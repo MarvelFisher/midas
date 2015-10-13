@@ -1,7 +1,5 @@
 package com.cyanspring.cstw.trader.gui.composite.speeddepth.provider;
 
-import java.text.DecimalFormat;
-
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -34,8 +32,7 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 			}
 			return "";
 		case 2:
-			DecimalFormat df = new DecimalFormat("#####0.00");
-			return df.format(model.getPrice());
+			return model.getFormatPrice();
 		case 3:
 			if (model.getType() == SpeedDepthModel.ASK && model.getVol() > 0) {
 				return "" + model.getVol();
@@ -55,6 +52,12 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 		switch (columnIndex) {
 		case 1:
 			return SWTResourceManager.getColor(SWT.COLOR_DARK_RED);
+		case 2:
+			SpeedDepthModel model = (SpeedDepthModel) element;
+			if (model.isLastPrice()) {
+				return SWTResourceManager.getColor(SWT.COLOR_DARK_YELLOW);
+			}
+			return null;
 		case 3:
 			return SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN);
 		}

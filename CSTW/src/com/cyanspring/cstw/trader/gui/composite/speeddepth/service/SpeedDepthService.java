@@ -9,10 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.business.OrderField;
+import com.cyanspring.common.cstw.tick.Ticker;
 import com.cyanspring.common.event.order.CancelParentOrderEvent;
 import com.cyanspring.common.event.order.EnterParentOrderEvent;
 import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.staticdata.HKexTickTable;
 import com.cyanspring.common.staticdata.ITickTable;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.OrderSide;
@@ -36,13 +36,22 @@ public final class SpeedDepthService {
 
 	private ITickTable tickTable;
 
+	private Ticker ticker;
+
 	private double middlePrice;
 
-	public SpeedDepthService() {
-		tickTable = new HKexTickTable();
-	}
+	private double lastPrice;
 
 	public List<SpeedDepthModel> getSpeedDepthList(Quote quote, boolean isLock) {
+		ticker = Business.getInstance().getTicker(quote.getSymbol());
+		if (ticker == null) {
+			return null;
+		} else {
+			tickTable = ticker.getTickTable();
+		}
+
+		lastPrice = quote.getLast();
+
 		List<SpeedDepthModel> list = new ArrayList<SpeedDepthModel>();
 		if (quote.getAsks() != null) {
 			int askSize = quote.getAsks().size();
@@ -91,6 +100,7 @@ public final class SpeedDepthService {
 	}
 
 	private void combineListByPrice(List<SpeedDepthModel> list) {
+		// clear data
 		for (SpeedDepthModel currentModel : currentList) {
 			currentModel.setVol(0);
 		}
@@ -117,6 +127,7 @@ public final class SpeedDepthService {
 				currentPrice = tickTable.tickUp(currentPrice, false);
 			}
 			model.setPrice(currentPrice);
+			model.setFormatPrice(ticker.formatPrice(currentPrice));
 			combineValueByCurrentList(model);
 			list.add(0, model);
 		}
@@ -127,6 +138,7 @@ public final class SpeedDepthService {
 			model.setSymbol(symbol);
 			currentPrice = tickTable.tickDown(currentPrice, false);
 			model.setPrice(currentPrice);
+			model.setFormatPrice(ticker.formatPrice(currentPrice));
 			combineValueByCurrentList(model);
 			list.add(model);
 		}
@@ -144,6 +156,9 @@ public final class SpeedDepthService {
 
 	private void refreshByCurrentOrder() {
 		for (SpeedDepthModel currentModel : currentList) {
+			if (PriceUtils.Equal(lastPrice, currentModel.getPrice())) {
+				currentModel.setLastPrice(true);
+			}
 			currentModel.setAskQty(0);
 			currentModel.setBidQty(0);
 		}
@@ -196,6 +211,10 @@ public final class SpeedDepthService {
 		}
 	}
 
+	public void cancelOrder(String currentSymbol) {
+		cancelOrder(currentSymbol, null);
+	}
+
 	public void cancelOrder(String currentSymbol, Double price) {
 		List<Map<String, Object>> orders = Business.getInstance()
 				.getOrderManager().getParentOrders();
@@ -224,10 +243,6 @@ public final class SpeedDepthService {
 				}
 			}
 		}
-	}
-
-	public void cancelOrder(String currentSymbol) {
-		cancelOrder(currentSymbol, null);
 	}
 
 }

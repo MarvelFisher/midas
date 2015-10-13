@@ -1,5 +1,8 @@
 package com.cyanspring.cstw.trader.gui;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
@@ -36,6 +39,7 @@ import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.gui.Activator;
+import com.cyanspring.cstw.gui.session.GuiSession;
 
 public class TraderPropertyView extends ViewPart implements IAsyncEventListener{
 	public TraderPropertyView() {
@@ -82,7 +86,7 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener{
 			}
 			sendAccountSettingRequestEvent();
 		} else if(event instanceof AsyncEvent) {
-			sendAccountSettingRequestEvent();
+			setAccountSettingParams();
 		} else {
 			log.error("Unhandled event: " + event);
 		}
@@ -223,6 +227,7 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener{
 		sendAccountSettingRequestEvent();
 		scheduleJob(refreshEvent,minRefreshInterval);
 		btnEdit.notifyListeners(SWT.Selection, new Event());
+		initSessionListener();
 	}
 	private void enableSettingParams(final boolean enable) {
 		parentComposite.getDisplay().asyncExec(new Runnable() {
@@ -331,5 +336,16 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener{
 			return false;
 		}
 		return true;
+	}
+	
+	private void initSessionListener() {
+		GuiSession.getInstance().addPropertyChangeListener(GuiSession.Property.ACCOUNT_SETTING.toString(),
+				new PropertyChangeListener() {
+
+					@Override
+					public void propertyChange(PropertyChangeEvent arg0) {
+						accountSetting = GuiSession.getInstance().getAccountSetting();
+					}
+				});
 	}
 }
