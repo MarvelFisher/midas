@@ -38,11 +38,14 @@ public final class SpeedDepthService {
 
 	private double middlePrice;
 
+	private double lastPrice;
+
 	public SpeedDepthService() {
 		tickTable = new HKexTickTable();
 	}
 
 	public List<SpeedDepthModel> getSpeedDepthList(Quote quote, boolean isLock) {
+		lastPrice = quote.getLast();
 		List<SpeedDepthModel> list = new ArrayList<SpeedDepthModel>();
 		if (quote.getAsks() != null) {
 			int askSize = quote.getAsks().size();
@@ -144,6 +147,9 @@ public final class SpeedDepthService {
 
 	private void refreshByCurrentOrder() {
 		for (SpeedDepthModel currentModel : currentList) {
+			if (PriceUtils.Equal(lastPrice, currentModel.getPrice())) {
+				currentModel.setLastPrice(true);
+			}
 			currentModel.setAskQty(0);
 			currentModel.setBidQty(0);
 		}

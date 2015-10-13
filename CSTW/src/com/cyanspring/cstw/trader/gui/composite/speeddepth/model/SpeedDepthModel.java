@@ -24,6 +24,8 @@ public final class SpeedDepthModel {
 
 	private String symbol;
 
+	private boolean isLastPrice;
+
 	public int getType() {
 		return type;
 	}
@@ -70,6 +72,14 @@ public final class SpeedDepthModel {
 
 	public void setBidQty(double bidQty) {
 		this.bidQty = bidQty;
+	}
+
+	public boolean isLastPrice() {
+		return isLastPrice;
+	}
+
+	public void setLastPrice(boolean isLastPrice) {
+		this.isLastPrice = isLastPrice;
 	}
 
 }

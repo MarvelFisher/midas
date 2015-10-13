@@ -55,6 +55,12 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 		switch (columnIndex) {
 		case 1:
 			return SWTResourceManager.getColor(SWT.COLOR_DARK_RED);
+		case 2:
+			SpeedDepthModel model = (SpeedDepthModel) element;
+			if (model.isLastPrice()) {
+				return SWTResourceManager.getColor(SWT.COLOR_DARK_YELLOW);
+			}
+			return null;
 		case 3:
 			return SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN);
 		}
