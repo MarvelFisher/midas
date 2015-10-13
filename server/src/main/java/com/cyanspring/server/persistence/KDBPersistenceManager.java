@@ -43,139 +43,148 @@ public class KDBPersistenceManager implements IPlugin {
 	}
 
 	public boolean saveQuote(Quote quote) {
-		try {
-			if (con.isConnected()) {
-				final Object[] data = new Object[] {new QTimestamp(quote.getTimeStamp()), quote.getSymbol(), quote.getBid(), quote.getAsk(), quote.getBidVol(), quote.getAskVol(), quote.getLast(),
-						quote.getLastVol(), quote.getTurnover(), quote.getHigh(), quote.getLow(), quote.getOpen(), quote.getClose(), quote.getTotalVolume()};
-				con.sync(".u.upd", "quote", data);
-			} else {
-				log.info("QConnection is not initialized");
+
+		synchronized (con) {
+			try {
+				if (con.isConnected()) {
+					final Object[] data = new Object[]{new QTimestamp(quote.getTimeStamp()), quote.getSymbol(), quote.getBid(), quote.getAsk(), quote.getBidVol(), quote.getAskVol(), quote.getLast(),
+							quote.getLastVol(), quote.getTurnover(), quote.getHigh(), quote.getLow(), quote.getOpen(), quote.getClose(), quote.getTotalVolume()};
+					con.sync(".u.upd", "quote", data);
+				} else {
+					log.info("QConnection is not initialized");
+				}
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+				e.printStackTrace();
+				return false;
 			}
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-			e.printStackTrace();
-			return false;
+			return true;
 		}
-		return true;
 	}
 	
 	public boolean saveQuotes(List<Quote> list) {
 
-		if (list.isEmpty()) {
-			return true;
-		}
+		synchronized (con) {
 
-		Date now = Clock.getInstance().now();
-		try {
-			if (con.isConnected()) {
-				int size = list.size();
-				final Object[] data = new Object[] {new QTimestamp[size], new String[size], new Double[size], new Double[size], new Double[size], new Double[size]
-						, new Double[size], new Double[size], new Double[size], new Double[size], new Double[size], new Double[size]
-								, new Double[size], new Double[size]};
-				for (int i=0; i < size; i++) {
-					Quote quote = list.get(i);
-					((QTimestamp[]) data[0])[i] = new QTimestamp(quote.getTimeStamp());
-					((String[]) data[1])[i] = quote.getSymbol();
-		            ((Double[]) data[2])[i] = quote.getBid();
-		            ((Double[]) data[3])[i] = quote.getAsk();
-		            ((Double[]) data[4])[i] = quote.getBidVol();
-		            ((Double[]) data[5])[i] = quote.getAskVol();
-		            ((Double[]) data[6])[i] = quote.getLast();
-		            ((Double[]) data[7])[i] = quote.getLastVol();
-		            ((Double[]) data[8])[i] = quote.getTurnover();
-		            ((Double[]) data[9])[i] = quote.getHigh();
-		            ((Double[]) data[10])[i] = quote.getLow();
-		            ((Double[]) data[11])[i] = quote.getOpen();
-		            ((Double[]) data[12])[i] = quote.getClose();
-		            ((Double[]) data[13])[i] = quote.getTotalVolume();
-				}
+			if (list.isEmpty()) {
+				return true;
+			}
 
-				con.sync(".u.upd", "quote", data);
-				
+			Date now = Clock.getInstance().now();
+			try {
+				if (con.isConnected()) {
+					int size = list.size();
+					final Object[] data = new Object[]{new QTimestamp[size], new String[size], new Double[size], new Double[size], new Double[size], new Double[size]
+							, new Double[size], new Double[size], new Double[size], new Double[size], new Double[size], new Double[size]
+							, new Double[size], new Double[size]};
+					for (int i = 0; i < size; i++) {
+						Quote quote = list.get(i);
+						((QTimestamp[]) data[0])[i] = new QTimestamp(quote.getTimeStamp());
+						((String[]) data[1])[i] = quote.getSymbol();
+						((Double[]) data[2])[i] = quote.getBid();
+						((Double[]) data[3])[i] = quote.getAsk();
+						((Double[]) data[4])[i] = quote.getBidVol();
+						((Double[]) data[5])[i] = quote.getAskVol();
+						((Double[]) data[6])[i] = quote.getLast();
+						((Double[]) data[7])[i] = quote.getLastVol();
+						((Double[]) data[8])[i] = quote.getTurnover();
+						((Double[]) data[9])[i] = quote.getHigh();
+						((Double[]) data[10])[i] = quote.getLow();
+						((Double[]) data[11])[i] = quote.getOpen();
+						((Double[]) data[12])[i] = quote.getClose();
+						((Double[]) data[13])[i] = quote.getTotalVolume();
+					}
+
+					con.sync(".u.upd", "quote", data);
+
 //				if(throttler.check()) {
 //					con.query(MessageType.SYNC, "`:quote insert (select from `quote)");
 //					if (cleanCache) {
 //						con.query(MessageType.SYNC, "delete from `quote");
 //					}
 //				}
-				
-			} else {
-				log.info("QConnection is not initialized");
+
+				} else {
+					log.info("QConnection is not initialized");
+				}
+			} catch (Exception e) {
+
+				log.info("quotes:", list);
+
+				log.error(e.getMessage(), e);
+				e.printStackTrace();
+				return false;
 			}
-		} catch (Exception e) {
 
-			log.info("quotes:", list);
-
-			log.error(e.getMessage(), e);
-			e.printStackTrace();
-			return false;
+			Date after = Clock.getInstance().now();
+			long pTime = TimeUtil.getTimePass(after, now);
+			if (pTime > 100)
+				log.info("Process time:" + pTime + "(msc)");
+			return true;
 		}
-		
-		Date after = Clock.getInstance().now();
-		long pTime = TimeUtil.getTimePass(after, now);
-		if (pTime > 100)
-			log.info("Process time:" + pTime + "(msc)");
-		return true;
 	}
 
 	public boolean saveQuotes(Map<String, Quote> map) {
 
-		if (map.isEmpty()) {
-			return true;
-		}
+		synchronized (con) {
 
-		Date now = Clock.getInstance().now();
-		try {
-			if (con.isConnected()) {
-				int size = map.size();
-				final Object[] data = new Object[] {new QTimestamp[size], new String[size], new Double[size], new Double[size], new Double[size], new Double[size]
-						, new Double[size], new Double[size], new Double[size], new Double[size], new Double[size], new Double[size]
-								, new Double[size], new Double[size]};
-				int i = 0;
-				for (Entry<String, Quote> entry : map.entrySet()){
-					Quote quote = entry.getValue();
-					((QTimestamp[]) data[0])[i] = new QTimestamp(quote.getTimeStamp());
-					((String[]) data[1])[i] = quote.getSymbol();
-					((Double[]) data[2])[i] = quote.getBid();
-					((Double[]) data[3])[i] = quote.getAsk();
-					((Double[]) data[4])[i] = quote.getBidVol();
-					((Double[]) data[5])[i] = quote.getAskVol();
-					((Double[]) data[6])[i] = quote.getLast();
-					((Double[]) data[7])[i] = quote.getLastVol();
-					((Double[]) data[8])[i] = quote.getTurnover();
-					((Double[]) data[9])[i] = quote.getHigh();
-					((Double[]) data[10])[i] = quote.getLow();
-					((Double[]) data[11])[i] = quote.getOpen();
-					((Double[]) data[12])[i] = quote.getClose();
-					((Double[]) data[13])[i] = quote.getTotalVolume();
-		            i++;
-				}
-				con.sync(".u.upd", "quote", data);
-				
+			if (map.isEmpty()) {
+				return true;
+			}
+
+			Date now = Clock.getInstance().now();
+			try {
+				if (con.isConnected()) {
+					int size = map.size();
+					final Object[] data = new Object[]{new QTimestamp[size], new String[size], new Double[size], new Double[size], new Double[size], new Double[size]
+							, new Double[size], new Double[size], new Double[size], new Double[size], new Double[size], new Double[size]
+							, new Double[size], new Double[size]};
+					int i = 0;
+					for (Entry<String, Quote> entry : map.entrySet()) {
+						Quote quote = entry.getValue();
+						((QTimestamp[]) data[0])[i] = new QTimestamp(quote.getTimeStamp());
+						((String[]) data[1])[i] = quote.getSymbol();
+						((Double[]) data[2])[i] = quote.getBid();
+						((Double[]) data[3])[i] = quote.getAsk();
+						((Double[]) data[4])[i] = quote.getBidVol();
+						((Double[]) data[5])[i] = quote.getAskVol();
+						((Double[]) data[6])[i] = quote.getLast();
+						((Double[]) data[7])[i] = quote.getLastVol();
+						((Double[]) data[8])[i] = quote.getTurnover();
+						((Double[]) data[9])[i] = quote.getHigh();
+						((Double[]) data[10])[i] = quote.getLow();
+						((Double[]) data[11])[i] = quote.getOpen();
+						((Double[]) data[12])[i] = quote.getClose();
+						((Double[]) data[13])[i] = quote.getTotalVolume();
+						i++;
+					}
+					con.sync(".u.upd", "quote", data);
+
 //				if(throttler.check()) {
 //					con.query(MessageType.SYNC, "`:quote insert (select from `quote)");
 //					if (cleanCache) {
 //						con.query(MessageType.SYNC, "delete from `quote");
 //					}
 //				}
-				
-			} else {
-				log.info("QConnection is not initialized");
+
+				} else {
+					log.info("QConnection is not initialized");
+				}
+			} catch (Exception e) {
+
+				log.info("quotes:", map);
+
+				log.error(e.getMessage(), e);
+				e.printStackTrace();
+				return false;
 			}
-		} catch (Exception e) {
 
-			log.info("quotes:", map);
-
-			log.error(e.getMessage(), e);
-			e.printStackTrace();
-			return false;
+			Date after = Clock.getInstance().now();
+			long pTime = TimeUtil.getTimePass(after, now);
+			if (pTime > 100)
+				log.info("Process time:" + pTime + "(msc)");
+			return true;
 		}
-		
-		Date after = Clock.getInstance().now();
-		long pTime = TimeUtil.getTimePass(after, now);
-		if (pTime > 100)
-			log.info("Process time:" + pTime + "(msc)");
-		return true;
 	}
 
 	public String getIp() {
