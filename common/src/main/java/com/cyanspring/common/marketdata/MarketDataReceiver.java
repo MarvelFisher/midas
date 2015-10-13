@@ -66,7 +66,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
     protected long quoteThrottle = 100; // 0 = no throttle
     protected long timerInterval = 300;
-    protected Map<String, InnerQuoteEvent> innerQuotesToBeSent = new HashMap<String, InnerQuoteEvent>();
+    protected ConcurrentHashMap<String, InnerQuoteEvent> innerQuotesToBeSent = new ConcurrentHashMap<String, InnerQuoteEvent>();
     protected List<String> preSubscriptionList = new ArrayList<String>();
     protected List<IMarketDataAdaptor> adaptors = new ArrayList<IMarketDataAdaptor>();
     protected List<IAsyncEventListener> eventListeners = new ArrayList<>();
