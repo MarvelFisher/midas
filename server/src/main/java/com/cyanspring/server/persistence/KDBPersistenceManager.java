@@ -115,7 +115,13 @@ public class KDBPersistenceManager implements IPlugin {
 			log.info("Process time:" + pTime + "(msc)");
 		return true;
 	}
+
 	public boolean saveQuotes(Map<String, Quote> map) {
+
+		if (map.isEmpty()) {
+			return true;
+		}
+
 		Date now = Clock.getInstance().now();
 		try {
 			if (con.isConnected()) {
