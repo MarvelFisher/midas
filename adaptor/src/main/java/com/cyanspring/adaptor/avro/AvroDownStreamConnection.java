@@ -149,6 +149,7 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
                 ", qty: " + order.getQuantity() + ", price: " + order.getPrice());
 			if (!state) {
 				log.warn("Down stream connection not ready");
+				order.setOrdStatus(OrdStatus.REJECTED);
 				listener.onOrder(ExecType.REJECTED, order, null, "Down stream connection not ready");
 				return;
 			}
