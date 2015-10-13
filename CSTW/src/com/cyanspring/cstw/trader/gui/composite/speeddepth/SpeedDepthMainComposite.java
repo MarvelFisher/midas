@@ -9,8 +9,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
@@ -19,6 +17,7 @@ import com.cyanspring.common.event.order.EnterParentOrderReplyEvent;
 import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.Constants;
+import com.cyanspring.cstw.common.GUIUtils;
 
 /**
  * 
@@ -28,9 +27,6 @@ import com.cyanspring.cstw.common.Constants;
  */
 public final class SpeedDepthMainComposite extends Composite implements
 		IAsyncEventListener {
-
-	private static final Logger log = LoggerFactory
-			.getLogger(SpeedDepthMainComposite.class);
 
 	private SpeedDepthTableComposite speedDepthComposite;
 	private Text symbolText;
@@ -130,8 +126,10 @@ public final class SpeedDepthMainComposite extends Composite implements
 			});
 		} else if (event instanceof EnterParentOrderReplyEvent) {
 			EnterParentOrderReplyEvent replyEvent = (EnterParentOrderReplyEvent) event;
-			log.info(replyEvent.getAccount() + ":" + replyEvent.isOk() + ":"
-					+ replyEvent.getKey() + ":" + replyEvent.getMessage());
+			if (!replyEvent.isOk()) {
+				GUIUtils.showMessageBox(replyEvent.getMessage(),
+						SpeedDepthMainComposite.this);
+			}
 		}
 
 		else if (event instanceof ParentOrderUpdateEvent) {
