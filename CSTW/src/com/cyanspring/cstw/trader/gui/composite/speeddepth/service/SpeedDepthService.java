@@ -44,7 +44,7 @@ public final class SpeedDepthService {
 
 	private double lastPrice;
 
-	private double delta = 0.0001;
+	private double delta = 0.000001;
 
 	public List<SpeedDepthModel> getSpeedDepthList(Quote quote, boolean isLock) {
 		ticker = Business.getInstance().getTicker(quote.getSymbol());
@@ -143,15 +143,11 @@ public final class SpeedDepthService {
 
 	private void combineValueByCurrentList(SpeedDepthModel model) {
 		for (SpeedDepthModel currentModel : currentList) {
-			log.info(":" + currentModel.getPrice() + ":" + model.getPrice());
 			if (PriceUtils.Equal(currentModel.getPrice(), model.getPrice(),
 					delta)) {
 				model.setType(currentModel.getType());
-				model.setVol(currentModel.getVol());
-				log.info("YES");
-			} else {
-				log.info("NO");
-			}
+				model.setVol(currentModel.getVol());		
+			} 
 		}
 	}
 
