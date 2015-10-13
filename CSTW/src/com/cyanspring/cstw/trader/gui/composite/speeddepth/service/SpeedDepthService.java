@@ -12,6 +12,8 @@ import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.event.order.CancelParentOrderEvent;
 import com.cyanspring.common.event.order.EnterParentOrderEvent;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.staticdata.HKexTickTable;
+import com.cyanspring.common.staticdata.ITickTable;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.QtyPrice;
@@ -32,12 +34,12 @@ public final class SpeedDepthService {
 
 	private List<SpeedDepthModel> currentList;
 
-	private double tick;
+	private ITickTable tickTable;
 
-	private double middleValue;
+	private double middlePrice;
 
-	public void setTick(double tick) {
-		this.tick = tick;
+	public SpeedDepthService() {
+		tickTable = new HKexTickTable();
 	}
 
 	public List<SpeedDepthModel> getSpeedDepthList(Quote quote, boolean isLock) {
@@ -65,7 +67,7 @@ public final class SpeedDepthService {
 				model.setSymbol(quote.getSymbol());
 				QtyPrice qp = quote.getBids().get(i);
 				if (i == 0) {
-					middleValue = qp.price;
+					middlePrice = qp.price;
 				}
 				model.setPrice(qp.price);
 				if (i < 5) {
@@ -104,19 +106,40 @@ public final class SpeedDepthService {
 
 	private void refreshByTick(String symbol) {
 		List<SpeedDepthModel> list = new ArrayList<SpeedDepthModel>();
-		for (int i = 10; i > -10; i--) {
+		// add 10 UP Price
+		double currentPrice = 0;
+		for (int i = 0; i < 10; i++) {
 			SpeedDepthModel model = new SpeedDepthModel();
 			model.setSymbol(symbol);
-			model.setPrice(middleValue + i * tick);
-			for (SpeedDepthModel currentModel : currentList) {
-				if (PriceUtils.Equal(currentModel.getPrice(), model.getPrice())) {
-					model.setType(currentModel.getType());
-					model.setVol(currentModel.getVol());
-				}
+			if (i == 0) {
+				currentPrice = middlePrice;
+			} else {
+				currentPrice = tickTable.tickUp(currentPrice, false);
 			}
+			model.setPrice(currentPrice);
+			combineValueByCurrentList(model);
+			list.add(0, model);
+		}
+		// add 10 DOWN Price
+		currentPrice = middlePrice;
+		for (int i = 0; i < 10; i++) {
+			SpeedDepthModel model = new SpeedDepthModel();
+			model.setSymbol(symbol);
+			currentPrice = tickTable.tickDown(currentPrice, false);
+			model.setPrice(currentPrice);
+			combineValueByCurrentList(model);
 			list.add(model);
 		}
 		currentList = list;
+	}
+
+	private void combineValueByCurrentList(SpeedDepthModel model) {
+		for (SpeedDepthModel currentModel : currentList) {
+			if (PriceUtils.Equal(currentModel.getPrice(), model.getPrice())) {
+				model.setType(currentModel.getType());
+				model.setVol(currentModel.getVol());
+			}
+		}
 	}
 
 	private void refreshByCurrentOrder() {
