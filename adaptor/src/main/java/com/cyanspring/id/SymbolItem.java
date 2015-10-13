@@ -3,16 +3,14 @@ package com.cyanspring.id;
 import com.cyanspring.common.marketdata.InnerQuote;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.QuoteSource;
+import com.cyanspring.common.type.QtyPrice;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.id.Library.Util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SymbolItem implements AutoCloseable {
@@ -263,7 +261,7 @@ public class SymbolItem implements AutoCloseable {
      * @return Quote
      */
     Quote getQuote() {
-        Quote quote = new Quote(symbol, null, null);
+        Quote quote = new Quote(symbol, new LinkedList<QtyPrice>(), new LinkedList<QtyPrice>());
         quote.setTimeStamp(tick.time);
         quote.setBid(tick.bid);
         quote.setAsk(tick.ask);

@@ -56,8 +56,8 @@ public final class SpeedDepthTableComposite extends Composite {
 	public SpeedDepthTableComposite(SpeedDepthMainComposite mainComposite,
 			int style) {
 		super(mainComposite, style);
-		this.mainComposite = mainComposite;
 		speedDepthService = new SpeedDepthService();
+		this.mainComposite = mainComposite;
 		initComponent();
 		initProvider();
 		initListener();
@@ -88,7 +88,7 @@ public final class SpeedDepthTableComposite extends Composite {
 		cancelButton = new Button(composite, SWT.NONE);
 		cancelButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true,
 				true, 1, 1));
-		cancelButton.setText("Cancel Order");
+		cancelButton.setText("Cancel ALL");
 
 		tableViewer = new TableViewer(this, SWT.BORDER | SWT.FULL_SELECTION);
 		table = tableViewer.getTable();
@@ -97,22 +97,22 @@ public final class SpeedDepthTableComposite extends Composite {
 		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		table.setBounds(0, 0, 85, 85);
 
-		TableColumn tblclmnNewColumn = new TableColumn(table, SWT.NONE);
+		TableColumn tblclmnNewColumn = new TableColumn(table, SWT.CENTER);
 		tblclmnNewColumn.setWidth(100);
 
-		tblclmnAskVol = new TableColumn(table, SWT.NONE);
+		tblclmnAskVol = new TableColumn(table, SWT.CENTER);
 		tblclmnAskVol.setWidth(100);
 		tblclmnAskVol.setText("Volume");
 
-		TableColumn tblclmnNewColumn_2 = new TableColumn(table, SWT.NONE);
+		TableColumn tblclmnNewColumn_2 = new TableColumn(table, SWT.CENTER);
 		tblclmnNewColumn_2.setWidth(100);
 		tblclmnNewColumn_2.setText("Ask/Bid");
 
-		tblBidsVol = new TableColumn(table, SWT.NONE);
+		tblBidsVol = new TableColumn(table, SWT.CENTER);
 		tblBidsVol.setWidth(100);
 		tblBidsVol.setText("Volume");
 
-		TableColumn tblclmnNewColumn_4 = new TableColumn(table, SWT.NONE);
+		TableColumn tblclmnNewColumn_4 = new TableColumn(table, SWT.CENTER);
 		tblclmnNewColumn_4.setWidth(100);
 	}
 
@@ -126,18 +126,10 @@ public final class SpeedDepthTableComposite extends Composite {
 		lockButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (lockButton.getSelection()) {
-					if (tableViewer.getInput() == null) {
-						return;
-					}
-					isLock = true;
+				isLock = lockButton.getSelection();
+				if (currentQuote != null) {
 					tableViewer.setInput(speedDepthService.getSpeedDepthList(
 							currentQuote, isLock));
-				} else {
-					isLock = false;
-					tableViewer.setInput(speedDepthService.getSpeedDepthList(
-							currentQuote, isLock));
-
 				}
 			}
 		});
@@ -171,14 +163,22 @@ public final class SpeedDepthTableComposite extends Composite {
 						speedDepthService.quickEnterOrder(model, "Sell",
 								mainComposite.getDefaultQuantityText()
 										.getText());
+					} else if (columnIndex == 0 || columnIndex == 4) {
+						speedDepthService.cancelOrder(model.getSymbol(),
+								Double.valueOf(model.getPrice()));
 					}
 				}
 			}
 		});
 	}
 
-	public void setQuote(Quote quote) {
+	public void setQuote(Quote quote, double tick) {
 		currentQuote = quote;
+		tableViewer.setInput(speedDepthService.getSpeedDepthList(currentQuote,
+				isLock));
+	}
+
+	public void refresh() {
 		tableViewer.setInput(speedDepthService.getSpeedDepthList(currentQuote,
 				isLock));
 	}

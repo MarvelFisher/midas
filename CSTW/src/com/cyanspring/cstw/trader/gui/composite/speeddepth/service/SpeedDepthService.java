@@ -12,9 +12,12 @@ import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.event.order.CancelParentOrderEvent;
 import com.cyanspring.common.event.order.EnterParentOrderEvent;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.staticdata.HKexTickTable;
+import com.cyanspring.common.staticdata.ITickTable;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.QtyPrice;
+import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.trader.gui.composite.speeddepth.model.SpeedDepthModel;
 
@@ -31,9 +34,16 @@ public final class SpeedDepthService {
 
 	private List<SpeedDepthModel> currentList;
 
+	private ITickTable tickTable;
+
+	private double middlePrice;
+
+	public SpeedDepthService() {
+		tickTable = new HKexTickTable();
+	}
+
 	public List<SpeedDepthModel> getSpeedDepthList(Quote quote, boolean isLock) {
 		List<SpeedDepthModel> list = new ArrayList<SpeedDepthModel>();
-
 		if (quote.getAsks() != null) {
 			int askSize = quote.getAsks().size();
 			for (int i = askSize - 1; i >= 0; i--) {
@@ -56,6 +66,9 @@ public final class SpeedDepthService {
 				SpeedDepthModel model = new SpeedDepthModel();
 				model.setSymbol(quote.getSymbol());
 				QtyPrice qp = quote.getBids().get(i);
+				if (i == 0) {
+					middlePrice = qp.price;
+				}
 				model.setPrice(qp.price);
 				if (i < 5) {
 					model.setVol(qp.quantity);
@@ -65,11 +78,11 @@ public final class SpeedDepthService {
 			}
 		}
 
-		
-		if (!isLock) {
-			currentList = list;
-		} else {
+		if (isLock && currentList != null) {
 			combineListByPrice(list);
+		} else {
+			currentList = list;
+			refreshByTick(quote.getSymbol());
 		}
 
 		refreshByCurrentOrder();
@@ -83,10 +96,48 @@ public final class SpeedDepthService {
 		}
 		for (SpeedDepthModel model : list) {
 			for (SpeedDepthModel currentModel : currentList) {
-				if (currentModel.getPrice() == model.getPrice()) {
+				if (PriceUtils.Equal(currentModel.getPrice(), model.getPrice())) {
 					currentModel.setType(model.getType());
 					currentModel.setVol(model.getVol());
 				}
+			}
+		}
+	}
+
+	private void refreshByTick(String symbol) {
+		List<SpeedDepthModel> list = new ArrayList<SpeedDepthModel>();
+		// add 10 UP Price
+		double currentPrice = 0;
+		for (int i = 0; i < 10; i++) {
+			SpeedDepthModel model = new SpeedDepthModel();
+			model.setSymbol(symbol);
+			if (i == 0) {
+				currentPrice = middlePrice;
+			} else {
+				currentPrice = tickTable.tickUp(currentPrice, false);
+			}
+			model.setPrice(currentPrice);
+			combineValueByCurrentList(model);
+			list.add(0, model);
+		}
+		// add 10 DOWN Price
+		currentPrice = middlePrice;
+		for (int i = 0; i < 10; i++) {
+			SpeedDepthModel model = new SpeedDepthModel();
+			model.setSymbol(symbol);
+			currentPrice = tickTable.tickDown(currentPrice, false);
+			model.setPrice(currentPrice);
+			combineValueByCurrentList(model);
+			list.add(model);
+		}
+		currentList = list;
+	}
+
+	private void combineValueByCurrentList(SpeedDepthModel model) {
+		for (SpeedDepthModel currentModel : currentList) {
+			if (PriceUtils.Equal(currentModel.getPrice(), model.getPrice())) {
+				model.setType(currentModel.getType());
+				model.setVol(currentModel.getVol());
 			}
 		}
 	}
@@ -105,7 +156,7 @@ public final class SpeedDepthService {
 					String symbol = (String) map.get("Symbol");
 					double price = (Double) map.get("Price");
 					if (currentModel.getSymbol().equals(symbol)
-							&& price == currentModel.getPrice()) {
+							&& PriceUtils.Equal(price, currentModel.getPrice())) {
 						OrderSide side = (OrderSide) map.get("Side");
 						double cumQty = (Double) map.get("Qty");
 						if (side.isBuy()) {
@@ -145,17 +196,26 @@ public final class SpeedDepthService {
 		}
 	}
 
-	public void cancelOrder(String currentSymbol) {
+	public void cancelOrder(String currentSymbol, Double price) {
 		List<Map<String, Object>> orders = Business.getInstance()
 				.getOrderManager().getParentOrders();
 		for (Map<String, Object> map : orders) {
-			String symbol = (String) map.get("Symbol");
-			String id = (String) map.get("id");
-			OrdStatus status = (OrdStatus) map.get("Status");
-			if (!status.isCompleted() && symbol.equals(currentSymbol)) {
+			String symbol = (String) map.get(OrderField.SYMBOL.value());
+			String id = (String) map.get(OrderField.ID.value());
+			OrdStatus status = (OrdStatus) map
+					.get(OrderField.ORDSTATUS.value());
+			boolean isPriceEqual;
+			if (price == null) {
+				isPriceEqual = true;
+			} else {
+				Double orderPrice = (Double) map.get(OrderField.PRICE.value());
+				isPriceEqual = PriceUtils.Equal(orderPrice, price);
+			}
+			if (!status.isCompleted() && symbol.equals(currentSymbol)
+					&& isPriceEqual) {
 				CancelParentOrderEvent event = new CancelParentOrderEvent(id,
 						Business.getInstance().getFirstServer(), id, false,
-						null);
+						null, true);
 				try {
 					Business.getInstance().getEventManager()
 							.sendRemoteEvent(event);
@@ -164,6 +224,10 @@ public final class SpeedDepthService {
 				}
 			}
 		}
+	}
+
+	public void cancelOrder(String currentSymbol) {
+		cancelOrder(currentSymbol, null);
 	}
 
 }
