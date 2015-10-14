@@ -66,6 +66,12 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 
 	@Override
 	public Color getForeground(Object element, int columnIndex) {
+		switch (columnIndex) {
+		case 1:
+			return SWTResourceManager.getColor(SWT.COLOR_WHITE);
+		case 3:
+			return SWTResourceManager.getColor(SWT.COLOR_WHITE);
+		}
 		return null;
 	}
 }
