@@ -876,6 +876,7 @@ public class AccountPositionManager implements IPlugin {
 	    		userGroup = new UserGroup(id,user.getRole());
 	    	}
 	    	user2AccountMap = new HashMap<>();
+	    	user2AccountMap.put(id, accountList.get(0));
 			for (UserGroup ug : userGroup.getManageeSet()) {
 				user2AccountMap.put(ug.getUser(),
 						accountKeeper.getAccounts(ug.getUser()).get(0));
