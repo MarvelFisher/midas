@@ -105,6 +105,7 @@ public class Business {
 	private Account loginAccount = null;
 	private AccountSetting accountSetting = null;
 	private UserGroup userGroup = new UserGroup("Admin",UserRole.Admin);
+	private List<String> accountGroupList = new ArrayList<String>();
 	private List<String> symbolList = new ArrayList<String>();
 	private TraderInfoListener traderInfoListener = null;
 	
@@ -474,6 +475,12 @@ public class Business {
 			log.info("loginAccount:{}",loginAccount.getId());
 			sendAccountSettingRequestEvent(loginAccount.getId());		
 		}
+		Map<String, Account> user2AccoutMap = event.getUser2AccountMap();
+		if(null != user2AccoutMap && !user2AccoutMap.isEmpty()) {
+			for (Account acc : user2AccoutMap.values()) {
+				accountGroupList.add(acc.getId());
+			}
+		}
 		UserGroup userGroup = event.getUserGroup();
 		this.user = userGroup.getUser();
 		
@@ -522,6 +529,10 @@ public class Business {
 	
 	public UserGroup getUserGroup() {
 		return userGroup;
+	}
+	
+	public List<String> getAccountGroup() {
+		return accountGroupList;
 	}
 	
 	public boolean isManagee(String account){
