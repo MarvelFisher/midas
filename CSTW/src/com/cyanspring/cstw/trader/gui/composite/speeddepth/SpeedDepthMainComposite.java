@@ -3,6 +3,8 @@ package com.cyanspring.cstw.trader.gui.composite.speeddepth;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -23,6 +25,7 @@ import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.Constants;
 import com.cyanspring.cstw.common.GUIUtils;
+import com.cyanspring.cstw.preference.PreferenceStoreManager;
 
 /**
  * 
@@ -42,8 +45,7 @@ public final class SpeedDepthMainComposite extends Composite implements
 	private Text symbolText;
 	private Text defaultQuantityText;
 	private String symbol = "";
-
-	private int defaultQty = 1000;
+	private String defaultQuantity;
 
 	/**
 	 * Create the composite.
@@ -71,9 +73,23 @@ public final class SpeedDepthMainComposite extends Composite implements
 		lblNewLabel.setText("Default Quantity:");
 
 		defaultQuantityText = new Text(this, SWT.BORDER);
-		defaultQuantityText.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER,
-				false, false, 1, 1));
-		defaultQuantityText.setText(Integer.toString(defaultQty));
+		GridData gd_defaultQuantityText = new GridData(SWT.RIGHT, SWT.CENTER,
+				false, false, 1, 1);
+		gd_defaultQuantityText.widthHint = 80;
+		gd_defaultQuantityText.minimumWidth = 80;
+		defaultQuantityText.setLayoutData(gd_defaultQuantityText);
+		if (PreferenceStoreManager.getInstance().getDefaultQty() == null
+				|| PreferenceStoreManager.getInstance().getDefaultQty()
+						.equals("")) {
+			defaultQuantityText.setText("1");
+		} else {
+			defaultQuantityText.setText(PreferenceStoreManager.getInstance()
+					.getDefaultQty());
+		}
+		new Label(this, SWT.NONE);
+		new Label(this, SWT.NONE);
+		new Label(this, SWT.NONE);
+
 		speedDepthComposite = new SpeedDepthTableComposite(this, SWT.NONE);
 		speedDepthComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL,
 				true, true, 4, 1));
@@ -127,6 +143,13 @@ public final class SpeedDepthMainComposite extends Composite implements
 						log.error(en.getMessage(), en);
 					}
 				}
+			}
+		});
+
+		defaultQuantityText.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				defaultQuantity = defaultQuantityText.getText();
 			}
 		});
 	}
@@ -188,6 +211,9 @@ public final class SpeedDepthMainComposite extends Composite implements
 
 	@Override
 	public void dispose() {
+
+		PreferenceStoreManager.getInstance().setDefayltQty(defaultQuantity);
+
 		Business.getInstance()
 				.getEventManager()
 				.unsubscribe(QuoteEvent.class, symbol,
