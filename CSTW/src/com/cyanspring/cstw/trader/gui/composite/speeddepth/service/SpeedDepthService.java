@@ -171,12 +171,14 @@ public final class SpeedDepthService {
 
 	// Always run in last time
 	private void refreshCurrentListByExistedOrder() {
+		int i = 0;
 		for (SpeedDepthModel currentModel : currentList) {
 			if (PriceUtils.Equal(lastPrice, currentModel.getPrice(), delta)) {
 				currentModel.setLastPrice(true);
 			}
 			currentModel.setAskQty(0);
 			currentModel.setBidQty(0);
+			currentModel.setIndex(i++);
 		}
 		List<Map<String, Object>> orders = Business.getInstance()
 				.getOrderManager().getParentOrders();

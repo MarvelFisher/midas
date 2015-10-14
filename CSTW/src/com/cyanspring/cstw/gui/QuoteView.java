@@ -1,8 +1,9 @@
 package com.cyanspring.cstw.gui;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -12,8 +13,8 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -42,7 +43,6 @@ import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.util.ArrayMap;
 import com.cyanspring.common.util.IdGenerator;
-import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.QuoteSymbolSelectEvent;
@@ -51,13 +51,10 @@ import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
 import com.cyanspring.cstw.gui.session.GuiSession;
+import com.cyanspring.cstw.preference.PreferenceStoreManager;
 
 public class QuoteView extends ViewPart implements IAsyncEventListener {
-	public QuoteView() {
-	}
-	private enum Column{
-		Symbol
-	}
+
 	private static final Logger log = LoggerFactory.getLogger(QuoteView.class);
 	public static final String ID = "com.cyanspring.cstw.gui.QuoteViewer";
 	private Composite parentComposite = null;
@@ -74,6 +71,12 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 	private Action popDeleteSymbol;
 	private final String MENU_ID_DELETESYMBOL = "POPUP_DELETE_SYMBOL";
 	private boolean updated = false;
+
+	private Set<String> symbolSet = new HashSet<String>();
+
+	private enum Column {
+		Symbol
+	}
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -98,7 +101,8 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 					}
 					{
 						textSymbol = new Text(composite, SWT.BORDER);
-						GridData gd_textSymbol = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+						GridData gd_textSymbol = new GridData(SWT.LEFT,
+								SWT.CENTER, false, false, 1, 1);
 						gd_textSymbol.widthHint = 165;
 						textSymbol.setLayoutData(gd_textSymbol);
 						textSymbol.setSize(149, 468);
@@ -108,16 +112,18 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 					btnSubscribe.setSize(148, 468);
 					btnSubscribe.setText("Subscribe");
 					{
-						Composite bottomComposite = new Composite(composite_1, SWT.NONE);
-						bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-//						bottomComposite.setSize(297, 469);
-						bottomComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
+						Composite bottomComposite = new Composite(composite_1,
+								SWT.NONE);
+						bottomComposite.setLayoutData(new GridData(SWT.FILL,
+								SWT.FILL, true, true, 1, 1));
+						// bottomComposite.setSize(297, 469);
+						bottomComposite
+								.setLayout(new FillLayout(SWT.HORIZONTAL));
 
 						createQuoteViewer(bottomComposite);
 						createMenu(bottomComposite);
 					}
-					btnSubscribe.addSelectionListener(new SelectionListener() {
-
+					btnSubscribe.addSelectionListener(new SelectionAdapter() {
 						@Override
 						public void widgetSelected(SelectionEvent e) {
 							final String symbol = textSymbol.getText();
@@ -126,25 +132,37 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 										parentComposite);
 								return;
 							}
-
-							Business.getInstance().getEventManager().subscribe(QuoteEvent.class, symbol, QuoteView.this);
-							QuoteSubEvent subEvent = new QuoteSubEvent(
-									receiverId, Business.getInstance()
-											.getFirstServer(), symbol);
-							sendRemoteEvent(subEvent);
-						}
-
-						@Override
-						public void widgetDefaultSelected(SelectionEvent e) {
-
+							queryBySymbol(symbol);
 						}
 					});
 				}
 			}
 		}
 
-		Business.getInstance().getEventManager().subscribe(QuoteEvent.class, receiverId, QuoteView.this);
+		Business.getInstance().getEventManager()
+				.subscribe(QuoteEvent.class, receiverId, QuoteView.this);
 		scheduleJob(refreshEvent, minRefreshInterval);
+
+		LoadQuoteList();
+	}
+
+	private void queryBySymbol(String symbol) {
+		symbolSet.add(symbol);
+
+		Business.getInstance().getEventManager()
+				.subscribe(QuoteEvent.class, symbol, QuoteView.this);
+		QuoteSubEvent subEvent = new QuoteSubEvent(receiverId, Business
+				.getInstance().getFirstServer(), symbol);
+		sendRemoteEvent(subEvent);
+	}
+
+	private void LoadQuoteList() {
+		List<String> quoteList = PreferenceStoreManager.getInstance()
+				.getQuoteList();
+		for (String quote : quoteList) {
+			queryBySymbol(quote);
+		}
+
 	}
 
 	private void triggerMarketData(String symbol) {
@@ -163,8 +181,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 				.getInstance().getXstream(), strFile, BeanHolder.getInstance()
 				.getDataConverter());
 		quoteViewer.init();
-		quoteViewer.getTable().addSelectionListener(new SelectionListener() {
-
+		quoteViewer.getTable().addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Table table = quoteViewer.getTable();
@@ -177,10 +194,6 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 				}
 			}
 
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-
-			}
 		});
 	}
 
@@ -189,7 +202,6 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void createMenu(Composite parent) {
-
 		AuthMenuManager menuMgr = AuthMenuManager.newInstance(this
 				.getPartName());
 		menuMgr.add(createPopDeleteSymbol(parent));
@@ -201,7 +213,6 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 		popDeleteSymbol = new StyledAction("",
 				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
-
 				try {
 					Table table = quoteViewer.getTable();
 					TableItem items[] = table.getSelection();
@@ -209,7 +220,10 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 						Object obj = item.getData();
 						if (obj instanceof Quote) {
 							String symbol = ((Quote) obj).getSymbol();
-							Business.getInstance().getEventManager().unsubscribe(QuoteEvent.class, symbol, QuoteView.this);
+							Business.getInstance()
+									.getEventManager()
+									.unsubscribe(QuoteEvent.class, symbol,
+											QuoteView.this);
 							quoteMap.remove(symbol);
 							refreshQuote();
 						}
@@ -233,22 +247,21 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 	@Override
 	public void onEvent(AsyncEvent event) {
 		if (event instanceof QuoteEvent) {
-			
 			QuoteEvent e = (QuoteEvent) event;
-
 			quoteMap.put(e.getQuote().getSymbol(), e.getQuote());
-			if(e.getKey().equals(receiverId)) { // first time receive, immediately refresh
+			if (e.getKey().equals(receiverId)) { // first time receive,
+													// immediately refresh
 				refreshQuote();
 			}
 			updated = true;
 		} else if (event instanceof AsyncTimerEvent) {
-			if(updated)
+			if (updated)
 				refreshQuote();
 		}
 	}
 
-	public KeyListener createKeyListener(){
-		KeyListener ka = new KeyAdapter(){
+	public KeyListener createKeyListener() {
+		KeyListener ka = new KeyAdapter() {
 			@Override
 			public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
 				if (e.keyCode == SWT.CR) {
@@ -258,7 +271,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 		};
 		return ka;
 	}
-	
+
 	private void refreshQuote() {
 		updated = false;
 		quoteViewer.getControl().getDisplay().asyncExec(new Runnable() {
@@ -267,44 +280,39 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 				synchronized (quoteViewer) {
 					if (quoteViewer.isViewClosing())
 						return;
-
 					if (null != quoteViewer.getTable()
 							&& null != quoteViewer.getTable().getMenu()
 							&& quoteViewer.getTable().getMenu().isVisible()) {
 						return;
 					}
-
 					if (!columnCreated) {
-
 						ArrayList<Quote> list = quoteMap.toArray();
 						if (list.isEmpty())
 							return;
-						
+
 						Object obj = list.get(0);
 						List<ColumnProperty> properties = quoteViewer
 								.setObjectColumnProperties(obj);
 						quoteViewer.setSmartColumnProperties(obj.getClass()
 								.getName(), properties);
-
 						columnCreated = true;
 						quoteViewer.setInput(list);
-						
-					} 
-					quoteViewer.refresh();	
+					}
+					quoteViewer.refresh();
 				}
 			}
 		});
 	}
 
-	private int getColumnPosition(Table table,Column col){
+	private int getColumnPosition(Table table, Column col) {
 		TableColumn columns[] = table.getColumns();
-		for(int i=0 ;i < columns.length ; i++){
-			if(col.name().equals(columns[i].getText()))
+		for (int i = 0; i < columns.length; i++) {
+			if (col.name().equals(columns[i].getText()))
 				return i;
 		}
 		return -1;
 	}
-	
+
 	private void sendRemoteEvent(RemoteAsyncEvent event) {
 		try {
 			Business.getInstance().getEventManager().sendRemoteEvent(event);
@@ -344,13 +352,22 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 	public void dispose() {
 		super.dispose();
 		cancelScheduleJob(refreshEvent);
+		saveQuoteList();
 	}
 
-	class QuoteSorter extends ViewerSorter{
+	private void saveQuoteList() {
+		String quoteList = "";
+		for (Quote quote : quoteMap.toArray()) {
+			quoteList = quoteList.concat(quote.getSymbol() + ";");
+		}
+		PreferenceStoreManager.getInstance().saveQuoteList(quoteList);
+	}
+
+	class QuoteSorter extends ViewerSorter {
 		@Override
 		public int compare(Viewer viewer, Object e1, Object e2) {
-			Quote q1 = (Quote)e1;
-			Quote q2 = (Quote)e2;		
+			Quote q1 = (Quote) e1;
+			Quote q2 = (Quote) e2;
 			return q1.getSymbol().compareTo(q2.getSymbol());
 		}
 	}

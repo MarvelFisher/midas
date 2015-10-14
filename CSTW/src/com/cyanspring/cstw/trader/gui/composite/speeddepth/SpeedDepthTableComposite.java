@@ -5,6 +5,7 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -14,7 +15,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.cstw.trader.gui.composite.speeddepth.model.SpeedDepthModel;
@@ -38,6 +41,7 @@ public final class SpeedDepthTableComposite extends Composite {
 	private TableViewer tableViewer;
 
 	private SpeedDepthContentProvider speedDepthContentProvider;
+	private SpeedDepthLabelProvider labelProvider;
 	private SpeedDepthMainComposite mainComposite;
 	private TableColumn tblclmnAskVol;
 	private TableColumn tblBidsVol;
@@ -46,6 +50,8 @@ public final class SpeedDepthTableComposite extends Composite {
 	private Button lockButton;
 
 	private boolean isLock = false;
+
+	private TableItem currentItem;
 
 	/**
 	 * Create the composite.
@@ -119,7 +125,8 @@ public final class SpeedDepthTableComposite extends Composite {
 	private void initProvider() {
 		speedDepthContentProvider = new SpeedDepthContentProvider();
 		tableViewer.setContentProvider(speedDepthContentProvider);
-		tableViewer.setLabelProvider(new SpeedDepthLabelProvider());
+		labelProvider = new SpeedDepthLabelProvider();
+		tableViewer.setLabelProvider(labelProvider);
 	}
 
 	private void initListener() {
@@ -168,6 +175,29 @@ public final class SpeedDepthTableComposite extends Composite {
 								Double.valueOf(model.getPrice()));
 					}
 				}
+			}
+		});
+
+		table.addMouseMoveListener(new MouseMoveListener() {
+			@Override
+			public void mouseMove(MouseEvent e) {
+				TableItem item = table.getItem(new Point(e.x, e.y));
+				if (item == null) {
+					return;
+				}
+				if (currentItem != null && currentItem != item) {
+					currentItem.setForeground(1,
+							SWTResourceManager.getColor(SWT.COLOR_WHITE));
+					currentItem.setForeground(3,
+							SWTResourceManager.getColor(SWT.COLOR_WHITE));
+				}
+				item.setForeground(1,
+						SWTResourceManager.getColor(SWT.COLOR_BLACK));
+				item.setForeground(3,
+						SWTResourceManager.getColor(SWT.COLOR_BLACK));
+				SpeedDepthModel model = (SpeedDepthModel) item.getData();
+				labelProvider.setSelectIndex(model.getIndex());
+				currentItem = item;
 			}
 		});
 	}

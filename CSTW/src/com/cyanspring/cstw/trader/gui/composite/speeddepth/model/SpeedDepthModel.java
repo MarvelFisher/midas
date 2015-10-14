@@ -28,6 +28,8 @@ public final class SpeedDepthModel {
 
 	private boolean isLastPrice;
 
+	private int index;
+
 	public int getType() {
 		return type;
 	}
@@ -91,5 +93,13 @@ public final class SpeedDepthModel {
 	public void setFormatPrice(String formatPrice) {
 		this.formatPrice = formatPrice;
 	}
-	
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
 }

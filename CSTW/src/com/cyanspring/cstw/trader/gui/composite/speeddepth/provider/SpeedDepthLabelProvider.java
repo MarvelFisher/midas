@@ -17,6 +17,8 @@ import com.cyanspring.cstw.trader.gui.composite.speeddepth.model.SpeedDepthModel
 public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 		implements ITableColorProvider {
 
+	private int selectIndex = 0;
+
 	@Override
 	public String getColumnText(Object element, int columnIndex) {
 		SpeedDepthModel model = (SpeedDepthModel) element;
@@ -66,12 +68,25 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 
 	@Override
 	public Color getForeground(Object element, int columnIndex) {
+		SpeedDepthModel model = (SpeedDepthModel) element;
 		switch (columnIndex) {
 		case 1:
-			return SWTResourceManager.getColor(SWT.COLOR_WHITE);
+			if (model.getIndex()==selectIndex) {
+				return SWTResourceManager.getColor(SWT.COLOR_BLACK);
+			} else {
+				return SWTResourceManager.getColor(SWT.COLOR_WHITE);
+			}
 		case 3:
-			return SWTResourceManager.getColor(SWT.COLOR_WHITE);
+			if (model.getIndex()==selectIndex) {
+				return SWTResourceManager.getColor(SWT.COLOR_BLACK);
+			} else {
+				return SWTResourceManager.getColor(SWT.COLOR_WHITE);
+			}
 		}
 		return null;
 	}
+
+	public void setSelectIndex(int selectIndex) {
+		this.selectIndex = selectIndex;
+	}	
 }
