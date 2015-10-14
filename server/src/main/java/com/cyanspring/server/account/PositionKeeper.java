@@ -410,9 +410,10 @@ public class PositionKeeper {
 				pos = getOverallPosition(list, account, symbol);
 				if(null != quoteFeeder) {
 					Quote quote = quoteFeeder.getQuote(symbol);
+					
 					if(null != quote && null != pos) {
 						double price = QuoteUtils.getPnlPrice(quote, pos.getQty(), useMid);
-						double lastPrice = QuoteUtils.getLastPrice(quote);
+						double lastPrice = QuoteUtils.getLastPrice(quote, useMid);
 						if(!PriceUtils.validPrice(price))
 							price = QuoteUtils.getValidPrice(quote);
 						
@@ -432,6 +433,13 @@ public class PositionKeeper {
 									quote.getSymbol(), pos.getLastPnL());
 							pos.setAcLastPnL(acLastPnL);
 						}
+						
+						if(pos.getPnL() > pos.getLastPnL() || pos.getAcPnL() > pos.getAcLastPnL()){
+							log.info("Strange LastPnl - " + pos.getQty() + ", lastPrice: " + lastPrice + ", price: " + price + ", position price: " + pos.getPrice()
+									+ ", Pnl: " + pos.getPnL() + ", AcPnl:" + pos.getAcPnL() + ", lastPnl: " + pos.getLastPnL()
+									+ ", AcLastPnl: " + pos.getAcLastPnL() + ", bid:" + quote.getBid() + ", ask: " + quote.getAsk());
+						}
+							
 					}
 				}
 			} catch (PositionException e) {
