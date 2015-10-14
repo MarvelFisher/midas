@@ -207,7 +207,7 @@ public final class SpeedDepthService {
 	}
 
 	public void quickEnterOrder(SpeedDepthModel model, String side,
-			String quantity) {
+			String quantity, String receiverId) {
 		HashMap<String, Object> fields = new HashMap<String, Object>();
 
 		fields.put(OrderField.SYMBOL.value(), model.getSymbol());
@@ -222,7 +222,7 @@ public final class SpeedDepthService {
 
 		EnterParentOrderEvent event = new EnterParentOrderEvent(Business
 				.getInstance().getInbox(), Business.getInstance()
-				.getFirstServer(), fields, null, false);
+				.getFirstServer(), fields, receiverId, false);
 		try {
 			Business.getInstance().getEventManager().sendRemoteEvent(event);
 		} catch (Exception e) {

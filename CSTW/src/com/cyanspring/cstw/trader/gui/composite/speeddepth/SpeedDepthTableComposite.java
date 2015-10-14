@@ -53,6 +53,8 @@ public final class SpeedDepthTableComposite extends Composite {
 
 	private TableItem currentItem;
 
+	private String receiverId;
+
 	/**
 	 * Create the composite.
 	 * 
@@ -60,10 +62,11 @@ public final class SpeedDepthTableComposite extends Composite {
 	 * @param style
 	 */
 	public SpeedDepthTableComposite(SpeedDepthMainComposite mainComposite,
-			int style) {
+			String receiverId, int style) {
 		super(mainComposite, style);
 		speedDepthService = new SpeedDepthService();
 		this.mainComposite = mainComposite;
+		this.receiverId = receiverId;
 		initComponent();
 		initProvider();
 		initListener();
@@ -163,13 +166,13 @@ public final class SpeedDepthTableComposite extends Composite {
 					if (columnIndex == 1) {
 						speedDepthService.quickEnterOrder(model, "Buy",
 								mainComposite.getDefaultQuantityText()
-										.getText());
+										.getText(), receiverId);
 					}
 					// bids
 					else if (columnIndex == 3) {
 						speedDepthService.quickEnterOrder(model, "Sell",
 								mainComposite.getDefaultQuantityText()
-										.getText());
+										.getText(), receiverId);
 					} else if (columnIndex == 0 || columnIndex == 4) {
 						speedDepthService.cancelOrder(model.getSymbol(),
 								Double.valueOf(model.getPrice()));

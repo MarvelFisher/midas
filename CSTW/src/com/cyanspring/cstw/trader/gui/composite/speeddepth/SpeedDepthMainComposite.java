@@ -79,7 +79,8 @@ public final class SpeedDepthMainComposite extends Composite implements
 		gd_defaultQuantityText.minimumWidth = 80;
 		defaultQuantityText.setLayoutData(gd_defaultQuantityText);
 		defaultQuantityText.setText("1");
-		tableComposite = new SpeedDepthTableComposite(this, SWT.NONE);
+		tableComposite = new SpeedDepthTableComposite(this, receiverId,
+				SWT.NONE);
 		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				true, 4, 1));
 
@@ -171,7 +172,7 @@ public final class SpeedDepthMainComposite extends Composite implements
 			});
 		} else if (event instanceof EnterParentOrderReplyEvent) {
 			EnterParentOrderReplyEvent replyEvent = (EnterParentOrderReplyEvent) event;
-			if (!replyEvent.isOk()) {
+			if (!replyEvent.isOk()&&  replyEvent.getTxId().equals(receiverId)) {
 				GUIUtils.showMessageBox(replyEvent.getMessage(),
 						SpeedDepthMainComposite.this);
 			}
@@ -207,17 +208,15 @@ public final class SpeedDepthMainComposite extends Composite implements
 
 		Business.getInstance().getEventManager()
 				.unsubscribe(QuoteEvent.class, SpeedDepthMainComposite.this);
-		Business.getInstance()
-				.getEventManager()
-				.unsubscribe(QuoteEvent.class, receiverId,
-						SpeedDepthMainComposite.this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(QuoteEvent.class, SpeedDepthMainComposite.this);
 		Business.getInstance()
 				.getEventManager()
 				.unsubscribe(EnterParentOrderReplyEvent.class,
 						SpeedDepthMainComposite.this);
 		Business.getInstance()
 				.getEventManager()
-				.unsubscribe(ParentOrderUpdateEvent.class,
+				.unsubscribe(ParentOrderUpdateEvent.class, receiverId,
 						SpeedDepthMainComposite.this);
 	}
 
