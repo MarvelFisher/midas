@@ -401,7 +401,7 @@ public class AccountPositionManager implements IPlugin {
             Account last = accountUpdates.get(account.getId());
             if (last == null || account == null || last.getMargin() != account.getMargin() ||
                     last.getUrPnL() != account.getUrPnL() || last.getCashAvailable() != account.getCashAvailable()
-                    || last.getPnL() != account.getPnL()) {
+                    || last.getPnL() != account.getPnL() || last.getUrLastPnL() != account.getUrLastPnL()) {
                 try {
                     accountUpdates.put(account.getId(), account.clone());
                 } catch (CloneNotSupportedException e) {
@@ -414,7 +414,8 @@ public class AccountPositionManager implements IPlugin {
 
         boolean dynamicDataHasChanged(OpenPosition position) {
             OpenPosition last = positionUpdates.get(position.getId());
-            if (last == null || position == null || last.getPnL() != position.getPnL()) {
+            if (last == null || position == null || last.getPnL() != position.getPnL() || last.getAcPnL() != position.getAcPnL() 
+            		|| last.getAcLastPnL() != position.getAcLastPnL()) {
                 positionUpdates.put(position.getId(), position);
                 return true;
             }
