@@ -419,12 +419,15 @@ public class PositionKeeper {
 						if(PriceUtils.validPrice(price)) {
 							double pnl = FxUtils.calculatePnL(refDataManager, pos.getSymbol(), pos.getQty(), 
 									(price-pos.getPrice()));
-							pos.setPnL(pnl);
-							double lastPnL = FxUtils.calculatePnL(refDataManager, pos.getSymbol(), pos.getQty(), lastPrice-pos.getPrice());
-							pos.setLastPnL(lastPnL);
+							pos.setPnL(pnl);							
 							double urPnL = FxUtils.convertPnLToCurrency(refDataManager, fxConverter, account.getCurrency(), 
 									quote.getSymbol(), pos.getPnL());
-							pos.setAcPnL(urPnL);
+							pos.setAcPnL(urPnL);							
+						}
+						
+						if (PriceUtils.validPrice(lastPrice)) {
+							double lastPnL = FxUtils.calculatePnL(refDataManager, pos.getSymbol(), pos.getQty(), (lastPrice-pos.getPrice()));
+							pos.setLastPnL(lastPnL);
 							double acLastPnL = FxUtils.convertPnLToCurrency(refDataManager, fxConverter, account.getCurrency(), 
 									quote.getSymbol(), pos.getLastPnL());
 							pos.setAcLastPnL(acLastPnL);
