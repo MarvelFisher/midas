@@ -58,6 +58,7 @@ class QuoteS {
             if (quote.getBid() < this.quote.getLow() || this.quote.getLow() == 0) {
                 this.quote.setLow(quote.getBid());
             }
+            this.quote.setLast((quote.getBid() + quote.getAsk())/2.0);
         } else {
             if (quote.getAsk() > 0 && quote.getBid() > 0) {
                 this.quote = quote;
