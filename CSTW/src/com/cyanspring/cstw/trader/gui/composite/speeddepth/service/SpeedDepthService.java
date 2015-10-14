@@ -146,15 +146,16 @@ public final class SpeedDepthService {
 			if (PriceUtils.Equal(currentModel.getPrice(), model.getPrice(),
 					delta)) {
 				model.setType(currentModel.getType());
-				model.setVol(currentModel.getVol());		
-			} 
+				model.setVol(currentModel.getVol());
+			}
 		}
 	}
 
 	private void combineExistedListByPrice(List<SpeedDepthModel> list) {
 		// clear data
-		for (SpeedDepthModel currentModel : existedList) {
-			currentModel.setVol(0);
+		for (SpeedDepthModel existedModel : existedList) {
+			existedModel.setVol(0);
+			existedModel.setLastPrice(false);
 		}
 		for (SpeedDepthModel model : list) {
 			for (SpeedDepthModel currentModel : existedList) {
@@ -165,6 +166,7 @@ public final class SpeedDepthService {
 				}
 			}
 		}
+		currentList = existedList;
 	}
 
 	// Always run in last time
