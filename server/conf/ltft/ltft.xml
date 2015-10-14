@@ -250,10 +250,10 @@
 		</property>
 		<property name="dailyExecTime" ref="dailyExec" /> <!-- format=[HH:mm:ss] 24hr -->
 		<property name="dynamicUpdateInterval">
-            <value>500</value>
+            <value>100</value>
 		</property>
 		<property name="rmUpdateInterval">
-            <value>450</value>
+            <value>120</value>
         </property>
         <property name="sendDynamicPositionUpdate">
             <value>true</value>
