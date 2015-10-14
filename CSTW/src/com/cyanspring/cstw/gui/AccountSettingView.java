@@ -184,7 +184,8 @@ public class AccountSettingView extends ViewPart implements IAsyncEventListener 
 			AccountSettingSnapshotRequestEvent request = new AccountSettingSnapshotRequestEvent(ID, Business.getInstance().getFirstServer(), evt.getAccount(), null);
 			sendRemoteEvent(request);
 		} else if(event instanceof AccountSettingSnapshotReplyEvent) {
-			displayObject(((AccountSettingSnapshotReplyEvent) event).getAccountSetting().getFields());
+			if(!editMode)
+				displayObject(((AccountSettingSnapshotReplyEvent) event).getAccountSetting().getFields());
 		} else if(event instanceof ChangeAccountSettingReplyEvent) {
 			ChangeAccountSettingReplyEvent evt = (ChangeAccountSettingReplyEvent)event;
 			log.info("Account setting change: " + evt.isOk() + ", " + evt.getMessage());
