@@ -52,6 +52,7 @@ import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
 import com.cyanspring.cstw.gui.session.GuiSession;
 import com.cyanspring.cstw.preference.PreferenceStoreManager;
+import com.cyanspring.cstw.trader.helper.QuoteHelper;
 
 public class QuoteView extends ViewPart implements IAsyncEventListener {
 
@@ -248,9 +249,12 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 	public void onEvent(AsyncEvent event) {
 		if (event instanceof QuoteEvent) {
 			QuoteEvent e = (QuoteEvent) event;
+			// check is quote valid
+			if (!QuoteHelper.checkValid(e.getQuote())) {
+				return;
+			}
 			quoteMap.put(e.getQuote().getSymbol(), e.getQuote());
-			if (e.getKey().equals(receiverId)) { // first time receive,
-													// immediately refresh
+			if (e.getKey().equals(receiverId)) { // first time receive,immediately refresh
 				refreshQuote();
 			}
 			updated = true;
