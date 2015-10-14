@@ -2,12 +2,30 @@ package com.cyanspring.server.api;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.apievent.reply.ServerReadyEvent;
 import com.cyanspring.apievent.reply.SystemErrorEvent;
 import com.cyanspring.apievent.request.UserLoginEvent;
 import com.cyanspring.apievent.version.ApiVersion;
+import com.cyanspring.common.IPlugin;
+import com.cyanspring.common.account.AccountException;
+import com.cyanspring.common.account.AccountSetting;
+import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.common.event.AsyncPriorityEventThread;
+import com.cyanspring.common.event.IAsyncEventBridge;
+import com.cyanspring.common.event.IAsyncEventListener;
+import com.cyanspring.common.event.IAsyncEventManager;
+import com.cyanspring.common.event.RemoteAsyncEvent;
+import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.message.MessageLookup;
+import com.cyanspring.common.transport.IServerSocketListener;
+import com.cyanspring.common.transport.IUserSocketContext;
 import com.cyanspring.event.api.ApiEventTranslator;
 import com.cyanspring.event.api.ApiResourceManager;
 import com.cyanspring.event.api.IEventTranslatror;
@@ -17,25 +35,8 @@ import com.cyanspring.event.api.obj.request.ApiUserLoginEvent;
 import com.cyanspring.event.api.obj.request.IApiRequest;
 import com.cyanspring.server.account.AccountKeeper;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.cyanspring.common.IPlugin;
-import com.cyanspring.common.account.AccountException;
-import com.cyanspring.common.account.AccountSetting;
-import com.cyanspring.common.event.AsyncEvent;
-import com.cyanspring.common.event.IAsyncEventBridge;
-import com.cyanspring.common.event.IAsyncEventListener;
-import com.cyanspring.common.event.IAsyncEventManager;
-import com.cyanspring.common.event.RemoteAsyncEvent;
-import com.cyanspring.common.message.ErrorMessage;
-import com.cyanspring.common.message.MessageLookup;
-import com.cyanspring.common.transport.IServerSocketListener;
-import com.cyanspring.common.transport.IUserSocketContext;
-import com.cyanspring.common.event.AsyncPriorityEventThread;
-
 public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEventListener {
+
     private static Logger log = LoggerFactory.getLogger(ApiBridgeManager.class);
 
     @Autowired
@@ -62,10 +63,9 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
             if (connected) {
                 ctx.send(new ServerReadyEvent(connected));
             } else {
-                for (Map<String, String> map : resourceManager.getAllSubscriptionbyList()) {
-                    String symbol = map.remove(ctx.getId());
-                    log.info("Remove symbol subscription: " + ctx.getUser() + ", " + symbol);
-                }
+            	Map<String, List<String>> mapQuoteSubs = resourceManager.getQuoteSubs();
+                List<String> lstSymbol = mapQuoteSubs.remove(ctx.getId());
+                log.info("Remove symbol subscription: " + ctx.getUser() + ", " + lstSymbol.toString());
             }
         }
 
@@ -93,10 +93,10 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
         	}
 
         	//check user client version
-        	if(null != obj && obj instanceof UserLoginEvent){
+        	if (null != obj && obj instanceof UserLoginEvent) {
         		UserLoginEvent checkVersion = (UserLoginEvent)obj;
         		ApiVersion version = checkVersion.getVersion();
-        		if(null == version || !version.isSameVersion(new ApiVersion())){
+        		if (null == version || !version.isSameVersion(new ApiVersion())) {
                     ctx.send(new SystemErrorEvent(null, null, 306, MessageLookup.buildEventMessage(ErrorMessage.VERSION_NEED_UPDATE
                     		, "now api version :"+new ApiVersion().getID()+" user version:"+(version==null? "no version control program":version.getID()))));
                     return;
@@ -126,7 +126,7 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
         @Override
         public void onEvent(AsyncEvent event) {
             IApiReply tranObject = translator.translateReply(event);
-            if (tranObject != null){
+            if (tranObject != null) {
                 tranObject.setResourceManager(resourceManager);
                 tranObject.sendEventToClient(event);
             }
@@ -191,4 +191,5 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
     public void setRestrict(int restrict) {
     	this.restrict = restrict;
     }
+
 }

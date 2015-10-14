@@ -1,14 +1,14 @@
 package com.cyanspring.event.api.obj.request;
 
-import com.cyanspring.apievent.request.QuoteSubEvent;
-import com.cyanspring.event.api.ApiResourceManager;
-import com.cyanspring.common.transport.IUserSocketContext;
+import java.util.Iterator;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import com.cyanspring.apievent.request.QuoteSubEvent;
+import com.cyanspring.common.transport.IUserSocketContext;
+import com.cyanspring.event.api.ApiResourceManager;
 
 /**
  * Description....
@@ -27,25 +27,33 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 1.0
  */
 public class ApiQuoteSubEvent implements IApiRequest {
+
     private Logger log = LoggerFactory.getLogger(ApiQuoteSubEvent.class);
 
     private ApiResourceManager resourceManager;
 
     @Override
     public void sendEventToLts(Object event, IUserSocketContext ctx) {
+    	if (event == null || ctx == null) {
+			return;
+		}
         QuoteSubEvent subEvent = (QuoteSubEvent) event;
+        String symbol = subEvent.getSymbol();
+        String ctxUser = ctx.getUser();
 
-        log.info("User: " + ctx.getUser() + ", Symbol: " + subEvent.getSymbol());
-        if(null == ctx.getUser())
-            return;
+        log.info("User: " + ctxUser + ", Symbol: " + symbol);
+        if (null == ctxUser) {
+			return;
+		}
 
-        Map<String, String> userSymbol = resourceManager.getSubscriptionMap(subEvent.getSymbol());
-        if(null == userSymbol) {
-            userSymbol = new ConcurrentHashMap<String, String>();
-            resourceManager.putQuoteSubscription(subEvent.getSymbol(), userSymbol);
+        // Restrict maximum number of quote per user to be <= 5
+        List<String> lstSymbol = resourceManager.getQuoteSubsSymbolList(ctxUser);
+        for (Iterator<String> iterator = lstSymbol.iterator(); lstSymbol.size() > 4 && iterator.hasNext();) {
+        	iterator.next();
+            iterator.remove();
         }
 
-        userSymbol.put(ctx.getUser(), subEvent.getSymbol());
+        resourceManager.putQuoteSubsSymbol(ctxUser, symbol);
 
         resourceManager.sendEventToManager(
                 new com.cyanspring.common.event.marketdata.QuoteSubEvent(ctx.getUser(), resourceManager.getBridgeId(), subEvent.getSymbol()));
@@ -55,4 +63,5 @@ public class ApiQuoteSubEvent implements IApiRequest {
     public void setResourceManager(ApiResourceManager resourceManager) {
         this.resourceManager = resourceManager;
     }
+
 }

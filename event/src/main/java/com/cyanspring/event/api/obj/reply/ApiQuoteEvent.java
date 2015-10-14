@@ -1,11 +1,12 @@
 package com.cyanspring.event.api.obj.reply;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.cyanspring.apievent.obj.Quote;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.event.api.ApiResourceManager;
-import com.cyanspring.event.api.obj.reply.IApiReply;
 
 /**
  * Description....
@@ -43,12 +44,17 @@ public class ApiQuoteEvent implements IApiReply {
         com.cyanspring.apievent.reply.QuoteEvent sendEvent =
                 new com.cyanspring.apievent.reply.QuoteEvent(quoteEvent.getKey(), quoteEvent.getReceiver(), quote);
 
-        if(quoteEvent.getReceiver() != null) {
+        if (quoteEvent.getReceiver() != null) {
             resourceManager.sendEventToUser(quoteEvent.getKey(), sendEvent); //in this case key is user
         } else {
-            Map<String, String> userSymbol = resourceManager.getSubscriptionMap(quoteEvent.getQuote().getSymbol());
-            if(null != userSymbol) {
-                for(String user: userSymbol.keySet()) {
+        	String symbol = quoteEvent.getQuote().getSymbol();
+            Map<String, List<String>> mapQuoteSubs = resourceManager.getQuoteSubs();
+            Set<Map.Entry<String, List<String>>> entries = mapQuoteSubs.entrySet();
+            for (Map.Entry<String, List<String>> entry : entries) {
+            	String user = entry.getKey();
+            	List<String> lstSymbol = entry.getValue();
+            	while (lstSymbol.contains(symbol)) {
+					lstSymbol.remove(symbol);
 					resourceManager.sendEventToUser(user, sendEvent);
 				}
             }
@@ -59,4 +65,5 @@ public class ApiQuoteEvent implements IApiReply {
     public void setResourceManager(ApiResourceManager resourceManager) {
         this.resourceManager = resourceManager;
     }
+
 }

@@ -10,7 +10,6 @@ import com.cyanspring.common.transport.IServerUserSocketService;
 import com.cyanspring.common.transport.IUserSocketContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,7 +28,7 @@ public class ApiResourceManager{
     private UserConnectionType userConnectionType = UserConnectionType.PREEMPTIVE;
     private String bridgeId = "ApiBridge-163168";
     private Map<String, PendingRecord> pendingRecords = new ConcurrentHashMap<String, PendingRecord>();
-    private Map<String, Map<String, String>> quoteSubscription = new ConcurrentHashMap<String,  Map<String, String>>();
+    private Map<String, List<String>> mapQuoteSubs = new ConcurrentHashMap<String, List<String>>();
     private Map<String, String> accountUserMap = new ConcurrentHashMap<String, String>();
     private Map<String, ParentOrder> orders = new ConcurrentHashMap<String, ParentOrder>();
 
@@ -51,20 +50,20 @@ public class ApiResourceManager{
         this.bridgeId = bridgeId;
     }
 
-    public void putPendingRecord(String txId, String origTxId, IUserSocketContext ctx){
+    public void putPendingRecord(String txId, String origTxId, IUserSocketContext ctx) {
         PendingRecord record = new PendingRecord(txId, origTxId, ctx);
         pendingRecords.put(record.txId, record);
     }
 
-    public PendingRecord getPendingRecord(String txId){
+    public PendingRecord getPendingRecord(String txId) {
         return pendingRecords.remove(txId);
     }
 
-    public void saveUser(String accountId, String eventUserId){
+    public void saveUser(String accountId, String eventUserId) {
         accountUserMap.put(accountId, eventUserId);
     }
 
-    public boolean hasUser(String account){
+    public boolean hasUser(String account) {
         return accountUserMap.containsKey(account);
     }
 
@@ -75,9 +74,10 @@ public class ApiResourceManager{
 
     public void sendEventToUser(String user, Object event) {
         List<IUserSocketContext> list = socketService.getContextByUser(user);
-        for(IUserSocketContext ctx: list) {
-            if(ctx.isOpen())
-                ctx.send(event);
+        for (IUserSocketContext ctx: list) {
+            if (ctx.isOpen()) {
+				ctx.send(event);
+			}
         }
     }
 
@@ -93,31 +93,34 @@ public class ApiResourceManager{
         this.socketService = socketService;
     }
 
-    public void putQuoteSubscription(String symbol, Map<String, String> map){
-        quoteSubscription.put(symbol, map);
+    public void putQuoteSubsSymbol(String user, String symbol) {
+    	List<String> lstSymbol = mapQuoteSubs.get(user);
+    	lstSymbol.add(symbol);
+    	mapQuoteSubs.put(user, lstSymbol);
     }
 
-    public Map<String, String> getSubscriptionMap(String symbol){
-        return quoteSubscription.get(symbol);
+    public List<String> getQuoteSubsSymbolList(String user) {
+        return mapQuoteSubs.get(user);
     }
 
-    public Collection<Map<String, String>> getAllSubscriptionbyList(){
-        return quoteSubscription.values();
+    public Map<String, List<String>> getQuoteSubs() {
+    	return mapQuoteSubs;
     }
 
-    public void putOrder(String id, ParentOrder order){
+    public void putOrder(String id, ParentOrder order) {
         orders.put(id, order);
     }
 
-    public ParentOrder getOrder(String id){
+    public ParentOrder getOrder(String id) {
         return orders.get(id);
     }
 
-    public void removeOrder(String id){
+    public void removeOrder(String id) {
         orders.remove(id);
     }
 
     public UserConnectionType getUserConnectionType() {
         return userConnectionType;
     }
+
 }
