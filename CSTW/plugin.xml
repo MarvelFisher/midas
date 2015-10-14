@@ -157,6 +157,7 @@
             restorable="true">
       </view>
       <view
+            allowMultiple="true"
             class="com.cyanspring.cstw.trader.gui.SpeedDepthViewPart"
             icon="icons/order.png"
             id="com.cyanspring.cstw.trader.gui.SpeedDepthViewPart"
