@@ -35,12 +35,12 @@ public final class PreferenceStoreManager {
 		return instance;
 	}
 
-	public String getDefaultQty() {
-		return store.getString("ORDER_DEFAULT_QTY");
+	public String getDefaultQty(String symbol) {
+		return store.getString(symbol + "ORDER_DEFAULT_QTY");
 	}
 
-	public void setDefayltQty(String qty) {
-		store.setValue("ORDER_DEFAULT_QTY", qty);
+	public void setDefayltQty(String symbol, String qty) {
+		store.setValue(symbol + "ORDER_DEFAULT_QTY", qty);
 	}
 
 }

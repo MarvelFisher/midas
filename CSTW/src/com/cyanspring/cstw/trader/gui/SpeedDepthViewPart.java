@@ -36,6 +36,7 @@ public final class SpeedDepthViewPart extends ViewPart {
 	@Override
 	public void dispose() {
 		mainComposite.dispose();
+		super.dispose();
 	}
 
 	@Override
