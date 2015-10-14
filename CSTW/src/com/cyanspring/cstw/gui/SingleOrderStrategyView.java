@@ -321,17 +321,6 @@ public class SingleOrderStrategyView extends ViewPart implements
 				} else if (e.keyCode == SWT.F4) {// Sell Stop Order
 					showOrderPadByType(false, CustomOrderType.Stop);
 					getDefaultQuickData();
-				} else if (e.keyCode == SWT.CR) {
-					panelComposite.getDisplay().asyncExec(new Runnable() {
-						@Override
-						public void run() {
-
-							if (panelComposite.isVisible()) {
-								btEnter.notifyListeners(SWT.Selection,
-										new Event());
-							}
-						}
-					});
 				}
 			}
 		};
@@ -1458,10 +1447,6 @@ public class SingleOrderStrategyView extends ViewPart implements
 					filterButton.pack();
 					filterComposite.layout();
 
-					TableColumn cols[] = viewer.getTable().getColumns();
-					for (TableColumn col : cols) {
-						log.info("col:{}", col.getText());
-					}
 				} else {
 					filterButton.setText("Apply Filter");
 					viewer.removeFilter(viewFilter);
