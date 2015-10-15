@@ -2,9 +2,9 @@
  * Copyright (c) 2011-2012 Cyan Spring Limited
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms specified by license file attached.
- * 
+ *
  * Software distributed under the License is released on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import com.cyanspring.common.account.Account;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.Instrument;
@@ -69,9 +68,12 @@ public class OrderManager {
 	private IRemoteEventManager eventManager;
 	private Map<String, String> clientChildOrderSubscription = new HashMap<String, String>();
 	private Map<String, String> clientExecutionSubscription = new HashMap<String, String>();
-	
+
     @Autowired(required = false)
-    OrderSaver orderSaver;
+    OrderSaver parentOrderSaver;
+
+    @Autowired(required = false)
+    OrderSaver childOrderSaver;
 
 	@Autowired
 	@Qualifier("fixToOrderMap")
@@ -109,8 +111,9 @@ public class OrderManager {
 		ResetAccountRequestEvent evt = event.getEvent();
 		String account = evt.getAccount();
 		Map<String, ParentOrder> map = parentOrders.removeMap(account);
-		if(null == map)
+		if(null == map) {
 			return;
+		}
 		for(ParentOrder parent: map.values()) {
 			archiveChildOrders.remove(parent.getId());
 			activeChildOrders.remove(parent.getId());
@@ -118,7 +121,7 @@ public class OrderManager {
 		}
 		log.info("Reset account removes orders: " + map.size());
 	}
-	
+
 	public void processChildOrderSnapshotRequestEvent(
 			ChildOrderSnapshotRequestEvent event) throws Exception {
 		String client = event.getSender();
@@ -130,10 +133,11 @@ public class OrderManager {
 
 		Map<String, ChildOrder> map = activeChildOrders.get(id);
 		List<ChildOrder> orders = null;
-		if (null != map)
+		if (null != map) {
 			orders = new ArrayList<ChildOrder>(map.values());
-		else
+		} else {
 			orders = new ArrayList<ChildOrder>();
+		}
 		ChildOrderSnapshotEvent reply = new ChildOrderSnapshotEvent(id, client,
 				orders);
 		eventManager.sendRemoteEvent(reply);
@@ -256,11 +260,11 @@ public class OrderManager {
 		orderList = new ArrayList<ParentOrder>(parentOrders.getMap(event.getKey()).values());
 		instList = new ArrayList<Instrument>(instruments.getMap(event.getKey()).values());
 		misdList = new ArrayList<MultiInstrumentStrategyData>(strategyData.getMap(event.getKey()).values());
-		
+
 		StrategySnapshotEvent reply = new StrategySnapshotEvent(event.getKey(),
-					event.getSender(), 
-						orderList, 
-						instList, 
+					event.getSender(),
+						orderList,
+						instList,
 						misdList,
 						event.getTxId());
 
@@ -271,11 +275,13 @@ public class OrderManager {
 	private boolean checkNeedFixUpdate(ExecType execType,
 			Map<String, Object> changes) {
 		if (!(execType.equals(ExecType.RESTATED) || execType
-				.equals(ExecType.REPLACE)))
+				.equals(ExecType.REPLACE))) {
 			return true;
+		}
 
-		if (changes == null)
+		if (changes == null) {
 			return false;
+		}
 
 		Collection<String> col = fixToOrderMap.values();
 		ArrayList<String> list = new ArrayList<String>(col);
@@ -289,8 +295,9 @@ public class OrderManager {
 		list.add(OrderField.LAST_PX.value());
 
 		for (String str : list) {
-			if (changes.containsKey(str))
+			if (changes.containsKey(str)) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -339,13 +346,34 @@ public class OrderManager {
 		}
 
 	}
-	
-    public void processPmEndOfDayRollEvent(PmEndOfDayRollEvent event) {
-        if (orderSaver !=null ) {
-            for (ParentOrder p : parentOrders.values()) {
-                orderSaver.addOrderMap(p);
+
+	public void processPmEndOfDayRollEvent(PmEndOfDayRollEvent event) {
+        if (parentOrderSaver != null) {
+        	Collection<ParentOrder> cParentOrders = parentOrders.values();
+        	List<ParentOrder> lstParentOrder = new ArrayList<>();
+        	if (cParentOrders instanceof List) {
+        		lstParentOrder = (List<ParentOrder>)cParentOrders;
+        	} else {
+        		lstParentOrder = new ArrayList<>(cParentOrders);
+        	}
+
+        	parentOrderSaver.addOrderList(lstParentOrder);
+        	parentOrderSaver.saveOrderToFile();
+        }
+
+        if (childOrderSaver != null) {
+        	List<ChildOrder> lstChildOrder = new ArrayList<>();
+
+        	for (Map<String, ChildOrder> map : archiveChildOrders.values()) {
+        		lstChildOrder.addAll(map.values());
             }
-            orderSaver.saveOrderToFile();
+
+        	for (Map<String, ChildOrder> map : activeChildOrders.values()) {
+        		lstChildOrder.addAll(map.values());
+            }
+
+        	childOrderSaver.addOrderList(lstChildOrder);
+        	childOrderSaver.saveOrderToFile();
         }
     }
 
@@ -353,8 +381,9 @@ public class OrderManager {
 		// subscribe to events
 		eventProcessor.setHandler(this);
 		eventProcessor.init();
-		if (eventProcessor.getThread() != null)
+		if (eventProcessor.getThread() != null) {
 			eventProcessor.getThread().setName("OrderManager");
+		}
 	}
 
 	public void uninit() {

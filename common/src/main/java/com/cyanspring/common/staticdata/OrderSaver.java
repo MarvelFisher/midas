@@ -1,12 +1,15 @@
 package com.cyanspring.common.staticdata;
 
 import com.cyanspring.common.Clock;
+import com.cyanspring.common.business.ChildOrder;
+import com.cyanspring.common.business.Order;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.util.TimeUtil;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +20,7 @@ public class OrderSaver {
 
     private FileManager fileManager = new FileManager();
 
-    private List<ParentOrder> orderList;
+    private List<Order> orderList;
     private String filePath;
     private String prefix = "";
     private String suffix = "";
@@ -28,28 +31,49 @@ public class OrderSaver {
         String fileDate = sdf.format(date);
         String path = filePath + "/" + prefix + fileDate + suffix + ".csv";
         fileManager.loadFile(path);
-        fileManager.appendToFile("Account,Symbol,Type,Price,Qty,CumQty,AvgPx,Status,Created,ID");
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(8);
-        for (ParentOrder o : orderList) {
-            if (!TimeUtil.sameDate(date, o.getCreated())) {
-				continue;
-			}
-            fileManager.appendToFile(o.getAccount() + "," + o.getSymbol() + "," +
-                    o.getOrderType() + "," + df.format(o.getPrice()) + "," +
-            		df.format(o.getQuantity()) + "," + df.format(o.getCumQty()) + "," +
-                    df.format(o.getAvgPx()) + "," + o.getOrdStatus() + "," +
-                    o.getCreated() + "," + o.getId());
+
+        if (orderList != null && orderList.size() > 0) {
+        	Collections.sort(orderList);
+        	if (orderList.get(0) instanceof ParentOrder) {
+        		fileManager.appendToFile("Account,Symbol,Type,Price,Qty,CumQty,AvgPx,Status,Created,ID");
+        		for (Order o : orderList) {
+        			ParentOrder pOrder = (ParentOrder)o;
+    	            if (!TimeUtil.sameDate(date, pOrder.getCreated())) {
+    					continue;
+    				}
+
+		            fileManager.appendToFile(pOrder.getAccount() + "," + pOrder.getSymbol() + "," +
+		            		pOrder.getOrderType() + "," + df.format(pOrder.getPrice()) + "," +
+		            		df.format(pOrder.getQuantity()) + "," + df.format(pOrder.getCumQty()) + "," +
+		                    df.format(pOrder.getAvgPx()) + "," + pOrder.getOrdStatus() + "," +
+		                    pOrder.getCreated() + "," + pOrder.getId());
+    	        }
+        	} else if (orderList.get(0) instanceof ChildOrder) {
+        		fileManager.appendToFile("Account,Symbol,Price,Qty,CumQty,AvgPx,Status,Created,ID,ExchangeOID");
+        		for (Order o : orderList) {
+        			ChildOrder cOrder = (ChildOrder)o;
+    	            if (!TimeUtil.sameDate(date, cOrder.getCreated())) {
+    					continue;
+    				}
+
+    	            fileManager.appendToFile(cOrder.getAccount() + "," + cOrder.getSymbol() + "," +
+    	            		df.format(cOrder.getPrice()) + "," + df.format(cOrder.getQuantity()) + "," +
+    	            		df.format(cOrder.getCumQty()) + "," + df.format(cOrder.getAvgPx()) + "," +
+    	            		cOrder.getOrdStatus() + "," + cOrder.getCreated() + "," + cOrder.getId() + "," +
+    	            		cOrder.getExchangeOrderId());
+    	        }
+        	}
         }
         fileManager.close();
     }
 
-
-    public void addOrderMap(ParentOrder order) {
+    public void addOrderList(List<? extends Order> lstOrder) {
     	if (this.orderList == null) {
 			this.orderList = new ArrayList<>();
 		}
-    	this.orderList.add(order);
+    	this.orderList.addAll(lstOrder);
     }
 
     public void setFilePath(String filePath) {
