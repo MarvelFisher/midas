@@ -1,11 +1,12 @@
 package com.cyanspring.common.staticdata;
 
-import com.cyanspring.common.Clock;
-import com.cyanspring.common.account.Account;
-
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import com.cyanspring.common.Clock;
+import com.cyanspring.common.account.Account;
 
 /**
  * @author elviswu
@@ -14,8 +15,8 @@ public class AccountSaver {
     private FileManager fileManager = new FileManager();
     private List<Account> accounts;
     private String filePath;
-    private String prefix;
-    private String suffix;
+    private String prefix = "";
+    private String suffix = "";
 
     public void saveAccountToFile() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -25,10 +26,13 @@ public class AccountSaver {
         fileManager.loadFile(path);
         fileManager.appendToFile("ID,Account Value,Account Cash,Cash Available," +
                 "DailyPnl,Pnl,UrPnl");
+        DecimalFormat df = new DecimalFormat("#");
+        df.setMaximumFractionDigits(8);
         for (Account a : accounts) {
-            fileManager.appendToFile(a.getId() + "," + a.getValue() + "," +
-                    a.getCash() + "," + a.getCashAvailable() + "," + a.getDailyPnL() + "," +
-                    a.getPnL() + "," + a.getUrPnL());
+            fileManager.appendToFile(a.getId() + "," + df.format(a.getValue()) + "," +
+            		df.format(a.getCash()) + "," + df.format(a.getCashAvailable()) + "," +
+            		df.format(a.getDailyPnL()) + "," + df.format(a.getPnL()) + "," +
+            		df.format(a.getUrPnL()));
         }
         fileManager.close();
     }

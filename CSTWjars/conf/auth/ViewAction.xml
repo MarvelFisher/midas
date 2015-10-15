@@ -1,0 +1,61 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+
+	<context:annotation-config />
+	<import resource="view/ApplicationView.xml" />
+	<import resource="view/AccountView.xml" />
+	<import resource="view/PositionView.xml" />
+	<import resource="view/SingleOrderStrategyView.xml" />
+	<import resource="view/QuoteView.xml" />
+	<import resource="view/TraderPropertyView.xml" />
+	<import resource="view/MarketDataView.xml" />
+	
+	<bean id="viewActionList" class="java.util.ArrayList">
+    	<constructor-arg>
+        	<list>
+        		<ref bean="traderPropertyView"/>
+        		<ref bean="applicationView"/>
+        		<ref bean="applicationViewAction1"/>
+        		<ref bean="accountView"/>
+            	<ref bean="accountViewAction1"/>
+            	<ref bean="accountViewAction2"/>      
+            	<ref bean="accountViewAction3"/>
+            	<ref bean="accountViewAction4"/>
+            	<ref bean="positionView"/>
+            	<ref bean="positionViewPopUpAction1"/>
+            	<ref bean="singleOrderStrategyView"/>
+            	<ref bean="singleOrderStrategyViewPopAction1"/>
+            	<ref bean="singleOrderStrategyViewPopAction2"/>
+            	<ref bean="singleOrderStrategyViewPopAction3"/>
+            	<ref bean="singleOrderStrategyViewPopAction4"/>
+            	<ref bean="singleOrderStrategyViewPopAction5"/>
+            	<ref bean="singleOrderStrategyViewPopAction6"/>
+            	<ref bean="singleOrderStrategyViewPopAction7"/>
+            	<ref bean="singleOrderStrategyViewPopAction8"/>
+            	<ref bean="singleOrderStrategyViewPopAction9"/>
+            	<ref bean="singleOrderStrategyViewToolBarAction1"/>
+            	<ref bean="singleOrderStrategyViewToolBarAction2"/>
+            	<ref bean="singleOrderStrategyViewToolBarAction3"/>
+            	<ref bean="singleOrderStrategyViewToolBarAction4"/>
+            	<ref bean="singleOrderStrategyViewToolBarAction5"/>
+            	<ref bean="singleOrderStrategyViewToolBarAction6"/>
+            	<ref bean="singleOrderStrategyViewToolBarAction7"/>
+            	<ref bean="singleOrderStrategyViewToolBarAction8"/>
+            	<ref bean="singleOrderStrategyViewToolBarAction9"/>
+            	<ref bean="singleOrderStrategyViewToolBarAction10"/>
+            	<ref bean="singleOrderStrategyViewToolBarAction11"/>
+            	<ref bean="quoteView"/>
+            	<ref bean="quoteViewPopAction1"/>
+            	<ref bean="marketDataView"/>
+        	</list>
+   		</constructor-arg>
+	</bean>
+	
+</beans>

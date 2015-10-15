@@ -4,9 +4,11 @@ import com.cyanspring.common.Clock;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.util.TimeUtil;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Map;
+import java.util.List;
 
 /**
  * @author elviswu
@@ -15,10 +17,10 @@ public class OrderSaver {
 
     private FileManager fileManager = new FileManager();
 
-    private Map<String, ParentOrder> orderMap;
+    private List<ParentOrder> orderList;
     private String filePath;
-    private String prefix;
-    private String suffix;
+    private String prefix = "";
+    private String suffix = "";
 
     public void saveOrderToFile() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -27,21 +29,27 @@ public class OrderSaver {
         String path = filePath + "/" + prefix + fileDate + suffix + ".csv";
         fileManager.loadFile(path);
         fileManager.appendToFile("Account,Symbol,Type,Price,Qty,CumQty,AvgPx,Status,Created,ID");
-        for (Map.Entry<String, ParentOrder> e : orderMap.entrySet()) {
-            ParentOrder o = e.getValue();
-            if (!TimeUtil.sameDate(date, o.getCreated()))
-                continue;
+        DecimalFormat df = new DecimalFormat("#");
+        df.setMaximumFractionDigits(8);
+        for (ParentOrder o : orderList) {
+            if (!TimeUtil.sameDate(date, o.getCreated())) {
+				continue;
+			}
             fileManager.appendToFile(o.getAccount() + "," + o.getSymbol() + "," +
-                    o.getOrderType() + "," + o.getPrice() + "," + o.getQuantity() + "," +
-                    o.getCumQty() + "," + o.getAvgPx() + "," + o.getOrdStatus() + "," +
+                    o.getOrderType() + "," + df.format(o.getPrice()) + "," +
+            		df.format(o.getQuantity()) + "," + df.format(o.getCumQty()) + "," +
+                    df.format(o.getAvgPx()) + "," + o.getOrdStatus() + "," +
                     o.getCreated() + "," + o.getId());
         }
         fileManager.close();
     }
 
 
-    public void setOrderMap(Map<String, ParentOrder> orderMap) {
-        this.orderMap = orderMap;
+    public void addOrderMap(ParentOrder order) {
+    	if (this.orderList == null) {
+			this.orderList = new ArrayList<>();
+		}
+    	this.orderList.add(order);
     }
 
     public void setFilePath(String filePath) {

@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.cyanspring.cstw.business;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -65,6 +67,7 @@ import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.event.SelectUserAccountEvent;
 import com.cyanspring.cstw.event.ServerStatusEvent;
 import com.cyanspring.cstw.gui.ServerStatusDisplay;
+import com.cyanspring.cstw.gui.session.GuiSession;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
@@ -102,7 +105,10 @@ public class Business {
 	private Account loginAccount = null;
 	private AccountSetting accountSetting = null;
 	private UserGroup userGroup = new UserGroup("Admin",UserRole.Admin);
+	private List<String> accountGroupList = new ArrayList<String>();
 	private List<String> symbolList = new ArrayList<String>();
+	private TraderInfoListener traderInfoListener = null;
+	
 	// singleton implementation
 	private Business() {
 	}
@@ -150,6 +156,8 @@ public class Business {
 				processCSTWUserLoginReplyEvent(evt);
 				if(evt.isOk()){
 					tickManager.init(getFirstServer());
+					if(null != loginAccount);
+						traderInfoListener.init(loginAccount);
 				}
 				if(isLoginRequired() && evt.isOk()) {
 					requestStrategyInfo(evt.getSender());
@@ -229,25 +237,6 @@ public class Business {
 		log.info("Multi-Instrument strategy field def update: " + event.getConfig().getStrategy());
 	}
 	
-	private void loadSystemInfo() throws IOException {
-	    String strFile = configPath + SystemInfo.class.getSimpleName() + ".xml";
-		File file = new File(strFile);
-		if (!file.exists()) {
-			log.info("writing default SystemInfo file: " + strFile);
-			file.createNewFile();
-			systemInfo = new SystemInfo();
-			FileOutputStream os = new FileOutputStream(file);
-			xstream.toXML(systemInfo, os);
-			os.close();
-			log.info("writen default SystemInfo file: " + strFile);
-		} else {
-			log.info("loading SystemInfo file: " + strFile);
-			systemInfo = (SystemInfo)xstream.fromXML(file);
-			log.info("loaded SystemInfo file: " + strFile);
-		}
-		log.info("SystemInfo: " + systemInfo);
-	}
-	
 	public void processServerHeartBeatEvent(ServerHeartBeatEvent event) {
 		lastHeartBeats.put(event.getSender(), Clock.getInstance().now());	
 	}
@@ -271,7 +260,7 @@ public class Business {
 
 	public void init() throws Exception {
 		log.info("Initializing business obj...");
-		loadSystemInfo();
+		this.systemInfo = BeanHolder.getInstance().getSystemInfo();
 		this.user = Default.getUser();
 		this.account = Default.getAccount();
 		
@@ -331,7 +320,8 @@ public class Business {
 		
 		//schedule timer
 		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval , listener, timerEvent);
-
+		traderInfoListener = new TraderInfoListener();
+		initSessionListener();
 	}
 	
 	public void start() throws Exception {
@@ -482,7 +472,14 @@ public class Business {
 		List<Account>accountList = event.getAccountList();
 		if(null != accountList && !accountList.isEmpty()){
 			loginAccount = event.getAccountList().get(0);
+			log.info("loginAccount:{}",loginAccount.getId());
 			sendAccountSettingRequestEvent(loginAccount.getId());		
+		}
+		Map<String, Account> user2AccoutMap = event.getUser2AccountMap();
+		if(null != user2AccoutMap && !user2AccoutMap.isEmpty()) {
+			for (Account acc : user2AccoutMap.values()) {
+				accountGroupList.add(acc.getId());
+			}
 		}
 		UserGroup userGroup = event.getUserGroup();
 		this.user = userGroup.getUser();
@@ -532,6 +529,10 @@ public class Business {
 	
 	public UserGroup getUserGroup() {
 		return userGroup;
+	}
+	
+	public List<String> getAccountGroup() {
+		return accountGroupList;
 	}
 	
 	public boolean isManagee(String account){
@@ -585,5 +586,16 @@ public class Business {
 	
 	public SignalType getSignal(String symbol,double scale){
 		return signalManager.getSignal(symbol, scale);
+	}
+	
+	private void initSessionListener() {
+		GuiSession.getInstance().addPropertyChangeListener(GuiSession.Property.ACCOUNT_SETTING.toString(),
+				new PropertyChangeListener() {
+
+					@Override
+					public void propertyChange(PropertyChangeEvent arg0) {
+						accountSetting = GuiSession.getInstance().getAccountSetting();
+					}
+				});
 	}
 }

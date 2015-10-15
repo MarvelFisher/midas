@@ -163,9 +163,6 @@ public class BusinessManager implements ApplicationContextAware {
 	@Autowired
 	ITransactionValidator transactionValidator;
 
-    @Autowired(required = false)
-    OrderSaver orderSaver;
-	
 	ScheduleManager scheduleManager = new ScheduleManager();
 
 	private int noOfContainers = 20;
@@ -206,7 +203,7 @@ public class BusinessManager implements ApplicationContextAware {
 			subscribeToEvent(CancelPendingOrderEvent.class, null);
 			subscribeToEvent(IndexSessionEvent.class, null);
 			subscribeToEvent(TickTableRequestEvent.class, null);
-            subscribeToEvent(PmEndOfDayRollEvent.class, null);
+            
 		}
 
 		@Override
@@ -1204,15 +1201,6 @@ public class BusinessManager implements ApplicationContextAware {
 			log.error(e.getMessage(), e);
 		}
 	}
-
-    public void processPmEndOfDayRollEvent(PmEndOfDayRollEvent event) {
-        if (orderSaver !=null ) {
-            for (Account a : accountKeeper.getAllAccounts()) {
-                orderSaver.setOrderMap(orders.getMap(a.getId()));
-                orderSaver.saveOrderToFile();
-            }
-        }
-    }
 
 	public void injectStrategies(List<DataObject> list) {
 		// create running strategies and assign to containers

@@ -63,6 +63,7 @@
 	<property column="TRADER" 			name="user" type="java.lang.String"/>
 	<property column="ACCOUNT" 			name="account" type="java.lang.String"/>
 	<property column="ROUTE" 			name="route" type="java.lang.String"/>
+	<property column="EXCHANGE_ORDER_ID" name="exchangeOrderId" type="java.lang.String"/>
   </class> 
   
   <class name="com.cyanspring.server.persistence.ChildOrderAudit" table="ANYONE.CHILD_ORDER_AUDIT"> 
@@ -107,6 +108,7 @@
 	<property column="TRADER" 			name="user" type="java.lang.String"/>
 	<property column="ACCOUNT" 			name="account" type="java.lang.String"/>
 	<property column="ROUTE" 			name="route" type="java.lang.String"/>
+	<property column="EXCHANGE_ORDER_ID" name="exchangeOrderId" type="java.lang.String"/>
   </class> 
   
   <class name="com.cyanspring.server.persistence.TextObject" table="ANYONE.TEXT_OBJECTS"> 

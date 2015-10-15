@@ -204,6 +204,14 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 		lblriskColor.setText("Risk Manager");
 		lblriskColor.setForeground(RISK_MANAGER_COLOR);
 		
+		Label lblbackEndRiskColor = new Label(container, SWT.NONE);
+		GridData gdLblMessage6 = new GridData(SWT.FILL, SWT.CENTER, true,
+				false, 2, 1);
+		gdLblMessage6.horizontalIndent = 1;
+		lblbackEndRiskColor.setLayoutData(gdLblMessage3);
+		lblbackEndRiskColor.setText("Backend Risk Manager");
+		lblbackEndRiskColor.setForeground(RISK_MANAGER_COLOR);
+		
 		Label lbltraderColor = new Label(container, SWT.NONE);
 		GridData gdLblMessage2 = new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 2, 1);
@@ -527,7 +535,7 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 			if(null != tempUser){
 				if(UserRole.Admin.equals(tempUser.getRole())){
 					item.setForeground(0,ADMIN_COLOR);
-				}else if(UserRole.RiskManager.equals(tempUser.getRole())){
+				}else if(tempUser.getRole().isManagerLevel()){
 					item.setForeground(0,RISK_MANAGER_COLOR);
 				}else if(UserRole.Trader.equals(tempUser.getRole())){
 					item.setForeground(0,TRADER_COLOR);

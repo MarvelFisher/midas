@@ -23,6 +23,7 @@
 		<module>soak</module>
 		<module>info</module>
 		<module>apievent</module>
+		<module>CSTWparent</module>
 	</modules>
 	
 	<repositories>

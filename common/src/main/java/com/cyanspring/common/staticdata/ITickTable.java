@@ -19,4 +19,5 @@ public interface ITickTable {
 	public double tickUp(double price, int ticks, boolean roundUp);
 	public double tickDown(double price, int ticks, boolean roundUp);
 	public boolean validPrice(double price);
+	public double getTick(double price);
 }
