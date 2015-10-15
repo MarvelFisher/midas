@@ -19,7 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
+import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.event.order.EnterParentOrderReplyEvent;
@@ -54,6 +56,8 @@ public final class SpeedDepthMainComposite extends Composite implements
 	private Composite composite_1;
 	private Label lblErrorMessage;
 
+	private SpeedTimer timer;
+
 	/**
 	 * Create the composite.
 	 * 
@@ -64,6 +68,8 @@ public final class SpeedDepthMainComposite extends Composite implements
 		super(parent, style);
 		initComponent();
 		initListener();
+
+		timer = new SpeedTimer();
 	}
 
 	private void initComponent() {
@@ -193,6 +199,7 @@ public final class SpeedDepthMainComposite extends Composite implements
 
 	private void refreshErrorMessage(String message) {
 		lblErrorMessage.setText(message);
+		timer.cleanMessage();
 		this.layout();
 	}
 
@@ -279,5 +286,38 @@ public final class SpeedDepthMainComposite extends Composite implements
 	@Override
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
+	}
+
+	private class SpeedTimer implements IAsyncEventListener {
+
+		private ScheduleManager scheduleManager = new ScheduleManager();
+		private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
+
+		private boolean isRuning = false;
+
+		public SpeedTimer() {
+
+		}
+
+		public void cleanMessage() {
+			if (isRuning) {
+				scheduleManager.cancelTimerEvent(timerEvent);
+			}
+			isRuning = true;
+			scheduleManager.scheduleTimerEvent(5000, this, timerEvent);
+		}
+
+		public void onEvent(AsyncEvent event) {
+			if (event instanceof AsyncTimerEvent) {
+				tableComposite.getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						lblErrorMessage.setText("");
+						isRuning = false;
+					}
+				});
+
+			}
+		}
 	}
 }
