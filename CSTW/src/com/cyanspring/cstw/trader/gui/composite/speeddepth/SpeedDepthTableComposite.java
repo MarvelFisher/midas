@@ -238,6 +238,7 @@ public final class SpeedDepthTableComposite extends Composite {
 		currentQuote = null;
 		lockButton.setSelection(false);
 		isLock = false;
+		speedDepthService.setRowLength(20);
 		tableViewer.setInput(null);
 	}
 
