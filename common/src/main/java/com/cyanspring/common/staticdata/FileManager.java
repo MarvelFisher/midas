@@ -16,10 +16,13 @@ public class FileManager {
     private FileWriter writer;
 
     public void loadFile(String path) {
-        file = new File(path);
+        file = new File(System.getProperty("user.dir") + "/" + path);
         try {
-            if (!file.exists() || file.isDirectory())
-                file.createNewFile();
+            if (!file.exists()) {
+            	File directory = new File(file.getParentFile().getAbsolutePath());
+            	directory.mkdirs();
+				file.createNewFile();
+			}
             writer = new FileWriter(file);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
@@ -28,7 +31,7 @@ public class FileManager {
 
     public void saveToFile(String data) {
         try {
-            writer.write(data);
+            writer.write(data + "\n");
             writer.flush();
         } catch (IOException e) {
             log.error(e.getMessage(), e);
@@ -37,7 +40,7 @@ public class FileManager {
 
     public void appendToFile(String data) {
         try {
-            writer.append(data);
+            writer.append(data + "\n");
             writer.flush();
         } catch (IOException e) {
             log.error(e.getMessage(), e);
@@ -50,9 +53,5 @@ public class FileManager {
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }
-    }
-
-    public static void main(String[] args) {
-
     }
 }

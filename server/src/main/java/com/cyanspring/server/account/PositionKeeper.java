@@ -410,19 +410,36 @@ public class PositionKeeper {
 				pos = getOverallPosition(list, account, symbol);
 				if(null != quoteFeeder) {
 					Quote quote = quoteFeeder.getQuote(symbol);
+					
 					if(null != quote && null != pos) {
 						double price = QuoteUtils.getPnlPrice(quote, pos.getQty(), useMid);
+						double lastPrice = QuoteUtils.getLastPrice(quote, useMid);
 						if(!PriceUtils.validPrice(price))
 							price = QuoteUtils.getValidPrice(quote);
 						
 						if(PriceUtils.validPrice(price)) {
 							double pnl = FxUtils.calculatePnL(refDataManager, pos.getSymbol(), pos.getQty(), 
 									(price-pos.getPrice()));
-							pos.setPnL(pnl);
+							pos.setPnL(pnl);							
 							double urPnL = FxUtils.convertPnLToCurrency(refDataManager, fxConverter, account.getCurrency(), 
 									quote.getSymbol(), pos.getPnL());
-							pos.setAcPnL(urPnL);
+							pos.setAcPnL(urPnL);							
 						}
+						
+						if (PriceUtils.validPrice(lastPrice)) {
+							double lastPnL = FxUtils.calculatePnL(refDataManager, pos.getSymbol(), pos.getQty(), (lastPrice-pos.getPrice()));
+							pos.setLastPnL(lastPnL);
+							double acLastPnL = FxUtils.convertPnLToCurrency(refDataManager, fxConverter, account.getCurrency(), 
+									quote.getSymbol(), pos.getLastPnL());
+							pos.setAcLastPnL(acLastPnL);
+						}
+						
+						if(pos.getPnL() > pos.getLastPnL() || pos.getAcPnL() > pos.getAcLastPnL()){
+							log.info("Strange LastPnl - " + pos.getQty() + ", lastPrice: " + lastPrice + ", price: " + price + ", position price: " + pos.getPrice()
+									+ ", Pnl: " + pos.getPnL() + ", AcPnl:" + pos.getAcPnL() + ", lastPnl: " + pos.getLastPnL()
+									+ ", AcLastPnl: " + pos.getAcLastPnL() + ", bid:" + quote.getBid() + ", ask: " + quote.getAsk());
+						}
+							
 					}
 				}
 			} catch (PositionException e) {
@@ -442,12 +459,14 @@ public class PositionKeeper {
 		double qty = 0;
 		double amount = 0;
 		double PnL = 0;
+		double lastPnL = 0;
 		double margin = 0;
 		double availableQty = 0;
 		for (OpenPosition pos : list) {
 			qty += pos.getQty();
 			amount += pos.getQty() * pos.getPrice();
 			PnL += pos.getPnL();
+			lastPnL += pos.getLastPnL();
 			margin += pos.getMargin();
 			availableQty += pos.getDetailAvailableQty(refData);
 		}
@@ -471,6 +490,7 @@ public class PositionKeeper {
 		OpenPosition result = new OpenPosition(list.get(0).getUser(), list.get(0).getAccount(),
 				list.get(0).getSymbol(), qty, price, margin);
 		result.setPnL(PnL);
+		result.setLastPnL(lastPnL);
 		result.setAvailableQty(availableQty);
 		return result;
 	}
@@ -552,6 +572,7 @@ public class PositionKeeper {
 
 	public void updateAccountDynamicData(Account account) {
 		double accountUrPnL = 0;
+		double accountUrLastPnl = 0;
 		double leverageUrPnL = 0;
 		double marginValue = 0;
 		double marginHeld = 0;
@@ -588,6 +609,7 @@ public class PositionKeeper {
 						boolean validMarketablePrice = true;
 						for(OpenPosition position: list) {
 							double price = QuoteUtils.getPnlPrice(quote, position.getQty(), useMid);
+							double lastPrice = QuoteUtils.getLastPrice(quote);
 							
 							validMarketablePrice = PriceUtils.validPrice(price);
 							if(!validMarketablePrice)
@@ -595,6 +617,9 @@ public class PositionKeeper {
 							double pnl = FxUtils.calculatePnL(refDataManager, position.getSymbol(), position.getQty(), 
 									(price-position.getPrice()));
 							position.setPnL(pnl);
+							double lastPnL = FxUtils.calculatePnL(refDataManager, position.getSymbol(), position.getQty(), 
+									(lastPrice-position.getPrice()));
+							position.setLastPnL(lastPnL);
 						}
 						
 						if(!validMarketablePrice)
@@ -602,6 +627,7 @@ public class PositionKeeper {
 						
 						OpenPosition overallPosition = getOverallPosition(account, symbol);
 						accountUrPnL += overallPosition.getAcPnL();
+						accountUrLastPnl += overallPosition.getAcLastPnL();
 						leverageUrPnL += overallPosition.getAcPnL() * (1-1/lev);
 					}
 				}
@@ -611,6 +637,7 @@ public class PositionKeeper {
 				marginHeld += value;
 			}
 			account.setUrPnL(accountUrPnL);
+			account.setUrLastPnL(accountUrLastPnl);
 			
 			double accountMargin = (account.getCash() +  account.getUrPnL()) * leverageManager.getLeverage(null, accountSetting);
 			if(PriceUtils.GreaterThan(accountSetting.getMargin(), 0))

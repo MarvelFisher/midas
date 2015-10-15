@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.staticdata.AbstractTickTable;
+import com.cyanspring.common.staticdata.ITickTable;
 import com.cyanspring.common.staticdata.RefData;
 
 public class Ticker {
@@ -72,5 +73,9 @@ public class Ticker {
 	
 	public String tickUp(double price, int ticks, boolean roundUp) {
 		return formatPrice(tickTable.tickUp(price, ticks, roundUp));
+	}
+	
+	public ITickTable getTickTable() {
+		return this.tickTable;
 	}
 }

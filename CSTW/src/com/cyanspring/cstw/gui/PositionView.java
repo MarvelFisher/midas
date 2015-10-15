@@ -12,6 +12,7 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
@@ -34,6 +35,8 @@ import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.account.Account;
+import com.cyanspring.common.account.AccountSetting;
+import com.cyanspring.common.account.AccountState;
 import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.OrderReason;
@@ -80,6 +83,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 
 	// display data
 	private Account account;
+	private AccountSetting accountSetting;
 	private List<OpenPosition> openPositions;
 	private List<ClosedPosition> closedPositions;
 	private List<Execution> executions;
@@ -227,11 +231,12 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	private Label lbUrPnL;
 	private Label lbCashAvailable;
 	private Label lbCashDeduct;
-
+	private Label lblastUrPnL;
+	private Label lbstatus;
 	// private Label lbMarginHeld;
 
 	private void createAccountInfoPad(Composite parent) {
-		GridLayout layout = new GridLayout(3, true);
+		GridLayout layout = new GridLayout(4, true);
 		layout.marginRight = 30;
 		layout.marginLeft = 30;
 		layout.horizontalSpacing = 50;
@@ -248,6 +253,10 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		Composite comp3 = new Composite(parent, SWT.NONE);
 		comp3.setLayout(new GridLayout(2, true));
 		comp3.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, true));
+		
+		Composite comp4 = new Composite(parent, SWT.NONE);
+		comp4.setLayout(new GridLayout(2, true));
+		comp4.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, true));
 
 		Label lb1 = new Label(comp1, SWT.LEFT);
 		lb1.setText("Account Value: ");
@@ -272,6 +281,13 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		lbCashAvailable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
 				true));
 
+		Label lb10 = new Label(comp4, SWT.LEFT);
+		lb10.setText("Status : ");
+		lb10.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		lbstatus = new Label(comp4, SWT.RIGHT);
+		lbstatus.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+				true));
 
 		Label lb5 = new Label(comp1, SWT.LEFT);
 		lb5.setText("P&&L: ");
@@ -287,18 +303,20 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		lbUrPnL = new Label(comp2, SWT.RIGHT);
 		lbUrPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-
-		Label lb4 = new Label(comp3, SWT.LEFT);
+		Label lb9 = new Label(comp3, SWT.LEFT);
+		lb9.setText("Unrealized Last P&&L: ");
+		lb9.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		
+		lblastUrPnL = new Label(comp3, SWT.RIGHT);
+		lblastUrPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		
+		Label lb4 = new Label(comp4, SWT.LEFT);
 		lb4.setText("Daily P&&L: ");
 		lb4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		lbDailyPnL = new Label(comp3, SWT.RIGHT);
+		lbDailyPnL = new Label(comp4, SWT.RIGHT);
 		lbDailyPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-
-		// Label lb2 = new Label(comp2, SWT.LEFT);
-		// lb2.setText("Cash value: ");
-		// lb2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		
 		//
 		// lbCash = new Label(comp2, SWT.RIGHT);
 		// lbCash.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -567,6 +585,19 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 					PositionView.this.lbCashAvailable.setText(decimalFormat
 							.format(PositionView.this.account
 									.getCashAvailable()));
+					PositionView.this.lblastUrPnL.setText(decimalFormat
+							.format(PositionView.this.account
+									.getUrLastPnL()));
+					
+					AccountState state = PositionView.this.account.getState();
+					Color stateColor = null;
+					if(AccountState.ACTIVE != state){
+						stateColor = getSite().getShell().getDisplay().getSystemColor(SWT.COLOR_RED);
+					}else{
+						stateColor = getSite().getShell().getDisplay().getSystemColor(SWT.COLOR_BLACK);
+					}
+					lbstatus.setForeground(stateColor);				
+					PositionView.this.lbstatus.setText(state.toString());
 					// PositionView.this.lbCash.setText(decimalFormat.format(PositionView.this.account.getCash()));
 					// PositionView.this.lbMargin.setText(decimalFormat.format(PositionView.this.account.getMargin()));
 					// PositionView.this.lbMarginHeld.setText(decimalFormat.format(PositionView.this.account.getMarginHeld()));
@@ -653,7 +684,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 			}
 		}
 	}
-
+	
 	private void sendSubscriptionRequest(String account) {
 		log.info("sendSubscriptionRequest");
 		currentAccount = account;

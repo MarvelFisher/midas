@@ -56,21 +56,13 @@
 		<property name="validators">
 			<list>
 				<ref bean="systemSuspendValidator" />
-				<ref bean="transactionThrottleValidator" />
 			</list>
 		</property>
 	</bean>
 
 	<bean id="systemSuspendValidator"
 		class="com.cyanspring.server.validation.transaction.SystemSuspendValidator" />
-
-	<bean id="transactionThrottleValidator"
-		class="com.cyanspring.server.validation.transaction.TransactionThrottleValidator">
-		<property name="interval">
-			<value>300</value>
-		</property>
-	</bean>
-
+		
 	<bean id="statisticManager" class="com.cyanspring.server.statistic.StatisticManager">
 	</bean>
 
@@ -258,10 +250,10 @@
 		</property>
 		<property name="dailyExecTime" ref="dailyExec" /> <!-- format=[HH:mm:ss] 24hr -->
 		<property name="dynamicUpdateInterval">
-            <value>500</value>
+            <value>100</value>
 		</property>
 		<property name="rmUpdateInterval">
-            <value>450</value>
+            <value>120</value>
         </property>
         <property name="sendDynamicPositionUpdate">
             <value>true</value>
@@ -276,6 +268,7 @@
 	</bean>
 
 	<bean id="positionKeeper" class="com.cyanspring.server.account.PositionKeeper">
+		<property name="useMid" value="false"></property>
 	</bean>
 
 	<bean id="fxConverter" class="com.cyanspring.server.fx.FxConverter">
@@ -437,5 +430,5 @@
 			<value>13:30:00</value><!-- HH:mm:ss -->
 		</property>
 	</bean>
-
+	
 </beans>

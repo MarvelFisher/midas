@@ -69,8 +69,8 @@
 				<ref bean="windAdaptorFT" />
 			</list>
 		</constructor-arg>
-		<property name="quoteThrottle" value="300"/>
-		<property name="timerInterval" value="500"/>
+		<property name="quoteThrottle" value="100"/>
+		<property name="timerInterval" value="100"/>
 		<property name="quoteLogIsOpen" value="true"/>
 		<property name="quoteExtendEventIsSend" value="true"/>
 		<property name="quoteExtendSegmentSize" value="300"/>
@@ -208,5 +208,16 @@
                 <value>DEFAULT</value>          <!-- liveTradingType -->
             </list>
         </property>
+    </bean>
+    
+    <!-- File Save -->
+    <bean id="orderSaver" class="com.cyanspring.common.staticdata.OrderSaver">
+        <property name="filePath" value="report/"/>
+        <property name="suffix" value="_t"/>
+    </bean>
+    
+    <bean id="accountSaver" class="com.cyanspring.common.staticdata.AccountSaver">
+        <property name="filePath" value="report/"/>
+        <property name="suffix" value="_a"/>
     </bean>
 </beans>

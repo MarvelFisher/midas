@@ -58,7 +58,10 @@ public class QuoteChecker implements IQuoteChecker {
 
     public boolean checkBidAskPirce(Quote quote){
         boolean isCorrect = true;
-        if(PriceUtils.EqualLessThan(quote.getBid(),0) || PriceUtils.EqualLessThan(quote.getAsk(),0))
+        if(PriceUtils.EqualLessThan(quote.getBid(),0)
+                || PriceUtils.EqualLessThan(quote.getAsk(),0)
+                || PriceUtils.EqualGreaterThan(quote.getBid(), quote.getAsk())
+                )
             isCorrect = false;
         return isCorrect;
     }

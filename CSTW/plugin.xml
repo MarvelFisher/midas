@@ -59,7 +59,7 @@
       </view>
       <view
             class="com.cyanspring.cstw.gui.ExecutionView"
-            icon="icons/Leaves16.png"
+            icon="icons/executions.png"
             id="com.cyanspring.cstw.gui.ExecutionView"
             name="Executions"
             restorable="true">
@@ -154,6 +154,14 @@
             icon="icons/active.png"
             id="com.cyanspring.cstw.kdb.gui.KDBInfoViewer"
             name="Signal"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="true"
+            class="com.cyanspring.cstw.trader.gui.SpeedDepthViewPart"
+            icon="icons/order.png"
+            id="com.cyanspring.cstw.trader.gui.SpeedDepthViewPart"
+            name="SpeedDepthView"
             restorable="true">
       </view>        
    </extension>
@@ -290,6 +298,7 @@
             </command>
             <command
                   commandId="CSTW.ExecutionView"
+                  icon="icons/executions.png"
                   label="Executions"
                   style="push">
                   <visibleWhen checkEnabled="false">
@@ -298,6 +307,9 @@
 		                  <equals value="ENABLED"></equals>        
 		               </with>
 		               <with variable="RiskManager">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+		               <with variable="Trader">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
                   	</or>
@@ -482,6 +494,19 @@
             	  	 </visibleWhen>
                </command>
             </menu>
+            <command
+                  commandId="CSTW.SpeedDepth"
+                  icon="icons/order.png"
+                  label="SpeedDepth"
+                  style="push">
+                   <visibleWhen checkEnabled="false">
+                  	<or>
+		               <with variable="Trader">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+                  	</or>
+            	  </visibleWhen>
+            </command>
          </menu>
       </menuContribution>
    </extension>
@@ -623,6 +648,11 @@
             description="Signal"
             id="CSTW.KDBInfoView"
             name="Signal">
+      </command>
+      <command
+            defaultHandler="com.cyanspring.cstw.trader.command.TraderSpeedDepthViewCommand"
+            id="CSTW.SpeedDepth"
+            name="SpeedDepth">
       </command>      
    </extension>
    <extension

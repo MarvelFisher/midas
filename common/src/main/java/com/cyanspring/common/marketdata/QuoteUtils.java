@@ -32,6 +32,22 @@ public class QuoteUtils {
 		return getMidPrice(quote);
 	}
 	
+	public static double getLastPrice(Quote quote, boolean useMid){
+		double price;
+		if (useMid) {
+			price = getMidPrice(quote);
+			if (PriceUtils.Equal(price, 0))
+				price = quote.getLast();
+		} else {
+			price = quote.getLast();
+			if (PriceUtils.Equal(price, 0))
+				price = getMidPrice(quote);
+		}
+		if (PriceUtils.Equal(price, 0))
+			price = quote.getClose();
+		return price;
+	}
+	
 	public static boolean validQuote(Quote quote) {
 		if(PriceUtils.EqualLessThan(quote.getBid(), 0.0) && PriceUtils.EqualLessThan(quote.getAsk(), 0.0))
 			return false;

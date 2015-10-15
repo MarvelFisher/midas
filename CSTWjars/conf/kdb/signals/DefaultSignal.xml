@@ -1,0 +1,41 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+	<bean id="defaultSignal" class="com.cyanspring.common.cstw.kdb.bean.SignalBean">
+		<property name="symbol" value="DEFAULT"></property>
+		<property name="scaleList" ref="defaultScaleList"></property>
+	</bean>	
+	
+	 <bean id="defaultScaleList" class="java.util.ArrayList">
+	 	<constructor-arg>
+	        <list>
+	            <ref bean="defaultSignal1" />
+	            <ref bean="defaultSignal2" />
+	            <ref bean="defaultSignal3" />                 
+	        </list>
+         </constructor-arg>
+	 </bean>
+	 
+	 <bean id="defaultSignal1" class="com.cyanspring.common.cstw.kdb.bean.SignalScaleBean">
+	 	<property name="from" value="0"></property>
+	 	<property name="to" value="1"></property>
+	 	<property name="signal" value="GREEN"></property>
+	 </bean>
+	 
+	 <bean id="defaultSignal2" class="com.cyanspring.common.cstw.kdb.bean.SignalScaleBean">
+	 	<property name="from" value="1"></property>
+	 	<property name="to" value="2"></property>
+	 	<property name="signal" value="YELLOW"></property>
+	 </bean>
+	 
+	 <bean id="defaultSignal3" class="com.cyanspring.common.cstw.kdb.bean.SignalScaleBean">
+	 	<property name="from" value="2"></property>
+	 	<property name="signal" value="RED"></property>
+	 </bean>	
+</beans>

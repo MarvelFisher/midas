@@ -18,15 +18,11 @@ import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.gui.assist.OpenSingleOrderStrategyViewAssist;
 
 public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
-	final private static Logger log = LoggerFactory
-			.getLogger(ApplicationWorkbenchAdvisor.class);
 
 	private static final String PERSPECTIVE_ID = "CSTW.perspective";
 
@@ -59,7 +55,8 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 	public void postStartup() {
 		Display.getDefault().addFilter(SWT.KeyDown, new Listener() {
 			public void handleEvent(Event e) {
-				if (e.keyCode == SWT.F1 || e.keyCode == SWT.F2) {
+				if (e.keyCode == SWT.F1 || e.keyCode == SWT.F2
+						|| e.keyCode == SWT.ESC) {
 					new OpenSingleOrderStrategyViewAssist().run(e.keyCode);
 				}
 			}

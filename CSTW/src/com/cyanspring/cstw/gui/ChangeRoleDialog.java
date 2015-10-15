@@ -73,7 +73,7 @@ public class ChangeRoleDialog extends Dialog implements IAsyncEventListener{
 			lblUserRoleId.setText("");
 
 		}else{
-			lblUserRoleId.setText(user.getRole().name());
+			lblUserRoleId.setText(user.getRole().desc());
 
 		}
 		Label lblchangeUserRole = new Label(container, SWT.NONE);
@@ -81,9 +81,9 @@ public class ChangeRoleDialog extends Dialog implements IAsyncEventListener{
 		
 		cbUserRole = new Combo(container, SWT.BORDER);
 		for(UserRole userRole: UserRole.values()) {
-			cbUserRole.add(userRole.toString());
+			cbUserRole.add(userRole.desc());
 		}
-		cbUserRole.setText(UserRole.Trader.toString());
+		cbUserRole.setText(UserRole.Trader.desc());
 		cbUserRole.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 1, 1));
 
@@ -122,7 +122,7 @@ public class ChangeRoleDialog extends Dialog implements IAsyncEventListener{
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				
-				UserRole newRole = UserRole.valueOf(cbUserRole.getText());
+				UserRole newRole = getRole(cbUserRole.getText());
 				
 				if(lblUserRoleId.getText().equals(newRole.name())){
 					pushMessageToLabel("Role already is :"+newRole.name());
@@ -145,6 +145,15 @@ public class ChangeRoleDialog extends Dialog implements IAsyncEventListener{
 		});
 
 		return buttonArea;
+	}
+	
+	public UserRole getRole(String desc){
+		for(UserRole role : UserRole.values()){
+			if(role.desc().equals(desc)){
+				return role;
+			}
+		}
+		return null;
 	}
 	
 	@Override
@@ -179,7 +188,7 @@ public class ChangeRoleDialog extends Dialog implements IAsyncEventListener{
 			public void run() {
 				
 				lblUserRoleId.setSize(100, 20);
-				lblUserRoleId.setText(user.getRole().name());
+				lblUserRoleId.setText(user.getRole().desc());
 				
 			}
 			

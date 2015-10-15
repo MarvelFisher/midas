@@ -401,7 +401,7 @@ public class AccountPositionManager implements IPlugin {
             Account last = accountUpdates.get(account.getId());
             if (last == null || account == null || last.getMargin() != account.getMargin() ||
                     last.getUrPnL() != account.getUrPnL() || last.getCashAvailable() != account.getCashAvailable()
-                    || last.getPnL() != account.getPnL()) {
+                    || last.getPnL() != account.getPnL() || last.getUrLastPnL() != account.getUrLastPnL()) {
                 try {
                     accountUpdates.put(account.getId(), account.clone());
                 } catch (CloneNotSupportedException e) {
@@ -414,7 +414,8 @@ public class AccountPositionManager implements IPlugin {
 
         boolean dynamicDataHasChanged(OpenPosition position) {
             OpenPosition last = positionUpdates.get(position.getId());
-            if (last == null || position == null || last.getPnL() != position.getPnL()) {
+            if (last == null || position == null || last.getPnL() != position.getPnL() || last.getAcPnL() != position.getAcPnL() 
+            		|| last.getAcLastPnL() != position.getAcLastPnL()) {
                 positionUpdates.put(position.getId(), position);
                 return true;
             }
@@ -823,6 +824,7 @@ public class AccountPositionManager implements IPlugin {
     	String message = "";
     	UserGroup userGroup = null;
     	List <Account> accountList = null;
+    	Map<String, Account> user2AccountMap = null;
 
     	boolean isAdminRole = false;
     	boolean isServerShutdownEvent = event.getShutdownServer();
@@ -833,7 +835,7 @@ public class AccountPositionManager implements IPlugin {
 
     	if (isAdminRole) {
     		userGroup = new UserGroup(id,UserRole.Admin);
-    		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(event.getKey(),event.getSender(),true,"",userGroup,accountList);
+    		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(event.getKey(),event.getSender(),true,"",userGroup,accountList,user2AccountMap );
     		try {
     			eventManager.sendRemoteEvent(reply);
     		} catch (Exception e) {
@@ -873,7 +875,12 @@ public class AccountPositionManager implements IPlugin {
 	    	if ( null == userGroup ){
 	    		userGroup = new UserGroup(id,user.getRole());
 	    	}
-
+	    	user2AccountMap = new HashMap<>();
+	    	user2AccountMap.put(id, accountList.get(0));
+			for (UserGroup ug : userGroup.getManageeSet()) {
+				user2AccountMap.put(ug.getUser(),
+						accountKeeper.getAccounts(ug.getUser()).get(0));
+			}
 	    	log.info("CSTW Login success:{} - {}",id,userGroup.getRole());
 			user.setLastLogin(Clock.getInstance().now());
 			eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));
@@ -883,14 +890,13 @@ public class AccountPositionManager implements IPlugin {
     		log.info("CSTW Login fail:{} - {}",id,message);
     	}
     	    	
-		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(event.getKey(),event.getSender(),isOk,message,userGroup,accountList);
+		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(event.getKey(),event.getSender(),isOk,message,userGroup,accountList,user2AccountMap);
 		try {
 			eventManager.sendRemoteEvent(reply);
 		} catch (Exception e) {
 			log.warn(e.getMessage(),e);
 		}
     }
-
     public void processGroupManageeRequestEvent(GroupManageeRequestEvent event){
     	String manager = event.getManager();
     	boolean isOk = true;
