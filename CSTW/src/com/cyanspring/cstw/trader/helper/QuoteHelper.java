@@ -2,7 +2,12 @@ package com.cyanspring.cstw.trader.helper;
 
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.util.PriceUtils;
-
+/**
+ * 
+ * @author NingXiaoFeng
+ * @create date 2015/10/14
+ *
+ */
 public class QuoteHelper {
 
 	public static boolean checkValid(Quote quote) {

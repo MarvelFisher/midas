@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +28,6 @@ import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.Constants;
-import com.cyanspring.cstw.common.GUIUtils;
 import com.cyanspring.cstw.preference.PreferenceStoreManager;
 
 /**
@@ -51,6 +51,8 @@ public final class SpeedDepthMainComposite extends Composite implements
 	private Text defaultQuantityText;
 	private String symbol;
 	private String defaultQuantity;
+	private Composite composite_1;
+	private Label lblErrorMessage;
 
 	/**
 	 * Create the composite.
@@ -100,9 +102,24 @@ public final class SpeedDepthMainComposite extends Composite implements
 		defaultQuantityText.setText("1");
 		tableComposite = new SpeedDepthTableComposite(this, receiverId,
 				SWT.NONE);
-		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				true, 5, 1));
+		GridData gd_tableComposite = new GridData(SWT.FILL, SWT.FILL, true,
+				true, 5, 1);
+		gd_tableComposite.heightHint = 232;
+		tableComposite.setLayoutData(gd_tableComposite);
 
+		composite_1 = new Composite(this, SWT.NONE);
+		composite_1.setLayout(new GridLayout(1, false));
+		GridData gd_composite_1 = new GridData(SWT.FILL, SWT.BOTTOM, true,
+				false, 5, 0);
+		gd_composite_1.heightHint = 30;
+		composite_1.setLayoutData(gd_composite_1);
+
+		lblErrorMessage = new Label(composite_1, SWT.NONE);
+		lblErrorMessage.setForeground(SWTResourceManager
+				.getColor(SWT.COLOR_RED));
+		lblErrorMessage.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+				false, 1, 1));
+		lblErrorMessage.setText("");
 		changeFont(SpeedDepthMainComposite.this);
 		SpeedDepthMainComposite.this.layout();
 
@@ -174,6 +191,11 @@ public final class SpeedDepthMainComposite extends Composite implements
 		});
 	}
 
+	private void refreshErrorMessage(String message) {
+		lblErrorMessage.setText(message);
+		this.layout();
+	}
+
 	private void changeFont(Control control) {
 		control.setFont(Constants.M_FONT);
 		if (control instanceof Composite) {
@@ -201,10 +223,14 @@ public final class SpeedDepthMainComposite extends Composite implements
 				}
 			});
 		} else if (event instanceof EnterParentOrderReplyEvent) {
-			EnterParentOrderReplyEvent replyEvent = (EnterParentOrderReplyEvent) event;
+			final EnterParentOrderReplyEvent replyEvent = (EnterParentOrderReplyEvent) event;
 			if (!replyEvent.isOk() && replyEvent.getTxId().equals(receiverId)) {
-				GUIUtils.showMessageBox(replyEvent.getMessage(),
-						SpeedDepthMainComposite.this);
+				tableComposite.getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						refreshErrorMessage(replyEvent.getMessage());
+					}
+				});
 			}
 		} else if (event instanceof ParentOrderUpdateEvent) {
 			ParentOrderUpdateEvent updateEvent = (ParentOrderUpdateEvent) event;
@@ -254,5 +280,4 @@ public final class SpeedDepthMainComposite extends Composite implements
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
 	}
-
 }
