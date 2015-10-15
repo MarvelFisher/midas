@@ -97,7 +97,7 @@ public class ApiResourceManager{
 
     public void putQuoteSubsSymbol(String user, String symbol) {
     	List<String> lstSymbol = mapQuoteSubs.get(user);
-    	if(null == lstSymbol) {
+    	if(lstSymbol == null) {
         	lstSymbol = new ArrayList<>();
     	}
     	lstSymbol.add(symbol);
