@@ -5,8 +5,11 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -42,7 +45,9 @@ public final class SpeedDepthMainComposite extends Composite implements
 	private String receiverId = IdGenerator.getInstance().getNextID();
 
 	private SpeedDepthTableComposite tableComposite;
+
 	private Text symbolText;
+	private Combo rowLengthCombo;
 	private Text defaultQuantityText;
 	private String symbol;
 	private String defaultQuantity;
@@ -60,12 +65,25 @@ public final class SpeedDepthMainComposite extends Composite implements
 	}
 
 	private void initComponent() {
-		this.setLayout(new GridLayout(3, false));
+		this.setLayout(new GridLayout(5, false));
 		symbolText = new Text(this, SWT.BORDER);
 		GridData gd_symbolText = new GridData(SWT.LEFT, SWT.CENTER, false,
 				false, 1, 1);
 		gd_symbolText.widthHint = 132;
 		symbolText.setLayoutData(gd_symbolText);
+
+		Label rowLabel = new Label(this, SWT.NONE);
+		rowLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false,
+				1, 1));
+		rowLabel.setText("Display Rows:");
+
+		rowLengthCombo = new Combo(this, SWT.NONE);
+		rowLengthCombo.add("20");
+		rowLengthCombo.add("30");
+		rowLengthCombo.add("40");
+		rowLengthCombo.add("80");
+		rowLengthCombo.add("100");
+		rowLengthCombo.select(0);
 
 		Label lblNewLabel = new Label(this, SWT.NONE);
 		lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true,
@@ -82,7 +100,7 @@ public final class SpeedDepthMainComposite extends Composite implements
 		tableComposite = new SpeedDepthTableComposite(this, receiverId,
 				SWT.NONE);
 		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				true, 4, 1));
+				true, 5, 1));
 
 		changeFont(SpeedDepthMainComposite.this);
 		SpeedDepthMainComposite.this.layout();
@@ -122,7 +140,7 @@ public final class SpeedDepthMainComposite extends Composite implements
 						qty = "1";
 					}
 					defaultQuantityText.setText(qty);
-
+					rowLengthCombo.select(0);
 					tableComposite.clear();
 					QuoteSubEvent quoteSubEvent = new QuoteSubEvent(receiverId,
 							Business.getInstance().getFirstServer(), symbol);
@@ -140,6 +158,17 @@ public final class SpeedDepthMainComposite extends Composite implements
 			@Override
 			public void modifyText(ModifyEvent e) {
 				defaultQuantity = defaultQuantityText.getText();
+			}
+		});
+
+		rowLengthCombo.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String lengthValue = rowLengthCombo.getItem(rowLengthCombo
+						.getSelectionIndex());
+				tableComposite.refresh(Integer.valueOf(lengthValue));
+				rowLengthCombo.setFocus();
+
 			}
 		});
 	}
@@ -172,7 +201,7 @@ public final class SpeedDepthMainComposite extends Composite implements
 			});
 		} else if (event instanceof EnterParentOrderReplyEvent) {
 			EnterParentOrderReplyEvent replyEvent = (EnterParentOrderReplyEvent) event;
-			if (!replyEvent.isOk()&&  replyEvent.getTxId().equals(receiverId)) {
+			if (!replyEvent.isOk() && replyEvent.getTxId().equals(receiverId)) {
 				GUIUtils.showMessageBox(replyEvent.getMessage(),
 						SpeedDepthMainComposite.this);
 			}
@@ -188,7 +217,7 @@ public final class SpeedDepthMainComposite extends Composite implements
 			tableComposite.getDisplay().asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					tableComposite.refresh();
+					tableComposite.refresh(-1);
 				}
 			});
 

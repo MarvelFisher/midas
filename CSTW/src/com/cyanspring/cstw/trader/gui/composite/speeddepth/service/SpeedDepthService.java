@@ -46,6 +46,8 @@ public final class SpeedDepthService {
 
 	private double delta = 0.000001;
 
+	private int rowLength = 10;
+
 	public List<SpeedDepthModel> getSpeedDepthList(Quote quote, boolean isLock) {
 		ticker = Business.getInstance().getTicker(quote.getSymbol());
 		if (ticker == null) {
@@ -60,7 +62,7 @@ public final class SpeedDepthService {
 		if (quote.getAsks() != null) {
 			int askSize = quote.getAsks().size();
 			for (int i = askSize - 1; i >= 0; i--) {
-				if (i < 10) {
+				if (i < rowLength) {
 					SpeedDepthModel model = new SpeedDepthModel();
 					QtyPrice qp = quote.getAsks().get(i);
 					model.setSymbol(quote.getSymbol());
@@ -75,7 +77,7 @@ public final class SpeedDepthService {
 		}
 
 		if (quote.getBids() != null) {
-			for (int i = 0; i < quote.getBids().size() && i < 10; i++) {
+			for (int i = 0; i < quote.getBids().size() && i < rowLength; i++) {
 				SpeedDepthModel model = new SpeedDepthModel();
 				model.setSymbol(quote.getSymbol());
 				QtyPrice qp = quote.getBids().get(i);
@@ -114,7 +116,7 @@ public final class SpeedDepthService {
 		List<SpeedDepthModel> newList = new ArrayList<SpeedDepthModel>();
 		// add 10 UP Price
 		double currentPrice = 0;
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < rowLength; i++) {
 			SpeedDepthModel model = new SpeedDepthModel();
 			model.setSymbol(symbol);
 			if (i == 0) {
@@ -129,7 +131,7 @@ public final class SpeedDepthService {
 		}
 		// add 10 DOWN Price
 		currentPrice = middlePrice;
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < rowLength; i++) {
 			SpeedDepthModel model = new SpeedDepthModel();
 			model.setSymbol(symbol);
 			currentPrice = currentPrice - tickTable.getTick(currentPrice);
@@ -247,9 +249,9 @@ public final class SpeedDepthService {
 				isPriceEqual = true;
 			} else {
 				Double orderPrice = (Double) map.get(OrderField.PRICE.value());
-				if( null == orderPrice)
+				if (null == orderPrice)
 					continue;
-				
+
 				isPriceEqual = PriceUtils.Equal(orderPrice, price, delta);
 			}
 			if (!status.isCompleted() && symbol.equals(currentSymbol)
@@ -265,6 +267,10 @@ public final class SpeedDepthService {
 				}
 			}
 		}
+	}
+
+	public void setRowLength(int rowLength) {
+		this.rowLength = rowLength / 2;
 	}
 
 }

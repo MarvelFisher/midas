@@ -117,7 +117,7 @@ public final class SpeedDepthTableComposite extends Composite {
 
 		TableColumn tblclmnNewColumn_2 = new TableColumn(table, SWT.CENTER);
 		tblclmnNewColumn_2.setWidth(100);
-		tblclmnNewColumn_2.setText("Ask/Bid");
+		tblclmnNewColumn_2.setText("Bid/Ask");
 
 		tblBidsVol = new TableColumn(table, SWT.CENTER);
 		tblBidsVol.setWidth(100);
@@ -247,7 +247,10 @@ public final class SpeedDepthTableComposite extends Composite {
 				isLock));
 	}
 
-	public void refresh() {
+	public void refresh(int rowLength) {
+		if (rowLength > 0) {
+			speedDepthService.setRowLength(rowLength);
+		}
 		tableViewer.setInput(speedDepthService.getSpeedDepthList(currentQuote,
 				isLock));
 	}
