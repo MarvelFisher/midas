@@ -51,7 +51,9 @@ public final class SpeedDepthTableComposite extends Composite {
 
 	private boolean isLock = false;
 
-	private TableItem currentItem;
+	private TableItem currentMouseSelectedItem;
+
+	private TableItem currentKeySelectedItem;
 
 	private String receiverId;
 
@@ -188,11 +190,16 @@ public final class SpeedDepthTableComposite extends Composite {
 				if (item == null) {
 					return;
 				}
-				if (currentItem != null && currentItem != item) {
-					currentItem.setForeground(1,
-							SWTResourceManager.getColor(SWT.COLOR_WHITE));
-					currentItem.setForeground(3,
-							SWTResourceManager.getColor(SWT.COLOR_WHITE));
+				if (currentMouseSelectedItem != null
+						&& !currentMouseSelectedItem.isDisposed()
+						&& currentMouseSelectedItem != item) {
+					if (isLock
+							|| (!isLock && currentMouseSelectedItem != currentKeySelectedItem)) {
+						currentMouseSelectedItem.setForeground(1,
+								SWTResourceManager.getColor(SWT.COLOR_WHITE));
+						currentMouseSelectedItem.setForeground(3,
+								SWTResourceManager.getColor(SWT.COLOR_WHITE));
+					}
 				}
 				item.setForeground(1,
 						SWTResourceManager.getColor(SWT.COLOR_BLACK));
@@ -200,7 +207,29 @@ public final class SpeedDepthTableComposite extends Composite {
 						SWTResourceManager.getColor(SWT.COLOR_BLACK));
 				SpeedDepthModel model = (SpeedDepthModel) item.getData();
 				labelProvider.setSelectIndex(model.getIndex());
-				currentItem = item;
+				currentMouseSelectedItem = item;
+			}
+		});
+
+		table.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TableItem item = table.getItem(table.getSelectionIndex());
+				if (currentKeySelectedItem != null
+						&& !currentKeySelectedItem.isDisposed()
+						&& currentKeySelectedItem != item
+						&& currentKeySelectedItem != currentMouseSelectedItem) {
+					currentKeySelectedItem.setForeground(1,
+							SWTResourceManager.getColor(SWT.COLOR_WHITE));
+					currentKeySelectedItem.setForeground(3,
+							SWTResourceManager.getColor(SWT.COLOR_WHITE));
+				}
+				item.setForeground(1,
+						SWTResourceManager.getColor(SWT.COLOR_BLACK));
+				item.setForeground(3,
+						SWTResourceManager.getColor(SWT.COLOR_BLACK));
+				currentKeySelectedItem = item;
+
 			}
 		});
 	}
