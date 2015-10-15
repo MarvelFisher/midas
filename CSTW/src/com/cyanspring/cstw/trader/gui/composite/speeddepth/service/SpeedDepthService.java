@@ -247,6 +247,9 @@ public final class SpeedDepthService {
 				isPriceEqual = true;
 			} else {
 				Double orderPrice = (Double) map.get(OrderField.PRICE.value());
+				if( null == orderPrice)
+					continue;
+				
 				isPriceEqual = PriceUtils.Equal(orderPrice, price, delta);
 			}
 			if (!status.isCompleted() && symbol.equals(currentSymbol)
