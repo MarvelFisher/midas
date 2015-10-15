@@ -1620,9 +1620,9 @@ public class SingleOrderStrategyView extends ViewPart implements
 							nowQuote.getSymbol());
 					String orderSide = cbOrderSide.getText();
 					if (orderSide.equals(OrderSide.Buy.toString())) {
-						txtPrice.setText("" + nowQuote.getAsk());
-					} else {
 						txtPrice.setText("" + nowQuote.getBid());
+					} else {
+						txtPrice.setText("" + nowQuote.getAsk());
 					}
 				}
 			}
