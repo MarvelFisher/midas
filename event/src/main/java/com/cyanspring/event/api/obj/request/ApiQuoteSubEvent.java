@@ -48,9 +48,11 @@ public class ApiQuoteSubEvent implements IApiRequest {
 
         // Restrict maximum number of quote per user to be <= 5
         List<String> lstSymbol = resourceManager.getQuoteSubsSymbolList(ctxUser);
-        for (Iterator<String> iterator = lstSymbol.iterator(); lstSymbol.size() > 4 && iterator.hasNext();) {
-        	iterator.next();
-            iterator.remove();
+        if (lstSymbol != null && lstSymbol.size() > 4) {
+	        for (Iterator<String> iterator = lstSymbol.iterator(); iterator.hasNext();) {
+	        	iterator.next();
+	            iterator.remove();
+	        }
         }
 
         resourceManager.putQuoteSubsSymbol(ctxUser, symbol);

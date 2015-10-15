@@ -8,8 +8,10 @@ import com.cyanspring.common.event.UserConnectionType;
 import com.cyanspring.common.transport.IServerSocketListener;
 import com.cyanspring.common.transport.IServerUserSocketService;
 import com.cyanspring.common.transport.IUserSocketContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -95,6 +97,9 @@ public class ApiResourceManager{
 
     public void putQuoteSubsSymbol(String user, String symbol) {
     	List<String> lstSymbol = mapQuoteSubs.get(user);
+    	if(null == lstSymbol) {
+        	lstSymbol = new ArrayList<>();
+    	}
     	lstSymbol.add(symbol);
     	mapQuoteSubs.put(user, lstSymbol);
     }
