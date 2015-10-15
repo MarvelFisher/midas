@@ -155,7 +155,7 @@ namespace Adaptor.TwSpeedy.Main
                 if(this.recovering) // during recovery there won't be an order in the cache
                 {
                     recoveryCount++;
-                    Order order = new Order(msg.Symbol, "unknown", msg.Price, msg.OrderQty,
+                    Order order = new Order(this.id, msg.Symbol, "unknown", msg.Price, msg.OrderQty,
                         FieldConverter.convert(msg.Side), FieldConverter.convert(msg.OrderType), "recovered");
 
                     if (updateOrder(order, msg))

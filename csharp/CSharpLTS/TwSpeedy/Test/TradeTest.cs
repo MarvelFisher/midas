@@ -50,7 +50,7 @@ namespace Adaptor
 
         private void btNew_Click(object sender, EventArgs e)
         {
-            Order order = new Order(edSymbol.Text, "Order id",
+            Order order = new Order("exchangeAccount", edSymbol.Text, "Order id",
                 Double.Parse(edPrice.Text), Double.Parse(edQuantity.Text),
                 (OrderSide)Enum.Parse(typeof(OrderSide), cbSide.Text),
                 (OrderType)Enum.Parse(typeof(OrderType), cbType.Text), "account");
