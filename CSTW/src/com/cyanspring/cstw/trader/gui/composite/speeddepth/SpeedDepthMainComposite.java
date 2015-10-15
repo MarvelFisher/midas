@@ -81,6 +81,7 @@ public final class SpeedDepthMainComposite extends Composite implements
 		rowLengthCombo.add("20");
 		rowLengthCombo.add("30");
 		rowLengthCombo.add("40");
+		rowLengthCombo.add("60");
 		rowLengthCombo.add("80");
 		rowLengthCombo.add("100");
 		rowLengthCombo.select(0);
