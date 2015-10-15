@@ -1,6 +1,6 @@
 package com.cyanspring.adaptor.future.wind.refdata;
 
-import com.cyanspring.Network.Transport.FDTFields;
+import com.cyanspring.network.transport.FDTFields;
 import com.cyanspring.adaptor.future.wind.IWindGWListener;
 import com.cyanspring.adaptor.future.wind.WindDef;
 import com.cyanspring.adaptor.future.wind.data.CodeTableResult;

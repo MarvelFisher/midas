@@ -1,7 +1,7 @@
 package com.cyanspring.adaptor.future.wind;
 
-import com.cyanspring.Network.Transport.FDTFields;
-import com.cyanspring.Network.Transport.FDTFrameDecoder;
+import com.cyanspring.network.transport.FDTFields;
+import com.cyanspring.network.transport.FDTFrameDecoder;
 import com.cyanspring.adaptor.future.wind.data.*;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;

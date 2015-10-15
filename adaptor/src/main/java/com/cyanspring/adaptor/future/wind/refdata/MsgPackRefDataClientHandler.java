@@ -1,8 +1,6 @@
 package com.cyanspring.adaptor.future.wind.refdata;
 
-import com.cyanspring.Network.Transport.FDTFields;
 import com.cyanspring.adaptor.future.wind.IWindGWListener;
-import com.cyanspring.adaptor.future.wind.WindDef;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -10,9 +8,7 @@ import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class MsgPackRefDataClientHandler extends ChannelInboundHandlerAdapter {
     private static final Logger log = LoggerFactory

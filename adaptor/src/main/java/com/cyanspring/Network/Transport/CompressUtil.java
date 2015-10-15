@@ -1,4 +1,4 @@
-package com.cyanspring.Network.Transport;
+package com.cyanspring.network.transport;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

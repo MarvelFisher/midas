@@ -3,8 +3,8 @@ package com.cyanspring.adaptor.future.wind.client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.Network.Transport.FDTFrameDecoder;
-import com.cyanspring.Network.Transport.FDTFrameEncoder;
+import com.cyanspring.network.transport.FDTFrameDecoder;
+import com.cyanspring.network.transport.FDTFrameEncoder;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;

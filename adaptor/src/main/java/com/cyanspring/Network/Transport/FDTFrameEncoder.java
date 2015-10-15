@@ -1,6 +1,4 @@
-package com.cyanspring.Network.Transport;
-
-import java.util.HashMap;
+package com.cyanspring.network.transport;
 
 import net.asdfa.msgpack.MsgPack;
 
@@ -13,7 +11,7 @@ import io.netty.handler.codec.MessageToByteEncoder;
 
 public class FDTFrameEncoder extends MessageToByteEncoder<Object> {
 
-	private static Logger log = LoggerFactory.getLogger(com.cyanspring.Network.Transport.FDTFrameEncoder.class);
+	private static Logger log = LoggerFactory.getLogger(FDTFrameEncoder.class);
 	private static byte byPacketNo = 0;
 	
 	/*

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-import com.cyanspring.Network.Transport.FDTFields;
+import com.cyanspring.network.transport.FDTFields;
 
 public class Registration {
 

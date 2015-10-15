@@ -1,4 +1,4 @@
-package com.cyanspring.Network.Transport;
+package com.cyanspring.network.transport;
 
 public class FDTPacket {
 	public final static int  PKT_HEAD_SIZE = 5;			// LEAD_CODE(1) + LEN(2) + VER(1) + PACKET_NO(1) 

@@ -1,7 +1,7 @@
 package com.cyanspring.adaptor.future.wind;
 
-import com.cyanspring.Network.Transport.FDTFrameDecoder;
-import com.cyanspring.Network.Transport.FDTFrameEncoder;
+import com.cyanspring.network.transport.FDTFrameDecoder;
+import com.cyanspring.network.transport.FDTFrameEncoder;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;

@@ -1,4 +1,4 @@
-package com.cyanspring.Network.Transport;
+package com.cyanspring.network.transport;
 
 public class MsgPackException extends Exception {
 	/**

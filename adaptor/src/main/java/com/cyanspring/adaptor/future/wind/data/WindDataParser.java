@@ -1,7 +1,7 @@
 package com.cyanspring.adaptor.future.wind.data;
 
 
-import com.cyanspring.Network.Transport.FDTFields;
+import com.cyanspring.network.transport.FDTFields;
 import com.cyanspring.adaptor.future.wind.WindDef;
 import com.cyanspring.common.staticdata.CodeTableData;
 

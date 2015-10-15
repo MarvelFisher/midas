@@ -1,7 +1,5 @@
-package com.cyanspring.Network.Transport;
+package com.cyanspring.network.transport;
 
-import java.io.Writer;
-import java.util.Arrays;
 import java.util.List;
 
 import net.asdfa.msgpack.MsgPack;

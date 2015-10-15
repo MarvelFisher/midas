@@ -1,33 +1,13 @@
 package com.cyanspring.adaptor.future.wind.client;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import com.cyanspring.Network.Transport.FDTFields;
-
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler;
+import com.cyanspring.network.transport.FDTFields;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
