@@ -30,14 +30,24 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 			return "";
 		case 1:
 			if (model.getType() == SpeedDepthModel.BID && model.getVol() > 0) {
-				return "" + model.getVol();
+				try {
+					int vol = (int) model.getVol();
+					return "" + vol;
+				} catch (Exception en) {
+					return "";
+				}
 			}
 			return "";
 		case 2:
 			return model.getFormatPrice();
 		case 3:
 			if (model.getType() == SpeedDepthModel.ASK && model.getVol() > 0) {
-				return "" + model.getVol();
+				try {
+					int vol = (int) model.getVol();
+					return "" + vol;
+				} catch (Exception en) {
+					return "";
+				}
 			}
 			return "";
 		case 4:
@@ -71,13 +81,13 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 		SpeedDepthModel model = (SpeedDepthModel) element;
 		switch (columnIndex) {
 		case 1:
-			if (model.getIndex()==selectIndex) {
+			if (model.getIndex() == selectIndex) {
 				return SWTResourceManager.getColor(SWT.COLOR_BLACK);
 			} else {
 				return SWTResourceManager.getColor(SWT.COLOR_WHITE);
 			}
 		case 3:
-			if (model.getIndex()==selectIndex) {
+			if (model.getIndex() == selectIndex) {
 				return SWTResourceManager.getColor(SWT.COLOR_BLACK);
 			} else {
 				return SWTResourceManager.getColor(SWT.COLOR_WHITE);
@@ -88,5 +98,5 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 
 	public void setSelectIndex(int selectIndex) {
 		this.selectIndex = selectIndex;
-	}	
+	}
 }
