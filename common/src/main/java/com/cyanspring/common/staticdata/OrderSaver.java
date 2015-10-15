@@ -51,7 +51,7 @@ public class OrderSaver {
 		                    pOrder.getCreated() + "," + pOrder.getId());
     	        }
         	} else if (orderList.get(0) instanceof ChildOrder) {
-        		fileManager.appendToFile("Account,Symbol,Price,Qty,CumQty,AvgPx,Status,Created,ID,ExchangeOID");
+        		fileManager.appendToFile("Account,Symbol,Price,Qty,CumQty,AvgPx,Status,Created,ID,ParentOID,ExchangeOID");
         		for (Order o : orderList) {
         			ChildOrder cOrder = (ChildOrder)o;
     	            if (!TimeUtil.sameDate(date, cOrder.getCreated())) {
@@ -62,9 +62,11 @@ public class OrderSaver {
     	            		df.format(cOrder.getPrice()) + "," + df.format(cOrder.getQuantity()) + "," +
     	            		df.format(cOrder.getCumQty()) + "," + df.format(cOrder.getAvgPx()) + "," +
     	            		cOrder.getOrdStatus() + "," + cOrder.getCreated() + "," + cOrder.getId() + "," +
-    	            		cOrder.getExchangeOrderId());
+    	            		cOrder.getParentOrderId() + "," + cOrder.getExchangeOrderId());
     	        }
         	}
+        } else {
+        	fileManager.appendToFile("No orders to display on " + fileDate);
         }
         fileManager.close();
     }

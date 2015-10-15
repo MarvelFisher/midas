@@ -2,9 +2,9 @@
  * Copyright (c) 2011-2012 Cyan Spring Limited
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms specified by license file attached.
- * 
+ *
  * Software distributed under the License is released on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
@@ -33,7 +33,7 @@ public class ChildOrder extends Order {
 		put(OrderField.ACCOUNT.value(), account);
 		this.setRoute(route);
 	}
-	
+
 	protected ChildOrder() {
 		super();
 	}
@@ -54,48 +54,49 @@ public class ChildOrder extends Order {
 	public String getStrategyId() {
 		return get(String.class, OrderField.STRATEGY_ID.value());
 	}
-	
+
 	public String getClOrderId() {
 		return get(String.class, OrderField.CLORDERID.value());
 	}
-	
+
 	public void setClOrderId(String clOrderId) {
 		put(OrderField.CLORDERID.value(), clOrderId);
 	}
-	
+
 	protected void setType(ExchangeOrderType type) {
 		put(OrderField.TYPE.value(), type);
 	}
-	
+
 	protected void setParentOrderId(String parentOrderId) {
 		put(OrderField.PARENT_ORDER_ID.value(), parentOrderId);
 	}
-	
+
 	protected void setStrategyId(String strategyId) {
 		put(OrderField.STRATEGY_ID.value(), strategyId);
 	}
-	
+
 	public boolean isUnsolicited() {
 		return get(boolean.class, OrderField.UNSOLICITED.value());
 	}
-	
+
 	public void setUnsolicited(boolean unsolicited) {
 		put(OrderField.UNSOLICITED.value(), unsolicited);
 	}
-	
+
 	public String getExchangeOrderId() {
-		return get(String.class, OrderField.EXCHANGE_ORDER_ID.value());
+		String oid = get(String.class, OrderField.EXCHANGE_ORDER_ID.value());
+		return oid == null ? "" : oid;
 	}
 
 	public void setExchangeOrderId(String id) {
 		put(OrderField.EXCHANGE_ORDER_ID.value(), id);
 	}
-	
+
 	@Override
 	protected String fieldsToString() {
 		return super.fieldsToString() + ", " + getType() + ", " + getParentOrderId() + ", " + getStrategyId() + ", " + getClOrderId();
 	}
-	
+
 	public ChildOrder clone() {
 		return (ChildOrder)super.clone();
 	}

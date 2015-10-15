@@ -131,7 +131,7 @@ namespace Common.Event
                 update.clOrderId = StringUtils.trim(order.clOrderId);
                 update.created = StringUtils.trim(order.created);
                 update.cumQty = order.cumQty;
-                update.exchangeAccount = StringUtils.trim(_adaptor.id);
+                update.exchangeAccount = order.exchangeAccount;
                 update.execType = (int)order.execType;
                 update.account = order.account;
                 
@@ -291,7 +291,7 @@ namespace Common.Event
                 {
                     try
                     {
-                        Order order = new Order(req.symbol, req.orderId, req.price, req.quantity, 
+                        Order order = new Order(req.exchangeAccount, req.symbol, req.orderId, req.price, req.quantity, 
                             (OrderSide)req.orderSide, (OrderType)req.orderType, req.account);
                         adaptor.newOrder(order);
                         NewOrderReply rsp = new NewOrderReply();

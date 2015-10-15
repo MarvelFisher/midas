@@ -44,6 +44,7 @@ namespace Adaptor.TwSpeedy.Main
         public int maxOrderCount { get; set; } = 1000;
         public bool copyAccount { get; set; }
         public bool skipRecover { get; set; }
+        public string accountSuffix { get; set; } = "-FT";
         private DailyKeyCounter placeOrderCount;
         private long recoveryCount;
 
@@ -154,7 +155,7 @@ namespace Adaptor.TwSpeedy.Main
                 if(this.recovering) // during recovery there won't be an order in the cache
                 {
                     recoveryCount++;
-                    Order order = new Order(msg.Symbol, "unknown", msg.Price, msg.OrderQty,
+                    Order order = new Order(this.id, msg.Symbol, "unknown", msg.Price, msg.OrderQty,
                         FieldConverter.convert(msg.Side), FieldConverter.convert(msg.OrderType), "recovered");
 
                     if (updateOrder(order, msg))
@@ -399,11 +400,23 @@ namespace Adaptor.TwSpeedy.Main
             return state;
         }
 
+        private string extractAccount(string account)
+        {
+            if (account.EndsWith(accountSuffix))
+            {
+                return account.Substring(0, account.Length - accountSuffix.Length);
+            }
+            else
+            {
+                return account;
+            }
+        }
+
         private string formatData(long qty, string account)
         {
             string str = subAccount;
             if (copyAccount)
-                str = account;
+                str = extractAccount(account);
             return String.Format("{0,-7}{1,-20}{2,10}{3:D4}{4}",
                 str, localIP, " ", qty, account);
         }

@@ -104,8 +104,13 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 				for(IViewReference vr : vrs){
 					if(!Business.getInstance().hasViewAuth(vr.getPartName())){
 						IViewPart part = activePage.findView(vr.getId());
-						part.getViewSite().getShell().setVisible(false);
-						activePage.hideView(vr);
+						log.info("hide view - PartName():{},{}",vr.getPartName(),vr.getId());
+						if(null == part){
+							log.info("part is null");
+						}else{
+							part.getViewSite().getShell().setVisible(false);
+							activePage.hideView(vr);
+						}
 					}else{
 						authListener.filterViewAllAction(vr.getPartName(), vr.getPart(true));
 					}

@@ -26,9 +26,10 @@ namespace Common.Adaptor
         public string lastMsg { get; set; }
         public string account { get; set; }
 
-        public Order(string symbol, string orderId, double price, double quantity, 
+        public Order(string exchangeAccount, string symbol, string orderId, double price, double quantity, 
             OrderSide orderSide, OrderType orderType, string account)
         {
+            this.exchangeAccount = exchangeAccount;
             this.symbol = symbol;
             this.orderId = orderId;
             this.price = price;

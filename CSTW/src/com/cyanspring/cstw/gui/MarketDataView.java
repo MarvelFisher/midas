@@ -80,18 +80,14 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 	private Label lbBidVol;
 	private Label lbAsk;
 	private Label lbAskVol;
-	private Label lbLast;
-	private Label lbLastVol;
-	private Label lbOpen;
-	private Label lbClose;
-	private Label lbHigh;
-	private Label lbLow;
+	private Label lbLastAndVol;
+	private Label lbOpenClose;
+	private Label lbHighLow;
 	private Map<String, String> symbolServer = new HashMap<String, String>();
 	private Label lblMktVol;
 	private Label lbMktVol;
 	private Label lblNewLabel_1;
-	private Label lbChange;
-	private Label lbChangePercent;
+	private Label lbChangeAndPercent;
 	private Label lbStale;
 	private Quote nowQuote = null;
 	private ExpandBar expandBar = null;
@@ -172,11 +168,8 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 		cbSymbol.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				String symbol = cbSymbol.getText();
-				if (!symbol.equals(MarketDataView.this.symbol)) {
-					String server = symbolServer.get(symbol);
-					if (null != server)
-						subscribeMD(symbol, server);
-				}
+				String server = symbolServer.get(symbol);
+				subscribeMD(symbol, server);
 			}
 		});
 
@@ -209,8 +202,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 		new Label(topComposite, SWT.NONE);
 		
 		expandBar = new ExpandBar(mainComposite, SWT.NONE);
-		GridData gd_expandBar = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-		expandBar.setLayoutData(gd_expandBar);		
+		expandBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));		
 		expandBar.addExpandListener(new ExpandListener() {
 			private Display display = Display.getCurrent();			
 			private void layout(){
@@ -243,10 +235,6 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 		});
 		expandBar.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
 		{
-			ExpandItem xpndtmAskbid = new ExpandItem(expandBar, SWT.NONE);
-			xpndtmAskbid.setImage(imageRegistry.getDescriptor(ImageID.ASKBID_ICON.toString()).createImage());
-			xpndtmAskbid.setExpanded(false);
-			xpndtmAskbid.setText("Ask / Bid");
 			{
 				askBidComposite = new Composite(expandBar,  SWT.BORDER);
 				GridLayout gl_composite_1 = new GridLayout(6, true);
@@ -255,8 +243,6 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 				askBidComposite.setLayout(gl_composite_1);
 				askBidComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false,
 						false, 1, 1));
-				
-				xpndtmAskbid.setControl(askBidComposite);
 				lblBidvolume = new Label(askBidComposite, SWT.NONE);
 				lblBidvolume.setText("Bid/Vol");
 				new Label(askBidComposite, SWT.NONE);
@@ -272,66 +258,56 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 				new Label(askBidComposite, SWT.NONE);
 				lbAskVol = new Label(askBidComposite, SWT.NONE);
 				new Label(askBidComposite, SWT.NONE);
-				
-				Label lblLastvolume = new Label(askBidComposite, SWT.NONE);
-				lblLastvolume.setText("Last/Vol");
-				new Label(askBidComposite, SWT.NONE);
-				lbLast = new Label(askBidComposite, SWT.NONE);
-				new Label(askBidComposite, SWT.NONE);
-				lbLastVol = new Label(askBidComposite, SWT.NONE);
-				new Label(askBidComposite, SWT.NONE);
-							
-				lblMktVol = new Label(askBidComposite, SWT.NONE);
-				lblMktVol.setText("Mkt Vol");
-				new Label(askBidComposite, SWT.NONE);
-				lbMktVol = new Label(askBidComposite, SWT.NONE);
-				new Label(askBidComposite, SWT.NONE);
-				
+		
 			}
-			xpndtmAskbid.setHeight(xpndtmAskbid.getControl().computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
 		}
 		{
 			ExpandItem xpndtmDetail = new ExpandItem(expandBar, SWT.NONE);
 			xpndtmDetail.setExpanded(true);
-			xpndtmDetail.setText("Detail");
-			xpndtmDetail.setImage(imageRegistry.getDescriptor(ImageID.DETAILS_ICON.toString()).createImage());
-
+			xpndtmDetail.setText("Details");
 			{
 				detailComposite = new Composite(expandBar, SWT.BORDER);
 				xpndtmDetail.setControl(detailComposite);
-				detailComposite.setLayout(new GridLayout(6, true));
+				GridLayout gl_detailComposite = new GridLayout(6, true);
+				gl_detailComposite.verticalSpacing = 10;
+				gl_detailComposite.marginBottom = 5;
+				detailComposite.setLayout(gl_detailComposite);
 				
 				Label lblOpenclose = new Label(detailComposite, SWT.NONE);		
-				lblOpenclose.setText("Open/Close");
+				lblOpenclose.setFont(SWTResourceManager.getFont("Microsoft JhengHei UI", 9, SWT.BOLD));
+				lblOpenclose.setText("Open/Close : ");				
+				lbOpenClose = new Label(detailComposite, SWT.NONE);				
 				new Label(detailComposite, SWT.NONE);
-				lbOpen = new Label(detailComposite, SWT.NONE);
-				new Label(detailComposite, SWT.NONE);			
-				lbClose = new Label(detailComposite, SWT.NONE);
-				new Label(detailComposite, SWT.NONE);
-				
 				Label lblHighlow = new Label(detailComposite, SWT.NONE);
-				lblHighlow.setText("High/Low");
-				new Label(detailComposite, SWT.NONE);
-				lbHigh = new Label(detailComposite, SWT.NONE);
-				new Label(detailComposite, SWT.NONE);
-				lbLow = new Label(detailComposite, SWT.NONE);
-				new Label(detailComposite, SWT.NONE);
+				lblHighlow.setFont(SWTResourceManager.getFont("Microsoft JhengHei UI", 9, SWT.BOLD));
+				lblHighlow.setText("High/Low : ");
 				
+				lbHighLow = new Label(detailComposite, SWT.NONE);
+				new Label(detailComposite, SWT.NONE);			
+				lblMktVol = new Label(detailComposite, SWT.NONE);
+				lblMktVol.setFont(SWTResourceManager.getFont("Microsoft JhengHei UI", 9, SWT.BOLD));
+				lblMktVol.setText("Mkt Vol : ");				
+				lbMktVol = new Label(detailComposite, SWT.NONE);
+				new Label(detailComposite, SWT.NONE);				
+				Label lblLastvolume = new Label(detailComposite, SWT.NONE);
+				lblLastvolume.setFont(SWTResourceManager.getFont("Microsoft JhengHei UI", 9, SWT.BOLD));
+				lblLastvolume.setText("Last/Vol : ");
+			
+				lbLastAndVol = new Label(detailComposite, SWT.NONE);
+				new Label(detailComposite, SWT.NONE);
 				lblNewLabel_1 = new Label(detailComposite, SWT.NONE);
-				lblNewLabel_1.setText("Change/%");
-				new Label(detailComposite, SWT.NONE);
-				lbChange = new Label(detailComposite, SWT.NONE);
-				new Label(detailComposite, SWT.NONE);
-				lbChangePercent = new Label(detailComposite, SWT.NONE);
-				new Label(detailComposite, SWT.NONE);		
-				Label lbLabelStale = new Label(detailComposite, SWT.NONE);
-				
-				lbLabelStale.setText("Stale");
-				new Label(detailComposite, SWT.NONE);
+				lblNewLabel_1.setFont(SWTResourceManager.getFont("Microsoft JhengHei UI", 9, SWT.BOLD));
+				lblNewLabel_1.setText("Change/% : ");
+				lbChangeAndPercent = new Label(detailComposite, SWT.NONE);
+				new Label(detailComposite, SWT.NONE);					
+				Label lbLabelStale = new Label(detailComposite, SWT.NONE);							
+				lbLabelStale.setFont(SWTResourceManager.getFont("Microsoft JhengHei UI", 9, SWT.BOLD));
+				lbLabelStale.setText("Stale : ");
 				lbStale = new Label(detailComposite, SWT.NONE);	
 			}
 			xpndtmDetail.setHeight(xpndtmDetail.getControl().computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
 		}
+		new Label(detailComposite, SWT.NONE);
 		
 		tableViewer = new TableViewer(mainComposite, SWT.BORDER
 				| SWT.FULL_SELECTION);
@@ -354,7 +330,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 				.subscribe(InstrumentSelectionEvent.class, this);
 		Business.getInstance().getEventManager()
 				.subscribe(QuoteSymbolSelectEvent.class, this);
-
+		cbSymbol.notifyListeners(SWT.Selection, new Event());
 	}
 
 	private void createColumns() {
@@ -572,9 +548,9 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 				} catch (DataConvertException e) {
 					log.error(e.getMessage(), e);
 				}
-				lbLast.setText(blankZero(quote.getLast()));
+
 				try {
-					lbLastVol.setText(BeanHolder.getInstance()
+					lbLastAndVol.setText(blankZero(quote.getLast())+" / "+BeanHolder.getInstance()
 							.getDataConverter()
 							.toString("Qty", quote.getLastVol()));
 				} catch (DataConvertException e) {
@@ -589,11 +565,18 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 					log.error(e.getMessage(), e);
 				}
 
-				lbHigh.setText(blankZero(quote.getHigh()));
-				lbLow.setText(blankZero(quote.getLow()));
-				lbOpen.setText(blankZero(quote.getOpen()));
-				lbClose.setText(blankZero(quote.getClose()));
-
+				if((blankZero(quote.getHigh())+blankZero(quote.getLow())).equals("")){
+					lbHighLow.setText("");
+				}else{
+					lbHighLow.setText(blankZero(quote.getHigh()) +" / "+blankZero(quote.getLow()));
+				}
+				
+				if((blankZero(quote.getOpen())+blankZero(quote.getClose())).equals("")){
+					lbOpenClose.setText("");
+				}else{
+					lbOpenClose.setText(blankZero(quote.getOpen()) +" / "+blankZero(quote.getClose()));
+				}
+				
 				if (!PriceUtils.isZero(quote.getClose())
 						&& !PriceUtils.isZero(quote.getLast())) {
 					String change = priceFormat.format(quote.getLast()
@@ -601,11 +584,9 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 					String changePercent = priceFormat.format((quote.getLast() - quote
 							.getClose()) * 100 / quote.getClose())
 							+ "%";
-					lbChange.setText(change);
-					lbChangePercent.setText(changePercent);
+					lbChangeAndPercent.setText(change+" / "+changePercent);
 				} else {
-					lbChange.setText("");
-					lbChangePercent.setText("");
+					lbChangeAndPercent.setText("");
 				}
 				lbStale.setText("" + quote.isStale());
 
