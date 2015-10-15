@@ -65,7 +65,11 @@ public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEvent
             } else {
             	Map<String, List<String>> mapQuoteSubs = resourceManager.getQuoteSubs();
                 List<String> lstSymbol = mapQuoteSubs.remove(ctx.getId());
-                log.info("Remove symbol subscription: " + ctx.getUser() + ", " + lstSymbol.toString());
+                if (lstSymbol != null) {
+                	for (String s : lstSymbol) {
+                		log.info("Remove symbol subscription: " + ctx.getUser() + ", " + s);
+                	}
+				}
             }
         }
 
