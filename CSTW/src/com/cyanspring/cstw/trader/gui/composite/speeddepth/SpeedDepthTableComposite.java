@@ -42,7 +42,7 @@ public final class SpeedDepthTableComposite extends Composite {
 
 	private SpeedDepthContentProvider speedDepthContentProvider;
 	private SpeedDepthLabelProvider labelProvider;
-	private SpeedDepthMainComposite mainComposite;
+
 	private TableColumn tblclmnAskVol;
 	private TableColumn tblBidsVol;
 	private Composite composite;
@@ -63,11 +63,10 @@ public final class SpeedDepthTableComposite extends Composite {
 	 * @param parent
 	 * @param style
 	 */
-	public SpeedDepthTableComposite(SpeedDepthMainComposite mainComposite,
-			String receiverId, int style) {
-		super(mainComposite, style);
+	public SpeedDepthTableComposite(Composite composite, String receiverId,
+			int style) {
+		super(composite, style);
 		speedDepthService = new SpeedDepthService();
-		this.mainComposite = mainComposite;
 		this.receiverId = receiverId;
 		initComponent();
 		initProvider();
@@ -164,6 +163,9 @@ public final class SpeedDepthTableComposite extends Composite {
 						&& cell.getElement() instanceof SpeedDepthModel) {
 					SpeedDepthModel model = (SpeedDepthModel) cell.getElement();
 					int columnIndex = cell.getColumnIndex();
+
+					SpeedDepthMainComposite mainComposite = (SpeedDepthMainComposite) SpeedDepthTableComposite.this
+							.getParent();
 					// ask
 					if (columnIndex == 1) {
 						speedDepthService.quickEnterOrder(model, "Buy",
