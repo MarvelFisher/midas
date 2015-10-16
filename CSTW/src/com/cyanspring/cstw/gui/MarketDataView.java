@@ -331,6 +331,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 		Business.getInstance().getEventManager()
 				.subscribe(QuoteSymbolSelectEvent.class, this);
 		cbSymbol.notifyListeners(SWT.Selection, new Event());
+		cbSymbol.setText(cbSymbol.getItem(0)+" ");
 	}
 
 	private void createColumns() {
