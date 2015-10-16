@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserRole;
@@ -29,6 +30,7 @@ import com.cyanspring.common.event.account.CreateUserEvent;
 import com.cyanspring.common.event.account.CreateUserReplyEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.common.GUIUtils;
 
 public class CreateUserDialog extends Dialog implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -42,13 +44,15 @@ public class CreateUserDialog extends Dialog implements IAsyncEventListener {
 	private Label lblMessage;
 	private Button btnOk, btnCancel;
 	private String id = IdGenerator.getInstance().getNextID();
-
+	private Composite parent;
+	
 	public CreateUserDialog(Shell parentShell) {
 		super(parentShell);
 	}
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
+		this.parent = parent;
 		Composite container = (Composite) super.createDialogArea(parent);
 		GridLayout layout = new GridLayout(2, false);
 		layout.marginRight = 30;
@@ -190,6 +194,10 @@ public class CreateUserDialog extends Dialog implements IAsyncEventListener {
 	private void doCreate() {
 		lblMessage.setText("");
 		Business business = Business.getInstance();
+		if(!StringUtils.hasText(txtUser.getText()) || !StringUtils.hasText(txtPassword.getText())){
+			GUIUtils.showMessageBox("Id or password is empty!", parent);
+			return;
+		}
 		// need to review which server to get login
 		String server = business.getFirstServer();
 		User user = new User(txtUser.getText(), txtPassword.getText());
