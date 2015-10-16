@@ -37,7 +37,6 @@ import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.RemoteAsyncEvent;
-import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.util.ArrayMap;
@@ -181,8 +180,6 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 	private void queryBySymbol(String symbol) {
 		symbolSet.add(symbol);
 
-		Business.getInstance().getEventManager()
-				.subscribe(QuoteEvent.class, symbol, QuoteView.this);
 		QuoteSubEvent subEvent = new QuoteSubEvent(receiverId, Business
 				.getInstance().getFirstServer(), symbol);
 		sendRemoteEvent(subEvent);
@@ -243,10 +240,6 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 						Object obj = item.getData();
 						if (obj instanceof Quote) {
 							String symbol = ((Quote) obj).getSymbol();
-							Business.getInstance()
-									.getEventManager()
-									.unsubscribe(QuoteEvent.class, symbol,
-											QuoteView.this);
 							quoteMap.remove(symbol);
 							symbolSet.remove(symbol);
 							refreshQuote();

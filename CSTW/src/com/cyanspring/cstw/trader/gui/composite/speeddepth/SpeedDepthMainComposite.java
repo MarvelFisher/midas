@@ -25,7 +25,6 @@ import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.ScheduleManager;
-import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.event.order.EnterParentOrderReplyEvent;
 import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
@@ -146,14 +145,6 @@ public final class SpeedDepthMainComposite extends Composite implements
 		Business.getInstance()
 				.getEventManager()
 				.subscribe(ParentOrderUpdateEvent.class,
-						SpeedDepthMainComposite.this);
-
-		Business.getInstance().getEventManager()
-				.subscribe(QuoteEvent.class, SpeedDepthMainComposite.this);
-
-		Business.getInstance()
-				.getEventManager()
-				.subscribe(QuoteEvent.class, receiverId,
 						SpeedDepthMainComposite.this);
 
 		symbolText.addKeyListener(new KeyAdapter() {
