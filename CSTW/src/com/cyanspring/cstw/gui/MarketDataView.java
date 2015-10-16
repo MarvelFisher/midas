@@ -48,7 +48,6 @@ import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.util.DataConvertException;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
-import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.type.QtyPrice;
@@ -340,8 +339,6 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 				.subscribe(SingleOrderStrategySelectionEvent.class, this);
 		Business.getInstance().getEventManager()
 				.subscribe(SingleInstrumentStrategySelectionEvent.class, this);
-		Business.getInstance().getEventManager()
-				.subscribe(QuoteEvent.class, this);
 		Business.getInstance().getEventManager()
 				.subscribe(InstrumentSelectionEvent.class, this);
 		Business.getInstance().getEventManager()
