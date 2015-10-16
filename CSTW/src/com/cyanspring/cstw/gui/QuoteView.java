@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
@@ -44,6 +43,8 @@ import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.util.ArrayMap;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.cachingmanager.quote.IQuoteChangeListener;
+import com.cyanspring.cstw.cachingmanager.quote.QuoteCachingManager;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.QuoteSymbolSelectEvent;
 import com.cyanspring.cstw.gui.command.auth.AuthMenuManager;
@@ -58,6 +59,9 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 
 	private static final Logger log = LoggerFactory.getLogger(QuoteView.class);
 	public static final String ID = "com.cyanspring.cstw.gui.QuoteViewer";
+
+	private IQuoteChangeListener quoteChangeListener;
+
 	private Composite parentComposite = null;
 	private ImageRegistry imageRegistry;
 	private Button btnSubscribe;
@@ -140,11 +144,38 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 			}
 		}
 
-		Business.getInstance().getEventManager()
-				.subscribe(QuoteEvent.class, receiverId, QuoteView.this);
 		scheduleJob(refreshEvent, minRefreshInterval);
 
+		quoteChangeListener = new IQuoteChangeListener() {
+			@Override
+			public Set<String> getQuoteSymbolSet() {
+				return symbolSet;
+			}
+
+			@Override
+			public void refreshByQuote(Quote quote) {
+				if (!QuoteHelper.checkValid(quote)) {
+					return;
+				}
+				quoteMap.put(quote.getSymbol(), quote);
+				refreshQuote();
+				updated = true;
+			}
+		};
+
+		QuoteCachingManager.getInstance().addIQuoteChangeListener(
+				quoteChangeListener);
+
 		LoadQuoteList();
+
+	}
+
+	private void LoadQuoteList() {
+		List<String> quoteList = PreferenceStoreManager.getInstance()
+				.getQuoteList();
+		for (String quote : quoteList) {
+			queryBySymbol(quote);
+		}
 	}
 
 	private void queryBySymbol(String symbol) {
@@ -155,15 +186,6 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 		QuoteSubEvent subEvent = new QuoteSubEvent(receiverId, Business
 				.getInstance().getFirstServer(), symbol);
 		sendRemoteEvent(subEvent);
-	}
-
-	private void LoadQuoteList() {
-		List<String> quoteList = PreferenceStoreManager.getInstance()
-				.getQuoteList();
-		for (String quote : quoteList) {
-			queryBySymbol(quote);
-		}
-
 	}
 
 	private void triggerMarketData(String symbol) {
@@ -226,6 +248,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 									.unsubscribe(QuoteEvent.class, symbol,
 											QuoteView.this);
 							quoteMap.remove(symbol);
+							symbolSet.remove(symbol);
 							refreshQuote();
 						}
 					}
@@ -247,18 +270,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 
 	@Override
 	public void onEvent(AsyncEvent event) {
-		if (event instanceof QuoteEvent) {
-			QuoteEvent e = (QuoteEvent) event;
-			// check is quote valid
-			if (!QuoteHelper.checkValid(e.getQuote())) {
-				return;
-			}
-			quoteMap.put(e.getQuote().getSymbol(), e.getQuote());
-			if (e.getKey().equals(receiverId)) { // first time receive,immediately refresh
-				refreshQuote();
-			}
-			updated = true;
-		} else if (event instanceof AsyncTimerEvent) {
+		if (event instanceof AsyncTimerEvent) {
 			if (updated)
 				refreshQuote();
 		}
@@ -308,15 +320,6 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 		});
 	}
 
-	private int getColumnPosition(Table table, Column col) {
-		TableColumn columns[] = table.getColumns();
-		for (int i = 0; i < columns.length; i++) {
-			if (col.name().equals(columns[i].getText()))
-				return i;
-		}
-		return -1;
-	}
-
 	private void sendRemoteEvent(RemoteAsyncEvent event) {
 		try {
 			Business.getInstance().getEventManager().sendRemoteEvent(event);
@@ -357,6 +360,8 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 		super.dispose();
 		cancelScheduleJob(refreshEvent);
 		saveQuoteList();
+		QuoteCachingManager.getInstance().removeIQuoteChangeListener(
+				quoteChangeListener);
 	}
 
 	private void saveQuoteList() {

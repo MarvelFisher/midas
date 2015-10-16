@@ -1,5 +1,8 @@
 package com.cyanspring.cstw.trader.gui.composite.speeddepth;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -29,6 +32,8 @@ import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.cachingmanager.quote.IQuoteChangeListener;
+import com.cyanspring.cstw.cachingmanager.quote.QuoteCachingManager;
 import com.cyanspring.cstw.common.Constants;
 import com.cyanspring.cstw.preference.PreferenceStoreManager;
 
@@ -46,6 +51,10 @@ public final class SpeedDepthMainComposite extends Composite implements
 
 	private String receiverId = IdGenerator.getInstance().getNextID();
 
+	private IQuoteChangeListener quoteChangeListener;
+
+	private SpeedTimer timer;
+
 	private SpeedDepthTableComposite tableComposite;
 
 	private Text symbolText;
@@ -55,8 +64,6 @@ public final class SpeedDepthMainComposite extends Composite implements
 	private String defaultQuantity;
 	private Composite composite_1;
 	private Label lblErrorMessage;
-
-	private SpeedTimer timer;
 
 	/**
 	 * Create the composite.
@@ -153,6 +160,8 @@ public final class SpeedDepthMainComposite extends Composite implements
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.character == SWT.CR) {
+
+					// check if same symbol
 					if (symbol != null && symbol.length() > 0
 							&& symbol.equals(symbolText.getText())) {
 						return;
@@ -174,6 +183,8 @@ public final class SpeedDepthMainComposite extends Composite implements
 					} catch (Exception en) {
 						log.error(en.getMessage(), en);
 					}
+
+					registerQuoteChnageListener(symbol);
 				}
 			}
 		});
@@ -195,6 +206,40 @@ public final class SpeedDepthMainComposite extends Composite implements
 
 			}
 		});
+
+	}
+
+	private void registerQuoteChnageListener(final String quoteSymbol) {
+		if (quoteChangeListener != null) {
+			QuoteCachingManager.getInstance().removeIQuoteChangeListener(
+					quoteChangeListener);
+		}
+
+		quoteChangeListener = new IQuoteChangeListener() {
+			@Override
+			public Set<String> getQuoteSymbolSet() {
+				Set<String> symbolSet = new HashSet<String>();
+				symbolSet.add(quoteSymbol);
+				return symbolSet;
+			}
+
+			@Override
+			public void refreshByQuote(final Quote quote) {
+				if (tableComposite.isDisposed()) {
+					return;
+				}
+				tableComposite.getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						if (symbol != null && symbol.equals(quote.getSymbol())) {
+							tableComposite.setQuote(quote);
+						}
+					}
+				});
+			}
+		};
+		QuoteCachingManager.getInstance().addIQuoteChangeListener(
+				quoteChangeListener);
 	}
 
 	private void refreshErrorMessage(String message) {
@@ -216,20 +261,7 @@ public final class SpeedDepthMainComposite extends Composite implements
 
 	@Override
 	public void onEvent(final AsyncEvent event) {
-		if (event instanceof QuoteEvent) {
-			if (tableComposite.isDisposed()) {
-				return;
-			}
-			tableComposite.getDisplay().asyncExec(new Runnable() {
-				@Override
-				public void run() {
-					Quote quote = ((QuoteEvent) event).getQuote();
-					if (symbol != null && symbol.equals(quote.getSymbol())) {
-						tableComposite.setQuote(quote);
-					}
-				}
-			});
-		} else if (event instanceof EnterParentOrderReplyEvent) {
+		if (event instanceof EnterParentOrderReplyEvent) {
 			final EnterParentOrderReplyEvent replyEvent = (EnterParentOrderReplyEvent) event;
 			if (!replyEvent.isOk() && replyEvent.getTxId().equals(receiverId)) {
 				tableComposite.getDisplay().asyncExec(new Runnable() {
@@ -269,10 +301,11 @@ public final class SpeedDepthMainComposite extends Composite implements
 					defaultQuantity);
 		}
 
-		Business.getInstance().getEventManager()
-				.unsubscribe(QuoteEvent.class, SpeedDepthMainComposite.this);
-		Business.getInstance().getEventManager()
-				.unsubscribe(QuoteEvent.class, SpeedDepthMainComposite.this);
+		if (quoteChangeListener != null) {
+			QuoteCachingManager.getInstance().removeIQuoteChangeListener(
+					quoteChangeListener);
+		}
+
 		Business.getInstance()
 				.getEventManager()
 				.unsubscribe(EnterParentOrderReplyEvent.class,

@@ -1,5 +1,7 @@
 package com.cyanspring.cstw.trader.gui.composite.speeddepth;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
@@ -245,9 +247,13 @@ public final class SpeedDepthTableComposite extends Composite {
 	}
 
 	public void setQuote(Quote quote) {
+		if (tableViewer.getTable().isDisposed()) {
+			return;
+		}
 		currentQuote = quote;
-		tableViewer.setInput(speedDepthService.getSpeedDepthList(currentQuote,
-				isLock));
+		List<SpeedDepthModel> list = speedDepthService.getSpeedDepthList(
+				currentQuote, isLock);
+		tableViewer.setInput(list);
 	}
 
 	public void refresh(int rowLength) {
