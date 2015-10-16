@@ -42,7 +42,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		spotCnName = template.getSpotCNName();
 		spotTwName = template.getSpotTWName();
 
-		if (this.cal == null) {
+		if (cal != null) {
 			this.cal = cal;
 		}
 
