@@ -34,6 +34,7 @@ public class KDBQuoteListener implements IQuoteListener, IAsyncEventListener {
 	private AsyncTimerEvent timerThrottlingEvent = new AsyncTimerEvent();
 	private long quoteThrottlingInterval = 1000;
 	private IKDBThrottling kdbThrottling = null;
+    private String id = "KDB";
 	HashMap<String, Quote> quoteHold = new HashMap<String, Quote>();
 
 	private BlockingQueue<Quote> queue;
@@ -146,7 +147,12 @@ public class KDBQuoteListener implements IQuoteListener, IAsyncEventListener {
 
 	}
 
-	public long getQuoteThrottlingInterval() {
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    public long getQuoteThrottlingInterval() {
 		return quoteThrottlingInterval;
 	}
 
