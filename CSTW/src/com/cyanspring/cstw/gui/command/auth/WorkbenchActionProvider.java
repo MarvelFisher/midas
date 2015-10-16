@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.event.system.SuspendServerEvent;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.common.GUIUtils;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.ConfirmPasswordDialog;
@@ -106,6 +107,11 @@ public class WorkbenchActionProvider {
 	public void createSuspendSystemAction() {
 		suspendSystemAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
 			public void run() {
+				
+				if(!Business.getInstance().getUserGroup().isAdmin()){
+					GUIUtils.showMessageBox("Only Admin can do this action", PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+					return;
+				}						
 				boolean suspend;
 				if (this.isChecked()) {
 					suspend = true;
@@ -134,6 +140,11 @@ public class WorkbenchActionProvider {
 	public void createServerShutdownAction() {
 		serverShutdownAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
+				if(!Business.getInstance().getUserGroup().isAdmin()){
+					GUIUtils.showMessageBox("Only Admin can do this action", PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+					return;
+				}	
+				
 				boolean isOk = MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "", "Shutdown server?");
 				if (!isOk) {
 					return;
