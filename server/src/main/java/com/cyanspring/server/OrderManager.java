@@ -29,11 +29,14 @@ import com.cyanspring.common.business.MultiInstrumentStrategyData;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.data.DataObject;
+import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
 import com.cyanspring.common.event.account.PmEndOfDayRollEvent;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
+import com.cyanspring.common.event.order.AllStrategySnapshotReplyEvent;
+import com.cyanspring.common.event.order.AllStrategySnapshotRequestEvent;
 import com.cyanspring.common.event.order.ChildOrderSnapshotEvent;
 import com.cyanspring.common.event.order.ChildOrderSnapshotRequestEvent;
 import com.cyanspring.common.event.order.ChildOrderUpdateEvent;
@@ -51,7 +54,6 @@ import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.util.DualKeyMap;
 import com.cyanspring.common.util.DualMap;
-import com.cyanspring.common.event.AsyncEventProcessor;
 
 public class OrderManager {
 	private static final Logger log = LoggerFactory
@@ -78,7 +80,11 @@ public class OrderManager {
 	@Autowired
 	@Qualifier("fixToOrderMap")
 	private DualMap<Integer, String> fixToOrderMap;
-
+	
+    private int asyncSendBatch = 3000;
+    private long asyncSendInterval = 2000;
+    private long orderLimit = 20000;
+    
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
 		@Override
@@ -92,6 +98,7 @@ public class OrderManager {
 			subscribeToEvent(MultiInstrumentStrategyUpdateEvent.class, null);
 			subscribeToEvent(InternalResetAccountRequestEvent.class, null);
 			subscribeToEvent(PmEndOfDayRollEvent.class, null);
+			subscribeToEvent(AllStrategySnapshotRequestEvent.class,null);
 		}
 
 		@Override
@@ -107,6 +114,142 @@ public class OrderManager {
 	public OrderManager() {
 	}
 
+	public void processAllStrategySnapshotRequestEvent(AllStrategySnapshotRequestEvent event){
+		log.info("start send All StrategySnapshotRequest");
+		asyncSendStrategySnapshot(event);
+	}
+	
+    private void asyncSendStrategySnapshot(final AllStrategySnapshotRequestEvent event) {
+        Thread thread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+            	List <String> ids = event.getAccountIdList();
+        		List<ParentOrder> orderList = null;
+        		List<Instrument> instList = null;
+        		List<MultiInstrumentStrategyData> misdList = null;
+
+        		orderList = new ArrayList<ParentOrder>();
+        		instList = new ArrayList<Instrument>(instruments.getMap(event.getKey()).values());
+        		misdList = new ArrayList<MultiInstrumentStrategyData>(strategyData.getMap(event.getKey()).values());
+
+        		if(null != ids){
+            		for(String id: ids){
+            			if(null != parentOrders.getMap(id).values() 
+            					&& parentOrders.getMap(id).values().size()!=0){
+            				orderList.addAll(parentOrders.getMap(id).values());
+            			}
+            			
+            			if(null != instruments.getMap(id).values() 
+            					&& instruments.getMap(id).values().size()!=0){
+            				instList.addAll(instruments.getMap(id).values());
+            			}
+            			
+            			if(null != strategyData.getMap(id).values() 
+            					&& strategyData.getMap(id).values().size()!=0){
+            				misdList.addAll(strategyData.getMap(id).values());
+            			}
+            		}
+            	}else{
+            		orderList.addAll(parentOrders.values());
+            		instList.addAll(instruments.values());
+            		misdList.addAll(strategyData.values());
+            	}
+            	
+        		log.info("orderList size:{},instList:{},misdList:{}"
+        				,new Object[]{orderList.size(),instList.size(),misdList.size()});
+        		
+        		if(orderList.size()+instList.size()+misdList.size()>orderLimit){
+        			AllStrategySnapshotReplyEvent reply = new AllStrategySnapshotReplyEvent(event.getKey()
+        					,event.getSender(),null,null,null,false,"Over order transfer limit:"+orderLimit);
+                    try {
+						eventManager.sendRemoteEvent(reply);
+					} catch (Exception e) {
+						log.error(e.getMessage(),e);
+					}
+                    return;
+        		}
+        	  		
+        		order:{
+        			
+        			if( null == orderList || orderList.size() <=0){
+        				break order;
+        			}   			
+            		List<ParentOrder> tempOrder = new ArrayList<ParentOrder>();
+            		int count = 0;
+            		for(ParentOrder order : orderList){
+             			count++;
+            			tempOrder.add(order);
+            			if(count % asyncSendBatch == 0 || orderList.size() == count){
+                			AllStrategySnapshotReplyEvent reply = new AllStrategySnapshotReplyEvent(event.getKey()
+                					,event.getSender(),tempOrder,null,null,true,"");
+                            try {
+                            	log.info("send orders:{},{}",event.getSender(),tempOrder.size());
+								eventManager.sendRemoteEvent(reply);
+                                Thread.sleep(asyncSendInterval);
+							} catch (Exception e) {
+								log.error(e.getMessage(),e);
+							}
+            				tempOrder.clear();
+            			}
+            		}
+        		}
+        		
+        		instrus:{
+        			
+        			if( null == instList || instList.size() <=0){
+        				break instrus;
+        			}
+            		List<Instrument> tempInstrus = new ArrayList<Instrument>();
+            		int count = 0;
+            		for(Instrument instrument : instList){
+            			count++;
+            			tempInstrus.add(instrument);
+            			if(count % asyncSendBatch == 0 || instList.size() == count){
+                			AllStrategySnapshotReplyEvent reply = new AllStrategySnapshotReplyEvent(event.getKey()
+                					,event.getSender(),null,tempInstrus,null,true,"");
+                            try {
+                            	log.info("send instrus:{},{}",event.getSender(),tempInstrus.size());
+								eventManager.sendRemoteEvent(reply);
+                                Thread.sleep(asyncSendInterval);
+							} catch (Exception e) {
+								log.error(e.getMessage(),e);
+							}
+                            tempInstrus.clear();
+            			}
+            		}
+        		}
+        		
+        		
+        		strategys:{
+        			
+        			if( null == misdList || misdList.size() <=0){
+        				break strategys;
+        			}
+            		List<MultiInstrumentStrategyData> tempStrategys = new ArrayList<MultiInstrumentStrategyData>();
+            		int count = 0;
+            		for(MultiInstrumentStrategyData misd :  misdList){
+            			count++;
+            			tempStrategys.add(misd);
+            			if(count % asyncSendBatch == 0 || misdList.size() == count){
+                			AllStrategySnapshotReplyEvent reply = new AllStrategySnapshotReplyEvent(event.getKey()
+                					,event.getSender(),null,null,tempStrategys,true,"");
+                            try {
+                            	log.info("send Strategys:{},{}",event.getSender(),tempStrategys.size());
+								eventManager.sendRemoteEvent(reply);
+                                Thread.sleep(asyncSendInterval);
+							} catch (Exception e) {
+								log.error(e.getMessage(),e);
+							}
+                            tempStrategys.clear();
+            			}
+            		}
+        		}
+            }
+        });
+        thread.start();
+	}
+	
 	public void processInternalResetAccountRequestEvent(InternalResetAccountRequestEvent event) {
 		ResetAccountRequestEvent evt = event.getEvent();
 		String account = evt.getAccount();
