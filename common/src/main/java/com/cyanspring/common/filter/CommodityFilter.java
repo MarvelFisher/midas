@@ -30,26 +30,23 @@ public class CommodityFilter implements IRefDataFilter {
 	public List<RefData> filter(List<RefData> lstRefData) throws Exception {
 		if (lstRefData != null && lstRefData.size() > 0) {
 			ArrayList<RefData> fLstRefData = new ArrayList<RefData>();
+			for (RefData refData : lstRefData) {
+				fLstRefData.add((RefData)refData.clone());
+			}
 
 			if (lstExcludedSymbols != null && lstExcludedSymbols.size() > 0) {
 				for (RefData refData : lstRefData) {
-					if (!lstExcludedSymbols.contains(refData.getSymbol())) {
-						fLstRefData.add(refData);
+					if (lstExcludedSymbols.contains(refData.getSymbol())) {
+						fLstRefData.remove(refData);
 					}
 				}
 			}
 
-			if (lstExcludedCategories != null && lstExcludedCategories.size() > 0) {
-				if (fLstRefData.size() > 0) {
+			if (fLstRefData.size() > 0) {
+				if (lstExcludedCategories != null && lstExcludedCategories.size() > 0) {
 					for (RefData refData : fLstRefData) {
 						if (lstExcludedCategories.contains(refData.getCategory())) {
 							fLstRefData.remove(refData);
-						}
-					}
-				} else {
-					for (RefData refData : lstRefData) {
-						if (!lstExcludedCategories.contains(refData.getCategory())) {
-							fLstRefData.add(refData);
 						}
 					}
 				}

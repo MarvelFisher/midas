@@ -42,7 +42,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		spotCnName = template.getSpotCNName();
 		spotTwName = template.getSpotTWName();
 
-		if (this.cal == null) {
+		if (cal != null) {
 			this.cal = cal;
 		}
 
@@ -237,8 +237,8 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 	}
 
 	protected String getIndexSessionType(RefData refData) {
-		refData.getSettlementDate();
 		String calDate = getSettlementDateFormat().format(cal.getTime());
+		log.info("calDate:{},{},{}",new Object[]{calDate,refData.getSettlementDate(),calDate.equals(refData.getSettlementDate())});
 		if (calDate.equals(refData.getSettlementDate())) {
 			return IndexSessionType.SETTLEMENT.name();
 		} else {

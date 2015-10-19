@@ -94,7 +94,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	private Button searchButton;
 	private ImageRegistry imageRegistry;
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-	private long maxRefreshInterval = 10000;
+	private long maxRefreshInterval = 300;
 	private final int autoRefreshLimitUser = 1000;
 	private boolean show;
 	

@@ -64,13 +64,13 @@ import com.cyanspring.common.marketsession.DefaultStartEndTime;
 import com.cyanspring.common.server.event.ServerReadyEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
+import com.cyanspring.cstw.cachingmanager.quote.QuoteCachingManager;
 import com.cyanspring.cstw.event.SelectUserAccountEvent;
 import com.cyanspring.cstw.event.ServerStatusEvent;
 import com.cyanspring.cstw.gui.ServerStatusDisplay;
 import com.cyanspring.cstw.gui.session.GuiSession;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-
 
 public class Business {
 	static Logger log = LoggerFactory.getLogger(Business.class);
@@ -104,15 +104,15 @@ public class Business {
 	private String account = Default.getAccount();
 	private Account loginAccount = null;
 	private AccountSetting accountSetting = null;
-	private UserGroup userGroup = new UserGroup("Admin",UserRole.Admin);
+	private UserGroup userGroup = new UserGroup("Admin", UserRole.Admin);
 	private List<String> accountGroupList = new ArrayList<String>();
 	private List<String> symbolList = new ArrayList<String>();
 	private TraderInfoListener traderInfoListener = null;
-	
+
 	// singleton implementation
 	private Business() {
 	}
-	
+
 	static public Business getInstance() {
 		if (null == instance) {
 			instance = new Business();
@@ -120,62 +120,72 @@ public class Business {
 		return instance;
 	}
 
-	class EventListener implements IAsyncEventListener 
-	{
+	class EventListener implements IAsyncEventListener {
 		@Override
 		public void onEvent(AsyncEvent event) {
-//			log.info("Received message: " + message);
-			if (event instanceof NodeInfoEvent ){
-				NodeInfoEvent nodeInfo = (NodeInfoEvent)event;
-				if(nodeInfo.getServer()) {
+			// log.info("Received message: " + message);
+			if (event instanceof NodeInfoEvent) {
+				NodeInfoEvent nodeInfo = (NodeInfoEvent) event;
+				if (nodeInfo.getServer()) {
 					log.info("NodeInfoEvent received: " + nodeInfo.getSender());
 					Boolean serverIsUp = servers.get(nodeInfo.getInbox());
-					if(serverIsUp != null && serverIsUp) {
-						log.error("ignore since server " + nodeInfo.getInbox() + " is still up");
+					if (serverIsUp != null && serverIsUp) {
+						log.error("ignore since server " + nodeInfo.getInbox()
+								+ " is still up");
 						return;
 					}
 					servers.put(nodeInfo.getInbox(), true);
-					lastHeartBeats.put(nodeInfo.getInbox(), Clock.getInstance().now());	
+					lastHeartBeats.put(nodeInfo.getInbox(), Clock.getInstance()
+							.now());
 				}
 			} else if (event instanceof InitClientEvent) {
 				log.debug("Received event: " + event);
-				InitClientEvent initClientEvent = (InitClientEvent)event;
-				singleOrderFieldDefs = initClientEvent.getSingleOrderFieldDefs();
-				singleOrderDisplayFields = initClientEvent.getSingleOrderDisplayFields();
-				singleInstrumentFieldDefs = initClientEvent.getSingleInstrumentFieldDefs();
-				singleInstrumentDisplayFields = initClientEvent.getSingleInstrumentDisplayFields();
+				InitClientEvent initClientEvent = (InitClientEvent) event;
+				singleOrderFieldDefs = initClientEvent
+						.getSingleOrderFieldDefs();
+				singleOrderDisplayFields = initClientEvent
+						.getSingleOrderDisplayFields();
+				singleInstrumentFieldDefs = initClientEvent
+						.getSingleInstrumentFieldDefs();
+				singleInstrumentDisplayFields = initClientEvent
+						.getSingleInstrumentDisplayFields();
 				defaultStartEndTime = initClientEvent.getDefaultStartEndTime();
-				multiInstrumentDisplayFields = initClientEvent.getMultiInstrumentDisplayFields();
-				multiInstrumentFieldDefs = initClientEvent.getMultiInstrumentStrategyFieldDefs();
-				if(!isLoginRequired()) {
+				multiInstrumentDisplayFields = initClientEvent
+						.getMultiInstrumentDisplayFields();
+				multiInstrumentFieldDefs = initClientEvent
+						.getMultiInstrumentStrategyFieldDefs();
+				if (!isLoginRequired()) {
 					requestStrategyInfo(initClientEvent.getSender());
 				}
-			}else if (event instanceof CSTWUserLoginReplyEvent) {
-				
-				CSTWUserLoginReplyEvent evt = (CSTWUserLoginReplyEvent)event;
+			} else if (event instanceof CSTWUserLoginReplyEvent) {
+
+				CSTWUserLoginReplyEvent evt = (CSTWUserLoginReplyEvent) event;
 				processCSTWUserLoginReplyEvent(evt);
-				if(evt.isOk()){
+				if (evt.isOk()) {
 					tickManager.init(getFirstServer());
-					if(null != loginAccount);
-						traderInfoListener.init(loginAccount);
+					if (null != loginAccount)
+						;
+					traderInfoListener.init(loginAccount);
 				}
-				if(isLoginRequired() && evt.isOk()) {
+				if (isLoginRequired() && evt.isOk()) {
 					requestStrategyInfo(evt.getSender());
 				}
-			}else if (event instanceof AccountSettingSnapshotReplyEvent) {
-				
-				AccountSettingSnapshotReplyEvent evt = (AccountSettingSnapshotReplyEvent)event;
+			} else if (event instanceof AccountSettingSnapshotReplyEvent) {
+
+				AccountSettingSnapshotReplyEvent evt = (AccountSettingSnapshotReplyEvent) event;
 				processAccountSettingSnapshotReplyEvent(evt);
-			}else if (event instanceof UserLoginReplyEvent) {
-				
-				UserLoginReplyEvent evt = (UserLoginReplyEvent)event;
+			} else if (event instanceof UserLoginReplyEvent) {
+
+				UserLoginReplyEvent evt = (UserLoginReplyEvent) event;
 				processUserLoginReplyEvent(evt);
-				if(isLoginRequired() && evt.isOk()) {
+				if (isLoginRequired() && evt.isOk()) {
 					requestStrategyInfo(evt.getSender());
 				}
 			} else if (event instanceof ServerReadyEvent) {
-				log.info("ServerReadyEvent  received: " + ((ServerReadyEvent) event).getSender());
-				InitClientRequestEvent request = new InitClientRequestEvent(null, ((ServerReadyEvent) event).getSender());
+				log.info("ServerReadyEvent  received: "
+						+ ((ServerReadyEvent) event).getSender());
+				InitClientRequestEvent request = new InitClientRequestEvent(
+						null, ((ServerReadyEvent) event).getSender());
 				try {
 					eventManager.sendRemoteEvent(request);
 				} catch (Exception e) {
@@ -183,76 +193,86 @@ public class Business {
 					e.printStackTrace();
 				}
 			} else if (event instanceof ServerHeartBeatEvent) {
-				processServerHeartBeatEvent((ServerHeartBeatEvent)event);
+				processServerHeartBeatEvent((ServerHeartBeatEvent) event);
 			} else if (event instanceof SingleOrderStrategyFieldDefUpdateEvent) {
-				processingSingleOrderStrategyFieldDefUpdateEvent((SingleOrderStrategyFieldDefUpdateEvent)event);
+				processingSingleOrderStrategyFieldDefUpdateEvent((SingleOrderStrategyFieldDefUpdateEvent) event);
 			} else if (event instanceof SingleInstrumentStrategyFieldDefUpdateEvent) {
-				processingSingleInstrumentStrategyFieldDefUpdateEvent((SingleInstrumentStrategyFieldDefUpdateEvent)event);
+				processingSingleInstrumentStrategyFieldDefUpdateEvent((SingleInstrumentStrategyFieldDefUpdateEvent) event);
 			} else if (event instanceof MultiInstrumentStrategyFieldDefUpdateEvent) {
-				processingMultiInstrumentStrategyFieldDefUpdateEvent((MultiInstrumentStrategyFieldDefUpdateEvent)event);
+				processingMultiInstrumentStrategyFieldDefUpdateEvent((MultiInstrumentStrategyFieldDefUpdateEvent) event);
 			} else if (event instanceof AsyncTimerEvent) {
-				processAsyncTimerEvent((AsyncTimerEvent)event);
+				processAsyncTimerEvent((AsyncTimerEvent) event);
 			} else if (event instanceof SelectUserAccountEvent) {
-				processSelectUserAccountEvent((SelectUserAccountEvent)event);
+				processSelectUserAccountEvent((SelectUserAccountEvent) event);
 			} else {
 				log.error("I dont expect this event: " + event);
 			}
 		}
 	}
-	
+
 	private void processSelectUserAccountEvent(SelectUserAccountEvent event) {
-		log.info("Setting current user/account to: " + this.user + "/" + this.account);
+		log.info("Setting current user/account to: " + this.user + "/"
+				+ this.account);
 		this.user = event.getUser();
 		this.account = event.getAccount();
 	}
-	
+
 	private void requestStrategyInfo(String server) {
 		try {
 			orderManager.init();
-			if(Business.getInstance().isLoginRequired())
-				eventManager.sendRemoteEvent(new StrategySnapshotRequestEvent(Business.this.getAccount(), server, null));
-//			else
-//				eventManager.sendRemoteEvent(new StrategySnapshotRequestEvent(null, server));
-			eventManager.sendEvent(new ServerStatusEvent(server, true));	
+			if (Business.getInstance().isLoginRequired())
+				eventManager.sendRemoteEvent(new StrategySnapshotRequestEvent(
+						Business.this.getAccount(), server, null));
+			// else
+			// eventManager.sendRemoteEvent(new
+			// StrategySnapshotRequestEvent(null, server));
+			eventManager.sendEvent(new ServerStatusEvent(server, true));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			e.printStackTrace();
 		}
-		
+
 	}
-	
-	synchronized private void processingSingleOrderStrategyFieldDefUpdateEvent(SingleOrderStrategyFieldDefUpdateEvent event) {
+
+	synchronized private void processingSingleOrderStrategyFieldDefUpdateEvent(
+			SingleOrderStrategyFieldDefUpdateEvent event) {
 		singleOrderFieldDefs.put(event.getName(), event.getFieldDefs());
-		log.info("Single-order strategy field def update: " + event.getName());		
+		log.info("Single-order strategy field def update: " + event.getName());
 	}
-	
+
 	public void processingSingleInstrumentStrategyFieldDefUpdateEvent(
 			SingleInstrumentStrategyFieldDefUpdateEvent event) {
 		singleInstrumentFieldDefs.put(event.getName(), event.getFieldDefs());
-		log.info("Single-instrument strategy field def update: " + event.getName());		
+		log.info("Single-instrument strategy field def update: "
+				+ event.getName());
 	}
 
-	synchronized private void processingMultiInstrumentStrategyFieldDefUpdateEvent(MultiInstrumentStrategyFieldDefUpdateEvent event) {
-		multiInstrumentFieldDefs.put(event.getConfig().getStrategy(), event.getConfig());
-		log.info("Multi-Instrument strategy field def update: " + event.getConfig().getStrategy());
+	synchronized private void processingMultiInstrumentStrategyFieldDefUpdateEvent(
+			MultiInstrumentStrategyFieldDefUpdateEvent event) {
+		multiInstrumentFieldDefs.put(event.getConfig().getStrategy(),
+				event.getConfig());
+		log.info("Multi-Instrument strategy field def update: "
+				+ event.getConfig().getStrategy());
 	}
-	
+
 	public void processServerHeartBeatEvent(ServerHeartBeatEvent event) {
-		lastHeartBeats.put(event.getSender(), Clock.getInstance().now());	
+		lastHeartBeats.put(event.getSender(), Clock.getInstance().now());
 	}
 
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
-		for(Entry<String, Date> entry: lastHeartBeats.entrySet()) {
-			if(TimeUtil.getTimePass(entry.getValue()) > heartBeatInterval) {
+		for (Entry<String, Date> entry : lastHeartBeats.entrySet()) {
+			if (TimeUtil.getTimePass(entry.getValue()) > heartBeatInterval) {
 				log.debug("Sending server down event: " + entry.getKey());
 				servers.put(entry.getKey(), false);
-				eventManager.sendEvent(new ServerStatusEvent(entry.getKey(), false));	
+				eventManager.sendEvent(new ServerStatusEvent(entry.getKey(),
+						false));
 			} else { // server heart beat can go back up
 				Boolean up = servers.get(entry.getKey());
-				if(null != up && !up) {
+				if (null != up && !up) {
 					log.debug("Sending server up event: " + entry.getKey());
 					servers.put(entry.getKey(), true);
-					eventManager.sendEvent(new ServerStatusEvent(entry.getKey(), true));	
+					eventManager.sendEvent(new ServerStatusEvent(
+							entry.getKey(), true));
 				}
 			}
 		}
@@ -263,30 +283,34 @@ public class Business {
 		this.systemInfo = BeanHolder.getInstance().getSystemInfo();
 		this.user = Default.getUser();
 		this.account = Default.getAccount();
-		
+
 		// create node.info subscriber and publisher
-		this.channel = systemInfo.getEnv() + "." + systemInfo.getCategory() + "." + "channel"; 
-		this.nodeInfoChannel = systemInfo.getEnv() + "." + systemInfo.getCategory() + "." + "node";
+		this.channel = systemInfo.getEnv() + "." + systemInfo.getCategory()
+				+ "." + "channel";
+		this.nodeInfoChannel = systemInfo.getEnv() + "."
+				+ systemInfo.getCategory() + "." + "node";
 		InetAddress addr = InetAddress.getLocalHost();
 		String hostName = addr.getHostName();
 		String userName = System.getProperty("user.name");
-		userName = userName == null? "" : userName;
-		this.inbox = hostName + "." + userName + "." + IdGenerator.getInstance().getNextID();
+		userName = userName == null ? "" : userName;
+		this.inbox = hostName + "." + userName + "."
+				+ IdGenerator.getInstance().getNextID();
 		BeanHolder beanHolder = BeanHolder.getInstance();
-		if(beanHolder == null)
+		if (beanHolder == null)
 			throw new Exception("BeanHolder is not yet initialised");
-		//ActiveMQObjectService transport = new ActiveMQObjectService();
-		//transport.setUrl(systemInfo.getUrl());
+		// ActiveMQObjectService transport = new ActiveMQObjectService();
+		// transport.setUrl(systemInfo.getUrl());
 
-		//eventManager = new RemoteEventManager(beanHolder.getTransportService());
+		// eventManager = new
+		// RemoteEventManager(beanHolder.getTransportService());
 		eventManager = beanHolder.getEventManager();
 		alertColorConfig = beanHolder.getAlertColorConfig();
 		authManager = beanHolder.getAuthManager();
 		tickManager = beanHolder.getTickManager();
 		signalManager = beanHolder.getSignalManager();
-		
+
 		boolean ok = false;
-		while(!ok) {
+		while (!ok) {
 			try {
 				eventManager.init(channel, inbox);
 			} catch (Exception e) {
@@ -297,41 +321,46 @@ public class Business {
 				continue;
 			}
 			ok = true;
-		} 
-		
+		}
+
 		eventManager.addEventChannel(this.channel);
 		eventManager.addEventChannel(this.nodeInfoChannel);
 
 		orderManager = new OrderCachingManager(eventManager);
 		tickManager = new TickManager(eventManager);
-		
+
 		ServerStatusDisplay.getInstance().init();
-		
+
 		eventManager.subscribe(NodeInfoEvent.class, listener);
-		eventManager.subscribe(InitClientEvent.class, listener);		
-		eventManager.subscribe(UserLoginReplyEvent.class, listener);		
-		eventManager.subscribe(SelectUserAccountEvent.class, listener);		
-		eventManager.subscribe(ServerHeartBeatEvent.class, listener);		
-		eventManager.subscribe(ServerReadyEvent.class, listener);		
-		eventManager.subscribe(SingleOrderStrategyFieldDefUpdateEvent.class, listener);		
-		eventManager.subscribe(MultiInstrumentStrategyFieldDefUpdateEvent.class, listener);		
-		eventManager.subscribe(CSTWUserLoginReplyEvent.class, listener);		
-		eventManager.subscribe(AccountSettingSnapshotReplyEvent.class, listener);
-		
-		//schedule timer
-		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval , listener, timerEvent);
+		eventManager.subscribe(InitClientEvent.class, listener);
+		eventManager.subscribe(UserLoginReplyEvent.class, listener);
+		eventManager.subscribe(SelectUserAccountEvent.class, listener);
+		eventManager.subscribe(ServerHeartBeatEvent.class, listener);
+		eventManager.subscribe(ServerReadyEvent.class, listener);
+		eventManager.subscribe(SingleOrderStrategyFieldDefUpdateEvent.class,
+				listener);
+		eventManager.subscribe(
+				MultiInstrumentStrategyFieldDefUpdateEvent.class, listener);
+		eventManager.subscribe(CSTWUserLoginReplyEvent.class, listener);
+		eventManager
+				.subscribe(AccountSettingSnapshotReplyEvent.class, listener);
+
+		// schedule timer
+		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval, listener,
+				timerEvent);
 		traderInfoListener = new TraderInfoListener();
 		initSessionListener();
 	}
-	
+
 	public void start() throws Exception {
 		// publish my node info
-		NodeInfoEvent nodeInfo = new NodeInfoEvent(null, null, false, true, inbox, inbox);
+		NodeInfoEvent nodeInfo = new NodeInfoEvent(null, null, false, true,
+				inbox, inbox);
 		eventManager.publishRemoteEvent(nodeInfoChannel, nodeInfo);
 		log.info("Published my node info");
-		
+
 	}
-	
+
 	public int getHeartBeatInterval() {
 		return heartBeatInterval;
 	}
@@ -402,6 +431,7 @@ public class Business {
 	synchronized public List<String> getSingleInstrumentDisplayFields() {
 		return singleInstrumentDisplayFields;
 	}
+
 	synchronized public Map<String, Map<String, FieldDef>> getSingleInstrumentFieldDefs() {
 		return singleInstrumentFieldDefs;
 	}
@@ -417,21 +447,22 @@ public class Business {
 	synchronized public List<String> getSingleOrderAmendableFields(String key) {
 		List<String> result = new ArrayList<String>();
 		Map<String, FieldDef> fieldDefs = singleOrderFieldDefs.get(key);
-		if(null != fieldDefs) {
-			for(FieldDef fieldDef: fieldDefs.values()) {
-				if(fieldDef.isAmendable())
+		if (null != fieldDefs) {
+			for (FieldDef fieldDef : fieldDefs.values()) {
+				if (fieldDef.isAmendable())
 					result.add(fieldDef.getName());
 			}
 		}
 		return result;
 	}
 
-	synchronized public List<String> getSingleInstrumentAmendableFields(String key) {
+	synchronized public List<String> getSingleInstrumentAmendableFields(
+			String key) {
 		List<String> result = new ArrayList<String>();
 		Map<String, FieldDef> fieldDefs = singleInstrumentFieldDefs.get(key);
-		if(null != fieldDefs) {
-			for(FieldDef fieldDef: fieldDefs.values()) {
-				if(fieldDef.isAmendable())
+		if (null != fieldDefs) {
+			for (FieldDef fieldDef : fieldDefs.values()) {
+				if (fieldDef.isAmendable())
 					result.add(fieldDef.getName());
 			}
 		}
@@ -441,81 +472,85 @@ public class Business {
 	public Map<AlertType, Integer> getAlertColorConfig() {
 		return alertColorConfig;
 	}
-	
+
 	public String getFirstServer() {
-		for(Entry<String, Boolean> entry: servers.entrySet()) {
-			if(entry.getValue())
+		for (Entry<String, Boolean> entry : servers.entrySet()) {
+			if (entry.getValue())
 				return entry.getKey();
 		}
 		return null;
 	}
-	
+
 	public boolean isFirstServerReady() {
 		Boolean result = servers.get(getFirstServer());
-		return result == null?false:result;
+		return result == null ? false : result;
 	}
-	
+
 	public boolean isLoginRequired() {
 		return BeanHolder.getInstance().isLoginRequired();
 	}
-	
-	public void processAccountSettingSnapshotReplyEvent(AccountSettingSnapshotReplyEvent event){
-		if( null != event.getAccountSetting()){
+
+	public void processAccountSettingSnapshotReplyEvent(
+			AccountSettingSnapshotReplyEvent event) {
+		if (null != event.getAccountSetting()) {
 			accountSetting = event.getAccountSetting();
 		}
 	}
-	
+
 	public boolean processCSTWUserLoginReplyEvent(CSTWUserLoginReplyEvent event) {
-		if(!event.isOk())
+		if (!event.isOk())
 			return false;
-		
-		List<Account>accountList = event.getAccountList();
-		if(null != accountList && !accountList.isEmpty()){
+
+		List<Account> accountList = event.getAccountList();
+		if (null != accountList && !accountList.isEmpty()) {
 			loginAccount = event.getAccountList().get(0);
-			log.info("loginAccount:{}",loginAccount.getId());
-			sendAccountSettingRequestEvent(loginAccount.getId());		
+			log.info("loginAccount:{}", loginAccount.getId());
+			sendAccountSettingRequestEvent(loginAccount.getId());
 		}
 		Map<String, Account> user2AccoutMap = event.getUser2AccountMap();
-		if(null != user2AccoutMap && !user2AccoutMap.isEmpty()) {
+		if (null != user2AccoutMap && !user2AccoutMap.isEmpty()) {
 			for (Account acc : user2AccoutMap.values()) {
 				accountGroupList.add(acc.getId());
 			}
 		}
 		UserGroup userGroup = event.getUserGroup();
 		this.user = userGroup.getUser();
-		
-		if(null != loginAccount)
+
+		if (null != loginAccount)
 			this.account = loginAccount.getId();
 		else
 			this.account = userGroup.getUser();
-		
+
 		this.userGroup = userGroup;
-		log.info("login user:{},{}",user,userGroup.getRole());
+		log.info("login user:{},{}", user, userGroup.getRole());
+
+		QuoteCachingManager.getInstance().init();
 		return true;
 	}
-	
-	
-	private void sendAccountSettingRequestEvent(String accountId){
-		AccountSettingSnapshotRequestEvent settingRequestEvent = new AccountSettingSnapshotRequestEvent(IdGenerator.getInstance().getNextID(), Business.getInstance().getFirstServer(), accountId, null);
+
+	private void sendAccountSettingRequestEvent(String accountId) {
+		AccountSettingSnapshotRequestEvent settingRequestEvent = new AccountSettingSnapshotRequestEvent(
+				IdGenerator.getInstance().getNextID(), Business.getInstance()
+						.getFirstServer(), accountId, null);
 		try {
 			eventManager.sendRemoteEvent(settingRequestEvent);
 		} catch (Exception e) {
-			log.warn(e.getMessage(),e);
+			log.warn(e.getMessage(), e);
 		}
 	}
-	
+
 	public boolean processUserLoginReplyEvent(UserLoginReplyEvent event) {
-		if(!event.isOk())
+		if (!event.isOk())
 			return false;
-		
+
 		this.user = event.getUser().getId();
-		if(event.getDefaultAccount() != null)
+		if (event.getDefaultAccount() != null)
 			this.account = event.getDefaultAccount().getId();
-		else if(null != event.getAccounts() && event.getAccounts().size() >0)
+		else if (null != event.getAccounts() && event.getAccounts().size() > 0)
 			this.account = event.getAccounts().get(0).getId();
 		else
 			return false;
-		
+
 		return true;
 	}
 
@@ -526,34 +561,34 @@ public class Business {
 	public String getAccount() {
 		return account;
 	}
-	
+
 	public UserGroup getUserGroup() {
 		return userGroup;
 	}
-	
+
 	public List<String> getAccountGroup() {
 		return accountGroupList;
 	}
-	
-	public boolean isManagee(String account){
-		
-		if(userGroup.isAdmin())
+
+	public boolean isManagee(String account) {
+
+		if (userGroup.isAdmin())
 			return true;
-		
-		if(userGroup.isGroupPairExist(account))
+
+		if (userGroup.isGroupPairExist(account))
 			return true;
-		
-		if(userGroup.isManageeExist(account))
+
+		if (userGroup.isManageeExist(account))
 			return true;
-		
+
 		return false;
 	}
-	
-	public boolean hasAuth(String view,String action){
+
+	public boolean hasAuth(String view, String action) {
 		return this.authManager.hasAuth(userGroup.getRole(), view, action);
 	}
-	
-	public boolean hasViewAuth(String view){
+
+	public boolean hasViewAuth(String view) {
 		return this.authManager.hasViewAuth(userGroup.getRole(), view);
 	}
 
@@ -568,33 +603,35 @@ public class Business {
 	public void setAccountSetting(AccountSetting accountSetting) {
 		this.accountSetting = accountSetting;
 	}
-	
-	public Ticker getTicker(String symbol){
+
+	public Ticker getTicker(String symbol) {
 		Ticker ticker = tickManager.getTicker(symbol);
-		if(null == ticker && StringUtils.hasText(symbol)){
+		if (null == ticker && StringUtils.hasText(symbol)) {
 			tickManager.requestTickTableInfo(symbol);
 		}
 		return ticker;
 	}
-	
-	public List<String> getSymbolList(){
-		if((null == symbolList || symbolList.isEmpty()) && null != tickManager)
+
+	public List<String> getSymbolList() {
+		if ((null == symbolList || symbolList.isEmpty()) && null != tickManager)
 			symbolList = tickManager.getSymbolList();
-		
+
 		return symbolList;
 	}
-	
-	public SignalType getSignal(String symbol,double scale){
+
+	public SignalType getSignal(String symbol, double scale) {
 		return signalManager.getSignal(symbol, scale);
 	}
-	
+
 	private void initSessionListener() {
-		GuiSession.getInstance().addPropertyChangeListener(GuiSession.Property.ACCOUNT_SETTING.toString(),
+		GuiSession.getInstance().addPropertyChangeListener(
+				GuiSession.Property.ACCOUNT_SETTING.toString(),
 				new PropertyChangeListener() {
 
 					@Override
 					public void propertyChange(PropertyChangeEvent arg0) {
-						accountSetting = GuiSession.getInstance().getAccountSetting();
+						accountSetting = GuiSession.getInstance()
+								.getAccountSetting();
 					}
 				});
 	}

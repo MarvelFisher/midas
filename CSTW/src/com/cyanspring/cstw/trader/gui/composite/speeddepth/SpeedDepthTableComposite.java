@@ -1,5 +1,7 @@
 package com.cyanspring.cstw.trader.gui.composite.speeddepth;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
@@ -42,7 +44,7 @@ public final class SpeedDepthTableComposite extends Composite {
 
 	private SpeedDepthContentProvider speedDepthContentProvider;
 	private SpeedDepthLabelProvider labelProvider;
-	private SpeedDepthMainComposite mainComposite;
+
 	private TableColumn tblclmnAskVol;
 	private TableColumn tblBidsVol;
 	private Composite composite;
@@ -51,7 +53,9 @@ public final class SpeedDepthTableComposite extends Composite {
 
 	private boolean isLock = false;
 
-	private TableItem currentItem;
+	private TableItem currentMouseSelectedItem;
+
+	private TableItem currentKeySelectedItem;
 
 	private String receiverId;
 
@@ -61,11 +65,10 @@ public final class SpeedDepthTableComposite extends Composite {
 	 * @param parent
 	 * @param style
 	 */
-	public SpeedDepthTableComposite(SpeedDepthMainComposite mainComposite,
-			String receiverId, int style) {
-		super(mainComposite, style);
+	public SpeedDepthTableComposite(Composite composite, String receiverId,
+			int style) {
+		super(composite, style);
 		speedDepthService = new SpeedDepthService();
-		this.mainComposite = mainComposite;
 		this.receiverId = receiverId;
 		initComponent();
 		initProvider();
@@ -115,7 +118,7 @@ public final class SpeedDepthTableComposite extends Composite {
 
 		TableColumn tblclmnNewColumn_2 = new TableColumn(table, SWT.CENTER);
 		tblclmnNewColumn_2.setWidth(100);
-		tblclmnNewColumn_2.setText("Ask/Bid");
+		tblclmnNewColumn_2.setText("Bid/Ask");
 
 		tblBidsVol = new TableColumn(table, SWT.CENTER);
 		tblBidsVol.setWidth(100);
@@ -162,6 +165,9 @@ public final class SpeedDepthTableComposite extends Composite {
 						&& cell.getElement() instanceof SpeedDepthModel) {
 					SpeedDepthModel model = (SpeedDepthModel) cell.getElement();
 					int columnIndex = cell.getColumnIndex();
+
+					SpeedDepthMainComposite mainComposite = (SpeedDepthMainComposite) SpeedDepthTableComposite.this
+							.getParent();
 					// ask
 					if (columnIndex == 1) {
 						speedDepthService.quickEnterOrder(model, "Buy",
@@ -188,11 +194,16 @@ public final class SpeedDepthTableComposite extends Composite {
 				if (item == null) {
 					return;
 				}
-				if (currentItem != null && currentItem != item) {
-					currentItem.setForeground(1,
-							SWTResourceManager.getColor(SWT.COLOR_WHITE));
-					currentItem.setForeground(3,
-							SWTResourceManager.getColor(SWT.COLOR_WHITE));
+				if (currentMouseSelectedItem != null
+						&& !currentMouseSelectedItem.isDisposed()
+						&& currentMouseSelectedItem != item) {
+					if (isLock
+							|| (!isLock && currentMouseSelectedItem != currentKeySelectedItem)) {
+						currentMouseSelectedItem.setForeground(1,
+								SWTResourceManager.getColor(SWT.COLOR_WHITE));
+						currentMouseSelectedItem.setForeground(3,
+								SWTResourceManager.getColor(SWT.COLOR_WHITE));
+					}
 				}
 				item.setForeground(1,
 						SWTResourceManager.getColor(SWT.COLOR_BLACK));
@@ -200,7 +211,29 @@ public final class SpeedDepthTableComposite extends Composite {
 						SWTResourceManager.getColor(SWT.COLOR_BLACK));
 				SpeedDepthModel model = (SpeedDepthModel) item.getData();
 				labelProvider.setSelectIndex(model.getIndex());
-				currentItem = item;
+				currentMouseSelectedItem = item;
+			}
+		});
+
+		table.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TableItem item = table.getItem(table.getSelectionIndex());
+				if (currentKeySelectedItem != null
+						&& !currentKeySelectedItem.isDisposed()
+						&& currentKeySelectedItem != item
+						&& currentKeySelectedItem != currentMouseSelectedItem) {
+					currentKeySelectedItem.setForeground(1,
+							SWTResourceManager.getColor(SWT.COLOR_WHITE));
+					currentKeySelectedItem.setForeground(3,
+							SWTResourceManager.getColor(SWT.COLOR_WHITE));
+				}
+				item.setForeground(1,
+						SWTResourceManager.getColor(SWT.COLOR_BLACK));
+				item.setForeground(3,
+						SWTResourceManager.getColor(SWT.COLOR_BLACK));
+				currentKeySelectedItem = item;
+
 			}
 		});
 	}
@@ -209,16 +242,24 @@ public final class SpeedDepthTableComposite extends Composite {
 		currentQuote = null;
 		lockButton.setSelection(false);
 		isLock = false;
+		speedDepthService.setRowLength(20);
 		tableViewer.setInput(null);
 	}
 
 	public void setQuote(Quote quote) {
+		if (tableViewer.getTable().isDisposed()) {
+			return;
+		}
 		currentQuote = quote;
-		tableViewer.setInput(speedDepthService.getSpeedDepthList(currentQuote,
-				isLock));
+		List<SpeedDepthModel> list = speedDepthService.getSpeedDepthList(
+				currentQuote, isLock);
+		tableViewer.setInput(list);
 	}
 
-	public void refresh() {
+	public void refresh(int rowLength) {
+		if (rowLength > 0) {
+			speedDepthService.setRowLength(rowLength);
+		}
 		tableViewer.setInput(speedDepthService.getSpeedDepthList(currentQuote,
 				isLock));
 	}
