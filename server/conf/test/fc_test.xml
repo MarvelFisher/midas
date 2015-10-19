@@ -299,6 +299,8 @@
 		<property name="types">
 			<list>
 				<value>FUTURES_CX</value>
+				<value>FUTURES_CX_IDX</value>
+				<value>EXCHANGE_INDEX</value>
 			</list>
 		</property>
 	</bean>
