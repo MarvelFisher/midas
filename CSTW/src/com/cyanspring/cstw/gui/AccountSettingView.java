@@ -168,6 +168,8 @@ public class AccountSettingView extends ViewPart implements IAsyncEventListener 
 	}
 
 	private void displayObject(final Map<String, Object> object) {
+		if(viewer.getControl().isDisposed())
+			return;
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {

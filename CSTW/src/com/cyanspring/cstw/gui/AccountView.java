@@ -518,14 +518,15 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void setBackgroundColorFromState(){
-		if(viewer.getControl().isDisposed()){
+		if(viewer.getControl().getDisplay().isDisposed()){
 			return ;
 		}
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
 
 			@Override
 			public void run() {
-				
+				if(viewer.getTable().isDisposed())
+					return ;
 				TableColumn columns[] = viewer.getTable().getColumns();
 				int stateColumn = -1;
 				for(int i=0 ; i < columns.length ; i++){
