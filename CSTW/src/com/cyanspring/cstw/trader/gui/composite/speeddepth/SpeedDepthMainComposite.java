@@ -64,6 +64,8 @@ public final class SpeedDepthMainComposite extends Composite implements
 	private Composite composite_1;
 	private Label lblErrorMessage;
 
+	private volatile boolean isTableRefreshIng = false;
+
 	/**
 	 * Create the composite.
 	 * 
@@ -222,8 +224,15 @@ public final class SpeedDepthMainComposite extends Composite implements
 				tableComposite.getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						if (symbol != null && symbol.equals(quote.getSymbol())) {
-							tableComposite.setQuote(quote);
+						if (isTableRefreshIng) {
+							return;
+						} else {
+							if (symbol != null
+									&& symbol.equals(quote.getSymbol())) {
+								isTableRefreshIng = true;
+								tableComposite.setQuote(quote);
+								isTableRefreshIng = false;
+							}
 						}
 					}
 				});
