@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.util.StringUtils;
 
 import com.cyanspring.apievent.obj.Account;
 import com.cyanspring.apievent.obj.OpenPosition;
@@ -494,6 +495,12 @@ public class LtsWsFrame extends JFrame {
     public void processQuoteEvent(QuoteEvent event) {
         log.debug("Received QuoteEvent: " + event.getKey() + ", " + event.getQuote());
         final Quote quote = event.getQuote();
+        
+        String symbol = edQuote.getText()!=null?edQuote.getText().trim():"";
+        
+        if(!symbol.equals(quote.getSymbol()))
+        	return;
+        	
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
             	lblBidAsk.setText("    "+ quote.getBid() + " / " + quote.getAsk());

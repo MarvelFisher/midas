@@ -28,6 +28,7 @@
 				<ref bean="cfSessionChecker"/>
 				<ref bean="agSessionChecker"/>
 				<ref bean="cuSessionChecker"/>
+				<ref bean="ifSessionChecker"/>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -48,6 +49,24 @@
 		</property>
 		<property name="tradeDateManager"><ref bean="tradeDateManager"/></property>
 		<property name="index" value="CF"/>
+	</bean>
+	
+	<bean id="ifSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">
+		<property name="stateMap">
+			<map>
+				<entry key="DEFAULT">
+					<ref bean="defaultSession"/>
+				</entry>
+				<entry key="FIRST_HOLIDAY">
+					<ref bean="holidaySession"/>
+				</entry>
+				<entry key="HOLIDAY">
+					<ref bean="holidaySession"/>
+				</entry>
+			</map>
+		</property>
+		<property name="tradeDateManager"><ref bean="tradeDateManager"/></property>
+		<property name="index" value="IF"/>
 	</bean>
 	
 	<bean id="agSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">

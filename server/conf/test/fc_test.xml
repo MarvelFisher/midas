@@ -270,7 +270,7 @@
 	</bean>
     
     <bean id="refDataAdaptor" class="com.cyanspring.server.sim.SimRefDataAdaptor">
-    	<property name="filePath" value="./conf/sim/codetable_fcc.xml"></property>
+    	<property name="filePath" value="./conf/sim/codetable_fci.xml"></property>
     </bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
@@ -299,6 +299,8 @@
 		<property name="types">
 			<list>
 				<value>FUTURES_CX</value>
+				<value>FUTURES_CX_IDX</value>
+				<value>EXCHANGE_INDEX</value>
 			</list>
 		</property>
 	</bean>

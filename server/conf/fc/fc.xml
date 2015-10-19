@@ -291,17 +291,17 @@
 			<list>
 				<ref bean="refDataAdapterFCI"/>
 				<ref bean="refDataAdapterFCC"/>
-				<ref bean="simRefDataAdaptor"/>
+				<!--<ref bean="simRefDataAdaptor"/>-->
 			</list>
 		</constructor-arg>
 		<property name="eventManager" ref="eventManager"/>
     </bean>
     
-    <bean id="simRefDataAdaptor" class="com.cyanspring.server.sim.SimRefDataAdaptor">
+    <!--<bean id="simRefDataAdaptor" class="com.cyanspring.server.sim.SimRefDataAdaptor">
         <property name="filePath">
             <value>refdata/template/codetable_cf.xml</value>
         </property>
-    </bean>
+    </bean>-->
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
 		<property name="refDataTemplatePath">
@@ -366,14 +366,14 @@
 	<bean id="commodityFilter" class="com.cyanspring.common.filter.CommodityFilter">
         <property name="lstExcludedSymbols">
             <list>
-                <value>IHC1.CF</value>
+                <!--<value>IHC1.CF</value>
 				<value>IHC2.CF</value>
 				<value>IHC3.CF</value>
 				<value>IHC4.CF</value>
 				<value>ICC1.CF</value>
 				<value>ICC2.CF</value>
 				<value>ICC3.CF</value>
-				<value>ICC4.CF</value>
+				<value>ICC4.CF</value>-->
 			</list>
         </property>
         <property name="lstExcludedCategories">
