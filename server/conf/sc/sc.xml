@@ -137,6 +137,7 @@
 				<entry key="StrategySnapshotEvent" value="com.cyanspring.event.api.obj.reply.ApiStrategySnapshotEvent"/>
 			</map>
 		</property>
+		<property name="restrict" value="10000"></property>
 	</bean>
 
 	<bean id="resourceManager" class="com.cyanspring.event.api.ApiResourceManager">

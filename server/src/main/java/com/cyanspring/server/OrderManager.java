@@ -51,7 +51,6 @@ import com.cyanspring.common.event.strategy.MultiInstrumentStrategyUpdateEvent;
 import com.cyanspring.common.event.strategy.SingleInstrumentStrategyUpdateEvent;
 import com.cyanspring.common.staticdata.OrderSaver;
 import com.cyanspring.common.type.ExecType;
-import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.util.DualKeyMap;
 import com.cyanspring.common.util.DualMap;
 
@@ -80,11 +79,11 @@ public class OrderManager {
 	@Autowired
 	@Qualifier("fixToOrderMap")
 	private DualMap<Integer, String> fixToOrderMap;
-	
+
     private int asyncSendBatch = 3000;
     private long asyncSendInterval = 2000;
     private long orderLimit = 20000;
-    
+
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
 		@Override
@@ -114,11 +113,11 @@ public class OrderManager {
 	public OrderManager() {
 	}
 
-	public void processAllStrategySnapshotRequestEvent(AllStrategySnapshotRequestEvent event){
+	public void processAllStrategySnapshotRequestEvent(AllStrategySnapshotRequestEvent event) {
 		log.info("start send All StrategySnapshotRequest");
 		asyncSendStrategySnapshot(event);
 	}
-	
+
     private void asyncSendStrategySnapshot(final AllStrategySnapshotRequestEvent event) {
         Thread thread = new Thread(new Runnable() {
 
@@ -133,113 +132,111 @@ public class OrderManager {
         		instList = new ArrayList<Instrument>(instruments.getMap(event.getKey()).values());
         		misdList = new ArrayList<MultiInstrumentStrategyData>(strategyData.getMap(event.getKey()).values());
 
-        		if(null != ids){
-            		for(String id: ids){
-            			if(null != parentOrders.getMap(id).values() 
-            					&& parentOrders.getMap(id).values().size()!=0){
+        		if (null != ids) {
+            		for (String id: ids) {
+            			if (null != parentOrders.getMap(id).values()
+            					&& parentOrders.getMap(id).values().size()!=0) {
             				orderList.addAll(parentOrders.getMap(id).values());
             			}
-            			
-            			if(null != instruments.getMap(id).values() 
-            					&& instruments.getMap(id).values().size()!=0){
+
+            			if (null != instruments.getMap(id).values()
+            					&& instruments.getMap(id).values().size()!=0) {
             				instList.addAll(instruments.getMap(id).values());
             			}
-            			
-            			if(null != strategyData.getMap(id).values() 
-            					&& strategyData.getMap(id).values().size()!=0){
+
+            			if (null != strategyData.getMap(id).values()
+            					&& strategyData.getMap(id).values().size()!=0) {
             				misdList.addAll(strategyData.getMap(id).values());
             			}
             		}
-            	}else{
+            	} else {
             		orderList.addAll(parentOrders.values());
             		instList.addAll(instruments.values());
             		misdList.addAll(strategyData.values());
             	}
-            	
+
         		log.info("orderList size:{},instList:{},misdList:{}"
-        				,new Object[]{orderList.size(),instList.size(),misdList.size()});
-        		
-        		if(orderList.size()+instList.size()+misdList.size()>orderLimit){
+        				, new Object[]{orderList.size(), instList.size(), misdList.size()});
+
+        		if (orderList.size() + instList.size() + misdList.size() > orderLimit) {
         			AllStrategySnapshotReplyEvent reply = new AllStrategySnapshotReplyEvent(event.getKey()
-        					,event.getSender(),null,null,null,false,"Over order transfer limit:"+orderLimit);
+        					,event.getSender(), null, null, null, false, "Over order transfer limit:" + orderLimit);
                     try {
 						eventManager.sendRemoteEvent(reply);
 					} catch (Exception e) {
-						log.error(e.getMessage(),e);
+						log.error(e.getMessage(), e);
 					}
                     return;
         		}
-        	  		
+
         		order:{
-        			
-        			if( null == orderList || orderList.size() <=0){
+        			if (null == orderList || orderList.size() <= 0) {
         				break order;
-        			}   			
+        			}
             		List<ParentOrder> tempOrder = new ArrayList<ParentOrder>();
             		int count = 0;
-            		for(ParentOrder order : orderList){
+            		for (ParentOrder order : orderList) {
              			count++;
             			tempOrder.add(order);
-            			if(count % asyncSendBatch == 0 || orderList.size() == count){
-                			AllStrategySnapshotReplyEvent reply = new AllStrategySnapshotReplyEvent(event.getKey()
-                					,event.getSender(),tempOrder,null,null,true,"");
+            			if (count % asyncSendBatch == 0 || orderList.size() == count) {
+                			AllStrategySnapshotReplyEvent reply = new AllStrategySnapshotReplyEvent(event.getKey(),
+                					event.getSender(), tempOrder, null, null, true, "");
                             try {
-                            	log.info("send orders:{},{}",event.getSender(),tempOrder.size());
+                            	log.info("send orders:{},{}", event.getSender(), tempOrder.size());
 								eventManager.sendRemoteEvent(reply);
                                 Thread.sleep(asyncSendInterval);
 							} catch (Exception e) {
-								log.error(e.getMessage(),e);
+								log.error(e.getMessage(), e);
 							}
             				tempOrder.clear();
             			}
             		}
         		}
-        		
+
         		instrus:{
-        			
-        			if( null == instList || instList.size() <=0){
+        			if (null == instList || instList.size() <= 0) {
         				break instrus;
         			}
             		List<Instrument> tempInstrus = new ArrayList<Instrument>();
             		int count = 0;
-            		for(Instrument instrument : instList){
+            		for (Instrument instrument : instList) {
             			count++;
             			tempInstrus.add(instrument);
-            			if(count % asyncSendBatch == 0 || instList.size() == count){
-                			AllStrategySnapshotReplyEvent reply = new AllStrategySnapshotReplyEvent(event.getKey()
-                					,event.getSender(),null,tempInstrus,null,true,"");
+            			if (count % asyncSendBatch == 0 || instList.size() == count) {
+                			AllStrategySnapshotReplyEvent reply = new AllStrategySnapshotReplyEvent(event.getKey(),
+                					event.getSender(), null, tempInstrus, null, true, "");
                             try {
-                            	log.info("send instrus:{},{}",event.getSender(),tempInstrus.size());
+                            	log.info("send instrus: {}, {}", event.getSender(), tempInstrus.size());
 								eventManager.sendRemoteEvent(reply);
                                 Thread.sleep(asyncSendInterval);
 							} catch (Exception e) {
-								log.error(e.getMessage(),e);
+								log.error(e.getMessage(), e);
 							}
                             tempInstrus.clear();
             			}
             		}
         		}
-        		
-        		
+
+
         		strategys:{
-        			
-        			if( null == misdList || misdList.size() <=0){
+
+        			if (null == misdList || misdList.size() <=0) {
         				break strategys;
         			}
             		List<MultiInstrumentStrategyData> tempStrategys = new ArrayList<MultiInstrumentStrategyData>();
             		int count = 0;
-            		for(MultiInstrumentStrategyData misd :  misdList){
+            		for (MultiInstrumentStrategyData misd : misdList) {
             			count++;
             			tempStrategys.add(misd);
-            			if(count % asyncSendBatch == 0 || misdList.size() == count){
-                			AllStrategySnapshotReplyEvent reply = new AllStrategySnapshotReplyEvent(event.getKey()
-                					,event.getSender(),null,null,tempStrategys,true,"");
+            			if (count % asyncSendBatch == 0 || misdList.size() == count) {
+                			AllStrategySnapshotReplyEvent reply = new AllStrategySnapshotReplyEvent(event.getKey(),
+                					event.getSender(), null, null, tempStrategys, true, "");
                             try {
-                            	log.info("send Strategys:{},{}",event.getSender(),tempStrategys.size());
+                            	log.info("send Strategys: {}, {}", event.getSender(), tempStrategys.size());
 								eventManager.sendRemoteEvent(reply);
                                 Thread.sleep(asyncSendInterval);
 							} catch (Exception e) {
-								log.error(e.getMessage(),e);
+								log.error(e.getMessage(), e);
 							}
                             tempStrategys.clear();
             			}
@@ -249,15 +246,15 @@ public class OrderManager {
         });
         thread.start();
 	}
-	
+
 	public void processInternalResetAccountRequestEvent(InternalResetAccountRequestEvent event) {
 		ResetAccountRequestEvent evt = event.getEvent();
 		String account = evt.getAccount();
 		Map<String, ParentOrder> map = parentOrders.removeMap(account);
-		if(null == map) {
+		if (null == map) {
 			return;
 		}
-		for(ParentOrder parent: map.values()) {
+		for (ParentOrder parent: map.values()) {
 			archiveChildOrders.remove(parent.getId());
 			activeChildOrders.remove(parent.getId());
 			executions.remove(parent.getId());
@@ -322,16 +319,7 @@ public class OrderManager {
 				+ event.getOrder());
 
 		ChildOrder child = event.getOrder();
-		if (child.getOrdStatus().equals(OrdStatus.NEW)
-				|| child.getOrdStatus().equals(OrdStatus.PENDING_NEW)) {
-			Map<String, ChildOrder> actives = activeChildOrders.get(child
-					.getStrategyId());
-			if (null == actives) {
-				actives = new HashMap<String, ChildOrder>();
-				activeChildOrders.put(child.getStrategyId(), actives);
-			}
-			actives.put(child.getId(), child);
-		} else if (child.getOrdStatus().isCompleted()) {
+		if (child.getOrdStatus().isCompleted()) {
 			Map<String, ChildOrder> actives = activeChildOrders.get(child
 					.getStrategyId());
 			if (null == actives) {
@@ -364,7 +352,7 @@ public class OrderManager {
 			addExecution(event.getExecution());
 		}
 
-		if(publishChildOrder) {
+		if (publishChildOrder) {
 			eventManager.sendRemoteEvent(new ChildOrderUpdateEvent(child
 					.getStrategyId(), null, event.getExecType(),
 					child, event.getExecution(), null));
@@ -538,6 +526,15 @@ public class OrderManager {
 			if (obj instanceof ParentOrder) {
 				ParentOrder parentOrder = (ParentOrder)obj;
 				parentOrders.put(parentOrder.getId(), parentOrder.getAccount(), parentOrder);
+			} else if (obj instanceof ChildOrder) {
+				ChildOrder childOrder = (ChildOrder)obj;
+				Map<String, ChildOrder> child = new HashMap<>();
+				child.put(childOrder.getId(), childOrder);
+				if (childOrder.getOrdStatus().isCompleted()) {
+					archiveChildOrders.put(childOrder.getStrategyId(), child);
+				} else {
+					activeChildOrders.put(childOrder.getStrategyId(), child);
+				}
 			} else if (obj instanceof MultiInstrumentStrategyData) {
 				MultiInstrumentStrategyData data = (MultiInstrumentStrategyData)obj;
 				strategyData.put(data.getId(), data.getAccount(), data);
