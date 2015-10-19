@@ -19,7 +19,7 @@ import com.cyanspring.cstw.business.Business;
  */
 public abstract class BasicCachingManager {
 
-	private static final Logger log = LoggerFactory
+	protected static final Logger log = LoggerFactory
 			.getLogger(BasicCachingManager.class);
 
 	protected String id;
@@ -54,7 +54,7 @@ public abstract class BasicCachingManager {
 		eventListener = new IAsyncEventListener() {
 			@Override
 			public void onEvent(AsyncEvent event) {
-				 processAsyncEvent(event);
+				processAsyncEvent(event);
 			}
 		};
 

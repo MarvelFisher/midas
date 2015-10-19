@@ -518,7 +518,9 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void setBackgroundColorFromState(){
-
+		if(viewer.getControl().isDisposed()){
+			return ;
+		}
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
 
 			@Override
