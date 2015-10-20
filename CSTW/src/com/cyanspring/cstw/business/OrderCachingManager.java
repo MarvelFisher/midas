@@ -364,7 +364,10 @@ public class OrderCachingManager implements IAsyncEventListener {
 		groupOrderCache.updateOrder(event.getOrders());
 		groupOrderCache.updateInstrument(event.getInstruments());
 		groupOrderCache.updateMultiInstrumentStrategyData(event.getStrategyData());
-		subGroupEvent(Business.getInstance().getAccountGroup());
+		if(Business.getInstance().getUserGroup().isAdmin()){
+			eventManager.subscribe(ParentOrderUpdateEvent.class,this);
+		}else
+			subGroupEvent(Business.getInstance().getAccountGroup());
 	}
 	
 	

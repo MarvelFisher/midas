@@ -21,6 +21,7 @@ public class AuthProvider extends AbstractSourceProvider{
 	  public final static String ADMIN = UserRole.Admin.name();
 	  public final static String RISK_MANAGER = UserRole.RiskManager.name();
 	  public final static String TRADER = UserRole.Trader.name();
+	  public final static String BACKEND_RISK_MANAGER = UserRole.BackEndRiskManager.name();
 	  public final static String ENABLED = "ENABLED";
 	  public final static String DISABLED = "DISABLED";
 	  private boolean enabled = true;
@@ -43,7 +44,7 @@ public class AuthProvider extends AbstractSourceProvider{
 
 	@Override
 	public String[] getProvidedSourceNames() {
-		return new String[] { ADMIN,RISK_MANAGER,TRADER };
+		return new String[] { ADMIN,RISK_MANAGER,BACKEND_RISK_MANAGER,TRADER };
 	}
 
 	public void fireAccountChanged(){

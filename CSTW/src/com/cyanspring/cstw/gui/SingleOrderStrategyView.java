@@ -711,9 +711,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 		currentOrderPadId = (String) map.get(OrderField.ID.value());
 		txtSymbol.setText((String) map.get(OrderField.SYMBOL.value()));
-		Double price = (Double) map.get(OrderField.PRICE.value());
-		if (null != price)
-			txtPrice.setText(price.toString());
+
 		txtQuantity.setText(((Double) map.get(OrderField.QUANTITY.value()))
 				.toString());
 		cbOrderType.setText(((OrderType) map.get(OrderField.TYPE.value()))
@@ -721,12 +719,19 @@ public class SingleOrderStrategyView extends ViewPart implements
 		cbOrderSide.setText(((OrderSide) map.get(OrderField.SIDE.value()))
 				.toString());
 		cbServer.setText((String) map.get(OrderField.SERVER_ID.value()));
-
+		
+		Double price = null;
 		if (Strategy.STOP.toString().equals(strategy)) {
 			cbOrderType.select(2);
+		    price = (Double) map.get(OrderField.STOP_LOSS_PRICE.value());			
+		}else{
+		    price = (Double) map.get(OrderField.PRICE.value());
 		}
+		
+		if (null != price)
+			txtPrice.setText(price.toString());
+		
 		cbOrderType.notifyListeners(SWT.Selection, new Event());
-
 	}
 
 	private void populateOrderPadServers() {
