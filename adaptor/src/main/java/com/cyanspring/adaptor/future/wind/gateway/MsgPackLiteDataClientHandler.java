@@ -1,17 +1,15 @@
 package com.cyanspring.adaptor.future.wind.gateway;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.cyanspring.network.transport.FDTFields;
+import com.cyanspring.network.transport.FDTFrameDecoder;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.network.transport.FDTFields;
-import com.cyanspring.network.transport.FDTFrameDecoder;
-
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 
@@ -187,7 +185,7 @@ public class MsgPackLiteDataClientHandler extends ChannelInboundHandlerAdapter {
 					}					
 				}
 				break;
-			case FDTFields.SnapShotEnds :
+			// case FDTFields.SnapShotEnds :  Cascading 時就不送, Client 避免收到多個 SnapShotEnds
 			case FDTFields.WindConnected :
 			case FDTFields.WindHeartBeat :
 			case FDTFields.WindMarketClose :

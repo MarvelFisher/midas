@@ -1,24 +1,7 @@
 package com.cyanspring.adaptor.future.wind.gateway;
 
-import java.util.HashMap;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import org.apache.log4j.xml.DOMConfigurator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
-
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-
+import cn.com.wind.td.tdf.*;
 import com.cyanspring.network.transport.FDTFields;
-
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -26,7 +9,18 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.ReferenceCountUtil;
-import cn.com.wind.td.tdf.*;
+import org.apache.log4j.xml.DOMConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class WindGateway implements Runnable {
 	
@@ -79,6 +73,7 @@ public class WindGateway implements Runnable {
 	public static boolean cascading = false;
 	public static String upstreamIp = "202.55.14.140";
 	public static int upstreamPort = 10049;
+	public static boolean adjIndexTurnover = false;
 	
 	public static boolean mpCascading = false;
 	public static String mpUpstreamIp = "202.55.14.140";
@@ -285,6 +280,13 @@ public class WindGateway implements Runnable {
 	}
 	public void setMpUpstreamPort(int port) {
 		mpUpstreamPort = port;
+	}
+	
+	public boolean getAdjIndexTurnover() {
+		return adjIndexTurnover;
+	}
+	public void setAdjIndexTurnover(boolean b) {
+		adjIndexTurnover = b;
 	}
 	
 	public int getStockTypeFlags() {
@@ -828,7 +830,8 @@ public class WindGateway implements Runnable {
 	
 	static public String publishIndexDataChanges(TDF_INDEX_DATA dirty,TDF_INDEX_DATA data)
 	{
-		StringBuilder sb = new StringBuilder("API=DATA_INDEX|Symbol=" + data.getWindCode());
+		String symbol = data.getWindCode();
+		StringBuilder sb = new StringBuilder("API=DATA_INDEX|Symbol=" + symbol);
 		if(dirty == null || dirty.getActionDay() != data.getActionDay())
 		{
 			sb.append("|ActionDay=" + data.getActionDay());
@@ -857,25 +860,41 @@ public class WindGateway implements Runnable {
 		{
 			sb.append("|Time=" + data.getTime());
 		}
-		if(dirty == null || dirty.getTotalVolume() != data.getTotalVolume())
-		{
-			sb.append("|TotalVolume=" + data.getTotalVolume());
-		}
 		if(dirty == null || dirty.getTradingDay() != data.getTradingDay())
 		{
 			sb.append("|TradingDay=" + data.getTradingDay());
 		}
-		if(dirty == null || dirty.getTurnover() != data.getTurnover())
+		if(adjIndexTurnover == true && (symbol.compareTo("399001.SZ") == 0 || symbol.compareTo("399006.SZ") == 0))
 		{
-			sb.append("|Turnover=" + data.getTurnover());
+			String idxkey = (symbol.compareTo("399001.SZ") == 0) ? "399106.SZ" : "399102.SZ";
+			TDF_INDEX_DATA n = mapIndexData.get(idxkey);
+			if(n != null) {
+				sb.append("|TotalVolume=" + n.getTotalVolume());
+				sb.append("|Turnover=" + n.getTurnover());
+			} else {
+				sb.append("|TotalVolume=0");
+				sb.append("|Turnover=0");				
+			}
+		}
+		else {
+			if(dirty == null || dirty.getTotalVolume() != data.getTotalVolume())
+			{
+				sb.append("|TotalVolume=" + data.getTotalVolume());
+			}		
+			if(dirty == null || dirty.getTurnover() != data.getTurnover())
+			{
+				sb.append("|Turnover=" + data.getTurnover());
+			}
 		}
 		return sb.toString();		
 	}
 	
-	static public HashMap<Integer,Object> publishIndexDataChangesToMap(TDF_INDEX_DATA dirty,TDF_INDEX_DATA data) {	
+	static public HashMap<Integer,Object> publishIndexDataChangesToMap(TDF_INDEX_DATA dirty,TDF_INDEX_DATA data) {
+		String symbol = data.getWindCode();
+		
 		HashMap<Integer,Object> map = new HashMap<Integer, Object>();
 		map.put(FDTFields.PacketType,FDTFields.WindIndexData);
-		map.put(FDTFields.WindSymbolCode, data.getWindCode());	
+		map.put(FDTFields.WindSymbolCode, symbol);	
 		if(dirty == null || dirty.getActionDay() != data.getActionDay()) {		
 			map.put(FDTFields.ActionDay,data.getActionDay());
 		}
@@ -897,14 +916,26 @@ public class WindGateway implements Runnable {
 		if(dirty == null || dirty.getTime() != data.getTime()) {		
 			map.put(FDTFields.Time,data.getTime());
 		}
-		if(dirty == null || dirty.getTotalVolume() != data.getTotalVolume()) {		
-			map.put(FDTFields.Volume,data.getTotalVolume());
-		}
 		if(dirty == null || dirty.getTradingDay() != data.getTradingDay()) {	
 			map.put(FDTFields.TradingDay,data.getTradingDay());
 		}
-		if(dirty == null || dirty.getTurnover() != data.getTurnover()) {		
-			map.put(FDTFields.Turnover,data.getTurnover());
+		if(adjIndexTurnover == true && (symbol.compareTo("399001.SZ") == 0 || symbol.compareTo("399006.SZ") == 0)) {
+			String idxkey = (symbol.compareTo("399001.SZ") == 0) ? "399106.SZ" : "399102.SZ";
+			TDF_INDEX_DATA n = mapIndexData.get(idxkey);
+			if(n != null) {
+				map.put(FDTFields.Volume,n.getTotalVolume());
+				map.put(FDTFields.Turnover,n.getTurnover());
+			} else {
+				map.put(FDTFields.Volume,0);
+				map.put(FDTFields.Turnover,0);
+			}			
+		} else {
+			if(dirty == null || dirty.getTotalVolume() != data.getTotalVolume()) {		
+				map.put(FDTFields.Volume,data.getTotalVolume());
+			}		
+			if(dirty == null || dirty.getTurnover() != data.getTurnover()) {		
+				map.put(FDTFields.Turnover,data.getTurnover());
+			}
 		}
 		return map;		
 	}	
@@ -1021,7 +1052,7 @@ public class WindGateway implements Runnable {
 		if(indexData == null) {
 			return;
 		}
-		String symbol = indexData.getWindCode().toUpperCase();  // 配合 DCE SHF 以小寫註冊商品,但回來是大寫
+		String symbol = indexData.getWindCode();
 		TDF_INDEX_DATA data = mapIndexData.get(symbol);
 		mapIndexData.put(symbol,indexData);
 		if(windGatewayInitializer != null && WindGatewayHandler.isRegisteredByClient(symbol)) {		
@@ -1031,6 +1062,18 @@ public class WindGateway implements Runnable {
 		if(MsgPackLiteDataServerHandler.isRegisteredByClient(symbol)) {			
 			MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishIndexDataChangesToMap(data,indexData), symbol,true);
 		}
+		
+		if(adjIndexTurnover == true && (symbol.compareTo("399106.SZ") == 0 || symbol.compareTo("399102.SZ") == 0)) {
+			// 399001 using 399106's turnover / volume , 399006 using 399102's turnover / volume
+			String idxkey = (symbol.compareTo("399106.SZ") == 0) ? "399001.SZ" : "399006.SZ";
+			if(MsgPackLiteDataServerHandler.isRegisteredByClient(idxkey)) {
+				TDF_INDEX_DATA n = mapIndexData.get(idxkey);
+				if(n != null) {
+					MsgPackLiteDataServerHandler.sendMssagePackToAllClientByRegistration(publishIndexDataChangesToMap(null,n), idxkey,true);
+				}
+			}			
+		}
+		
 		if(data != null) {		
 			data = null;
 		}		
