@@ -83,7 +83,7 @@ public class OrderManager {
 	
     private int asyncSendBatch = 3000;
     private long asyncSendInterval = 2000;
-    private long orderLimit = 20000;
+    private long orderLimit = 15000;
     
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -135,6 +135,7 @@ public class OrderManager {
 
         		if(null != ids){
             		for(String id: ids){
+            			log.info("account id:{}",id);
             			if(null != parentOrders.getMap(id).values() 
             					&& parentOrders.getMap(id).values().size()!=0){
             				orderList.addAll(parentOrders.getMap(id).values());
@@ -160,6 +161,7 @@ public class OrderManager {
         				,new Object[]{orderList.size(),instList.size(),misdList.size()});
         		
         		if(orderList.size()+instList.size()+misdList.size()>orderLimit){
+        			log.info("Over order transfer limit:"+orderLimit);
         			AllStrategySnapshotReplyEvent reply = new AllStrategySnapshotReplyEvent(event.getKey()
         					,event.getSender(),null,null,null,false,"Over order transfer limit:"+orderLimit);
                     try {

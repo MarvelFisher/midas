@@ -1514,9 +1514,9 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private void showOrders() {
 		lastRefreshTime = Clock.getInstance().now();
 		if (!setColumns) {
-			List<Map<String, Object>> orders = Business.getInstance()
-					.getOrderManager().getParentOrders();
-
+			
+			List<Map<String, Object>> orders = null;
+			orders = Business.getInstance().getOrderManager().getParentOrders();
 			if (orders.size() == 0)
 				return;
 
@@ -1538,6 +1538,13 @@ public class SingleOrderStrategyView extends ViewPart implements
 			viewer.setInput(orders);
 			setColumns = true;
 		}
+		
+		if(pinned){
+			viewer.setInput(Business.getInstance().getOrderManager().getParentOrders());
+		}else{
+			viewer.setInput(Business.getInstance().getOrderManager().getAllParentOrders());
+		}
+
 		viewer.refresh();
 	}
 

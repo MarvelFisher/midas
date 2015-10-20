@@ -52,6 +52,8 @@ import com.cyanspring.common.event.account.AccountSettingSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AccountSettingSnapshotRequestEvent;
 import com.cyanspring.common.event.account.CSTWUserLoginReplyEvent;
 import com.cyanspring.common.event.account.UserLoginReplyEvent;
+import com.cyanspring.common.event.order.AllStrategySnapshotReplyEvent;
+import com.cyanspring.common.event.order.AllStrategySnapshotRequestEvent;
 import com.cyanspring.common.event.order.InitClientEvent;
 import com.cyanspring.common.event.order.InitClientRequestEvent;
 import com.cyanspring.common.event.order.StrategySnapshotRequestEvent;
@@ -158,10 +160,10 @@ public class Business {
 					tickManager.init(getFirstServer());
 					if(null != loginAccount);
 						traderInfoListener.init(loginAccount);
-				}
-				if(isLoginRequired() && evt.isOk()) {
+						
 					requestStrategyInfo(evt.getSender());
 				}
+
 			}else if (event instanceof AccountSettingSnapshotReplyEvent) {
 				
 				AccountSettingSnapshotReplyEvent evt = (AccountSettingSnapshotReplyEvent)event;
@@ -209,10 +211,6 @@ public class Business {
 	private void requestStrategyInfo(String server) {
 		try {
 			orderManager.init();
-			if(Business.getInstance().isLoginRequired())
-				eventManager.sendRemoteEvent(new StrategySnapshotRequestEvent(Business.this.getAccount(), server, null));
-//			else
-//				eventManager.sendRemoteEvent(new StrategySnapshotRequestEvent(null, server));
 			eventManager.sendEvent(new ServerStatusEvent(server, true));	
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -317,7 +315,6 @@ public class Business {
 		eventManager.subscribe(MultiInstrumentStrategyFieldDefUpdateEvent.class, listener);		
 		eventManager.subscribe(CSTWUserLoginReplyEvent.class, listener);		
 		eventManager.subscribe(AccountSettingSnapshotReplyEvent.class, listener);
-		
 		//schedule timer
 		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval , listener, timerEvent);
 		traderInfoListener = new TraderInfoListener();
