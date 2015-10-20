@@ -127,9 +127,9 @@ public class KDBQuoteListener implements IQuoteListener, IAsyncEventListener {
 	}
 	
 	@Override
-	public void onQuote(InnerQuote InnerQuote) {
+	public void onQuote(Quote quote) {
 		try {
-			queue.put(InnerQuote.getQuote());
+			queue.put(quote);
 			if (!quoteThread.isAlive())
 				quoteThread.start();
 		} catch (InterruptedException e) {
