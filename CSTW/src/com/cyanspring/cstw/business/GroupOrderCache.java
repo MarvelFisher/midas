@@ -51,6 +51,7 @@ public class GroupOrderCache {
 			String account = order.getAccount();
 			log.info("receive order:{},{}",account,order.getId());
 			Map<String,ParentOrder> tempMap = null;
+
 			if(orderMap.containsKey(account)){
 				tempMap = orderMap.get(account);
 				if(null == tempMap)
@@ -62,6 +63,22 @@ public class GroupOrderCache {
 				tempMap = new HashMap<String,ParentOrder>();
 				tempMap.put(order.getId(),order);
 				orderMap.put(account, tempMap);
+			}
+		}
+//		printAllOrder();
+	}
+	
+	private void printAllOrder(){
+		Iterator <String>key = orderMap.keySet().iterator();
+		while(key.hasNext()){
+			String key1  = key.next();
+			log.info("account:{}",key1);
+			Map<String,ParentOrder> tempMap = orderMap.get(key1);
+			Iterator <String>ite2 = tempMap.keySet().iterator();
+			while(ite2.hasNext()){
+				String k = ite2.next();
+				ParentOrder order = tempMap.get(k);
+				log.info(" - order:{},{}",k,order.getPrice());
 			}
 		}
 	}
