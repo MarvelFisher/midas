@@ -12,15 +12,15 @@ public class CurPriceAlert extends BasePriceAlert{
 	private double risePercentage;
 	private double fallPercentage;
 	
-	public CurPriceAlert(String userId, String symbol, double risePrice, double dropPrice, 
+	public CurPriceAlert(String userId, String symbol, String group, double risePrice, double dropPrice, 
 			double risePercentage, double fallPercentage, String strdateTime, String content, String commodity){
-		super(userId, symbol, risePrice, dropPrice, 
+		super(userId, symbol, group, risePrice, dropPrice, 
 				risePercentage, fallPercentage, strdateTime, content, commodity);
 	}
 
-    public CurPriceAlert(String userId, String symbol, double risePrice, double dropPrice, 
+    public CurPriceAlert(String userId, String symbol, String group, double risePrice, double dropPrice, 
 			double risePercentage, double fallPercentage, String strdateTime, String content){
-        super(userId, symbol, risePrice, dropPrice, 
+        super(userId, symbol, group, risePrice, dropPrice, 
 				risePercentage, fallPercentage, strdateTime, content);
     }
 

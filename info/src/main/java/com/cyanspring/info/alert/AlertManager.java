@@ -160,8 +160,7 @@ public class AlertManager extends Compute {
 			try {
 				strCmd = "Delete from TRADEALERT_PAST where USER_ID='"
 						+ UserId + "'";
-				SQLQuery query = session.createSQLQuery(strCmd);
-				int Return = query.executeUpdate();
+				session.createSQLQuery(strCmd);
 			} catch (Exception ee) {
 				ResetAccountReplyEvent resetAccountReplyEvent = new ResetAccountReplyEvent(
 						event.getKey(), event.getSender(), event.getAccount(),
@@ -254,7 +253,7 @@ public class AlertManager extends Compute {
 	                Query query = session.getNamedQuery("LoadPastTradeAlert");
 	                query.setString(0, parentOrder.getUser());
 	//				query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
-	                Iterator iterator = query.list().iterator();
+	                Iterator<?> iterator = query.list().iterator();
 	                list = new ArrayList<TradeAlert>();
 	                ArrayList<TradeAlert> lstExpired = new ArrayList<TradeAlert>();
 	                while (iterator.hasNext()) {
@@ -293,9 +292,6 @@ public class AlertManager extends Compute {
 	            } else {
 	                if (list.indexOf(TA) != -1) {
 	                    log.warn("[UpdateChildOrderEvent][WARNING] : ChildOrderEvent already exists.");
-	                    if (null != session) {
-	                        session.close();
-	                    }
 	                    return;
 	                } else {
 	                    if (list.size() >= 20) {
@@ -368,7 +364,7 @@ public class AlertManager extends Compute {
 					Query query = session.getNamedQuery("LoadPastTradeAlert");
 					query.setString(0, execution.getUser());
 	//				query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
-					Iterator iterator = query.list().iterator();
+					Iterator<?> iterator = query.list().iterator();
 					list = new ArrayList<TradeAlert>();
 					ArrayList<TradeAlert> lstExpired = new ArrayList<TradeAlert>();
 					while (iterator.hasNext()) {
@@ -407,9 +403,6 @@ public class AlertManager extends Compute {
 				} else {
 					if (list.indexOf(TA) != -1) {
 						log.warn("[UpdateChildOrderEvent][WARNING] : ChildOrderEvent already exists.");
-						if (null != session) {
-							session.close();
-						}
 						return;
 					} else {
 						if (list.size() >= 20) {
@@ -451,7 +444,7 @@ public class AlertManager extends Compute {
 									.getNamedQuery("LoadPastTradeAlert");
 							query.setString(0, event.getuserId());
 	//						query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
-							Iterator iterator = query.list().iterator();
+							Iterator<?> iterator = query.list().iterator();
 							list = new ArrayList<TradeAlert>();
 							ArrayList<TradeAlert> lstExpired = new ArrayList<TradeAlert>();
 							while (iterator.hasNext()) {
@@ -582,7 +575,6 @@ public class AlertManager extends Compute {
 					{
 						continue;
 					}
-					String setDateTime = alert.getDateTime();
 					// SendEvent
 					SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
 							null, null, "txId", PackPriceAlert(alert, comp));
@@ -590,9 +582,10 @@ public class AlertManager extends Compute {
 					// Add Alert to PastSQL
 					PastPriceAlert pastPriceAlert = new PastPriceAlert(
 							alert.getUserId(), alert.getSymbol(),
-							alert.getRisePrice(), alert.getDropPrice(), 
-							alert.getRisePercentage(), alert.getDropPercentage(), 
-							alert.getDateTime(), alert.getContent());
+							alert.getGroup(), alert.getRisePrice(), 
+							alert.getDropPrice(), alert.getRisePercentage(), 
+							alert.getDropPercentage(), alert.getDateTime(), 
+							alert.getContent());
 					pastPriceAlert.setId(alert.getId());
 					pastPriceAlert.setCommodity(refdata.getCommodity());
 					SQLSave(pastPriceAlert);
@@ -619,9 +612,10 @@ public class AlertManager extends Compute {
 					// Delete Alert from CurSQL
 					CurPriceAlert curPriceAlert = new CurPriceAlert(
 							alert.getUserId(), alert.getSymbol(),
-							alert.getRisePrice(), alert.getDropPrice(), 
-							alert.getRisePercentage(), alert.getDropPercentage(), 
-							alert.getDateTime(), alert.getContent());
+							alert.getGroup(), alert.getRisePrice(), 
+							alert.getDropPrice(), alert.getRisePercentage(), 
+							alert.getDropPercentage(), alert.getDateTime(), 
+							alert.getContent());
 					curPriceAlert.setId(alert.getId());
 					curPriceAlert.setCommodity(refdata.getCommodity());
 					SQLDelete(curPriceAlert);
@@ -732,7 +726,7 @@ public class AlertManager extends Compute {
 				Query query = session.getNamedQuery("LoadPastPriceAlert");
 				query.setString(0, userId);
 	//			query.setInteger("maxNoOfAlerts", maxNoOfAlerts);
-				Iterator iterator = query.list().iterator();
+				Iterator<?> iterator = query.list().iterator();
 				while (iterator.hasNext()) {
 					PastPriceAlert pastPriceAlert = (PastPriceAlert) iterator
 							.next();
@@ -786,9 +780,10 @@ public class AlertManager extends Compute {
 			// save to SQL
 			CurPriceAlert curPriceAlert = new CurPriceAlert(
 					priceAlert.getUserId(), priceAlert.getSymbol(),
-					priceAlert.getRisePrice(), priceAlert.getDropPrice(), 
-					priceAlert.getRisePercentage(), priceAlert.getDropPercentage(), 
-					priceAlert.getDateTime(), priceAlert.getContent());
+					priceAlert.getGroup(), priceAlert.getRisePrice(), 
+					priceAlert.getDropPrice(), priceAlert.getRisePercentage(), 
+					priceAlert.getDropPercentage(), priceAlert.getDateTime(), 
+					priceAlert.getContent());
 			curPriceAlert.setId(priceAlert.getId());
 			curPriceAlert.setCommodity(refdata.getCommodity());
 			SQLSave(curPriceAlert);
@@ -843,9 +838,10 @@ public class AlertManager extends Compute {
 					// save to SQL
 					CurPriceAlert curPriceAlert = new CurPriceAlert(
 							priceAlert.getUserId(), priceAlert.getSymbol(),
-							priceAlert.getRisePrice(), priceAlert.getDropPrice(), 
-							priceAlert.getRisePercentage(), priceAlert.getDropPercentage(), 
-							priceAlert.getDateTime(), priceAlert.getContent());
+							priceAlert.getGroup(), priceAlert.getRisePrice(), 
+							priceAlert.getDropPrice(), priceAlert.getRisePercentage(), 
+							priceAlert.getDropPercentage(), priceAlert.getDateTime(), 
+							priceAlert.getContent());
 					curPriceAlert.setId(priceAlert.getId());
 					SQLSave(curPriceAlert);
 					// SendPriceAlertreplyEvent
@@ -919,9 +915,10 @@ public class AlertManager extends Compute {
 						// update to SQL
 						CurPriceAlert curPriceAlert = new CurPriceAlert(
 								priceAlert.getUserId(), priceAlert.getSymbol(),
-								priceAlert.getRisePrice(), priceAlert.getDropPrice(), 
-								priceAlert.getRisePercentage(), priceAlert.getDropPercentage(), 
-								priceAlert.getDateTime(), priceAlert.getContent());
+								priceAlert.getGroup(), priceAlert.getRisePrice(), 
+								priceAlert.getDropPrice(), priceAlert.getRisePercentage(), 
+								priceAlert.getDropPercentage(), priceAlert.getDateTime(), 
+								priceAlert.getContent());
 						curPriceAlert.setId(priceAlert.getId());
 						curPriceAlert.setCommodity(refdata.getCommodity());
 						SQLUpdate(curPriceAlert);
@@ -1004,9 +1001,10 @@ public class AlertManager extends Compute {
 				// update to SQL
 				CurPriceAlert curPriceAlert = new CurPriceAlert(
 						priceAlert.getUserId(), priceAlert.getSymbol(),
-						priceAlert.getRisePrice(), priceAlert.getDropPrice(), 
-						priceAlert.getRisePercentage(), priceAlert.getDropPercentage(), 
-						priceAlert.getDateTime(), priceAlert.getContent());
+						priceAlert.getGroup(), priceAlert.getRisePrice(), 
+						priceAlert.getDropPrice(), priceAlert.getRisePercentage(), 
+						priceAlert.getDropPercentage(), priceAlert.getDateTime(), 
+						priceAlert.getContent());
 				curPriceAlert.setId(priceAlert.getId());
 				curPriceAlert.setCommodity(refdata.getCommodity());
 				SQLDelete(curPriceAlert);
@@ -1179,8 +1177,6 @@ public class AlertManager extends Compute {
 
 	synchronized private void SendSQLHeartBeat() {
         Calendar cal = Calendar.getInstance();
-        long aaa = cal.getTimeInMillis();
-        long bbb = LastHeartbeat.getTime() ;
         if ((cal.getTimeInMillis() - LastHeartbeat.getTime()) < 240000)
         {
             return ;
@@ -1193,7 +1189,7 @@ public class AlertManager extends Compute {
 		try {
 			session = sessionFactory.openSession();			
 			SQLQuery sq = session.createSQLQuery("select 1;");
-			Iterator iterator = sq.list().iterator();
+			sq.list().iterator();
 			log.info("Send SQLHeartBeat...");
 		} catch (Exception e) {
 			log.error("[SendSQLHeartBeat] : " + e.getMessage());
@@ -1233,7 +1229,6 @@ public class AlertManager extends Compute {
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public void processAsyncTimerEvent(AsyncTimerEvent event,
 			List<Compute> computes) {
 		if (event.getKey() == "SendSQLHeartTimer") {
@@ -1251,7 +1246,7 @@ public class AlertManager extends Compute {
 		try {
 			ArrayList<BasePriceAlert> BasePriceAlertlist;
 			Query query = session.getNamedQuery("LoadAllCurPriceAlert");
-			Iterator iterator = query.list().iterator();
+			Iterator<?> iterator = query.list().iterator();
 			int search;
 			while (iterator.hasNext()) {
 				CurPriceAlert curPriceAlert = (CurPriceAlert) iterator.next();

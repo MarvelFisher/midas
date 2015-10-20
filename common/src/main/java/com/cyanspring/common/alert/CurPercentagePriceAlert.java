@@ -9,9 +9,9 @@ public class CurPercentagePriceAlert extends BasePriceAlert{
 	private String content ;
 	private double percentage ;	
 	
-	public CurPercentagePriceAlert(String userId, String symbol, double risePrice, double dropPrice, 
+	public CurPercentagePriceAlert(String userId, String symbol, String group, double risePrice, double dropPrice, 
 			double risePercentage, double fallPercentage, String strdateTime, String content, String commodity){
-		super(userId, symbol, risePrice, dropPrice, 
+		super(userId, symbol, group, risePrice, dropPrice, 
 				risePercentage, fallPercentage, strdateTime, content, commodity);
 	}
 
