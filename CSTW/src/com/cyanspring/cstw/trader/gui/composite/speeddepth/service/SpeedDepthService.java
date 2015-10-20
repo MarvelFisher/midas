@@ -188,8 +188,12 @@ public final class SpeedDepthService {
 			OrdStatus status = (OrdStatus) map.get("Status");
 			if (!status.isCompleted()) {
 				for (SpeedDepthModel currentModel : currentList) {
-					String symbol = (String) map.get("Symbol");
+					String symbol = (String) map.get("Symbol");					
+					if( null == map.get("Price"))
+						continue;
+					
 					double price = (Double) map.get("Price");
+
 					if (currentModel.getSymbol().equals(symbol)
 							&& PriceUtils.Equal(price, currentModel.getPrice(),
 									delta)) {
