@@ -52,6 +52,8 @@ import com.cyanspring.common.event.account.AccountSettingSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AccountSettingSnapshotRequestEvent;
 import com.cyanspring.common.event.account.CSTWUserLoginReplyEvent;
 import com.cyanspring.common.event.account.UserLoginReplyEvent;
+import com.cyanspring.common.event.order.AllStrategySnapshotReplyEvent;
+import com.cyanspring.common.event.order.AllStrategySnapshotRequestEvent;
 import com.cyanspring.common.event.order.InitClientEvent;
 import com.cyanspring.common.event.order.InitClientRequestEvent;
 import com.cyanspring.common.event.order.StrategySnapshotRequestEvent;
@@ -163,13 +165,14 @@ public class Business {
 				processCSTWUserLoginReplyEvent(evt);
 				if (evt.isOk()) {
 					tickManager.init(getFirstServer());
-					if (null != loginAccount)
-						;
-					traderInfoListener.init(loginAccount);
+					if(null != loginAccount);
+						traderInfoListener.init(loginAccount);
+						
 				}
 				if (isLoginRequired() && evt.isOk()) {
 					requestStrategyInfo(evt.getSender());
 				}
+
 			} else if (event instanceof AccountSettingSnapshotReplyEvent) {
 
 				AccountSettingSnapshotReplyEvent evt = (AccountSettingSnapshotReplyEvent) event;
@@ -220,13 +223,7 @@ public class Business {
 	private void requestStrategyInfo(String server) {
 		try {
 			orderManager.init();
-			if (Business.getInstance().isLoginRequired())
-				eventManager.sendRemoteEvent(new StrategySnapshotRequestEvent(
-						Business.this.getAccount(), server, null));
-			// else
-			// eventManager.sendRemoteEvent(new
-			// StrategySnapshotRequestEvent(null, server));
-			eventManager.sendEvent(new ServerStatusEvent(server, true));
+			eventManager.sendEvent(new ServerStatusEvent(server, true));	
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			e.printStackTrace();
@@ -332,22 +329,17 @@ public class Business {
 		ServerStatusDisplay.getInstance().init();
 
 		eventManager.subscribe(NodeInfoEvent.class, listener);
-		eventManager.subscribe(InitClientEvent.class, listener);
-		eventManager.subscribe(UserLoginReplyEvent.class, listener);
-		eventManager.subscribe(SelectUserAccountEvent.class, listener);
-		eventManager.subscribe(ServerHeartBeatEvent.class, listener);
-		eventManager.subscribe(ServerReadyEvent.class, listener);
-		eventManager.subscribe(SingleOrderStrategyFieldDefUpdateEvent.class,
-				listener);
-		eventManager.subscribe(
-				MultiInstrumentStrategyFieldDefUpdateEvent.class, listener);
-		eventManager.subscribe(CSTWUserLoginReplyEvent.class, listener);
-		eventManager
-				.subscribe(AccountSettingSnapshotReplyEvent.class, listener);
-
-		// schedule timer
-		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval, listener,
-				timerEvent);
+		eventManager.subscribe(InitClientEvent.class, listener);		
+		eventManager.subscribe(UserLoginReplyEvent.class, listener);		
+		eventManager.subscribe(SelectUserAccountEvent.class, listener);		
+		eventManager.subscribe(ServerHeartBeatEvent.class, listener);		
+		eventManager.subscribe(ServerReadyEvent.class, listener);		
+		eventManager.subscribe(SingleOrderStrategyFieldDefUpdateEvent.class, listener);		
+		eventManager.subscribe(MultiInstrumentStrategyFieldDefUpdateEvent.class, listener);		
+		eventManager.subscribe(CSTWUserLoginReplyEvent.class, listener);		
+		eventManager.subscribe(AccountSettingSnapshotReplyEvent.class, listener);
+		//schedule timer
+		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval , listener, timerEvent);	
 		traderInfoListener = new TraderInfoListener();
 		initSessionListener();
 	}

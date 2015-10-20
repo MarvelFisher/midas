@@ -28,11 +28,15 @@ import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.IRemoteEventManager;
+import com.cyanspring.common.event.order.AllStrategySnapshotReplyEvent;
+import com.cyanspring.common.event.order.AllStrategySnapshotRequestEvent;
 import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
 import com.cyanspring.common.event.order.StrategySnapshotEvent;
+import com.cyanspring.common.event.order.StrategySnapshotRequestEvent;
 import com.cyanspring.common.event.strategy.MultiInstrumentStrategyUpdateEvent;
 import com.cyanspring.common.event.strategy.SingleInstrumentStrategyUpdateEvent;
 import com.cyanspring.common.event.strategy.StrategyLogEvent;
+import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.event.AccountSelectionEvent;
 import com.cyanspring.cstw.event.GuiMultiInstrumentStrategyUpdateEvent;
 import com.cyanspring.cstw.event.GuiSingleInstrumentStrategyUpdateEvent;
@@ -54,6 +58,8 @@ public class OrderCachingManager implements IAsyncEventListener {
 	private static final int maxLog = 100;
 	private String currentAccount;
 	
+	private GroupOrderCache groupOrderCache = new GroupOrderCache();
+	
 	public OrderCachingManager(IRemoteEventManager eventManager) {
 		this.eventManager = eventManager;
 	}
@@ -66,6 +72,7 @@ public class OrderCachingManager implements IAsyncEventListener {
 		// processing parent orders snapshot for this server
 		singleOrderStrategyCache.clearOrders(event.getSender());
 		for(ParentOrder order: event.getOrders()) {
+			
 //			order.put(OrderField.SERVER.value(), event.getSender());
 			singleOrderStrategyCache.update(order);
 		}
@@ -132,8 +139,12 @@ public class OrderCachingManager implements IAsyncEventListener {
 		while (singleInstrumentStrategyQueue.size()>0) {
 			Instrument instrument = singleInstrumentStrategyQueue.remove();
 			String server = instrument.get(String.class, OrderField.SERVER_ID.value());
+			String accountId = instrument.getAccount();
 			if (servers.contains(server)) {
-				singleInstrumentStrategyCache.update(instrument);
+				if(accountId != null && accountId.equals(currentAccount)){
+					singleInstrumentStrategyCache.update(instrument);
+				}
+				groupOrderCache.updateInstrument(instrument);
 			} else {
 				newQueue.add(instrument);
 			}
@@ -146,8 +157,12 @@ public class OrderCachingManager implements IAsyncEventListener {
 		while (multiInstrumentStrategyQueue.size()>0) {
 			MultiInstrumentStrategyData data = multiInstrumentStrategyQueue.remove();
 			String server = data.get(String.class, OrderField.SERVER_ID.value());
+			String accountId = data.getAccount();
 			if (servers.contains(server)) {
-				multiInstrumentStrategyCache.update(data);
+				if(accountId != null && accountId.equals(currentAccount)){
+					multiInstrumentStrategyCache.update(data);
+				}
+				groupOrderCache.updateMultiInstrumentStrategyData(data);
 			} else {
 				newQueue.add(data);
 			}
@@ -157,11 +172,18 @@ public class OrderCachingManager implements IAsyncEventListener {
 
 	private void processParentOrderUpdateEvent(ParentOrderUpdateEvent event) {
 		ParentOrder parentOrder = ((ParentOrderUpdateEvent)event).getOrder();
-//		parentOrder.put(OrderField.SERVER.value(), event.getSender());
+		
 		log.debug("Update parent order recieved: " + parentOrder);
 		String server = parentOrder.get(String.class, OrderField.SERVER_ID.value());
+		String accountId = parentOrder.getAccount();
 		if (server == null || server.equals("") || servers.contains(server)) {
-			singleOrderStrategyCache.update(parentOrder);
+			if(accountId != null && accountId.equals(currentAccount)){
+				log.info("update currentAccoount :{}",currentAccount);
+				singleOrderStrategyCache.update(parentOrder);
+			}
+			log.info("update groupOrdr :{},{}",parentOrder.getAccount(),parentOrder.getId());
+
+			groupOrderCache.updateOrder(parentOrder);
 			eventManager.sendEvent(new GuiSingleOrderStrategyUpdateEvent(parentOrder));
 		} else {
 			singleOrderStrategyQueue.add(parentOrder);
@@ -234,6 +256,19 @@ public class OrderCachingManager implements IAsyncEventListener {
 		subscribeAccountOrder(Business.getInstance().getAccount());
 		eventManager.subscribe(SingleInstrumentStrategyUpdateEvent.class, Business.getInstance().getAccount(), this);
 		eventManager.subscribe(MultiInstrumentStrategyUpdateEvent.class, Business.getInstance().getAccount(), this);
+		eventManager.subscribe(AllStrategySnapshotReplyEvent.class,this);
+		
+		try {
+			if(Business.getInstance().getUserGroup().isAdmin()){
+				eventManager.sendRemoteEvent(new AllStrategySnapshotRequestEvent(IdGenerator.getInstance().getNextID(),Business.getInstance().getFirstServer(), null));	
+			}else if(Business.getInstance().getUserGroup().getRole().isManagerLevel()){
+				eventManager.sendRemoteEvent(new AllStrategySnapshotRequestEvent(IdGenerator.getInstance().getNextID(), Business.getInstance().getFirstServer(), Business.getInstance().getAccountGroup()));
+			}else{
+				eventManager.sendRemoteEvent(new StrategySnapshotRequestEvent(Business.getInstance().getAccount(), Business.getInstance().getFirstServer(), null));
+			}	
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
 	}
 	
 	private void subscribeAccountOrder(String account) {
@@ -249,10 +284,12 @@ public class OrderCachingManager implements IAsyncEventListener {
 			eventManager.unsubscribe(ParentOrderUpdateEvent.class, Business.getInstance().getAccount(), this);
 			eventManager.unsubscribe(SingleInstrumentStrategyUpdateEvent.class, Business.getInstance().getAccount(), this);
 			eventManager.unsubscribe(MultiInstrumentStrategyUpdateEvent.class, Business.getInstance().getAccount(), this);
+			eventManager.unsubscribe(AllStrategySnapshotReplyEvent.class, Business.getInstance().getAccount(), this);
 		} else {
 			eventManager.unsubscribe(ParentOrderUpdateEvent.class, this);
 			eventManager.unsubscribe(SingleInstrumentStrategyUpdateEvent.class, this);
 			eventManager.unsubscribe(MultiInstrumentStrategyUpdateEvent.class, this);
+			eventManager.unsubscribe(AllStrategySnapshotReplyEvent.class, Business.getInstance().getAccount(), this);
 		}
 	}
 
@@ -309,14 +346,37 @@ public class OrderCachingManager implements IAsyncEventListener {
 			processStrategyLogEvent((StrategyLogEvent)event);
 		} else if (event instanceof ParentOrderUpdateEvent) {
 			processParentOrderUpdateEvent((ParentOrderUpdateEvent)event);
-		} else if (event instanceof ParentOrderUpdateEvent) {
-			processParentOrderUpdateEvent((ParentOrderUpdateEvent)event);
 		} else if (event instanceof SingleInstrumentStrategyUpdateEvent) {
-			processSingleInstrumentStrategyUpdateEvent((SingleInstrumentStrategyUpdateEvent)event);
+			processSingleInstrumentStrategyUpdateEvent((SingleInstrumentStrategyUpdateEvent)event);		
 		} else if (event instanceof MultiInstrumentStrategyUpdateEvent) {
-			processMultiInstrumentStrategyUpdateEvent((MultiInstrumentStrategyUpdateEvent)event);
+			processMultiInstrumentStrategyUpdateEvent((MultiInstrumentStrategyUpdateEvent)event);			
+		}else if(event instanceof AllStrategySnapshotReplyEvent){
+			processAllStrategySnapshotReplyEvent((AllStrategySnapshotReplyEvent)event);
 		}
 	}
 
+	private void processAllStrategySnapshotReplyEvent(
+			AllStrategySnapshotReplyEvent event) {
+		if(!event.isOk()){
+			log.warn("processAllStrategySnapshotReplyEvent is not ok:{}",event.getMessage());
+			return;
+		}
+		groupOrderCache.updateOrder(event.getOrders());
+		groupOrderCache.updateInstrument(event.getInstruments());
+		groupOrderCache.updateMultiInstrumentStrategyData(event.getStrategyData());
+		subGroupEvent(Business.getInstance().getAccountGroup());
+	}
 	
+	
+	private void subGroupEvent(List<String> accountList){
+		for(String id : accountList){
+			eventManager.unsubscribe(ParentOrderUpdateEvent.class, id, this);
+			eventManager.subscribe(ParentOrderUpdateEvent.class, id, this);
+			log.info("sub ParentOrderUpdateEvent:{}",id);
+		}
+	}
+	
+	public List <Map<String,Object>> getAllParentOrders(){
+		return groupOrderCache.getAllParentOrders();
+	}
 }

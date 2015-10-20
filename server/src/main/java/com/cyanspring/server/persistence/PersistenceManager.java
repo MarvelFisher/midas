@@ -1255,7 +1255,7 @@ public class PersistenceManager {
 		List<ClosedPosition> result = new ArrayList<ClosedPosition>();
 		try {
 			result = session.createCriteria(ClosedPosition.class)
-					.add(Restrictions.gt("created", 
+					.add(Restrictions.gt("created",
 							todayOnly ? TimeUtil.getOnlyDate(Clock.getInstance().now()) : new Date(0)))
 					.addOrder(Order.asc("created"))
 					.list();
@@ -1294,6 +1294,25 @@ public class PersistenceManager {
 			if (null != state && state.equals(StrategyState.Terminated)) {
 				toBeRemoved.add(dataObject.get(String.class, OrderField.ID.value()));
 			}
+		}
+	}
+
+	private void processChildOrderAudit(List<DataObject> result, List<ChildOrderAudit> list) {
+		// If object in list has duplicate id, keep the latest created one
+		if (list != null && list.size() > 0) {
+			ChildOrderAudit toAdd = list.get(0);
+			for (int i = 1; i < list.size(); i++) {
+				ChildOrderAudit c = list.get(i);
+				if (!toAdd.getId().equals(c.getId())) {
+					result.add(toAdd.clone());
+					toAdd = c;
+				} else {
+					if (toAdd.getCreated().before(c.getCreated())) {
+						toAdd = c;
+					}
+				}
+			}
+			result.add(toAdd);
 		}
 	}
 
@@ -1349,6 +1368,26 @@ public class PersistenceManager {
 			}
 			log.info("Deleted " + persistType + " " + toBeRemoved.size() + " terminated items");
 		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		} finally {
+			session.close();
+		}
+
+		return result;
+	}
+
+	public List<DataObject> recoverChildOrderAudit(boolean todayOnly) {
+		Session session = sessionFactory.openSession();
+		List<DataObject> result = new ArrayList<>();
+		try {
+			@SuppressWarnings("unchecked")
+			List<ChildOrderAudit> list = session.createCriteria(ChildOrderAudit.class)
+					.add(Restrictions.eq("serverId", IdGenerator.getInstance().getSystemId()))
+					.add(Restrictions.gt("created",
+							this.todayOnly || todayOnly ? TimeUtil.getOnlyDate(Clock.getInstance().now()) : new Date(0)))
+					.addOrder(Order.asc("id")).addOrder(Order.asc("created")).list();
+			processChildOrderAudit(result, list);
+		}  catch (Exception e) {
 			log.error(e.getMessage(), e);
 		} finally {
 			session.close();

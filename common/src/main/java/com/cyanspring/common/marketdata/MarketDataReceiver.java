@@ -481,7 +481,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     private void broadCastStaleQuotes() {
         for(String index : indexSessions.keySet()){
             MarketSessionData marketSessionData= indexSessions.get(index);
-            if(marketSessionData != null && marketSessionData.getSessionType() == MarketSessionType.CLOSE){
+            if(marketSessionData != null && (marketSessionData.getSessionType() == MarketSessionType.CLOSE
+                || marketSessionData.getSessionType() == MarketSessionType.BREAK ))
+            {
                 ArrayList<String> symbols = indexSessionTypes.get(index);
                 for(String symbol : symbols){
                     Quote quote = quotes.get(symbol);

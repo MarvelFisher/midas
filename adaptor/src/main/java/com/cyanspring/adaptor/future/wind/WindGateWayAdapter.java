@@ -5,7 +5,9 @@ import com.cyanspring.network.transport.FDTFrameDecoder;
 import com.cyanspring.adaptor.future.wind.data.*;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.event.*;
+import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.common.event.AsyncTimerEvent;
+import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
@@ -27,7 +29,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
@@ -56,17 +57,9 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
     private boolean useRefDataCodeSubscribe = false;
     private List<String> marketsList;
     private String id = "W";
-
     private boolean isAlive = false;
     EventLoopGroup eventLoopGroup = null;
-
-    @Autowired
-    protected IRemoteEventManager eventManager;
-
-    protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-    protected ScheduleManager scheduleManager = new ScheduleManager();
     protected WindDataParser windDataParser = new WindDataParser();
-
     private ConcurrentHashMap<String, FutureData> futureDataBySymbolMap = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, StockData> stockDataBySymbolMap = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, IndexData> indexDataBySymbolMap = new ConcurrentHashMap<>();
@@ -92,35 +85,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
 
     List<IMarketDataStateListener> stateList = new ArrayList<IMarketDataStateListener>();
     List<UserClient> clientsList = new ArrayList<UserClient>();
-
-    private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
-
-        @Override
-        public void subscribeToEvents() {
-        }
-
-        @Override
-        public IAsyncEventManager getEventManager() {
-            return eventManager;
-        }
-    };
-
-    public void processAsyncTimerEvent(AsyncTimerEvent event) {
-        // process symbol Market Session
-        for (String symbol : marketRuleBySymbolMap.keySet()) {
-            MarketSessionData marketSessionData = marketSessionByIndexMap.get(marketRuleBySymbolMap.get(symbol));
-            if (marketSessionData != null && (marketSessionData.getSessionType() == MarketSessionType.CLOSE
-                    || marketSessionData.getSessionType() == MarketSessionType.BREAK)) {
-                Quote lastQuote = lastQuoteBySymbolMap.get(symbol);
-                DataObject lastQuoteExtend = lastQuoteExtendBySymbolMap.get(symbol);
-                if (lastQuote != null && !lastQuote.isStale()) {
-                    log.debug("Process Symbol Session & Send Stale Final Quote : Symbol=" + symbol);
-                    lastQuote.setStale(true);
-                    sendInnerQuote(new InnerQuote(QuoteSource.WIND_GENERAL, lastQuote));
-                }
-            }
-        }
-    }
 
     public String[] getRefSymbol() {
         List<String> list = new ArrayList<String>();
@@ -401,25 +365,13 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
     @Override
     public void init() throws Exception {
         isAlive = true;
-
-        // subscribe to events
-        eventProcessor.setHandler(this);
-        eventProcessor.init();
-        if (eventProcessor.getThread() != null)
-            eventProcessor.getThread().setName(id + " WFDA eventProcessor");
-
         quoteMgr.init();
         quoteMgr.setModifyTickTime(modifyTickTime);
         initReqThread();
         if(controlReqThread != null){
             queue.offer(new Integer(0));
         }
-
         if(marketsList != null) Collections.sort(marketsList);
-
-        if (!eventProcessor.isSync())
-            scheduleManager.scheduleRepeatTimerEvent(timerInterval,
-                    eventProcessor, timerEvent);
     }
 
     @Override
@@ -433,8 +385,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
             controlReqThread.interrupt();
             controlReqThread = null;
         }
-        if (!eventProcessor.isSync())
-            scheduleManager.uninit();
         log.info(id + " Wind uninit end");
     }
 

@@ -69,8 +69,8 @@
     <string>IFC1.CF</string>
     <com.cyanspring.common.staticdata.CodeTableData>
       <windCode>IFC1.CF</windCode>
-      <cnName>IF当月[IF1508]</cnName>
-      <spellName>IFdy[IF1508]</spellName>
+      <cnName>IF当月[IF1511]</cnName>
+      <spellName>IFdy[IF1511]</spellName>
       <shortName>IFC1</shortName>
       <securityExchange>CF</securityExchange>
       <securityType>120</securityType>
@@ -80,8 +80,8 @@
     <string>IFC2.CF</string>
     <com.cyanspring.common.staticdata.CodeTableData>
       <windCode>IFC2.CF</windCode>
-      <cnName>IF下月[IF1509]</cnName>
-      <spellName>IFxy[IF1509]</spellName>
+      <cnName>IF下月[IF1512]</cnName>
+      <spellName>IFxy[IF1512]</spellName>
       <shortName>IFC2</shortName>
       <securityExchange>CF</securityExchange>
       <securityType>120</securityType>
@@ -242,12 +242,12 @@
     </com.cyanspring.common.staticdata.CodeTableData>
   </entry>
   <entry>
-    <string>IF1509.CF</string>
+    <string>IF1511.CF</string>
     <com.cyanspring.common.staticdata.CodeTableData>
-      <windCode>IF1509.CF</windCode>
-      <cnName>IF1509</cnName>
-      <spellName>IF1509</spellName>
-      <shortName>IF1509</shortName>
+      <windCode>IF1511.CF</windCode>
+      <cnName>IF1511</cnName>
+      <spellName>IF1511</spellName>
+      <shortName>IF1511</shortName>
       <securityExchange>CF</securityExchange>
       <securityType>112</securityType>
     </com.cyanspring.common.staticdata.CodeTableData>
