@@ -256,13 +256,13 @@ public final class SpeedDepthTableComposite extends Composite {
 			currentTimeStamp = currentQuote.getTimeStamp();
 		}
 
-		if (currentTimeStamp == null
-				|| quote.getTimeStamp().after(currentTimeStamp)) {
+//		if (currentTimeStamp == null
+//				|| quote.getTimeStamp().after(currentTimeStamp)) {
 			currentQuote = quote;
 			List<SpeedDepthModel> list = speedDepthService.getSpeedDepthList(
 					currentQuote, isLock);
 			tableViewer.setInput(list);
-		}
+//		}
 	}
 
 	public void refresh(int rowLength) {
