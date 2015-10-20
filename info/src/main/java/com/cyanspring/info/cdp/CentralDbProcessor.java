@@ -428,6 +428,8 @@ public class CentralDbProcessor implements IPlugin
 			retEvent.setOk(false);
 			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.SYMBOLIST_ERROR, "Recieved null argument"));
 			log.debug("Process Request Group Symbol fail: Recieved null argument");
+			sendEvent(retEvent);
+			return;
 		}
 		String userEncode;
 		userEncode = InfoUtils.utf8Encode(user);
@@ -494,6 +496,12 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void userRequestGroupList(GroupListEvent retEvent)
 	{
+		StringBuilder msg;
+		msg = new StringBuilder("Process Request Group Symbol user:");
+		msg.append(retEvent.getUserID());
+		msg.append(" mkt:");
+		msg.append(retEvent.getMarket());
+		log.debug(msg.toString());
 		List<GroupInfo> retList = this.getDbhnd().getGroupList(retEvent.getUserID(), retEvent.getMarket());
 		retEvent.setGroupList(retList);
 		if (retList == null)
@@ -501,6 +509,16 @@ public class CentralDbProcessor implements IPlugin
 			retEvent.setOk(false);
 			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.CONNECTION_BROKEN, "Lost connection to Info Database"));
 			log.debug("Process Request Group Symbol fail: Can't find requested symbol");
+		}
+		else if (retList.isEmpty())
+		{
+			msg = new StringBuilder("Empty GroupList result user:");
+			msg.append(retEvent.getUserID());
+			msg.append(" mkt:");
+			msg.append(retEvent.getMarket());
+			retEvent.setOk(false);
+			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.DATA_NOT_FOUND, msg.toString()));
+			log.debug(msg.toString());
 		}
 		else
 		{
@@ -511,11 +529,27 @@ public class CentralDbProcessor implements IPlugin
 	
 	public void userSetGroupList(GroupListEvent retEvent, List<GroupInfo> groups)
 	{
+		StringBuilder msg;
 		if (groups == null || groups.isEmpty())
 		{
-			userRequestGroupList(retEvent);
+			msg = new StringBuilder("Process Set Group List fail: ");
+			if (groups == null) msg.append("groups == null ");
+			if (groups.isEmpty()) msg.append("groups is empty");
+			log.debug(msg.toString());
+			retEvent.setOk(false);
+			retEvent.setMessage(MessageLookup.buildEventMessage(ErrorMessage.SYMBOLIST_ERROR, msg.toString()));
+			sendEvent(retEvent);
 			return;
 		}
+		msg = new StringBuilder("Process Set Group List ");
+		msg.append(retEvent.getUserID());
+		msg.append(" Group:");
+		for (GroupInfo g : groups)
+		{
+			if (groups.indexOf(g) > 0) msg.append(",");
+			msg.append(g.getGroupID());
+		}
+		log.debug(msg.toString());
 		List<GroupInfo> orgList = this.getDbhnd().getGroupList(retEvent.getUserID(), retEvent.getMarket());
 		List<GroupInfo> delList = new ArrayList<GroupInfo>();
 		ArrayList<GroupInfo> sortSource = new ArrayList<GroupInfo>();

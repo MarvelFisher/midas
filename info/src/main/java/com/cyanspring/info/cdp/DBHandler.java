@@ -241,6 +241,12 @@ public class DBHandler
 		}
 		if (retsymbollist.isEmpty())
 		{
+			StringBuilder msg;
+			msg = new StringBuilder("Request GroupList empty user:");
+			msg.append(user);
+			msg.append(" mkt:");
+			msg.append(market);
+			log.warn(msg.toString());
 			int count = getSubscribeSymbolCount(user, market);
 			if (count > 0)
 				retsymbollist.add(new GroupInfo("Mobile", "Mobile", count));
