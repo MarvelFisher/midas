@@ -22,7 +22,6 @@ public class RefDataFactory extends RefDataService {
 
 	protected static final Logger log = LoggerFactory.getLogger(RefDataFactory.class);
 	List<RefData> refDataList = new CopyOnWriteArrayList<>();
-	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	private XStream xstream = new XStream(new DomDriver("UTF-8"));
 	private Map<String, AbstractRefDataStrategy> strategyMap = new HashMap<>();
 	private String strategyPack = "com.cyanspring.common.staticdata.fu";
@@ -78,7 +77,7 @@ public class RefDataFactory extends RefDataService {
 		}
 		log.info("Updating refData....");
 		Calendar cal = Calendar.getInstance();
-		cal.setTime(sdf.parse(tradeDate));
+		cal.setTime(getSettlementDateFormat().parse(tradeDate));
 		for (RefData refData : refDataList) {
 			updateRefData(cal, refData);
 		}
@@ -207,7 +206,7 @@ public class RefDataFactory extends RefDataService {
 	@Override
 	public RefData add(RefData refData, String tradeDate) throws Exception {
 		Calendar cal = Calendar.getInstance();
-		cal.setTime(sdf.parse(tradeDate));
+		cal.setTime(getSettlementDateFormat().parse(tradeDate));
 		updateRefData(cal, refData);
 		remove(refData);
 		refDataList.add(refData);
@@ -229,7 +228,7 @@ public class RefDataFactory extends RefDataService {
 		for (RefData refData : refDataList) {
 			if (index.equals(refData.getCategory())) {
 				Calendar cal = Calendar.getInstance();
-				cal.setTime(sdf.parse(tradeDate));
+				cal.setTime(getSettlementDateFormat().parse(tradeDate));
 				updateRefData(cal, refData);
 				ret.add(refData);
 			}
@@ -263,4 +262,7 @@ public class RefDataFactory extends RefDataService {
 		this.templateListAsRefDataList = templateListAsRefDataList;
 	}
 
+	private SimpleDateFormat getSettlementDateFormat() {
+		return new SimpleDateFormat("yyyy-MM-dd") ;
+	}
 }

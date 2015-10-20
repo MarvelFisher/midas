@@ -43,6 +43,7 @@ import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.PositionPeakPrice;
 import com.cyanspring.common.account.User;
+import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.CoinControl;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.GroupManagement;
@@ -222,7 +223,7 @@ public class Server implements ApplicationContextAware {
 		log.info("Market data is ready: " + event.isReady());
 		readyList.update("MarketData", event.isReady());
 	}
-	
+
 	public void processRefDataEvent(RefDataEvent event) {
 		log.info("RefData is ready: " + event.isOk());
 		readyList.update("RefData", event.isOk());
@@ -349,20 +350,22 @@ public class Server implements ApplicationContextAware {
 			trailingStopManager.injectPositionPeakPrices(list);
 		}
 	}
-	
+
 	private void recoverStrategies() {
 		if (null != strategyRecoveryProcessor) {
 			List<DataObject> list = strategyRecoveryProcessor.recover();
 
 			// setting all strategy to stopped state
 			for (DataObject obj : list) {
-				StrategyState state = obj.get(StrategyState.class,
-						OrderField.STATE.value());
-				if (state.equals(StrategyState.Terminated)) {
-					continue;
-				}
+				if (!(obj instanceof ChildOrder)) {
+					StrategyState state = obj.get(StrategyState.class,
+							OrderField.STATE.value());
+					if (state.equals(StrategyState.Terminated)) {
+						continue;
+					}
 
-				obj.put(OrderField.STATE.value(), StrategyState.Stopped);
+					obj.put(OrderField.STATE.value(), StrategyState.Stopped);
+				}
 			}
 			orderManager.injectStrategies(list);
 			businessManager.injectStrategies(list);
@@ -467,12 +470,12 @@ public class Server implements ApplicationContextAware {
 						Thread.sleep(2000);
 					} catch (InterruptedException e) {
 					}
-					
+
 					if (!readyList.map.get("DownStream")) {
 						log.debug("waiting for down stream ready before recovery...");
 						continue;
 					}
-					
+
 					if (!readyList.map.get("RefData")) {
 						log.debug("waiting for refData ready before recovery...");
 						continue;

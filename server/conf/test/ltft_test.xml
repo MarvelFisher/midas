@@ -319,27 +319,6 @@
 		</property>
 	</bean>
 
-	<bean id="categoryFilter" class="com.cyanspring.common.filter.CategoryFilter">
-		<property name="refDataTplLoader" ref="refDataTplLoader"></property>
-	</bean>
-
-	<bean id="itypeFilter" class="com.cyanspring.common.filter.ITypeFilter">
-		<property name="types">
-			<list>
-				<value>FUTURES_FT</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="refDataFilter" class="com.cyanspring.common.filter.RefDataFilter">
-		<constructor-arg>
-			<list>
-				<ref bean="categoryFilter" />
-				<ref bean="itypeFilter" />
-			</list>
-		</constructor-arg>
-	</bean>
-
 	<bean id="userGroupRecoveryProcessor" class="com.cyanspring.server.UserGroupRecoveryProcessor">
 	</bean>
 

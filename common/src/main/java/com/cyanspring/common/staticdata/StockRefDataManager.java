@@ -24,7 +24,6 @@ public class StockRefDataManager extends RefDataService {
 
     protected static final Logger log = LoggerFactory.getLogger(StockRefDataManager.class);
     private List<RefData> refDataList = new CopyOnWriteArrayList<>();
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private XStream xstream = new XStream(new DomDriver("UTF-8"));
     
     //Futures
@@ -74,7 +73,7 @@ public class StockRefDataManager extends RefDataService {
         }
         log.info("Updating refData....");
         Calendar cal = Calendar.getInstance();
-        cal.setTime(sdf.parse(tradeDate));
+        cal.setTime(getSettlementDateFormat().parse(tradeDate));
         for (RefData refData : refDataList) {
             updateRefData(cal, refData);
         }
@@ -156,7 +155,7 @@ public class StockRefDataManager extends RefDataService {
 	@Override
 	public RefData add(RefData refData, String tradeDate) throws Exception {	
 		Calendar cal = Calendar.getInstance();
-		cal.setTime(sdf.parse(tradeDate));
+		cal.setTime(getSettlementDateFormat().parse(tradeDate));
 		updateRefData(cal, refData);
 		remove(refData);
 		refDataList.add(refData);
@@ -281,5 +280,9 @@ public class StockRefDataManager extends RefDataService {
 
 	public void setRefDataTemplateMap(Map<String, RefData> refDataTemplateMap) {
 		this.refDataTemplateMap = refDataTemplateMap;
+	}
+	
+	private SimpleDateFormat getSettlementDateFormat() {
+		return new SimpleDateFormat("yyyy-MM-dd") ;
 	}
 }

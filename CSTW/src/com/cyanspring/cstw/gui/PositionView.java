@@ -578,11 +578,11 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 					}
 					lbstatus.setForeground(stateColor);				
 					PositionView.this.lbstatus.setText(state.toString());
-					// PositionView.this.lbCash.setText(decimalFormat.format(PositionView.this.account.getCash()));
-					// PositionView.this.lbMargin.setText(decimalFormat.format(PositionView.this.account.getMargin()));
-					// PositionView.this.lbMarginHeld.setText(decimalFormat.format(PositionView.this.account.getMarginHeld()));
-					PositionView.this.topComposite.layout();
-					tabFolder.setSelection(tbtmOpenPositions);
+					PositionView.this.topComposite.layout();				
+					if(tabFolder.getSelectionIndex() < 0){
+						tabFolder.setSelection(tbtmOpenPositions);
+					}	
+					
 				}
 			}
 		});

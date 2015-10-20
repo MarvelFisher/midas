@@ -38,6 +38,11 @@
 				</bean>
 	        </list>
 		</property>
+		<property name="eventExecuteTiming">
+	  		<map key-type="java.lang.Class" value-type="com.cyanspring.common.strategy.ExecuteTiming">
+		        <entry key="com.cyanspring.common.event.marketdata.QuoteEvent" value="NOW" />
+		    </map>
+		</property>
 	</bean>
 	
 	<bean id="stopPriceAnalyzer" class="com.cyanspring.sample.singleorder.stop.StopPriceAnalyzer" scope="prototype">

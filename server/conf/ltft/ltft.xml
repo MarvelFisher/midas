@@ -177,6 +177,18 @@
 		<property name="syncCentralDb" value="true" />
 		<property name="useLtsGateway" value="false" />
 	</bean>
+	
+	<bean id="positionRecoveryProcessor" class="com.cyanspring.server.PositionRecoveryProcessor">
+        <property name="todayOnly" value="true"></property>
+    </bean>
+
+    <bean id="executionRecoveryProcessor" class="com.cyanspring.server.ExecutionRecoveryProcessor">
+        <property name="todayOnly" value="true"></property>
+    </bean>
+
+    <bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
+        <property name="todayOnly" value="true"></property>
+    </bean>
 
 	<bean id="quoteSaver" class="com.cyanspring.common.marketdata.QuoteSaver" />
 	<bean id="quoteChecker" class="com.cyanspring.common.marketdata.QuoteChecker">
@@ -309,15 +321,6 @@
 	</bean>
 
 	<bean id="accountSettingRecoveryProcessor" class="com.cyanspring.server.AccountSettingRecoveryProcessor">
-	</bean>
-
-	<bean id="positionRecoveryProcessor" class="com.cyanspring.server.PositionRecoveryProcessor">
-	</bean>
-
-	<bean id="executionRecoveryProcessor" class="com.cyanspring.server.ExecutionRecoveryProcessor">
-	</bean>
-
-	<bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
 	</bean>
 
 	<bean id="riskOrderController" class="com.cyanspring.server.order.RiskOrderController">

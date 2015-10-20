@@ -104,6 +104,9 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener{
 		if(null == parentComposite)
 			return ;
 		
+		if(parentComposite.getDisplay().isDisposed())
+			return ;
+		
 		parentComposite.getDisplay().asyncExec(new Runnable() {
 			
 			@Override
