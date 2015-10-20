@@ -57,8 +57,7 @@
     <bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
         <constructor-arg>
             <list>
-                <!--<ref bean="ibAdaptor" />-->
-                <ref bean="idAdaptor" />
+                <ref bean="ibAdaptor" />
             </list>
         </constructor-arg>
         <property name="quoteThrottle" value="100"/>
@@ -88,31 +87,18 @@
         <property name="quoteListener" ref="kdbQuoteListener"/>
     </bean>
 
-    <!-- IDAdaptor setting (Setting can be marked if not used) -->
+    <!-- IBAdaptor setting (Setting can be marked if not used) -->
 
-    <bean id="idAdaptor" class="com.cyanspring.id.IdMarketDataAdaptor">
-        <property name="account" value="fdtcanned"></property>
-        <property name="password" value="MFW9dC26"></property>
-        <property name="gateway" value="false"></property>
-        <property name="reqIp" value="10.0.0.32"></property>
-        <property name="reqPort" value="6088"></property>
-        <property name="exch" value="687"></property>
-        <property name="sendHeartBeat" value="3"></property>
-        <property name="throwQuoteTimeInterval" value="10000"/>
-        <property name="nonFX">
-            <map>
-                <entry key="XAUUSD" value="691" />
-                <entry key="XAGUSD" value="691" />
-            </map>
-        </property>
-        <property name="contributeList">
-            <list>
-            </list>
-        </property>
-        <property name="unContributeList">
-            <list>
-            </list>
-        </property>
+    <bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
+        <property name="id" value="IB01" />
+        <property name="host" value="10.0.0.30" />
+        <property name="port" value="4001" />
+        <property name="clientId" value="277" />
+        <property name="reqMarketDepth" value="false" />
+        <property name="logMarketData" value="false" />
+        <property name="newsIsSubCurrentDay" value="false" />
+        <property name="checkLastTimeInterval" value="15000" />
+        <!--<property name="cancelOpenOrders" value="true" /> -->
     </bean>
 
 </beans>
