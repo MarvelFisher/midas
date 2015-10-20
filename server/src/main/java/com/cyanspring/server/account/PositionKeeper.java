@@ -434,11 +434,11 @@ public class PositionKeeper {
 							pos.setAcLastPnL(acLastPnL);
 						}
 						
-						if(pos.getPnL() > pos.getLastPnL() || pos.getAcPnL() > pos.getAcLastPnL()){
+						/*if(pos.getPnL() > pos.getLastPnL() || pos.getAcPnL() > pos.getAcLastPnL()){
 							log.info("Strange LastPnl - " + pos.getQty() + ", lastPrice: " + lastPrice + ", price: " + price + ", position price: " + pos.getPrice()
 									+ ", Pnl: " + pos.getPnL() + ", AcPnl:" + pos.getAcPnL() + ", lastPnl: " + pos.getLastPnL()
 									+ ", AcLastPnl: " + pos.getAcLastPnL() + ", bid:" + quote.getBid() + ", ask: " + quote.getAsk());
-						}
+						}*/
 							
 					}
 				}
