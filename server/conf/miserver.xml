@@ -46,11 +46,11 @@
 
     <bean id="kdbQuoteListener" class="com.cyanspring.server.marketdata.KDBQuoteListener">
         <property name="quoteThrottlingInterval">
-            <value>1000</value>
+            <value>100</value>
         </property>
-        <!--<property name="kdbThrottling">-->
-            <!--<ref bean="kdbThrottling" />-->
-        <!--</property>-->
+        <property name="kdbThrottling">
+            <ref bean="kdbThrottling" />
+        </property>
     </bean>
 
     <!-- MarketDataManager setting -->

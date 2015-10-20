@@ -667,6 +667,10 @@
                name="RiskManager"
                priorityLevel="workbench">
          </variable>
+          <variable
+               name="BackEndRiskManager"
+               priorityLevel="workbench">
+         </variable>
          <variable
                name="Trader"
                priorityLevel="workbench">

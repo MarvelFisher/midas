@@ -57,7 +57,7 @@ public class DataReceiver implements IPlugin, IMarketDataListener {
         List<String> subListener = subList.get(symbol);
         for (String sub : subListener) {
             IQuoteListener listener = listeners.get(sub);
-            listener.onQuote(innerQuote);
+            listener.onQuote(quote);
         }
         quotes.put(symbol, innerQuote);
     }

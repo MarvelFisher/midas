@@ -326,6 +326,9 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
         QuoteEvent event = new QuoteEvent(inEvent.getKey(), null, quote);
 
+    	if (quoteListener != null)
+    		quoteListener.onQuote(quote);
+    	
         if (eventProcessor.isSync()) {
             sendQuoteEvent(event);
             return;
@@ -524,8 +527,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     @Override
     public void onQuote(InnerQuote innerQuote) {
-    	if (quoteListener != null)
-    		quoteListener.onQuote(innerQuote);
         if (TimeUtil.getTimePass(chkDate) > chkTime && chkTime != 0) {
             log.warn("Quotes receive time large than excepted.");
         }
