@@ -576,8 +576,8 @@ public class AlertManager extends Compute {
 			BasePriceAlert alert;
 			for (int i = list.size(); i > 0; i--) {
 				alert = list.get(i - 1);
-				if (ComparePriceQuoto(alert, quotes.get(quote.getSymbol()),
-						quote)) {
+				int comp = ComparePriceQuoto(alert, quotes.get(quote.getSymbol()), quote);
+				if (comp != 0) {
 					if (!checkSendFlag(alert))
 					{
 						continue;
@@ -585,13 +585,14 @@ public class AlertManager extends Compute {
 					String setDateTime = alert.getDateTime();
 					// SendEvent
 					SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
-							null, null, "txId", PackPriceAlert(alert));
+							null, null, "txId", PackPriceAlert(alert, comp));
 					SendEvent(sendNotificationRequestEvent);
 					// Add Alert to PastSQL
 					PastPriceAlert pastPriceAlert = new PastPriceAlert(
 							alert.getUserId(), alert.getSymbol(),
-							alert.getPrice(), alert.getDateTime(),
-							alert.getContent());
+							alert.getRisePrice(), alert.getDropPrice(), 
+							alert.getRisePercentage(), alert.getDropPercentage(), 
+							alert.getDateTime(), alert.getContent());
 					pastPriceAlert.setId(alert.getId());
 					pastPriceAlert.setCommodity(refdata.getCommodity());
 					SQLSave(pastPriceAlert);
@@ -618,7 +619,9 @@ public class AlertManager extends Compute {
 					// Delete Alert from CurSQL
 					CurPriceAlert curPriceAlert = new CurPriceAlert(
 							alert.getUserId(), alert.getSymbol(),
-							alert.getPrice(), setDateTime, alert.getContent());
+							alert.getRisePrice(), alert.getDropPrice(), 
+							alert.getRisePercentage(), alert.getDropPercentage(), 
+							alert.getDateTime(), alert.getContent());
 					curPriceAlert.setId(alert.getId());
 					curPriceAlert.setCommodity(refdata.getCommodity());
 					SQLDelete(curPriceAlert);
@@ -637,25 +640,26 @@ public class AlertManager extends Compute {
 		quotes.put(quote.getSymbol(), quote);
 	}
 
-	private boolean ComparePriceQuoto(BasePriceAlert alert,
+	private int ComparePriceQuoto(BasePriceAlert alert,
 			Quote Previousquoto, Quote quote) {
-		double alertPrice = alert.getPrice();
+		double risePrice = alert.getRisePrice();
+		double fallPrice = alert.getDropPrice();
 		double PreviousPrice = getAlertPrice(Previousquoto);
 		double currentPrice = getAlertPrice(quote);
-		if (PriceUtils.GreaterThan(alertPrice, PreviousPrice)) {
-			if (PriceUtils.GreaterThan(alertPrice, currentPrice)) {
-				return false;
+		if (PriceUtils.GreaterThan(risePrice, PreviousPrice)) {
+			if (PriceUtils.GreaterThan(risePrice, currentPrice)) {
+				return 0;
 			} else {
-				return true;
+				return 1;
 			}
-		} else if (PriceUtils.EqualLessThan(alertPrice, PreviousPrice)) {
-			if (PriceUtils.GreaterThan(alertPrice, currentPrice)) {
-				return true;
+		} else if (PriceUtils.EqualLessThan(fallPrice, PreviousPrice)) {
+			if (PriceUtils.GreaterThan(fallPrice, currentPrice)) {
+				return -1;
 			} else {
-				return false;
+				return 0;
 			}
 		}
-		return false;
+		return 0;
 	}
 
 	@Override
@@ -782,8 +786,9 @@ public class AlertManager extends Compute {
 			// save to SQL
 			CurPriceAlert curPriceAlert = new CurPriceAlert(
 					priceAlert.getUserId(), priceAlert.getSymbol(),
-					priceAlert.getPrice(), priceAlert.getDateTime(),
-					priceAlert.getContent());
+					priceAlert.getRisePrice(), priceAlert.getDropPrice(), 
+					priceAlert.getRisePercentage(), priceAlert.getDropPercentage(), 
+					priceAlert.getDateTime(), priceAlert.getContent());
 			curPriceAlert.setId(priceAlert.getId());
 			curPriceAlert.setCommodity(refdata.getCommodity());
 			SQLSave(curPriceAlert);
@@ -838,8 +843,9 @@ public class AlertManager extends Compute {
 					// save to SQL
 					CurPriceAlert curPriceAlert = new CurPriceAlert(
 							priceAlert.getUserId(), priceAlert.getSymbol(),
-							priceAlert.getPrice(), priceAlert.getDateTime(),
-							priceAlert.getContent());
+							priceAlert.getRisePrice(), priceAlert.getDropPrice(), 
+							priceAlert.getRisePercentage(), priceAlert.getDropPercentage(), 
+							priceAlert.getDateTime(), priceAlert.getContent());
 					curPriceAlert.setId(priceAlert.getId());
 					SQLSave(curPriceAlert);
 					// SendPriceAlertreplyEvent
@@ -913,9 +919,9 @@ public class AlertManager extends Compute {
 						// update to SQL
 						CurPriceAlert curPriceAlert = new CurPriceAlert(
 								priceAlert.getUserId(), priceAlert.getSymbol(),
-								priceAlert.getPrice(),
-								priceAlert.getDateTime(),
-								priceAlert.getContent());
+								priceAlert.getRisePrice(), priceAlert.getDropPrice(), 
+								priceAlert.getRisePercentage(), priceAlert.getDropPercentage(), 
+								priceAlert.getDateTime(), priceAlert.getContent());
 						curPriceAlert.setId(priceAlert.getId());
 						curPriceAlert.setCommodity(refdata.getCommodity());
 						SQLUpdate(curPriceAlert);
@@ -998,8 +1004,9 @@ public class AlertManager extends Compute {
 				// update to SQL
 				CurPriceAlert curPriceAlert = new CurPriceAlert(
 						priceAlert.getUserId(), priceAlert.getSymbol(),
-						priceAlert.getPrice(), priceAlert.getDateTime(),
-						priceAlert.getContent());
+						priceAlert.getRisePrice(), priceAlert.getDropPrice(), 
+						priceAlert.getRisePercentage(), priceAlert.getDropPercentage(), 
+						priceAlert.getDateTime(), priceAlert.getContent());
 				curPriceAlert.setId(priceAlert.getId());
 				curPriceAlert.setCommodity(refdata.getCommodity());
 				SQLDelete(curPriceAlert);
@@ -1201,11 +1208,19 @@ public class AlertManager extends Compute {
 		return (quote.getBid() + quote.getAsk()) / 2;
 	}
 
-	public ParseData PackPriceAlert(BasePriceAlert priceAlert) {
+	public ParseData PackPriceAlert(BasePriceAlert priceAlert, int compare) {
 		DecimalFormat priceFormat = new DecimalFormat("#0.#####");
-		String strPrice = priceFormat.format(priceAlert.getPrice());
-		String PriceAlertMessage = priceAlert.getSymbol() + " just reached $"
-				+ strPrice;
+		String PriceAlertMessage, strPrice;
+		if (compare > 0)
+		{
+			strPrice = priceFormat.format(priceAlert.getRisePrice());
+			PriceAlertMessage = priceAlert.getSymbol() + " Price rises to $" + strPrice;
+		}
+		else
+		{
+			strPrice = priceFormat.format(priceAlert.getDropPrice());
+			PriceAlertMessage = priceAlert.getSymbol() + " Price drops to $" + strPrice;
+		}
 		SimpleDateFormat dateFormat = new SimpleDateFormat(
 				"yyyy-MM-dd HH:mm:ss");
 		String strDate = dateFormat.format(Clock.getInstance().now());
