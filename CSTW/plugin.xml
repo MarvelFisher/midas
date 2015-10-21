@@ -142,7 +142,7 @@
       </view>
       <view
             allowMultiple="false"
-            class="com.cyanspring.cstw.trader.gui.TraderPropertyView"
+            class="com.cyanspring.cstw.ui.trader.views.TraderPropertyView"
             icon="icons/property.png"
             id="com.cyanspring.cstw.trader.gui.TraderPropertyViewer"
             name="Properties"
@@ -150,7 +150,7 @@
       </view>    
       <view
             allowMultiple="false"
-            class="com.cyanspring.cstw.kdb.gui.KDBInfoView"
+            class="com.cyanspring.cstw.ui.kdb.views.KDBInfoView"
             icon="icons/active.png"
             id="com.cyanspring.cstw.kdb.gui.KDBInfoViewer"
             name="Signal"
@@ -158,7 +158,7 @@
       </view>
       <view
             allowMultiple="true"
-            class="com.cyanspring.cstw.trader.gui.SpeedDepthViewPart"
+            class="com.cyanspring.cstw.ui.trader.views.SpeedDepthViewPart"
             icon="icons/order.png"
             id="com.cyanspring.cstw.trader.gui.SpeedDepthViewPart"
             name="SpeedDepthView"
@@ -670,19 +670,19 @@
             name="Quote">
       </command>
       <command
-            defaultHandler="com.cyanspring.cstw.trader.command.TraderPropertyViewCommand"
+            defaultHandler="com.cyanspring.cstw.ui.trader.command.TraderPropertyViewCommand"
             description="Trader Property"
             id="CSTW.TraderPropertyView"
             name="Properties">
       </command>
       <command
-            defaultHandler="com.cyanspring.cstw.kdb.command.KDBInfoViewCommand"
+            defaultHandler="com.cyanspring.cstw.ui.kdb.command.KDBInfoViewCommand"
             description="Signal"
             id="CSTW.KDBInfoView"
             name="Signal">
       </command>
       <command
-            defaultHandler="com.cyanspring.cstw.trader.command.TraderSpeedDepthViewCommand"
+            defaultHandler="com.cyanspring.cstw.ui.trader.command.TraderSpeedDepthViewCommand"
             id="CSTW.SpeedDepth"
             name="SpeedDepth">
       </command>
