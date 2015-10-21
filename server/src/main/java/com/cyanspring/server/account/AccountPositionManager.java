@@ -414,7 +414,7 @@ public class AccountPositionManager implements IPlugin {
 
         boolean dynamicDataHasChanged(OpenPosition position) {
             OpenPosition last = positionUpdates.get(position.getId());
-            if (last == null || position == null || last.getPnL() != position.getPnL() || last.getAcPnL() != position.getAcPnL() 
+            if (last == null || position == null || last.getPnL() != position.getPnL() || last.getAcPnL() != position.getAcPnL()
             		|| last.getAcLastPnL() != position.getAcLastPnL()) {
                 positionUpdates.put(position.getId(), position);
                 return true;
@@ -546,7 +546,7 @@ public class AccountPositionManager implements IPlugin {
         log.info("process AddCashEvent, account: {}, cash: {}", event.getAccount(), event.getCash());
         Account account = accountKeeper.getAccount(event.getAccount());
 
-        if (account == null){
+        if (account == null) {
         	log.error("Cannot find account: {}", event.getAccount());
         	return;
         }
@@ -707,7 +707,7 @@ public class AccountPositionManager implements IPlugin {
         log.info("User created in cache: " + event.getUser().getId());
     }
 
-    public void processChangeAccountStateRequestEvent(ChangeAccountStateRequestEvent event){
+    public void processChangeAccountStateRequestEvent(ChangeAccountStateRequestEvent event) {
     	String id = event.getId();
     	String message = "";
     	boolean isOk =false;
@@ -715,33 +715,33 @@ public class AccountPositionManager implements IPlugin {
     	Account account = null;
     	check :{
 
-    		if (!StringUtils.hasText(id)){
+    		if (!StringUtils.hasText(id)) {
     			message = MessageLookup.buildEventMessage(ErrorMessage.CHANGE_ACCOUNT_STATE_FAILED, "id is empty!");
     			break check;
     		}
 
-    		if ( null == newState ){
+    		if ( null == newState ) {
     			message = MessageLookup.buildEventMessage(ErrorMessage.CHANGE_ACCOUNT_STATE_FAILED, "State is empty!");
     			break check;
     		}
 
     		account = accountKeeper.getAccount(id);
-    		if ( null == account){
+    		if ( null == account) {
     			message = MessageLookup.buildEventMessage(ErrorMessage.CHANGE_ACCOUNT_STATE_FAILED, "can't find this account!");
     			break check;
     		}
 
-    		if (newState.equals(account.getState())){
+    		if (newState.equals(account.getState())) {
     			message = MessageLookup.buildEventMessage(ErrorMessage.CHANGE_ACCOUNT_STATE_FAILED, "State aready is:"+newState.name());
     			break check;
     		}
 
     	}
 
-    	if (!StringUtils.hasText(message)){
-        	if (AccountState.ACTIVE.equals(newState)){
+    	if (!StringUtils.hasText(message)) {
+        	if (AccountState.ACTIVE.equals(newState)) {
         		activeAccount(account,event);
-        	} else if (AccountState.FROZEN.equals(newState) || AccountState.TERMINATED.equals(newState)){
+        	} else if (AccountState.FROZEN.equals(newState) || AccountState.TERMINATED.equals(newState)) {
             	TradingUtil.closeAllPositoinAndOrder(account, positionKeeper, eventManager, true, OrderReason.CompanyManualClose, riskOrderController);
             	setAccountState(account,newState,event);
         	}
@@ -770,7 +770,7 @@ public class AccountPositionManager implements IPlugin {
 		}
 	}
 
-    private void activeAccount(Account account,ChangeAccountStateRequestEvent event){
+    private void activeAccount(Account account,ChangeAccountStateRequestEvent event) {
     	AccountSetting accountSetting;
     	TerminateStopLossCheck terminateCheck = new TerminateStopLossCheck();
     	FrozenStopLossCheck frozenCheck  = new FrozenStopLossCheck();
@@ -781,24 +781,24 @@ public class AccountPositionManager implements IPlugin {
 
 			ChangeAccountStateReplyEvent reply = null;
 
-	    	if (AccountState.ACTIVE.equals(account.getState())){
+	    	if (AccountState.ACTIVE.equals(account.getState())) {
 	        	isOk = false;
 	            message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_ALREADY_ACTIVE,"Account already in ACTIVE state");
 	            reply = new ChangeAccountStateReplyEvent(event.getKey()
 	            		,event.getSender(),isOk,message,account);
-	    	} else if (terminateCheck.isOverTerminateLoss(account, accountSetting)){
+	    	} else if (terminateCheck.isOverTerminateLoss(account, accountSetting)) {
 	        	isOk = false;
 	            message = MessageLookup.buildEventMessage(ErrorMessage.OVER_TERMINATE_LOSS,"Still over terminate loss, you must set terminate loss percent/value under current loss");
 	            reply = new ChangeAccountStateReplyEvent(event.getKey()
 	            		,event.getSender(),isOk,message,account);
-	    	} else if (frozenCheck.isOverFrozenLoss(account, accountSetting)){
+	    	} else if (frozenCheck.isOverFrozenLoss(account, accountSetting)) {
 	        	isOk = false;
 	            message = MessageLookup.buildEventMessage(ErrorMessage.OVER_FROZEN_LOSS,"Still over frozen loss, you must set frozen loss percent/value under current loss");
 	            reply = new ChangeAccountStateReplyEvent(event.getKey()
 	            		,event.getSender(),isOk,message,account);
 	    	}
 
-	    	if (isOk){
+	    	if (isOk) {
 	    		log.info("Active Account:{}, old state:{}",account.getId(),account.getState());
 		    	account.setState(AccountState.ACTIVE);
 		        reply = new ChangeAccountStateReplyEvent(event.getKey()
@@ -817,7 +817,7 @@ public class AccountPositionManager implements IPlugin {
         }
     }
 
-    public void processCSTWUserLoginEvent(CSTWUserLoginEvent event){
+    public void processCSTWUserLoginEvent(CSTWUserLoginEvent event) {
     	String id = event.getId();
     	String pwd = event.getPassword();
     	boolean isOk = false;
@@ -846,18 +846,18 @@ public class AccountPositionManager implements IPlugin {
 
 
     	try{
-	    	if (!StringUtils.hasText(id) || !StringUtils.hasText(pwd)){
+	    	if (!StringUtils.hasText(id) || !StringUtils.hasText(pwd)) {
         		throw new UserException("id or password is empty!",ErrorMessage.CSTW_LOGIN_FAILED);
 	    	} else {
 	    		id = id.toLowerCase().trim();
 	    	}
 
-	    	if ( null == userKeeper.getUser(id) ){
+	    	if ( null == userKeeper.getUser(id) ) {
         		throw new UserException("id not exist",ErrorMessage.CSTW_LOGIN_FAILED);
 	    	}
 
 	    	User user = userKeeper.getUser(id);
-	    	if (!pwd.equals(user.getPassword())){
+	    	if (!pwd.equals(user.getPassword())) {
         		throw new UserException("wrong password!",ErrorMessage.CSTW_LOGIN_FAILED);
 	    	}
 
@@ -869,10 +869,10 @@ public class AccountPositionManager implements IPlugin {
 	    	if (!StringUtils.hasText(message)) {
 				isOk =true;
 			}
-	    	
+
 	    	userGroup = userKeeper.getUserGroup(id);
 	    	accountList = accountKeeper.getAccounts(id);
-	    	if ( null == userGroup ){
+	    	if ( null == userGroup ) {
 	    		userGroup = new UserGroup(id,user.getRole());
 	    	}
 	    	user2AccountMap = new HashMap<>();
@@ -885,11 +885,11 @@ public class AccountPositionManager implements IPlugin {
 			user.setLastLogin(Clock.getInstance().now());
 			eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));
 
-    	}catch(UserException e){
+    	}catch(UserException e) {
     		message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
     		log.info("CSTW Login fail:{} - {}",id,message);
     	}
-    	    	
+
 		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(event.getKey(),event.getSender(),isOk,message,userGroup,accountList,user2AccountMap);
 		try {
 			eventManager.sendRemoteEvent(reply);
@@ -897,21 +897,21 @@ public class AccountPositionManager implements IPlugin {
 			log.warn(e.getMessage(),e);
 		}
     }
-    public void processGroupManageeRequestEvent(GroupManageeRequestEvent event){
+    public void processGroupManageeRequestEvent(GroupManageeRequestEvent event) {
     	String manager = event.getManager();
     	boolean isOk = true;
     	String message = "";
     	try{
-        	if (!StringUtils.hasText(manager)){
+        	if (!StringUtils.hasText(manager)) {
         		throw new UserException("Manager is empty",ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED);
         	}
-    		if ( null == userKeeper.getUser(manager) ){
+    		if ( null == userKeeper.getUser(manager) ) {
     			throw new UserException("Manager:"+manager+" doen't exist in User",ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED);
     		}
-//    		if ( null == userKeeper.getUserGroup(manager) ){
+//    		if ( null == userKeeper.getUserGroup(manager) ) {
 //    			throw new UserException("this user doesn't have any group",ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED);
 //    		}
-    	}catch(UserException e){
+    	}catch(UserException e) {
     		isOk = false;
 			message = MessageLookup.buildEventMessage(ErrorMessage.GET_GROUP_MANAGEMENT_INFO_FAILED, e.getLocalizedMessage());
 			log.info(message);
@@ -922,7 +922,7 @@ public class AccountPositionManager implements IPlugin {
 			userGroup = userKeeper.getUserGroup(manager);
 		}
 
-		if ( null == userGroup ){
+		if ( null == userGroup ) {
 			User user = userKeeper.getUser(manager);
 			userGroup = new UserGroup(manager,user.getRole());
 		}
@@ -935,14 +935,14 @@ public class AccountPositionManager implements IPlugin {
 		}
     }
 
-    public void processDeleteGroupManagementEvent(DeleteGroupManagementEvent event){
+    public void processDeleteGroupManagementEvent(DeleteGroupManagementEvent event) {
     	List<GroupManagement> groupList = event.getGroupManagementList();
     	List<GroupManagement> successList = new ArrayList<GroupManagement>();
     	Map <GroupManagement,String> resultMap = new HashMap<GroupManagement,String>();
     	boolean isOk = true;
     	String message = "";
-    	if ( null != userKeeper){
-    		for(GroupManagement group : groupList){
+    	if ( null != userKeeper) {
+    		for (GroupManagement group : groupList) {
     			try {
 					userKeeper.deleteGroup(group);
 					successList.add(group);
@@ -954,7 +954,7 @@ public class AccountPositionManager implements IPlugin {
         			continue;
 				}
     		}
-    		if (!successList.isEmpty()){
+    		if (!successList.isEmpty()) {
     			PmDeleteGroupManagementEvent pmEvent = new PmDeleteGroupManagementEvent(null, null, successList);
         		try {
     				eventManager.sendEvent(pmEvent);
@@ -977,14 +977,14 @@ public class AccountPositionManager implements IPlugin {
 		}
     }
 
-    public void processCreateGroupManagementEvent(CreateGroupManagementEvent event){
+    public void processCreateGroupManagementEvent(CreateGroupManagementEvent event) {
     	List<GroupManagement> groupList = event.getGroupManagementList();
     	List<GroupManagement> successList = new ArrayList<GroupManagement>();
     	Map <GroupManagement,String> resultMap = new HashMap<GroupManagement,String>();
     	boolean isOk = true;
     	String message = "";
-    	if ( null != userKeeper){
-    		for(GroupManagement group : groupList){
+    	if ( null != userKeeper) {
+    		for (GroupManagement group : groupList) {
     			try {
 					userKeeper.createGroup(group);
 					successList.add(group);
@@ -995,7 +995,7 @@ public class AccountPositionManager implements IPlugin {
         			continue;
 				}
     		}
-    		if (!successList.isEmpty()){
+    		if (!successList.isEmpty()) {
     			PmCreateGroupManagementEvent pmEvent = new PmCreateGroupManagementEvent(null, null, successList);
         		try {
     				eventManager.sendEvent(pmEvent);
@@ -1129,7 +1129,7 @@ public class AccountPositionManager implements IPlugin {
         }
     }
 
-    public void processAllPositionSnapshotRequestEvent(AllPositionSnapshotRequestEvent event){
+    public void processAllPositionSnapshotRequestEvent(AllPositionSnapshotRequestEvent event) {
         if (null == accountKeeper || null == positionKeeper) {
 			return;
 		}
@@ -1138,7 +1138,7 @@ public class AccountPositionManager implements IPlugin {
         asyncSendPositionSnapshot(event, allAccounts);
     }
 
-    public void processChangeUserRoleEvent(ChangeUserRoleEvent event){
+    public void processChangeUserRoleEvent(ChangeUserRoleEvent event) {
     	String id = event.getId();
     	UserRole role= event.getRole();
     	User user = userKeeper.getUser(id);
@@ -1148,23 +1148,23 @@ public class AccountPositionManager implements IPlugin {
     	String message = "";
 
     	try{
-        	if ( null == user){
+        	if ( null == user) {
         		throw new UserException("user not exist!");
         	}
 
        		UserRole originRole = user.getRole();
 
-    		if (null != originRole && originRole.equals(role)){
+    		if (null != originRole && originRole.equals(role)) {
     			throw new UserException("this user role already is "+role);
     		}
 
-        	if ( null != userGroup){
-        		if (UserRole.Trader.equals(role) || UserRole.Admin.equals(role)){
+        	if ( null != userGroup) {
+        		if (UserRole.Trader.equals(role) || UserRole.Admin.equals(role)) {
         			needClearAllManagee = true;
         		}
         	}
 
-    	}catch(UserException e){
+    	}catch(UserException e) {
     		isOk = false;
             message = MessageLookup.buildEventMessage(ErrorMessage.CHANGE_USER_ROLE_FAILED, e.getMessage());
             log.info("message:{}",message);
@@ -1172,7 +1172,7 @@ public class AccountPositionManager implements IPlugin {
 
     	 try {
 
-	    	if (isOk){
+	    	if (isOk) {
 	    		log.info("{} change User role:{} to {} needClearAllManagee:{}",new Object[]{user.getId(),user.getRole(),role,needClearAllManagee});
 	    		user.setRole(role);
 
@@ -1182,7 +1182,7 @@ public class AccountPositionManager implements IPlugin {
 
 	    		PmUpdateUserEvent updateUserEvent = new PmUpdateUserEvent(PersistenceManager.ID,null,user);
 	            eventManager.sendEvent(updateUserEvent);
-	    		if (needClearAllManagee && !userGroup.getNoneRecursiveManageeList().isEmpty()){
+	    		if (needClearAllManagee && !userGroup.getNoneRecursiveManageeList().isEmpty()) {
 	    			PmDeleteGroupManagementEvent deleteGroupManagementEvent = new PmDeleteGroupManagementEvent(PersistenceManager.ID, null, userGroup.exportGroupManagementList());
 		            eventManager.sendEvent(deleteGroupManagementEvent);
 		            userGroup.clearManageeList();
@@ -1262,10 +1262,10 @@ public class AccountPositionManager implements IPlugin {
 						continue;
 					}
 
-                	for(OpenPosition op: tempOpList){
+                	for (OpenPosition op: tempOpList) {
                 		openPositionList.add(op);
                 		positionCount++;
-                		if (positionCount % asyncSendBatch == 0 ){
+                		if (positionCount % asyncSendBatch == 0 ) {
                             try {
                             	AllPositionSnapshotReplyEvent reply = new AllPositionSnapshotReplyEvent(
                                         event.getKey(), event.getSender(), openPositionList);
@@ -1280,7 +1280,7 @@ public class AccountPositionManager implements IPlugin {
                 		}
                 	}
                 }//for account
-            	if (positionCount != 0){
+            	if (positionCount != 0) {
 
                     try {
                     	AllPositionSnapshotReplyEvent reply = new AllPositionSnapshotReplyEvent(
@@ -1339,14 +1339,14 @@ public class AccountPositionManager implements IPlugin {
         }
     }
 
-    public void processAccountStateRequestEvent(AccountStateRequestEvent event){
+    public void processAccountStateRequestEvent(AccountStateRequestEvent event) {
     	boolean isOk = true;
     	String message = "";
     	String id = event.getId();
     	Account account = accountKeeper.getAccount(id);
     	AccountStateReplyEvent reply = null;
 
-    	if (null == account){
+    	if (null == account) {
     		isOk = false;
             message = MessageLookup.buildEventMessage(ErrorMessage.ACCOUNT_NOT_EXIST,"Account not exist");
             reply = new AccountStateReplyEvent(event.getKey()
@@ -1390,10 +1390,10 @@ public class AccountPositionManager implements IPlugin {
         }
 
     }
-    private ExtraEventMessageBuilder getUserLiveTradingTime(AccountSetting accountSetting){
+    private ExtraEventMessageBuilder getUserLiveTradingTime(AccountSetting accountSetting) {
 
     	if ( null != liveTradingSetting
-    			 && null != accountSetting && accountSetting.isLiveTrading() ){
+    			 && null != accountSetting && accountSetting.isLiveTrading() ) {
 
     			ExtraEventMessageBuilder builder = new ExtraEventMessageBuilder();
 
@@ -1425,7 +1425,7 @@ public class AccountPositionManager implements IPlugin {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-        if (ok){
+        if (ok) {
             PmChangeAccountSettingEvent pmEvent = new PmChangeAccountSettingEvent(PersistenceManager.ID,
                     null, accountSetting);
             eventManager.sendEvent(pmEvent);
@@ -1507,11 +1507,11 @@ public class AccountPositionManager implements IPlugin {
 						continue;
 					}
 	                if (null != liveTradingCheckHandler && accountSetting.isUserLiveTrading()) {
-	                	if (liveTradingCheckHandler.startCheckChain(account, accountSetting)){
+	                	if (liveTradingCheckHandler.startCheckChain(account, accountSetting)) {
 	                		continue;
 	                	}
 	                } else {
-		                if (checkStopLoss(account, accountSetting)){
+		                if (checkStopLoss(account, accountSetting)) {
 	                		continue;
 		                }
 	                }
@@ -1546,10 +1546,10 @@ public class AccountPositionManager implements IPlugin {
         return !quote.isStale();
     }
 
-	private boolean checkDailyStopLoss(Account account, AccountSetting accountSetting){
+	private boolean checkDailyStopLoss(Account account, AccountSetting accountSetting) {
 
     	double dailyStopLoss = accountSetting.getDailyStopLoss();
-		if (PriceUtils.isZero(dailyStopLoss)){
+		if (PriceUtils.isZero(dailyStopLoss)) {
 			return false;
 		}
 
@@ -1557,7 +1557,7 @@ public class AccountPositionManager implements IPlugin {
 			return false;
 		}
 
-		if (PriceUtils.EqualLessThan(account.getDailyPnL(), -dailyStopLoss)){
+		if (PriceUtils.EqualLessThan(account.getDailyPnL(), -dailyStopLoss)) {
 
 			if (account.getState().equals(AccountState.ACTIVE)) {
 				log.info("Account:"+account.getId()+" Daily loss: " + account.getDailyPnL() + " over " + -dailyStopLoss);
@@ -1583,7 +1583,7 @@ public class AccountPositionManager implements IPlugin {
 
         Double positionStopLoss = Default.getPositionStopLoss();
 
-        if (checkDailyStopLoss(account,accountSetting)){
+        if (checkDailyStopLoss(account,accountSetting)) {
         	return true;
         }
 
@@ -1607,7 +1607,7 @@ public class AccountPositionManager implements IPlugin {
 					}
                 }
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("Check StopLoss fail at {}, {}", account.getUserId(), account.getId());
             return false;
         }
@@ -1766,17 +1766,22 @@ public class AccountPositionManager implements IPlugin {
     private void processDayEndTasks() {
         log.info("Account day end processing start");
         List<Account> list = accountKeeper.getAllAccounts();
+        if (accountSaver != null) {
+            accountSaver.setAccounts(list);
+            accountSaver.saveAccountToFile();
+        }
+
         for (Account account : list) {
 
         	boolean sendUpdate = false;
-        	if (AccountState.FROZEN.equals(account.getState())){
+        	if (AccountState.FROZEN.equals(account.getState())) {
         		sendUpdate = true;
         	}
 
             Account copy = positionKeeper.rollAccount(account);
             eventManager.sendEvent(new PmUpdateAccountEvent(PersistenceManager.ID, null, copy));
 
-            if (sendUpdate){ // notify frozen accounts are reactivated
+            if (sendUpdate) { // notify frozen accounts are reactivated
     			AccountUpdateEvent event = new AccountUpdateEvent(account.getId(), null, account);
     			try {
 					eventManager.sendRemoteEvent(event);
@@ -1788,10 +1793,6 @@ public class AccountPositionManager implements IPlugin {
         }
 
         eventManager.sendEvent(new PmEndOfDayRollEvent(null, null, tradeDate));
-        if (accountSaver != null) {
-            accountSaver.setAccounts(accountKeeper.getAllAccounts());
-            accountSaver.saveAccountToFile();
-        }
     }
 
     public void processTradeDateEvent(TradeDateEvent event) {
@@ -1801,7 +1802,7 @@ public class AccountPositionManager implements IPlugin {
     public void processIndexSessionEvent(IndexSessionEvent event) {
     	Map<String, MarketSessionData> map = event.getDataMap();
     	List<MarketSessionData> list = new ArrayList<>(map.values());
-    	if (list.size() > 0){
+    	if (list.size() > 0) {
     		MarketSessionData first = list.get(0);
     		tradeDate = first.getTradeDateByString();   // Take first marketsession's trade date as system's trade date, but not a great choice
     	} else {
