@@ -339,7 +339,6 @@ public class Business {
 		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval , listener, timerEvent);	
 		traderInfoListener = new TraderInfoListener();
 		initSessionListener();
-		quoteDataReceiver.init();
 	}
 
 	public void start() throws Exception {
