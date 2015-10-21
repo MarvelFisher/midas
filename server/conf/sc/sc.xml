@@ -295,24 +295,24 @@
 		</constructor-arg>
 	</bean>
 
-	<!-- <bean id="commodityFilter" class="com.cyanspring.common.filter.CommodityFilter">
+	<bean id="commodityFilter" class="com.cyanspring.common.filter.CommodityFilter">
 		<property name="lstExcludedSymbols">
 			<list>
-				<value>IHC1.CF</value>
+				<!-- <value>IHC1.CF</value>
 				<value>IHC2.CF</value>
 				<value>IHC3.CF</value>
 				<value>IHC4.CF</value>
 				<value>ICC1.CF</value>
 				<value>ICC2.CF</value>
 				<value>ICC3.CF</value>
-				<value>ICC4.CF</value>
+				<value>ICC4.CF</value> -->
 			</list>
 		</property>
 		<property name="lstExcludedCategories">
 			<list>
 			</list>
 		</property>
-	</bean> -->
+	</bean>
 
 	<bean id="categoryFilter" class="com.cyanspring.common.filter.CategoryFilter">
     	<property name="refDataTplLoader" ref="refDataTplLoader"></property>
