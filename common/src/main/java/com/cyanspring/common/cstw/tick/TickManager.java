@@ -2,6 +2,7 @@ package com.cyanspring.common.cstw.tick;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +82,22 @@ public class TickManager implements IAsyncEventListener {
 		
 		List<String> tempList = new ArrayList<String>();
 		tempList.addAll(tempSet);
+		return tempList;	
+	}
+	
+	public List<RefData> getRefDataList(){
+		List<RefData> tempList = new ArrayList<RefData>();
+
+		if( null == tickMap )
+			return null;
+		
+		Iterator<AbstractTickTable> table = tickMap.keySet().iterator();
+		while(table.hasNext()){
+			AbstractTickTable tempTable = table.next();
+			List<RefData> reflList = tickMap.get(tempTable);
+			tempList.addAll(reflList);
+		}
+		
 		return tempList;	
 	}
 	

@@ -507,6 +507,38 @@
                   	</or>
             	  </visibleWhen>
             </command>
+            <command
+                  commandId="CSTW.RiskManager.Data"
+                  label="RiskManager Data"
+                  style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                  <or>
+                     <with
+                           variable="RiskManager">
+                        <equals
+                              value="ENABLED">
+                        </equals>
+                     </with>
+                  </or>
+               </visibleWhen>
+            </command>
+            <command
+                  commandId="CSTW.BackRiskManager.Data"
+                  label="BackRiskManager Data"
+                  style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                  <or>
+                     <with
+                           variable="BackEndRiskManager">
+                        <equals
+                              value="ENABLED">
+                        </equals>
+                     </with>
+                  </or>
+               </visibleWhen>
+            </command>
          </menu>
       </menuContribution>
    </extension>
@@ -653,6 +685,14 @@
             defaultHandler="com.cyanspring.cstw.trader.command.TraderSpeedDepthViewCommand"
             id="CSTW.SpeedDepth"
             name="SpeedDepth">
+      </command>
+      <command
+            id="CSTW.RiskManager.Data"
+            name="RiskManager Data">
+      </command>
+      <command
+            id="CSTW.BackRiskManager.Data"
+            name="BackRiskManager Data">
       </command>      
    </extension>
    <extension

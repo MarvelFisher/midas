@@ -12,9 +12,6 @@ package com.cyanspring.cstw.business;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,18 +49,17 @@ import com.cyanspring.common.event.account.AccountSettingSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AccountSettingSnapshotRequestEvent;
 import com.cyanspring.common.event.account.CSTWUserLoginReplyEvent;
 import com.cyanspring.common.event.account.UserLoginReplyEvent;
-import com.cyanspring.common.event.order.AllStrategySnapshotReplyEvent;
-import com.cyanspring.common.event.order.AllStrategySnapshotRequestEvent;
 import com.cyanspring.common.event.order.InitClientEvent;
 import com.cyanspring.common.event.order.InitClientRequestEvent;
-import com.cyanspring.common.event.order.StrategySnapshotRequestEvent;
 import com.cyanspring.common.event.strategy.MultiInstrumentStrategyFieldDefUpdateEvent;
 import com.cyanspring.common.event.strategy.SingleInstrumentStrategyFieldDefUpdateEvent;
 import com.cyanspring.common.event.strategy.SingleOrderStrategyFieldDefUpdateEvent;
 import com.cyanspring.common.event.system.NodeInfoEvent;
 import com.cyanspring.common.event.system.ServerHeartBeatEvent;
+import com.cyanspring.common.marketdata.DataReceiver;
 import com.cyanspring.common.marketsession.DefaultStartEndTime;
 import com.cyanspring.common.server.event.ServerReadyEvent;
+import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.cachingmanager.quote.QuoteCachingManager;
@@ -110,7 +106,8 @@ public class Business {
 	private List<String> accountGroupList = new ArrayList<String>();
 	private List<String> symbolList = new ArrayList<String>();
 	private TraderInfoListener traderInfoListener = null;
-
+	private DataReceiver quoteDataReceiver = null;
+	
 	// singleton implementation
 	private Business() {
 	}
@@ -305,7 +302,7 @@ public class Business {
 		authManager = beanHolder.getAuthManager();
 		tickManager = beanHolder.getTickManager();
 		signalManager = beanHolder.getSignalManager();
-
+		quoteDataReceiver = beanHolder.getDataReceiver();
 		boolean ok = false;
 		while (!ok) {
 			try {
@@ -610,6 +607,10 @@ public class Business {
 
 		return symbolList;
 	}
+	
+	public List<RefData> getRefDataList() {
+		return tickManager.getRefDataList();
+	}
 
 	public SignalType getSignal(String symbol, double scale) {
 		return signalManager.getSignal(symbol, scale);
@@ -626,5 +627,9 @@ public class Business {
 								.getAccountSetting();
 					}
 				});
+	}
+	
+	public DataReceiver getQuoteDataReceiver(){
+		return quoteDataReceiver;
 	}
 }
