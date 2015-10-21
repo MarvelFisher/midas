@@ -74,6 +74,7 @@ public class RequestMgr{
     }
 
     void process(int type, Object objMsg) {
+        if(objMsg == null) return;
         switch (type) {
             case WindDef.MSG_SYS_CODETABLE: {
                 CodeTableData codeTableData = (CodeTableData) objMsg;

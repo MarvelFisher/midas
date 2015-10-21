@@ -1,6 +1,6 @@
 package com.cyanspring.common.staticdata;
 
-public class CodeTableData {
+public class CodeTableData implements Cloneable{
     private String windCode;
     private String cnName;
     private String spellName;
@@ -117,5 +117,15 @@ public class CodeTableData {
 
     public void setGroup(String group) {
         this.group = group;
+    }
+
+    public CodeTableData clone(){
+        try {
+            CodeTableData codeTableData = (CodeTableData)super.clone();
+            return codeTableData;
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

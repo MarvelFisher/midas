@@ -157,7 +157,7 @@ public class DealerRefDataHandler implements IPlugin, IRefDataListener {
 				}
 				List<RefData> filteredRefDataList = filterRefData(send);
 				if(filteredRefDataList.size() > 0) {
-					log.debug("send refDataUpdateEvent, action:" + action);
+					log.debug("send refDataUpdateEvent, action:" + action + ", size:" + filteredRefDataList.size());
 					RefDataUpdateEvent event = new RefDataUpdateEvent(null, null, filteredRefDataList, action);
 					eventManager.sendGlobalEvent(event);
 				}

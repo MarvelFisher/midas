@@ -1,6 +1,6 @@
 package com.cyanspring.adaptor.future.wind.data;
 
-public class CodeTableResult {
+public class CodeTableResult implements Cloneable{
     private int actionDay;
     private long hashCode;
     private String securityExchange;
@@ -27,5 +27,15 @@ public class CodeTableResult {
 
     public void setSecurityExchange(String securityExchange) {
         this.securityExchange = securityExchange;
+    }
+
+    public CodeTableResult clone(){
+        try {
+            CodeTableResult codeTableResult = (CodeTableResult)super.clone();
+            return codeTableResult;
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
