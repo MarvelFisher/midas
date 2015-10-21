@@ -35,7 +35,6 @@ import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.OrderReason;
-import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.FieldDef;
 import com.cyanspring.common.business.MultiInstrumentStrategyDisplayConfig;
 import com.cyanspring.common.business.OrderException;
@@ -1221,35 +1220,33 @@ public class BusinessManager implements ApplicationContextAware {
 	public void injectStrategies(List<DataObject> list) {
 		// create running strategies and assign to containers
 		for (DataObject obj : list) {
-			if (!(obj instanceof ChildOrder)) {
-				try {
-					StrategyState state = obj.get(StrategyState.class,
-							OrderField.STATE.value());
-					if (state.equals(StrategyState.Terminated)) {
-						continue;
-					}
-
-					String strategyName = obj.get(String.class,
-							OrderField.STRATEGY.value());
-					IStrategy strategy;
-					strategy = strategyFactory.createStrategy(strategyName,
-							new Object[] { refDataManager, tickTableManager, obj });
-					IStrategyContainer container = getLeastLoadContainer();
-					log.debug("strategy " + strategy.getId()
-							+ " assigned to container " + container.getId());
-					if (strategy instanceof SingleOrderStrategy) {
-						ParentOrder parentOrder = ((SingleOrderStrategy) strategy)
-								.getParentOrder();
-						orders.put(parentOrder.getId(), parentOrder.getAccount(),
-								parentOrder);
-					}
-					AddStrategyEvent addStrategyEvent = new AddStrategyEvent(
-							container.getId(), strategy, autoStartStrategy);
-
-					eventManager.sendEvent(addStrategyEvent);
-				} catch (Exception e) {
-					log.error(e.getMessage(), e);
+			try {
+				StrategyState state = obj.get(StrategyState.class,
+						OrderField.STATE.value());
+				if (state == null || state.equals(StrategyState.Terminated)) {
+					continue;
 				}
+
+				String strategyName = obj.get(String.class,
+						OrderField.STRATEGY.value());
+				IStrategy strategy;
+				strategy = strategyFactory.createStrategy(strategyName,
+						new Object[] { refDataManager, tickTableManager, obj });
+				IStrategyContainer container = getLeastLoadContainer();
+				log.debug("strategy " + strategy.getId()
+						+ " assigned to container " + container.getId());
+				if (strategy instanceof SingleOrderStrategy) {
+					ParentOrder parentOrder = ((SingleOrderStrategy) strategy)
+							.getParentOrder();
+					orders.put(parentOrder.getId(), parentOrder.getAccount(),
+							parentOrder);
+				}
+				AddStrategyEvent addStrategyEvent = new AddStrategyEvent(
+						container.getId(), strategy, autoStartStrategy);
+
+				eventManager.sendEvent(addStrategyEvent);
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
 			}
 		}
 	}
