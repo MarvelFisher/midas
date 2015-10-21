@@ -20,6 +20,9 @@
 		<property name="env" value="Test"/>
 	</bean>
 
+	<bean id="dataReceiver" class="com.cyanspring.common.marketdata.DataReceiver">
+	</bean>
+
 	<bean id="signalManager" class="com.cyanspring.common.cstw.kdb.SignalManager">
 	</bean>
 

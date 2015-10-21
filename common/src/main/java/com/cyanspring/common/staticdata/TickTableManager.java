@@ -47,6 +47,7 @@ public class TickTableManager {
 			RefData tempData = new RefData();
 			tempData.setSymbol(refData.getSymbol());
 			tempData.setDecimalPoint(refData.getDeciamlPoint());
+			tempData.setCode(refData.getCode());
 			if(map.containsKey(table)){
 				tempList = map.get(table);
 				if( null != tempList){

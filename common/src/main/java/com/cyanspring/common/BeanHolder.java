@@ -21,6 +21,7 @@ import com.cyanspring.common.cstw.kdb.SignalManager;
 import com.cyanspring.common.cstw.tick.TickManager;
 import com.cyanspring.common.data.AlertType;
 import com.cyanspring.common.event.IRemoteEventManager;
+import com.cyanspring.common.marketdata.DataReceiver;
 import com.cyanspring.common.transport.IObjectTransportService;
 
 public class BeanHolder {
@@ -45,6 +46,9 @@ public class BeanHolder {
 	
 	@Autowired
 	SystemInfo systemInfo;
+	
+	@Autowired
+	DataReceiver dataReceiver;
 	
 	@Autowired
 	@Qualifier("alertColorConfig")
@@ -105,5 +109,9 @@ public class BeanHolder {
 	
 	public SystemInfo getSystemInfo() {
 		return systemInfo;
+	}
+	
+	public DataReceiver getDataReceiver() {
+		return dataReceiver;
 	}
 }
