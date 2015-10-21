@@ -28,34 +28,28 @@ public class CommodityFilter implements IRefDataFilter {
 
 	@Override
 	public List<RefData> filter(List<RefData> lstRefData) throws Exception {
-		if (lstRefData != null && lstRefData.size() > 0) {
-			ArrayList<RefData> fLstRefData = new ArrayList<RefData>();
-			for (RefData refData : lstRefData) {
-				fLstRefData.add((RefData)refData.clone());
-			}
-
-			if (lstExcludedSymbols != null && lstExcludedSymbols.size() > 0) {
-				for (RefData refData : lstRefData) {
-					if (lstExcludedSymbols.contains(refData.getSymbol())) {
-						fLstRefData.remove(refData);
-					}
-				}
-			}
-
-			if (fLstRefData.size() > 0) {
-				if (lstExcludedCategories != null && lstExcludedCategories.size() > 0) {
-					for (RefData refData : fLstRefData) {
-						if (lstExcludedCategories.contains(refData.getCategory())) {
-							fLstRefData.remove(refData);
-						}
-					}
-				}
-			}
-
-			return fLstRefData;
+		if (lstRefData == null || lstRefData.size() == 0 ||
+				 ((lstExcludedSymbols == null || lstExcludedSymbols.size() == 0) &&
+						 lstExcludedCategories == null || lstExcludedCategories.size() == 0)) {
+			return lstRefData;
 		}
 
-		return lstRefData;
+		if (lstExcludedSymbols == null) {
+			lstExcludedSymbols = new ArrayList<>();
+		}
+		if (lstExcludedCategories == null) {
+			lstExcludedCategories = new ArrayList<>();
+		}
+
+		ArrayList<RefData> fLstRefData = new ArrayList<>();
+		for (RefData refData : lstRefData) {
+			if (!lstExcludedSymbols.contains(refData.getSymbol()) &&
+					!lstExcludedCategories.contains(refData.getCategory())) {
+				fLstRefData.add(refData);
+			}
+		}
+
+		return fLstRefData;
 	}
 
 }
