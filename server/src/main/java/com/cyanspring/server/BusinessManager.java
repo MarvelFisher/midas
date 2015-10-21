@@ -2,9 +2,9 @@
  * Copyright (c) 2011-2012 Cyan Spring Limited
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms specified by license file attached.
- * 
+ *
  * Software distributed under the License is released on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
@@ -20,15 +20,13 @@ import java.util.Map.Entry;
 
 import com.cyanspring.common.event.account.*;
 import com.cyanspring.common.staticdata.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.ui.context.Theme;
-import org.springframework.util.StringUtils;
-
 import webcurve.util.PriceUtils;
 
 import com.cyanspring.common.Clock;
@@ -37,6 +35,7 @@ import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.OrderReason;
+import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.FieldDef;
 import com.cyanspring.common.business.MultiInstrumentStrategyDisplayConfig;
 import com.cyanspring.common.business.OrderException;
@@ -156,10 +155,10 @@ public class BusinessManager implements ApplicationContextAware {
 
 	@Autowired(required = false)
 	RiskOrderController riskOrderController;
-	
+
 	@Autowired(required = false)
 	CoinManager coinManager;
-	
+
 	@Autowired
 	ITransactionValidator transactionValidator;
 
@@ -203,7 +202,7 @@ public class BusinessManager implements ApplicationContextAware {
 			subscribeToEvent(CancelPendingOrderEvent.class, null);
 			subscribeToEvent(IndexSessionEvent.class, null);
 			subscribeToEvent(TickTableRequestEvent.class, null);
-            
+
 		}
 
 		@Override
@@ -243,11 +242,12 @@ public class BusinessManager implements ApplicationContextAware {
 
 		try {
 			transactionValidator.checkEnterOrder(event, account);
-			
+
 			String strategyName = (String) fields.get(OrderField.STRATEGY
 					.value());
-			if (null == strategyName)
+			if (null == strategyName) {
 				throw new Exception("Strategy Field is missing");
+			}
 
 			HashMap<String, Object> map = null;
 			// pre-fill any fields that are specified
@@ -263,12 +263,14 @@ public class BusinessManager implements ApplicationContextAware {
 			parentOrderValidator.validate(map, null);
 
 			// stick in the txId for future updates
-			if (null != event.getTxId())
+			if (null != event.getTxId()) {
 				map.put(OrderField.CLORDERID.value(), event.getTxId());
+			}
 
 			// stick in source for FIX orders
-			if (null != event.getKey())
+			if (null != event.getKey()) {
 				map.put(OrderField.SOURCE.value(), event.getKey());
+			}
 
 			map.put(OrderField.IS_FIX.value(), event.isFix());
 
@@ -306,8 +308,9 @@ public class BusinessManager implements ApplicationContextAware {
 			IStrategyContainer container = getLeastLoadContainer();
 
 			String note = order.get(String.class, OrderField.NOTE.value());
-			if (null != note)
+			if (null != note) {
 				log.debug("strategy " + strategy.getId() + " : " + note);
+			}
 
 			log.debug("strategy " + strategy.getId()
 					+ " assigned to container " + container.getId());
@@ -392,10 +395,11 @@ public class BusinessManager implements ApplicationContextAware {
 			// check whether order is there
 			String id = event.getId();
 			order = orders.get(id);
-			if (null == order)
+			if (null == order) {
 				throw new OrderException("Cant find this order id: " + id,
 						ErrorMessage.ORDER_ID_NOT_FOUND);
-			
+			}
+
 			transactionValidator.checkAmendOrder(event, order.getAccount());
 
 			checkClosePositionPending(order.getAccount(), order.getSymbol());
@@ -431,8 +435,9 @@ public class BusinessManager implements ApplicationContextAware {
 								+ e.getMessage(),
 								ErrorMessage.ORDER_VALIDATION_ERROR);
 					}
-					if (add)
+					if (add) {
 						changes.put(entry.getKey(), entry.getValue());
+					}
 				}
 
 			}
@@ -529,21 +534,23 @@ public class BusinessManager implements ApplicationContextAware {
 			throws Exception {
 		log.debug("processCancelParentOrderEvent received: " + event.getTxId()
 					+ ", " + event.getOrderId());
-		
+
 		ParentOrder order = orders.get(event.getOrderId());
 		String message = "";
 		boolean failed = false;
 		try {
-			if(null == order)
+			if (null == order) {
 				throw new OrderException("Cant find this order id: " + event.getOrderId(),
 						ErrorMessage.ORDER_ID_NOT_FOUND);
-			
+			}
+
 			transactionValidator.checkCancelOrder(event, order.getAccount());
-			
-			if (order.getOrdStatus().isCompleted())
+
+			if (order.getOrdStatus().isCompleted()) {
 				throw new OrderException("Order already completed: " + order.getId(),
 						ErrorMessage.ORDER_ALREADY_COMPLETED);
-			
+			}
+
 		} catch (OrderException e) {
 			failed = true;
 			message = MessageLookup.buildEventMessage(e.getClientMessage(),
@@ -561,15 +568,15 @@ public class BusinessManager implements ApplicationContextAware {
 					"Cancel order failed, please check server log");
 
 		}
-		
-		if(failed) {
+
+		if (failed) {
 			CancelParentOrderReplyEvent reply = new CancelParentOrderReplyEvent(
 					event.getKey(), event.getSender(), false, message,
 					event.getTxId(), order);
 			eventManager.sendLocalOrRemoteEvent(reply);
 			return;
 		}
-			
+
 		if (order.getState().equals(StrategyState.Terminated)) {
 			order.setOrdStatus(OrdStatus.CANCELED);
 			CancelParentOrderReplyEvent reply = new CancelParentOrderReplyEvent(
@@ -592,10 +599,11 @@ public class BusinessManager implements ApplicationContextAware {
 
 	private void checkClosePositionPending(String account, String symbol)
 			throws OrderException {
-		if (positionKeeper.checkAccountPositionLock(account, symbol))
+		if (positionKeeper.checkAccountPositionLock(account, symbol)) {
 			throw new OrderException("Account " + account
 					+ " has pending close position action on symbol " + symbol,
 					ErrorMessage.POSITION_PENDING);
+		}
 	}
 
 	public void processClosePositionRequestEvent(ClosePositionRequestEvent event) {
@@ -604,7 +612,7 @@ public class BusinessManager implements ApplicationContextAware {
 		ErrorMessage clientMessage = null;
 		try {
 			transactionValidator.checkClosePosition(event, event.getAccount());
-			
+
 			Account account = accountKeeper.getAccount(event.getAccount());
 			if (null == account) {
 				clientMessage = ErrorMessage.ACCOUNT_NOT_EXIST;
@@ -630,8 +638,9 @@ public class BusinessManager implements ApplicationContextAware {
 
 			}
 
-			if (!PriceUtils.isZero(event.getQty()))
+			if (!PriceUtils.isZero(event.getQty())) {
 				qty = Math.min(qty, event.getQty());
+			}
 
             processClosePosition(event.getSender(), event.getTxId(), event.getKey(), event.getReason(),
                     account, position.getSymbol(), position.getQty() > 0 ? OrderSide.Sell: OrderSide.Buy, qty);
@@ -742,8 +751,9 @@ public class BusinessManager implements ApplicationContextAware {
 
 		List<ParentOrder> list = new LinkedList<ParentOrder>();
 		for (ParentOrder order : map.values()) {
-			if (!order.getOrdStatus().isCompleted())
+			if (!order.getOrdStatus().isCompleted()) {
 				list.add(order);
+			}
 		}
 
 		if (null != list && list.size() > 0) {
@@ -790,10 +800,11 @@ public class BusinessManager implements ApplicationContextAware {
 
 		Map<String, FieldDef> fieldDefs = strategyFactory
 				.getStrategyFieldDef(strategyName);
-		if (null == fieldDefs)
+		if (null == fieldDefs) {
 			throw new DataConvertException(
 					"Cant find field definition for strategy: " + strategyName,
 					ErrorMessage.FIELD_DEFINITION_NOT_FOUND);
+		}
 		for (Entry<String, Object> entry : fields.entrySet()) {
 			Object obj;
 			if (entry.getValue() instanceof String) {
@@ -823,9 +834,10 @@ public class BusinessManager implements ApplicationContextAware {
 		try {
 			strategyName = (String) event.getStrategy().get(
 					OrderField.STRATEGY.value());
-			if (null == strategyName)
+			if (null == strategyName) {
 				throw new StrategyException(
 						"Strategy field not present in NewMultiInstrumentStrategyEvent");
+			}
 			IStrategy strategy = strategyFactory.createStrategy(
 					strategyName,
 					new Object[] { refDataManager, tickTableManager,
@@ -905,21 +917,21 @@ public class BusinessManager implements ApplicationContextAware {
 	public void processLiveTradingEndEvent(LiveTradingEndEvent event) {
 		// close all position and orders accounts that has live trading
 		try {
-			if(!event.isNeedClearOrderPosition()){
+			if (!event.isNeedClearOrderPosition()) {
 				return;
-			}		
+			}
 
 			List<Account> accounts = accountKeeper.getAllAccounts();
 			for (Account account : accounts) {
 				AccountSetting accountSetting = accountKeeper
 						.getAccountSetting(account.getId());
-				
-				if( null != coinManager && !coinManager.canCheckDayTradingMode(account.getId())){
+
+				if ( null != coinManager && !coinManager.canCheckDayTradingMode(account.getId())) {
 					continue;
 				}
-				
+
 				if (accountSetting.isLiveTrading()) {
-					
+
 					log.info("LiveTradingEndEvent:close position account:"
 							+ account.getId());
 					TradingUtil.closeAllPositoinAndOrder(account,
@@ -938,8 +950,9 @@ public class BusinessManager implements ApplicationContextAware {
 		IStrategyContainer result = null;
 		for (IStrategyContainer container : containers) {
 			if (result == null
-					|| container.getStrategyCount() < result.getStrategyCount())
+					|| container.getStrategyCount() < result.getStrategyCount()) {
 				result = container;
+			}
 		}
 
 		return result;
@@ -970,8 +983,9 @@ public class BusinessManager implements ApplicationContextAware {
 	public List<String> getSingleOrderDisplayFields() throws StrategyException {
 		List<String> result = globalStrategySettings
 				.getSingleOrderCommonDisplayFields();
-		if (null == result)
+		if (null == result) {
 			throw new StrategyException("SingleOrderDisplayFields is null");
+		}
 		return result;
 	}
 
@@ -979,8 +993,9 @@ public class BusinessManager implements ApplicationContextAware {
 			throws StrategyException {
 		List<String> result = globalStrategySettings
 				.getSingleInstrumentCommonDisplayFields();
-		if (null == result)
+		if (null == result) {
 			throw new StrategyException("SingleInstrumentDisplayFields is null");
+		}
 		return result;
 	}
 
@@ -988,8 +1003,9 @@ public class BusinessManager implements ApplicationContextAware {
 			throws StrategyException {
 		List<String> result = globalStrategySettings
 				.getMultiInstrumentCommonDisplayFields();
-		if (null == result)
+		if (null == result) {
 			throw new StrategyException("MultiInstrumentDisplayFields is null");
+		}
 		return result;
 	}
 
@@ -1064,29 +1080,29 @@ public class BusinessManager implements ApplicationContextAware {
 			}
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * Based on processMarketSessionEvent
 	 * Compare the "key" value of MarketSessionData in incoming IndexSessionEvent
 	 * with the "key" of the orders/positions to determine if cancel/close or not
-	 * 
+	 *
 	 * @param event
 	 */
 	public void processIndexSessionEvent(IndexSessionEvent event) {
 		log.info("Received IndexSessionEvent: " + event);
-		
+
 		if (event == null || !event.isOk()) {
 			log.warn("Received IndexSessionEvent is " + (event == null ? "null" : "not OK"));
 			return;
 		}
-		
+
 		Map<String, MarketSessionData> sessionDataMap = event.getDataMap();
-		
+
 		for (Entry<String, MarketSessionData> sessionDataMapEntry : sessionDataMap.entrySet()) {
 			String entryKey = sessionDataMapEntry.getKey();
 			MarketSessionData entrySessionData = sessionDataMapEntry.getValue();
-			
+
 			if (entrySessionData.getSessionType().equals(MarketSessionType.CLOSE)) {
 				if (this.cancelAllOrdersAtClose) {
 					for (ParentOrder order : orders.values()) {
@@ -1100,13 +1116,13 @@ public class BusinessManager implements ApplicationContextAware {
 						} else if (orderIdxSessionType.equals(IndexSessionType.EXCHANGE.toString())) {
 							orderKey = orderRefData.getExchange();
 						}
-						
+
 						if (orderKey.equals(entryKey) && !order.getOrdStatus().isCompleted()) {
 							cancelOrder(order);
 						}
 					}
 				}
-				
+
 				if (this.closeAllPositionsAtClose) {
 					List<Account> accounts = accountKeeper.getAllAccounts();
 					for (Account account : accounts) {
@@ -1123,7 +1139,7 @@ public class BusinessManager implements ApplicationContextAware {
 							} else if (positionIdxSessionType.equals(IndexSessionType.EXCHANGE.toString())) {
 								positionKey = positionRefData.getExchange();
 							}
-							
+
 							if (positionKey.equals(entryKey)) {
 								closePosition(position);
 							}
@@ -1133,7 +1149,7 @@ public class BusinessManager implements ApplicationContextAware {
 			}
 		}
 	}
-	
+
 	private void cancelOrder(ParentOrder order) {
 		log.debug("Market close cancel: " + order);
 		String source = order.get(String.class,
@@ -1145,7 +1161,7 @@ public class BusinessManager implements ApplicationContextAware {
 				null, false);
 		eventManager.sendEvent(cancel);
 	}
-	
+
 	private void closePosition(OpenPosition position) {
 		log.info("Day end position close: "
 				+ position.getAccount() + ", "
@@ -1183,18 +1199,18 @@ public class BusinessManager implements ApplicationContextAware {
 				cancelPendingOrderEvent);
 		log.info("Schedule cancel pending order event at {}", cal.getTime());
 	}
-	
+
 	public void processTickTableRequestEvent(TickTableRequestEvent event) {
 		try {
 			String symbol = event.getSymbol();
-			Map <AbstractTickTable,List<RefData>> map= tickTableManager.buildTickTableSymbolMap(symbol);			
-			if(null == map){
+			Map <AbstractTickTable,List<RefData>> map= tickTableManager.buildTickTableSymbolMap(symbol);
+			if (null == map) {
 				log.info("no tick table map data:{}",symbol);
 				return;
 			}
 
 			eventManager.sendLocalOrRemoteEvent(
-					new TickTableReplyEvent(event.getKey(), 
+					new TickTableReplyEvent(event.getKey(),
 							event.getSender(),map));
 
 		} catch (Exception e) {
@@ -1205,32 +1221,35 @@ public class BusinessManager implements ApplicationContextAware {
 	public void injectStrategies(List<DataObject> list) {
 		// create running strategies and assign to containers
 		for (DataObject obj : list) {
-			try {
-				StrategyState state = obj.get(StrategyState.class,
-						OrderField.STATE.value());
-				if (state.equals(StrategyState.Terminated))
-					continue;
+			if (!(obj instanceof ChildOrder)) {
+				try {
+					StrategyState state = obj.get(StrategyState.class,
+							OrderField.STATE.value());
+					if (state.equals(StrategyState.Terminated)) {
+						continue;
+					}
 
-				String strategyName = obj.get(String.class,
-						OrderField.STRATEGY.value());
-				IStrategy strategy;
-				strategy = strategyFactory.createStrategy(strategyName,
-						new Object[] { refDataManager, tickTableManager, obj });
-				IStrategyContainer container = getLeastLoadContainer();
-				log.debug("strategy " + strategy.getId()
-						+ " assigned to container " + container.getId());
-				if (strategy instanceof SingleOrderStrategy) {
-					ParentOrder parentOrder = ((SingleOrderStrategy) strategy)
-							.getParentOrder();
-					orders.put(parentOrder.getId(), parentOrder.getAccount(),
-							parentOrder);
+					String strategyName = obj.get(String.class,
+							OrderField.STRATEGY.value());
+					IStrategy strategy;
+					strategy = strategyFactory.createStrategy(strategyName,
+							new Object[] { refDataManager, tickTableManager, obj });
+					IStrategyContainer container = getLeastLoadContainer();
+					log.debug("strategy " + strategy.getId()
+							+ " assigned to container " + container.getId());
+					if (strategy instanceof SingleOrderStrategy) {
+						ParentOrder parentOrder = ((SingleOrderStrategy) strategy)
+								.getParentOrder();
+						orders.put(parentOrder.getId(), parentOrder.getAccount(),
+								parentOrder);
+					}
+					AddStrategyEvent addStrategyEvent = new AddStrategyEvent(
+							container.getId(), strategy, autoStartStrategy);
+
+					eventManager.sendEvent(addStrategyEvent);
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
 				}
-				AddStrategyEvent addStrategyEvent = new AddStrategyEvent(
-						container.getId(), strategy, autoStartStrategy);
-
-				eventManager.sendEvent(addStrategyEvent);
-			} catch (Exception e) {
-				log.error(e.getMessage(), e);
 			}
 		}
 	}
@@ -1248,8 +1267,9 @@ public class BusinessManager implements ApplicationContextAware {
 		// subscribe to events
 		eventProcessor.setHandler(this);
 		eventProcessor.init();
-		if (eventProcessor.getThread() != null)
+		if (eventProcessor.getThread() != null) {
 			eventProcessor.getThread().setName("BusinessManager");
+		}
 
 		eventMultiProcessor.setHandler(this);
 		eventMultiProcessor.init();
@@ -1272,8 +1292,9 @@ public class BusinessManager implements ApplicationContextAware {
 			cal.set(Calendar.MINUTE, min);
 			cal.set(Calendar.SECOND, sec);
 
-			if (TimeUtil.getTimePass(Clock.getInstance().now(), cal.getTime()) >= 0)
+			if (TimeUtil.getTimePass(Clock.getInstance().now(), cal.getTime()) >= 0) {
 				cal.add(Calendar.DAY_OF_YEAR, 7);
+			}
 
 			scheduleManager.scheduleTimerEvent(cal.getTime(), eventProcessor,
 					cancelPendingOrderEvent);
