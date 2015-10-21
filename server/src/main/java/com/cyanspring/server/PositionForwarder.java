@@ -57,6 +57,11 @@ public class PositionForwarder implements IPlugin{
     @Override
     public void init() throws Exception {
         log.info("initializing...");
+        if (eventManager == null || globalEventManager == null) {
+        	log.warn("initial fail");
+        	return;
+        }
+        
         eventProcessor.setHandler(this);
         eventProcessor.init();
         if (eventProcessor.getThread() != null)
