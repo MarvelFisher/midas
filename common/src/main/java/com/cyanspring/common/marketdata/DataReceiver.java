@@ -53,7 +53,8 @@ public class DataReceiver implements IPlugin, IMarketDataListener {
     @Override
     public void onQuote(InnerQuote innerQuote) {
         Quote quote = innerQuote.getQuote();
-        String symbol = quote.getSymbol();
+        String symbol = getLtsSymbol(quote.getSymbol());
+        quote.setSymbol(symbol);
         List<String> subListener = subList.get(symbol);
         for (String sub : subListener) {
             IQuoteListener listener = listeners.get(sub);
@@ -64,7 +65,8 @@ public class DataReceiver implements IPlugin, IMarketDataListener {
 
     @Override
     public void onQuoteExt(DataObject quoteExt, QuoteSource quoteSource) {
-        String symbol = quoteExt.get(String.class, QuoteExtDataField.SYMBOL.toString());
+        String symbol = getLtsSymbol(quoteExt.get(String.class, QuoteExtDataField.SYMBOL.toString()));
+        quoteExt.set(symbol, QuoteExtDataField.SYMBOL.toString());
         List<String> subListener = subList.get(symbol);
         for (String sub : subListener) {
             IQuoteListener listener = listeners.get(sub);
@@ -74,7 +76,8 @@ public class DataReceiver implements IPlugin, IMarketDataListener {
 
     @Override
     public void onTrade(Trade trade) {
-        String symbol = trade.getSymbol();
+        String symbol = getLtsSymbol(trade.getSymbol());
+        trade.setSymbol(symbol);
         List<String> subListener = subList.get(symbol);
         for (String sub : subListener) {
             IQuoteListener listener = listeners.get(sub);
@@ -86,6 +89,10 @@ public class DataReceiver implements IPlugin, IMarketDataListener {
         if (listeners == null)
             listeners = new HashMap<>();
         listeners.put(listener.getId(), listener);
+    }
+
+    public void setAdaptors(List<IMarketDataAdaptor> adaptors) {
+        this.adaptors = adaptors;
     }
 
     @Override
