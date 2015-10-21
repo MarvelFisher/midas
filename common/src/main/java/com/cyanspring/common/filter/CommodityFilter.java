@@ -30,7 +30,7 @@ public class CommodityFilter implements IRefDataFilter {
 	public List<RefData> filter(List<RefData> lstRefData) throws Exception {
 		if (lstRefData == null || lstRefData.size() == 0 ||
 				 ((lstExcludedSymbols == null || lstExcludedSymbols.size() == 0) &&
-						 lstExcludedCategories == null || lstExcludedCategories.size() == 0)) {
+						 (lstExcludedCategories == null || lstExcludedCategories.size() == 0))) {
 			return lstRefData;
 		}
 
