@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.SystemInfo;
@@ -132,10 +133,10 @@ public class CentralDbProcessor implements IPlugin
 	
 	private ConcurrentHashMap<String, HashMap<String, List<HistoricalPrice>>> retrieveMap = null;
 	
-	@Autowired
+	@Autowired @Qualifier("eventManager")
 	private IRemoteEventManager eventManager;
 	
-	@Autowired
+	@Autowired @Qualifier("eventManagerMD")
 	private IRemoteEventManager eventManagerMD;
 	
 	@Autowired
@@ -684,10 +685,10 @@ public class CentralDbProcessor implements IPlugin
 		if (event.getAction() == Action.ADD || event.getAction() == Action.MOD)
 		{
 			int nCount = getRefSymbolInfo().setByRefData(refList);
-			if (nCount == 0)
-			{
-				return;
-			}
+//			if (nCount == 0)
+//			{
+//				return;
+//			}
 			for(RefData refdata : refList)
 			{
 				if (refdata.getExchange() == null) 
@@ -703,6 +704,7 @@ public class CentralDbProcessor implements IPlugin
 					log.debug("Add symbol " + symbol);
 				SymbolData data = chef.getSymbolData(symbol);
 				data.setSessionIndex(indexSessionType);
+				log.debug("Set symbol:" + symbol + "sesType:" + indexSessionType);
 				if (IndexSessionType.EXCHANGE.name().equals(indexSessionType))
 				{
 					key = info.getExchange();

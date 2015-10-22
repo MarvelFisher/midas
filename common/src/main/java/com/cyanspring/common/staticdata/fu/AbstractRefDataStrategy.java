@@ -172,7 +172,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 	}
 
 	protected String getRefSymbol(String refSymbol) {
-		return refSymbol.replaceAll(".[A-Z]+$", "");
+		return refSymbol.replaceAll("\\.[A-Z]+$", "");
 	}
 
 	protected String getCategory(RefData refData) {
