@@ -36,7 +36,10 @@ public class CoinManager implements IPlugin{
 	
 	@Autowired
 	protected IRemoteEventManager eventManager;
-	
+
+	@Autowired
+	private IRemoteEventManager globalEventManager;
+
 	@Autowired
     AccountKeeper accountKeeper;
 	
@@ -52,7 +55,22 @@ public class CoinManager implements IPlugin{
 			return eventManager;
 		}
 	};
-	
+
+
+	private AsyncEventProcessor globalEventProcessor = new AsyncEventProcessor() {
+
+		@Override
+		public void subscribeToEvents() {
+			subscribeToEvent(CoinSettingRequestEvent.class, null);
+		}
+
+		@Override
+		public IAsyncEventManager getEventManager() {
+			return globalEventManager;
+		}
+	};
+
+
 	@Override
 	public void init() throws Exception {
 		log.info("init coinControl");
@@ -61,6 +79,12 @@ public class CoinManager implements IPlugin{
 		if (eventProcessor.getThread() != null){
 			eventProcessor.getThread().setName("CoinManager");
 		}
+
+		globalEventProcessor.setHandler(this);
+		globalEventProcessor.init();
+		if(globalEventProcessor.getThread() != null)
+			globalEventProcessor.getThread().setName("CoinManager");
+
 	}
 
 	@Override
@@ -172,7 +196,11 @@ public class CoinManager implements IPlugin{
 				event.getKey(), event.getSender(), event.getTxId(), event.getUserId(), event.getClientId(),
 				event.getCoinType(), event.getMarket(), isOk, message);
 		try {
-			eventManager.sendRemoteEvent(reply);
+			if (!Strings.isNullOrEmpty(event.getMarket())) {
+				globalEventManager.sendRemoteEvent(reply);
+			} else {
+				eventManager.sendRemoteEvent(reply);
+			}
 		} catch (Exception e) {
 			log.warn(e.getMessage(),e);
 		}
