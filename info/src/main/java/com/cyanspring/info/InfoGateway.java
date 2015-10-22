@@ -7,9 +7,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.cyanspring.common.alert.SendNotificationRequestEvent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.business.Execution;
@@ -34,13 +36,13 @@ import com.cyanspring.info.alert.Compute;
 public class InfoGateway implements IPlugin {
 	private static final Logger log = LoggerFactory
 			.getLogger(InfoGateway.class);
-	@Autowired
+	@Autowired @Qualifier("eventManager")
 	private IRemoteEventManager eventManager;
 
 //	@Autowired
 //	ScheduleManager scheduleManager;
 
-	@Autowired
+	@Autowired @Qualifier("eventManagerMD")
 	private IRemoteEventManager eventManagerMD;
 
 	private int createThreadCount;
