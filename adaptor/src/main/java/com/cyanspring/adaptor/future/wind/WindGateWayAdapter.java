@@ -683,19 +683,23 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
 
         if(event instanceof RefDataUpdateEvent){
             RefDataUpdateEvent refDataUpdateEvent = (RefDataUpdateEvent) event;
-            if(refDataUpdateEvent.getAction() == RefDataUpdateEvent.Action.ADD)
-                inputRefDataList(refDataUpdateEvent.getRefDataList());
-            if(refDataUpdateEvent.getAction() == RefDataUpdateEvent.Action.MOD){
-                for(RefData refData : refDataUpdateEvent.getRefDataList()){
-                    DataObject quoteExtend = new DataObject();
-                    quoteExtend.put(QuoteExtDataField.SYMBOL.value(), refData.getSymbol());
-                    quoteExtend.put(QuoteExtDataField.TIMESTAMP.value(), Clock.getInstance().now());
-                    quoteExtend.put(QuoteExtDataField.CNNAME.value(), refData.getCNDisplayName());
-                    quoteExtend.put(QuoteExtDataField.TWNAME.value(), refData.getTWDisplayName());
-                    sendQuoteExtend(quoteExtend);
-                }
+            switch (refDataUpdateEvent.getAction()){
+                case ADD:
+                    inputRefDataList(refDataUpdateEvent.getRefDataList());
+                    break;
+                case MOD:
+                    inputRefDataList(refDataUpdateEvent.getRefDataList());
+                    break;
+                case DEL:
+                    for(RefData refData: refDataUpdateEvent.getRefDataList()){
+                        if(marketRuleBySymbolMap.containsKey(refData.getSymbol())){
+                            marketRuleBySymbolMap.remove(refData.getSymbol());
+                        }
+                    }
+                    break;
+                default:
+                    break;
             }
-
         }
 
         if (event instanceof IndexSessionEvent) {
