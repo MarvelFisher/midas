@@ -171,7 +171,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
                 if (!dataCheck("S", stockData.getWindCode(), stockData.getTime(), stockData.getTradingDay(), stockData.getStatus()))
                     return;
                 quoteMgr.AddRequest(new Object[]{
-                        WindDef.MSG_DATA_MARKET, stockData});
+                        WindDef.MSG_DATA_MARKET, stockData.clone()});
             }
             break;
             case WindDef.MSG_DATA_INDEX: {
@@ -191,7 +191,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
                 if (!dataCheck("I", indexData.getWindCode(), indexData.getTime(), indexData.getTradingDay(), -1))
                     return;
                 quoteMgr.AddRequest(new Object[]{
-                        WindDef.MSG_DATA_INDEX, indexData});
+                        WindDef.MSG_DATA_INDEX, indexData.clone()});
             }
             break;
             case WindDef.MSG_DATA_FUTURE: {
@@ -208,7 +208,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
                 if (!dataCheck("F", futureData.getWindCode(), futureData.getTime(), futureData.getTradingDay(), -1))
                     return;
                 quoteMgr.AddRequest(new Object[]{
-                        WindDef.MSG_DATA_FUTURE, futureData});
+                        WindDef.MSG_DATA_FUTURE, futureData.clone()});
             }
             break;
             case WindDef.MSG_DATA_TRANSACTION: {
@@ -224,7 +224,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
                 if (!dataCheck("T", transationData.getWindCode(), transationData.getTime(), transationData.getActionDay(), -1))
                     return;
                 quoteMgr.AddRequest(new Object[]{
-                        WindDef.MSG_DATA_TRANSACTION, transationData});
+                        WindDef.MSG_DATA_TRANSACTION, transationData.clone()});
             }
             break;
             case WindDef.MSG_DATA_ORDERQUEUE:

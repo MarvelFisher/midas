@@ -226,6 +226,12 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                                     + ",Start=" + marketSessionData.getStart() + ",End=" + marketSessionData.getEnd()
                     );
                     indexSessions.put(index, marketSessionData);
+                    if(indexSessionTypes.get(index) == null){
+                        if(marketTypes.get(index) != null) {
+                            //if indexSessionType not this index & refData not null, this index is settlement index
+                            indexSessionTypes.put(index, new ArrayList<String>(Arrays.asList(index)));
+                        }
+                    }
                 }
                 checkEventAndSend(event);
                 if (!isInitReqDataEnd) isInitIndexSessionReceived = true;
@@ -488,6 +494,10 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 || marketSessionData.getSessionType() == MarketSessionType.BREAK ))
             {
                 ArrayList<String> symbols = indexSessionTypes.get(index);
+                if(symbols == null || symbols.size() == 0){
+                    log.debug("indexSessionType index:" + index +" list empty.");
+                    continue;
+                }
                 for(String symbol : symbols){
                     Quote quote = quotes.get(symbol);
                     if (quote != null && !quote.isStale()) {
@@ -566,7 +576,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     public void onTrade(Trade trade) {
     	if (quoteListener != null)
     		quoteListener.onTrade(trade);
-        if(quoteLogIsOpen) 
+        if(quoteLogIsOpen)
         	log.debug("Trade Receive:S="+trade.getSymbol()+",I="+trade.getId()+",BS="+trade.getBuySellFlag()+",P="+trade.getPrice()+",V=" + trade.getQuantity());
         TradeEvent event = new TradeEvent(trade.getSymbol(), null, trade);
         eventProcessor.onEvent(event);

@@ -213,7 +213,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IWindGWListener {
                         );
                     }
                     requestMgr.addReqData(new Object[]{
-                            WindDef.MSG_SYS_CODETABLE, futureCodeTableData});
+                            WindDef.MSG_SYS_CODETABLE, futureCodeTableData.clone()});
                     needsubscribeDataIsReceive = true;
                 }
                 break;
@@ -237,7 +237,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IWindGWListener {
 				}
                 codeTableResultByExchangeMap.put(codeTableResult.getSecurityExchange(),codeTableResult);
                 log.debug("codeTable exchange = " + codeTableResult.getSecurityExchange() + ",hashCode=" + codeTableResult.getHashCode());
-                requestMgr.addReqData(new Object[]{datatype, codeTableResult});
+                requestMgr.addReqData(new Object[]{datatype, codeTableResult.clone()});
                 break;
             case WindDef.MSG_SYS_CODETABLE:
                 if (serverHeartBeatCountAfterCodeTableCome <= -1) {
@@ -291,7 +291,7 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IWindGWListener {
                             + ",Sp=" + codeTableData.getSpellName() + ",EN=" + codeTableData.getEnglishName());
 //                }
                 if(!needsubscribe) {
-					requestMgr.addReqData(new Object[]{datatype, codeTableData});
+					requestMgr.addReqData(new Object[]{datatype, codeTableData.clone()});
 				}
                 break;
             case WindDef.MSG_WINDGW_SERVERHEARTBEAT:

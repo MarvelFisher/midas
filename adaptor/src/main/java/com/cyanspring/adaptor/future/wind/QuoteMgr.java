@@ -79,6 +79,7 @@ public class QuoteMgr {
     }
 
     void process(int type, Object objMsg) {
+        if(objMsg == null) return;
         switch (type) {
             case WindDef.MSG_DATA_INDEX: {
                 IndexData indexData = (IndexData) objMsg;

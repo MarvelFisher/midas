@@ -13,6 +13,8 @@ package com.cyanspring.common.marketdata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
+
 public class Trade implements Cloneable{
 	private static final Logger log = LoggerFactory
 			.getLogger(Trade.class);
@@ -21,6 +23,7 @@ public class Trade implements Cloneable{
 	double price;
 	double quantity;
 	int buySellFlag;
+	Date timestamp;
 
 	@Override
 	public Trade clone() {
@@ -64,5 +67,13 @@ public class Trade implements Cloneable{
 
 	public void setBuySellFlag(int buySellFlag) {
 		this.buySellFlag = buySellFlag;
+	}
+
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
 	}
 }

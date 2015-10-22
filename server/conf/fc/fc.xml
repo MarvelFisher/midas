@@ -367,14 +367,14 @@
 	<bean id="commodityFilter" class="com.cyanspring.common.filter.CommodityFilter">
         <property name="lstExcludedSymbols">
             <list>
-                <!--<value>IHC1.CF</value>
+                <!-- <value>IHC1.CF</value>
 				<value>IHC2.CF</value>
 				<value>IHC3.CF</value>
 				<value>IHC4.CF</value>
 				<value>ICC1.CF</value>
 				<value>ICC2.CF</value>
 				<value>ICC3.CF</value>
-				<value>ICC4.CF</value>-->
+				<value>ICC4.CF</value> -->
 			</list>
         </property>
         <property name="lstExcludedCategories">
@@ -413,7 +413,6 @@
 				<ref bean="refSymbolFilter"/>
 				<ref bean="itypeFilter"/>
 				<ref bean="contractDateFilter"/>
-				<ref bean="commodityFilter"/>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -477,6 +476,10 @@
 	
 	<!-- coin control -->
 	<bean id="coinManager" class="com.cyanspring.server.account.CoinManager">
+		<property name="activePositionCoinControl" value="false"></property>
+		<property name="activeDailyCoinControl" value="false"></property>
+		<property name="activeTrailingStopCoinControl" value="false"></property>
+		<property name="activeDayTradingModeCoinControl" value="false"></property>
 	</bean>
 	
 	<bean id="coinControlRecoveryProcessor" class="com.cyanspring.server.CoinControlRecoveryProcessor">

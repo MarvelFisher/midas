@@ -1,6 +1,6 @@
 package com.cyanspring.adaptor.future.wind.data;
 
-public class TransationData {
+public class TransationData implements Cloneable{
     private String windCode;
     private int actionDay;
     private int time;
@@ -72,5 +72,15 @@ public class TransationData {
 
     public void setBuySellFlag(int buySellFlag) {
         this.buySellFlag = buySellFlag;
+    }
+
+    public TransationData clone(){
+        try {
+            TransationData transationData = (TransationData)super.clone();
+            return transationData;
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

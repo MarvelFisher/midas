@@ -57,20 +57,6 @@ public class TransationItem implements AutoCloseable {
         String symbolId = transationData.getWindCode();
         TransationItem item = getItem(symbolId, true);
 
-        //Get MarketSession
-        String index = windGateWayAdapter.getMarketRuleBySymbolMap().get(symbolId);
-        MarketSessionData marketSessionData = null;
-        Date endDate;
-        Date startDate;
-        try {
-            marketSessionData = windGateWayAdapter.getMarketSessionByIndexMap().get(index);
-            endDate = marketSessionData.getEndDate();
-            startDate = marketSessionData.getStartDate();
-        } catch (Exception e) {
-            LogUtil.logException(log, e);
-            return;
-        }
-
         // tick time
         String timeStamp = String.format("%d-%d", transationData.getActionDay(),
                 transationData.getTime());
@@ -97,30 +83,9 @@ public class TransationItem implements AutoCloseable {
             return;
         }
 
-        //modify tick Time
-        if (quoteMgr.isModifyTickTime()) {
-            if (marketSessionData.getSessionType() == MarketSessionType.PREOPEN
-                    && DateUtil.compareDate(tickTime, endDate) < 0) {
-                tickTime = endDate;
-            }
-
-            if (marketSessionData.getSessionType() == MarketSessionType.OPEN
-                    && DateUtil.compareDate(tickTime, endDate) >= 0) {
-                tickTime = DateUtil.subDate(endDate, 1, TimeUnit.SECONDS);
-            }
-
-            if ((marketSessionData.getSessionType() == MarketSessionType.CLOSE
-                    || marketSessionData.getSessionType() == MarketSessionType.BREAK)
-                    && DateUtil.compareDate(tickTime, startDate) >= 0) {
-                if (TimeUtil.getTimePass(tickTime, startDate) <= WindDef.SmallSessionTimeInterval)
-                    tickTime = DateUtil.subDate(startDate, 1, TimeUnit.SECONDS);
-                if (TimeUtil.getTimePass(endDate, tickTime) <= WindDef.SmallSessionTimeInterval)
-                    tickTime = endDate;
-            }
-        }
-
         Trade trade = new Trade();
         trade.setSymbol(symbolId);
+        trade.setTimestamp(tickTime);
         trade.setPrice((double) transationData.getMatch()/10000);
         trade.setQuantity(transationData.getVolume());
         trade.setBuySellFlag(transationData.getBuySellFlag());

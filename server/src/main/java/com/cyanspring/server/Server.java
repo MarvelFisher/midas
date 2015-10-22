@@ -43,7 +43,6 @@ import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.PositionPeakPrice;
 import com.cyanspring.common.account.User;
-import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.CoinControl;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.GroupManagement;
@@ -357,15 +356,13 @@ public class Server implements ApplicationContextAware {
 
 			// setting all strategy to stopped state
 			for (DataObject obj : list) {
-				if (!(obj instanceof ChildOrder)) {
-					StrategyState state = obj.get(StrategyState.class,
-							OrderField.STATE.value());
-					if (state.equals(StrategyState.Terminated)) {
-						continue;
-					}
-
-					obj.put(OrderField.STATE.value(), StrategyState.Stopped);
+				StrategyState state = obj.get(StrategyState.class,
+						OrderField.STATE.value());
+				if (state == null || state.equals(StrategyState.Terminated)) {
+					continue;
 				}
+
+				obj.put(OrderField.STATE.value(), StrategyState.Stopped);
 			}
 			orderManager.injectStrategies(list);
 			businessManager.injectStrategies(list);

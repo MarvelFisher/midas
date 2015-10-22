@@ -26,7 +26,9 @@ public class StockCommissionManager extends CommissionManager {
     public double getCommission(RefData refData, AccountSetting settings, double value, Execution execution) {
     	if (refData != null) {
         	String type = refData.getIType();
-        	if (type != null && (IType.FUTURES_CX.getValue().equals(type) || IType.FUTURES_IDX.getValue().equals(type))) {
+        	if (type != null && (!IType.STOCK.getValue().equals(type) 
+        			&& !IType.STOCK_GEI.getValue().equals(type)
+        			&& !IType.STOCK_SSE.getValue().equals(type))) {
 				return super.getCommission(refData, settings, value, execution);
 			}
         }

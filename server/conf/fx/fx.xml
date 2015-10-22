@@ -41,6 +41,7 @@
 				<ref bean="statisticManager" />	
 				<ref bean="systemSuspendValidator" />
 				<ref bean="coinManager" />
+				<ref bean="positionForwarder"/>
 			</list>
 		</property>
 		<property name="readyMap">
@@ -496,9 +497,18 @@
 	
 	<!-- coin control -->
 	<bean id="coinManager" class="com.cyanspring.server.account.CoinManager">
+		<property name="activePositionCoinControl" value="false"></property>
+		<property name="activeDailyCoinControl" value="false"></property>
+		<property name="activeTrailingStopCoinControl" value="false"></property>
+		<property name="activeDayTradingModeCoinControl" value="false"></property>
 	</bean>
 	
 	<bean id="coinControlRecoveryProcessor" class="com.cyanspring.server.CoinControlRecoveryProcessor">
+	</bean>
+	
+	<bean id="positionForwarder" class="com.cyanspring.server.PositionForwarder">
+		<property name="eventManager" ref="eventManager"></property>
+		<property name="globalEventManager" ref="globalEventManager"></property>
 	</bean>
 	
 </beans>

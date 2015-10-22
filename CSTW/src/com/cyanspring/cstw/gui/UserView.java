@@ -111,7 +111,9 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 	}
 	
 	private void showUsers() {
-	
+		if(viewer.getControl().isDisposed())
+			return ;
+		
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
