@@ -20,6 +20,9 @@
 		<property name="env" value="Test"/>
 	</bean>
 
+	<bean id="allPositionManager" class="com.cyanspring.common.cstw.position.AllPositionManager">
+	</bean>
+
 	<bean id="dataReceiver" class="com.cyanspring.common.marketdata.DataReceiver">
 	</bean>
 

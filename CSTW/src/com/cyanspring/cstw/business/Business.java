@@ -30,6 +30,7 @@ import com.cyanspring.common.Default;
 import com.cyanspring.common.SystemInfo;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountSetting;
+import com.cyanspring.common.account.OverallPosition;
 import com.cyanspring.common.account.UserGroup;
 import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.business.FieldDef;
@@ -37,6 +38,7 @@ import com.cyanspring.common.business.MultiInstrumentStrategyDisplayConfig;
 import com.cyanspring.common.cstw.auth.IAuthChecker;
 import com.cyanspring.common.cstw.kdb.SignalManager;
 import com.cyanspring.common.cstw.kdb.SignalType;
+import com.cyanspring.common.cstw.position.AllPositionManager;
 import com.cyanspring.common.cstw.tick.TickManager;
 import com.cyanspring.common.cstw.tick.Ticker;
 import com.cyanspring.common.data.AlertType;
@@ -107,7 +109,7 @@ public class Business {
 	private List<String> symbolList = new ArrayList<String>();
 	private TraderInfoListener traderInfoListener = null;
 	private DataReceiver quoteDataReceiver = null;
-	
+	private AllPositionManager allPositionManager = null;
 	// singleton implementation
 	private Business() {
 	}
@@ -303,6 +305,7 @@ public class Business {
 		tickManager = beanHolder.getTickManager();
 		signalManager = beanHolder.getSignalManager();
 		quoteDataReceiver = beanHolder.getDataReceiver();
+		allPositionManager = beanHolder.getAllPositionManager();
 		boolean ok = false;
 		while (!ok) {
 			try {
@@ -514,6 +517,7 @@ public class Business {
 		log.info("login user:{},{}", user, userGroup.getRole());
 
 		QuoteCachingManager.getInstance().init();
+		allPositionManager.init(eventManager, getFirstServer(), getAccountGroup(), getUserGroup());
 		return true;
 	}
 
@@ -631,5 +635,13 @@ public class Business {
 	
 	public DataReceiver getQuoteDataReceiver(){
 		return quoteDataReceiver;
+	}
+	
+	public AllPositionManager getAllPositionManager(){
+		return allPositionManager;
+	}
+	
+	public List<OverallPosition> getOverallPositionList(){
+		return allPositionManager.getOverAllPositionList();
 	}
 }
