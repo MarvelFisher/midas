@@ -22,7 +22,10 @@ public enum TableType {
 	CapitalTable4RiskCtrl(new String[] { "交易账号", "可用资金", "挂单资金" }, new int[] {
 			100, 100, 100 }, SWT.CENTER, false, false),
 
-	;
+	RWPosition(new String[] { "column1", "column2", "column3" }, new int[] {
+			100, 100, 100 }, SWT.CENTER, false, false),
+			
+			;
 
 	private String[] columnTiles;
 

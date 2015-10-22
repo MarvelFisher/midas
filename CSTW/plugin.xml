@@ -163,6 +163,14 @@
             id="com.cyanspring.cstw.trader.gui.SpeedDepthViewPart"
             name="SpeedDepthView"
             restorable="true">
+      </view>
+      <view
+            allowMultiple="false"
+            class="com.cyanspring.cstw.ui.rw.views.RWInfoView"
+            icon="icons/Leaves16.png"
+            id="com.cyanspring.cstw.ui.rw.views.RWInfoView"
+            name="RW Info"
+            restorable="true">
       </view>        
    </extension>
    <extension
@@ -508,8 +516,8 @@
             	  </visibleWhen>
             </command>
             <command
-                  commandId="CSTW.RiskManager.Data"
-                  label="RiskManager Data"
+                  commandId="CSTW.FrontRiskManager.Data"
+                  label="RWManager Data"
                   style="push">
                <visibleWhen
                      checkEnabled="false">
@@ -525,7 +533,7 @@
             </command>
             <command
                   commandId="CSTW.BackRiskManager.Data"
-                  label="BackRiskManager Data"
+                  label="BWManager Data"
                   style="push">
                <visibleWhen
                      checkEnabled="false">
@@ -687,8 +695,9 @@
             name="SpeedDepth">
       </command>
       <command
-            id="CSTW.RiskManager.Data"
-            name="RiskManager Data">
+            defaultHandler="com.cyanspring.cstw.ui.rw.command.RWInfoViewCommand"
+            id="CSTW.FrontRiskManager.Data"
+            name="FrontRiskManager Data">
       </command>
       <command
             id="CSTW.BackRiskManager.Data"

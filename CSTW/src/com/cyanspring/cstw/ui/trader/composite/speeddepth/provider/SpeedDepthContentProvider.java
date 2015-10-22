@@ -2,7 +2,7 @@ package com.cyanspring.cstw.ui.trader.composite.speeddepth.provider;
 
 import java.util.List;
 
-import com.cyanspring.cstw.ui.trader.basic.DefaultContentProviderAdapter;
+import com.cyanspring.cstw.ui.basic.DefaultContentProvider;
 
 /**
  * 
@@ -11,7 +11,7 @@ import com.cyanspring.cstw.ui.trader.basic.DefaultContentProviderAdapter;
  *
  */
 public final class SpeedDepthContentProvider extends
-		DefaultContentProviderAdapter {
+		DefaultContentProvider {
 
 	@Override
 	public Object[] getElements(Object inputElement) {

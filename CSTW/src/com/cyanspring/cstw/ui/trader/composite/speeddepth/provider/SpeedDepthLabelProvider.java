@@ -5,7 +5,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import com.cyanspring.cstw.ui.trader.basic.DefaultLabelProviderAdapter;
+import com.cyanspring.cstw.ui.basic.DefaultLabelProviderAdapter;
 import com.cyanspring.cstw.ui.trader.composite.speeddepth.model.SpeedDepthModel;
 
 /**
