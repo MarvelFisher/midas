@@ -497,6 +497,10 @@
 	
 	<!-- coin control -->
 	<bean id="coinManager" class="com.cyanspring.server.account.CoinManager">
+		<property name="activePositionCoinControl" value="false"></property>
+		<property name="activeDailyCoinControl" value="false"></property>
+		<property name="activeTrailingStopCoinControl" value="false"></property>
+		<property name="activeDayTradingModeCoinControl" value="false"></property>
 	</bean>
 	
 	<bean id="coinControlRecoveryProcessor" class="com.cyanspring.server.CoinControlRecoveryProcessor">
