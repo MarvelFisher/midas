@@ -120,6 +120,8 @@
 				<value>FUTURES_CX</value>
 				<value>FUTURES_IDX</value>
 				<value>FUTURES_CX_IDX</value>
+				<value>FUTURES</value>
+				<value>FUTURES_EFP</value>
 			</set>
 		</property>
 	</bean>
