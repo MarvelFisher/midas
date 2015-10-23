@@ -6,48 +6,47 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
 	private String id;
 	private String userId;
 	private String symbol;
-	private String group = null;
     private String Commodity;
-	private double risePrice;
-	private double dropPrice;
-	private String dateTime;
-	private String content;
-	private double risePercentage;
-	private double dropPercentage;
+	private double price;
+	private String dateTime ;
+	private String content ;
+	private double percentage ;
 	private boolean sendFlag;
 	
-	public BasePriceAlert(String userId, String symbol, String group, double risePrice, double dropPrice, 
-			double risePercentage, double dropPercentage, String strdateTime, String content, String commodity){
+	public BasePriceAlert(String userId, String symbol, double price, String strdateTime, String content, String commodity){
 		super();
 		this.id = "A" + IdGenerator.getInstance().getNextID();
 		this.setUserId(userId); //david
 		this.setSymbol(symbol);  //USDJPY
-		this.setGroup(group);
         this.setCommodity(commodity);
-		this.setRisePrice(risePrice);
-		this.setDropPrice(dropPrice);
-		this.setRisePercentage(risePercentage);
-		this.setDropPercentage(dropPercentage);
+		this.setPrice(price);
 		this.setDateTime(strdateTime); // yyyy-mm-dd hh:mm:ss
 		this.setContent(content);
 		this.setSendFlag(false);
 	}
 
-    public BasePriceAlert(String userId, String symbol, String group, double risePrice, double dropPrice, 
-			double risePercentage, double fallPercentage, String strdateTime, String content){
+    public BasePriceAlert(String userId, String symbol, double price, String strdateTime, String content){
         super();
         this.id = "A" + IdGenerator.getInstance().getNextID();
         this.setUserId(userId); //david
         this.setSymbol(symbol);  //USDJPY
-        this.setGroup(group);
-		this.setRisePrice(risePrice);
-		this.setDropPrice(dropPrice);
-		this.setRisePercentage(risePercentage);
-		this.setDropPercentage(fallPercentage);
+        this.setPrice(price);
         this.setDateTime(strdateTime); // yyyy-mm-dd hh:mm:ss
         this.setContent(content);
         this.setSendFlag(false);
     }
+	
+	public BasePriceAlert(String userId, double percentage, String symbol, String strdateTime, String content, String commodity){
+			super();
+			this.id = "A" + IdGenerator.getInstance().getNextID();
+			this.setUserId(userId); //david
+			this.setSymbol(symbol);  //USDJPY
+			this.setCommodity(commodity);
+            this.setPercentage(percentage);
+			this.setDateTime(strdateTime); // yyyy-mm-dd hh:mm:ss
+			this.setContent(content);
+			this.setSendFlag(false);
+	}
 	
 	public BasePriceAlert()
 	{
@@ -56,8 +55,8 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
 	
 	protected String fieldtoString()
 	{
-		return new String("userId='" + userId + "',symbol='" + symbol + "',rise=" + String.valueOf(risePrice) +
-				",fall=" + String.valueOf(dropPrice) + ",datetime='" + dateTime + "'");
+		return new String("userId='" + userId + "',symbol='" + symbol + "',price=" + String.valueOf(price) +
+				",datetime='" + dateTime + "'");
 	}
 	
 	@Override
@@ -76,21 +75,16 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
 			return ;
 		}
 		this.setSymbol(basePriceAlert.getSymbol());  //USDJPY
-		this.setRisePrice(basePriceAlert.getRisePrice());
-		this.setDropPrice(basePriceAlert.getDropPrice());
-		this.setRisePercentage(basePriceAlert.getRisePercentage());
-		this.setDropPercentage(basePriceAlert.getDropPercentage());
+		this.setPrice(basePriceAlert.getPrice());
 		this.setDateTime(basePriceAlert.getDateTime()); // yyyy-mm-dd hh:mm:ss
 		this.setContent(basePriceAlert.getContent());
 	}
 	@Override
 	public int compareTo(BasePriceAlert other) {
 		int iReturn = this.getUserId().compareTo(other.getUserId());
-		if (iReturn == 0) {
-			iReturn = this.group.compareTo(other.group);
-			if (iReturn == 0) {
-				iReturn = this.id.compareTo(other.id);
-			}
+		if (iReturn == 0)
+		{
+			iReturn = this.id.compareTo(other.id);
 		}
 		return iReturn;
 	}
@@ -124,6 +118,14 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
 		this.symbol = symbol;
 	}
 	
+	public double getPrice() {
+		return price;
+	}
+	
+	public void setPrice(double price) {
+		this.price = price;
+	}
+	
 	public String getDateTime() {
 		return dateTime;
 	}
@@ -142,6 +144,14 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
 		this.content = content ;
 	}
 
+	public double getPercentage() {
+		return percentage;
+	}
+
+	public void setPercentage(double percentage) {
+		this.percentage = percentage;
+	}
+
 	public boolean isSendFlag() {
 		return sendFlag;
 	}
@@ -157,55 +167,5 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
     public void setCommodity(String commodity) {
         Commodity = commodity;
     }
-
-	public double getRisePrice()
-	{
-		return risePrice;
-	}
-
-	public void setRisePrice(double risePrice)
-	{
-		this.risePrice = risePrice;
-	}
-
-	public double getDropPrice()
-	{
-		return dropPrice;
-	}
-
-	public void setDropPrice(double dropPrice)
-	{
-		this.dropPrice = dropPrice;
-	}
-
-	public double getRisePercentage()
-	{
-		return risePercentage;
-	}
-
-	public void setRisePercentage(double risePercentage)
-	{
-		this.risePercentage = risePercentage;
-	}
-
-	public double getDropPercentage()
-	{
-		return dropPercentage;
-	}
-
-	public void setDropPercentage(double dropPercentage)
-	{
-		this.dropPercentage = dropPercentage;
-	}
-
-	public String getGroup()
-	{
-		return group;
-	}
-
-	public void setGroup(String group)
-	{
-		this.group = group;
-	}
 
 }
