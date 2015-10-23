@@ -390,7 +390,11 @@ public class MarketDataManager extends MarketDataReceiver {
                                 , quoteExtendSegmentMap);
                         multiQuoteExtendEvent.setOffSet(transQuoteExtendOffset - dataSegmentSize);
                         multiQuoteExtendEvent.setTotalDataCount(-1);
-                        eventManager.sendEvent(multiQuoteExtendEvent);
+                        try {
+                            eventManager.sendLocalOrRemoteEvent(multiQuoteExtendEvent);
+                        } catch (Exception e) {
+                            log.error(e.getMessage(),e);
+                        }
                     }
                     quoteExtendSegmentMap = new HashMap<String, DataObject>();
                 }
@@ -409,7 +413,11 @@ public class MarketDataManager extends MarketDataReceiver {
                                     transQuoteExtendOffset - transQuoteExtendOffset % dataSegmentSize + 1 : transQuoteExtendOffset - dataSegmentSize + 1);
                     multiQuoteExtendEvent.setTotalDataCount(totalQuoteExtendCount);
                 }
-                eventManager.sendEvent(multiQuoteExtendEvent);
+                try {
+                    eventManager.sendLocalOrRemoteEvent(multiQuoteExtendEvent);
+                } catch (Exception e) {
+                    log.error(e.getMessage(),e);
+                }
             }
         }
     }
