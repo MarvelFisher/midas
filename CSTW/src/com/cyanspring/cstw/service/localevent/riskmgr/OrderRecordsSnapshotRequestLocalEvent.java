@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.service.localevent;
+package com.cyanspring.cstw.service.localevent.riskmgr;
 
 import com.cyanspring.common.event.AsyncEvent;
 

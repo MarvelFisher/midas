@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.service.localevent;
+package com.cyanspring.cstw.service.localevent.riskmgr;
 
 import java.util.ArrayList;
 import java.util.List;

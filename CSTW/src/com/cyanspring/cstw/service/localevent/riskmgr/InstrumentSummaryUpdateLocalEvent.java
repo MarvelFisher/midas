@@ -1,4 +1,7 @@
-package com.cyanspring.cstw.service.localevent;
+/**
+ * 
+ */
+package com.cyanspring.cstw.service.localevent.riskmgr;
 
 import java.util.List;
 
@@ -6,16 +9,18 @@ import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.cstw.service.model.riskmgr.RCInstrumentModel;
 
 /**
- * @author GuoWei
- * @since 08/13/2015
+ * 
+ * @author NingXiaoFeng
+ * @create date 2015/09/02
+ *
  */
-public class InstrumentSummarySnapshotReplyLocalEvent extends AsyncEvent {
+public final class InstrumentSummaryUpdateLocalEvent extends AsyncEvent {
 
-	private static final long serialVersionUID = -3452293957081261616L;
-
+	private static final long serialVersionUID = -1093065513947000897L;
+	
 	private List<RCInstrumentModel> instrumentModelList;
 
-	public InstrumentSummarySnapshotReplyLocalEvent(
+	public InstrumentSummaryUpdateLocalEvent(
 			List<RCInstrumentModel> instrumentModelList) {
 		this.instrumentModelList = instrumentModelList;
 	}
