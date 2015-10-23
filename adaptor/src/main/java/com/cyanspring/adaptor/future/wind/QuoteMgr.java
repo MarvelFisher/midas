@@ -46,10 +46,6 @@ public class QuoteMgr {
                                 int type = (int) arr[0];
                                 process(type, arr[1]);
                             }
-                        try {
-                            TimeUnit.MILLISECONDS.sleep(1);
-                        } catch (InterruptedException e) {
-                        }
                     }
                 }
             });
