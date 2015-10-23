@@ -67,6 +67,11 @@ public class AlertManager extends Compute {
 
 	private Map<String, Quote> quotes = new HashMap<String, Quote>();
 	private Map<String, Object> userLocks = new ConcurrentHashMap<String, Object>();
+	
+	private enum processType {
+		PRICE,
+		PERCENTAGE
+	}
 
 	@Override
 	public void SubscirbetoEvents() {
@@ -553,8 +558,7 @@ public class AlertManager extends Compute {
 			return;
 		}
 		RefData refdata = getGateway().getRefData(quote.getSymbol());
-		if (refdata == null)
-		{
+		if (refdata == null) {
 			return;
 		}
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
@@ -567,71 +571,199 @@ public class AlertManager extends Compute {
 		ArrayList<BasePriceAlert> UserPriceList;
 		if (null != list && checkAlertstart) {
 			BasePriceAlert alert;
+			boolean delete;
 			for (int i = list.size(); i > 0; i--) {
 				alert = list.get(i - 1);
-				int comp = ComparePriceQuoto(alert, quotes.get(quote.getSymbol()), quote);
-				if (comp != 0) {
-					if (!checkSendFlag(alert))
-					{
-						continue;
-					}
-					// SendEvent
-					SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
-							null, null, "txId", PackPriceAlert(alert, comp));
-					SendEvent(sendNotificationRequestEvent);
-					// Add Alert to PastSQL
-					PastPriceAlert pastPriceAlert = new PastPriceAlert(
-							alert.getUserId(), alert.getSymbol(),
-							alert.getGroup(), alert.getRisePrice(), 
-							alert.getDropPrice(), alert.getRisePercentage(), 
-							alert.getDropPercentage(), alert.getDateTime(), 
-							alert.getContent());
-					pastPriceAlert.setId(alert.getId());
-					pastPriceAlert.setCommodity(refdata.getCommodity());
-					SQLSave(pastPriceAlert);
-					// Add Alert to pastUserPriceAlertList
-					UserPriceList = userPastPriceAlerts.get(alert.getUserId());
-					if (null == UserPriceList) {
-						loadPastPriceAlert(alert.getUserId());
-						UserPriceList = userPastPriceAlerts.get(alert
-								.getUserId());
-						if (UserPriceList.size() >= 20) {
-							UserPriceList.remove(19);
-							UserPriceList.add(0, pastPriceAlert);
-						} else {
-							UserPriceList.add(0, pastPriceAlert);
-						}
-					} else {
-						if (UserPriceList.size() >= 20) {
-							UserPriceList.remove(19);
-							UserPriceList.add(0, pastPriceAlert);
-						} else {
-							UserPriceList.add(0, pastPriceAlert);
-						}
-					}
-					// Delete Alert from CurSQL
-					CurPriceAlert curPriceAlert = new CurPriceAlert(
-							alert.getUserId(), alert.getSymbol(),
-							alert.getGroup(), alert.getRisePrice(), 
-							alert.getDropPrice(), alert.getRisePercentage(), 
-							alert.getDropPercentage(), alert.getDateTime(), 
-							alert.getContent());
-					curPriceAlert.setId(alert.getId());
-					curPriceAlert.setCommodity(refdata.getCommodity());
-					SQLDelete(curPriceAlert);
-					// Delete Alert from CurUserPriceAlertList
-					UserPriceList = userPriceAlerts.get(alert.getUserId());
-					if (null == UserPriceList) {
-						log.warn("[processQuoteEvent] : userPriceAlerts data didnt match with SQL");
-					} else {
-						UserPriceList.remove(alert);
-					}
-					// Delete Alert from List
-					list.remove(alert);
-				}
+				processCompareAlert(list, alert, quote, refdata.getCommodity(), processType.PRICE);
+				processCompareAlert(list, alert, quote, refdata.getCommodity(), processType.PERCENTAGE);
+//				delete = false;
+//				int comp = ComparePriceQuoto(alert, quotes.get(quote.getSymbol()), quote);
+//				if (comp != 0) {
+//					if (!checkSendFlag(alert)) {
+//						continue;
+//					}
+//					// SendEvent
+//					SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
+//							null, null, "txId", PackPriceAlert(alert, comp));
+//					SendEvent(sendNotificationRequestEvent);
+//					CurPriceAlert curPriceAlert = new CurPriceAlert(
+//							alert.getUserId(), alert.getSymbol(),
+//							alert.getGroup(), alert.getRisePrice(), 
+//							alert.getDropPrice(), alert.getRisePercentage(), 
+//							alert.getDropPercentage(), alert.getDateTime(), 
+//							alert.getContent());
+//					curPriceAlert.setId(alert.getId());
+//					curPriceAlert.setCommodity(refdata.getCommodity());
+//					// Add Alert to PastSQL
+//					PastPriceAlert pastPriceAlert = new PastPriceAlert(
+//							alert.getUserId(), alert.getSymbol(),
+//							alert.getGroup(), 0, 0, 0, 0, 
+//							alert.getDateTime(), alert.getContent());
+//					pastPriceAlert.setId(alert.getId());
+//					pastPriceAlert.setCommodity(refdata.getCommodity());
+//					if (comp > 0) {
+//						pastPriceAlert.setRisePrice(alert.getRisePrice());
+//						alert.setRisePrice(0);
+//					}
+//					else {
+//						pastPriceAlert.setDropPrice(alert.getDropPrice());
+//						alert.setDropPrice(0);
+//					}
+//					SQLSave(pastPriceAlert);
+//					// Add Alert to pastUserPriceAlertList
+//					UserPriceList = userPastPriceAlerts.get(alert.getUserId());
+//					if (null == UserPriceList) {
+//						loadPastPriceAlert(alert.getUserId());
+//						UserPriceList = userPastPriceAlerts.get(alert
+//								.getUserId());
+//						if (UserPriceList.size() >= 20) {
+//							UserPriceList.remove(19);
+//							UserPriceList.add(0, pastPriceAlert);
+//						} else {
+//							UserPriceList.add(0, pastPriceAlert);
+//						}
+//					} else {
+//						if (UserPriceList.size() >= 20) {
+//							UserPriceList.remove(19);
+//							UserPriceList.add(0, pastPriceAlert);
+//						} else {
+//							UserPriceList.add(0, pastPriceAlert);
+//						}
+//					}
+//					// Add modified Alert back to CurSQL if not totally send
+//					if (PriceUtils.isZero(alert.getRisePrice()) == false
+//							|| PriceUtils.isZero(alert.getRisePrice()) == false
+//							|| PriceUtils.isZero(alert.getRisePrice()) == false
+//							|| PriceUtils.isZero(alert.getRisePrice()) == false) {
+//						curPriceAlert.setRisePrice(alert.getRisePrice());
+//						curPriceAlert.setDropPrice(alert.getDropPrice());
+//						curPriceAlert.setRisePercentage(alert.getRisePercentage());
+//						curPriceAlert.setDropPercentage(alert.getDropPercentage());
+//						SQLUpdate(curPriceAlert);
+//					} else {
+//						// Delete Alert from CurSQL
+//						SQLDelete(curPriceAlert);
+//						delete = true;
+//					}
+//					if (delete) {
+//						// Delete Alert from CurUserPriceAlertList
+//						UserPriceList = userPriceAlerts.get(alert.getUserId());
+//						if (null == UserPriceList) {
+//							log.warn("[processQuoteEvent] : userPriceAlerts data didnt match with SQL");
+//						} else {
+//							UserPriceList.remove(alert);
+//						}
+//						// Delete Alert from List
+//						list.remove(alert);
+//					}
+//				}
 			}
 		}
 		quotes.put(quote.getSymbol(), quote);
+	}
+	
+	private void processCompareAlert(List<BasePriceAlert> list, 
+			BasePriceAlert alert, Quote quote, String commodity, processType type) {
+		boolean delete = false;
+		ArrayList<BasePriceAlert> UserPriceList;
+		int comp = 0;
+		if (type == processType.PRICE) {
+			ComparePriceQuoto(alert, quotes.get(quote.getSymbol()), quote);
+		}
+		else {
+			ComparePercentageQuote(alert, quote);
+		}
+		if (comp != 0) {
+			if (!checkSendFlag(alert)) {
+				return;
+			}
+			// SendEvent
+			SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
+					null, null, "txId", PackPriceAlert(alert, comp));
+			SendEvent(sendNotificationRequestEvent);
+			CurPriceAlert curPriceAlert = new CurPriceAlert(
+					alert.getUserId(), alert.getSymbol(),
+					alert.getGroup(), alert.getRisePrice(), 
+					alert.getDropPrice(), alert.getRisePercentage(), 
+					alert.getDropPercentage(), alert.getDateTime(), 
+					alert.getContent());
+			curPriceAlert.setId(alert.getId());
+			curPriceAlert.setCommodity(commodity);
+			// Add Alert to PastSQL
+			PastPriceAlert pastPriceAlert = new PastPriceAlert(
+					alert.getUserId(), alert.getSymbol(),
+					alert.getGroup(), 0, 0, 0, 0, 
+					alert.getDateTime(), alert.getContent());
+			pastPriceAlert.setId(alert.getId());
+			pastPriceAlert.setCommodity(commodity);
+			if (type == processType.PRICE) {
+				if (comp > 0) {
+					pastPriceAlert.setRisePrice(alert.getRisePrice());
+					alert.setRisePrice(0);
+				}
+				else {
+					pastPriceAlert.setDropPrice(alert.getDropPrice());
+					alert.setDropPrice(0);
+				}
+			}
+			else {
+				if (comp > 0) {
+					pastPriceAlert.setRisePercentage(alert.getRisePercentage());
+					alert.setRisePercentage(0);
+				}
+				else {
+					pastPriceAlert.setDropPercentage(alert.getDropPercentage());
+					alert.setDropPrice(0);
+				}
+			}
+			SQLSave(pastPriceAlert);
+			// Add Alert to pastUserPriceAlertList
+			UserPriceList = userPastPriceAlerts.get(alert.getUserId());
+			if (null == UserPriceList) {
+				loadPastPriceAlert(alert.getUserId());
+				UserPriceList = userPastPriceAlerts.get(alert
+						.getUserId());
+				if (UserPriceList.size() >= 20) {
+					UserPriceList.remove(19);
+					UserPriceList.add(0, pastPriceAlert);
+				} else {
+					UserPriceList.add(0, pastPriceAlert);
+				}
+			} else {
+				if (UserPriceList.size() >= 20) {
+					UserPriceList.remove(19);
+					UserPriceList.add(0, pastPriceAlert);
+				} else {
+					UserPriceList.add(0, pastPriceAlert);
+				}
+			}
+			// Add modified Alert back to CurSQL if not totally send
+			if (PriceUtils.isZero(alert.getRisePrice()) == false
+					|| PriceUtils.isZero(alert.getRisePrice()) == false
+					|| PriceUtils.isZero(alert.getRisePrice()) == false
+					|| PriceUtils.isZero(alert.getRisePrice()) == false) {
+				curPriceAlert.setRisePrice(alert.getRisePrice());
+				curPriceAlert.setDropPrice(alert.getDropPrice());
+				curPriceAlert.setRisePercentage(alert.getRisePercentage());
+				curPriceAlert.setDropPercentage(alert.getDropPercentage());
+				SQLUpdate(curPriceAlert);
+			} else {
+				// Delete Alert from CurSQL
+				SQLDelete(curPriceAlert);
+				delete = true;
+			}
+			if (delete) {
+				// Delete Alert from CurUserPriceAlertList
+				UserPriceList = userPriceAlerts.get(alert.getUserId());
+				if (null == UserPriceList) {
+					log.warn("[processQuoteEvent] : userPriceAlerts data didnt match with SQL");
+				} else {
+					UserPriceList.remove(alert);
+				}
+				// Delete Alert from List
+				list.remove(alert);
+			}
+		}
 	}
 
 	private int ComparePriceQuoto(BasePriceAlert alert,
@@ -640,14 +772,40 @@ public class AlertManager extends Compute {
 		double fallPrice = alert.getDropPrice();
 		double PreviousPrice = getAlertPrice(Previousquoto);
 		double currentPrice = getAlertPrice(quote);
-		if (PriceUtils.GreaterThan(risePrice, PreviousPrice)) {
+		if (PriceUtils.Equal(risePrice, 0) == false && 
+				PriceUtils.GreaterThan(risePrice, PreviousPrice)) {
 			if (PriceUtils.GreaterThan(risePrice, currentPrice)) {
 				return 0;
 			} else {
 				return 1;
 			}
-		} else if (PriceUtils.EqualLessThan(fallPrice, PreviousPrice)) {
+		} else if (PriceUtils.Equal(fallPrice, 0) == false && 
+				PriceUtils.EqualLessThan(fallPrice, PreviousPrice)) {
 			if (PriceUtils.GreaterThan(fallPrice, currentPrice)) {
+				return -1;
+			} else {
+				return 0;
+			}
+		}
+		return 0;
+	}
+
+	private int ComparePercentageQuote(BasePriceAlert alert, Quote quote) {
+		double price = getAlertPrice(quote);
+		double close = quote.getClose();
+		double risePercentage = alert.getRisePercentage();
+		double dropPercentage = alert.getDropPercentage();
+		double curPercentage = (price - close) * 100 / close;
+		if (PriceUtils.Equal(risePercentage, 0) == false
+				&& PriceUtils.GreaterThan(curPercentage, 0)) {
+			if (PriceUtils.GreaterThan(risePercentage, curPercentage)) {
+				return 0;
+			} else {
+				return 1;
+			}
+		} else if (PriceUtils.Equal(dropPercentage, 0) == false
+				&& PriceUtils.LessThan(curPercentage, 0)) {
+			if (PriceUtils.GreaterThan(dropPercentage, Math.abs(curPercentage))) {
 				return -1;
 			} else {
 				return 0;

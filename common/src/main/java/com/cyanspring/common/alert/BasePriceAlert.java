@@ -86,9 +86,11 @@ public class BasePriceAlert implements Comparable<BasePriceAlert>{
 	@Override
 	public int compareTo(BasePriceAlert other) {
 		int iReturn = this.getUserId().compareTo(other.getUserId());
-		if (iReturn == 0)
-		{
-			iReturn = this.id.compareTo(other.id);
+		if (iReturn == 0) {
+			iReturn = this.group.compareTo(other.group);
+			if (iReturn == 0) {
+				iReturn = this.id.compareTo(other.id);
+			}
 		}
 		return iReturn;
 	}
