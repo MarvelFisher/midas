@@ -100,7 +100,10 @@ namespace Adaptor.TwSpeedy.Main
                     return OrdStatus.Replaced;
 
                 case OrderStatusEnum.osRejected:
-                    return OrdStatus.Rejected;
+                    if (order.ordStatus == OrdStatus.PendingNew)
+                        return OrdStatus.Rejected;
+
+                    return order.ordStatus;
 
                 case OrderStatusEnum.osPartiallyFilled:
                     if (PriceUtils.EqualGreaterThan(order.cumQty, order.quantity))
