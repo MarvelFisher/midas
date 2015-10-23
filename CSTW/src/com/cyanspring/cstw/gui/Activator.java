@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.cyanspring.cstw.gui;
 
+import java.io.File;
 import java.net.URL;
 
 import org.apache.log4j.xml.DOMConfigurator;
@@ -36,7 +37,8 @@ public class Activator extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "CSTW"; //$NON-NLS-1$
-
+	
+	public static final String CSTW_SPRING_FILE_PROP = "cstw.spring.file";
 	// The shared instance
 	private static Activator plugin;
 	
@@ -63,7 +65,19 @@ public class Activator extends AbstractUIPlugin {
 	    Business.getInstance().setConfigPath(confPath);
 	    log.info("Setting configuration path: " + confPath); 
 	    
-		ApplicationContext spring = new FileSystemXmlApplicationContext("classpath*:cstw.xml");
+	    String springFile = System.getProperty(CSTW_SPRING_FILE_PROP);
+	    if (springFile == null) {
+	    	springFile = "classpath*:cstw.xml";
+	    } else {
+	    	if (!springFile.startsWith("classpath")){
+	    		File file = new File(springFile);
+		    	if (!file.exists()){
+		    		springFile = "classpath*:cstw.xml";
+		    	}
+	    	}
+	    }
+	    log.info("Setting Srping Configuration: " + springFile);
+		ApplicationContext spring = new FileSystemXmlApplicationContext(springFile);
 		BeanHolder holder = (BeanHolder)spring.getBean("beanHolder");
 		BeanHolder.setInstance(holder);
 		log.debug("Initiated bean holder");

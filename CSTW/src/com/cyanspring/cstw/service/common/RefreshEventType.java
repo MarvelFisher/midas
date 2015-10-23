@@ -12,16 +12,16 @@ public enum RefreshEventType {
 	//Trader
 	
 	// Common RiskCtrl
-	InstrumentSummary4RC,	
-	CapitalInfo4RC,
-	AccountStatistics4RC,
-	OrderRecordList4RC,
+	RWOrderRecordList,
 	
-	// Front RiskCtrl
-	CurrentPositionList4FrontRC,
-	TradeRecordList4FrontRC,
-	InstrumentStatistics4FrontRC,
-	IndividualStatistics4FrontRC,
+	// RW
+	RWCurrentPositionList,
+	RWTradeRecordList,
+	RWInstrumentStatistics,
+	RWIndividualStatistics,
+	RWUserStatistics,
+	
+	// BW
 	
 	//Admin	
 	

@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.cyanspring.cstw.ui.basic.BasicTableComposite;
 import com.cyanspring.cstw.ui.common.TableType;
-import com.cyanspring.cstw.ui.rw.composite.table.provider.PositionLabelProvider;
+import com.cyanspring.cstw.ui.rw.composite.table.provider.RWPositionLabelProvider;
 
 /**
  * @author Junfeng
@@ -19,7 +19,7 @@ public class RWPositionTableComposite extends BasicTableComposite {
 
 	@Override
 	protected IBaseLabelProvider createLabelProvider() {
-		return new PositionLabelProvider();
+		return new RWPositionLabelProvider();
 	}
 
 }

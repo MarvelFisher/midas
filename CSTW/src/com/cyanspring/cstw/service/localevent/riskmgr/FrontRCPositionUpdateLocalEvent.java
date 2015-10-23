@@ -8,7 +8,7 @@ import com.cyanspring.common.account.OverallPosition;
  * 
  * @author NingXiaoFeng
  * @create date 2015/08/27
- *
+ * designed for CachingManager
  */
 public final class FrontRCPositionUpdateLocalEvent extends BasicRCPositionUpdateLocalEvent {
 

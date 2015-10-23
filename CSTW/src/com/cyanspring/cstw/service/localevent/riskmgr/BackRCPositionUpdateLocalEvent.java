@@ -10,6 +10,7 @@ import com.cyanspring.common.account.OverallPosition;
 /**
  * @author Yu-Junfeng
  * @create 14 Sep 2015
+ * designed for CachingManager
  */
 public class BackRCPositionUpdateLocalEvent extends BasicRCPositionUpdateLocalEvent {
 	

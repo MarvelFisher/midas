@@ -60,7 +60,7 @@ public class OrderRecordServiceImpl extends BasicServiceImpl implements
 	@Override
 	protected RefreshEventType handleEvent(AsyncEvent event) {
 		
-		return RefreshEventType.OrderRecordList4RC;
+		return RefreshEventType.RWOrderRecordList;
 	}
 
 }

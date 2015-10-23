@@ -8,7 +8,7 @@ import com.cyanspring.common.business.ParentOrder;
  * 
  * @author NingXiaoFeng
  * @create date 2015/09/07
- *
+ * designed for CachingManager
  */
 public class FrontRCParentOrderUpdateLocalEvent extends BasicRCParentOrderUpdateLocalEvent {
 

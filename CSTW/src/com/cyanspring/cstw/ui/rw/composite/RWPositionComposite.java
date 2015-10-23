@@ -93,7 +93,7 @@ public class RWPositionComposite extends BasicComposite {
 	
 	@Override
 	protected void processByType(RefreshEventType type) {
-		if (type == RefreshEventType.CurrentPositionList4FrontRC) {
+		if (type == RefreshEventType.RWCurrentPositionList) {
 //			tableCompsoite.setInput(service.getOpenPositionModelList());
 //			lblAllMarketCapitalization.setText(service.getAllMarketCapitalization());
 //			lblUnrealizedPL.setText(service.getUnrealizedPNL());

@@ -11,6 +11,7 @@ import com.cyanspring.common.event.AsyncEvent;
 /**
  * @author Yu-Junfeng
  * @create 14 Sep 2015
+ * designed for CachingManager
  */
 public class BasicRCPositionUpdateLocalEvent extends AsyncEvent {
 
