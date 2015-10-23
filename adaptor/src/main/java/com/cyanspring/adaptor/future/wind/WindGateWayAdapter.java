@@ -125,10 +125,11 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
                                     connect();
                                 }
                             }
-                        }
-                        try {
-                            TimeUnit.MILLISECONDS.sleep(1);
-                        } catch (InterruptedException e) {
+                        }else{
+                            try {
+                                TimeUnit.SECONDS.sleep(1);
+                            } catch (InterruptedException e) {
+                            }
                         }
                     }
                 }

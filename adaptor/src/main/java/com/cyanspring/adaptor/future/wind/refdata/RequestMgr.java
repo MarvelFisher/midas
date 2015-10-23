@@ -47,10 +47,11 @@ public class RequestMgr{
                             }
                             int type = (int) arr[0];
                             process(type, arr[1]);
-                        }
-                        try {
-                            TimeUnit.MILLISECONDS.sleep(1);
-                        } catch (InterruptedException e) {
+                        }else{
+                            try {
+                                TimeUnit.MILLISECONDS.sleep(1);
+                            } catch (InterruptedException e) {
+                            }
                         }
                     }
                 }
