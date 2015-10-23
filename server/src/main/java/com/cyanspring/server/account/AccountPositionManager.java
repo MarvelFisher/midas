@@ -1768,7 +1768,7 @@ public class AccountPositionManager implements IPlugin {
         List<Account> list = accountKeeper.getAllAccounts();
         if (accountSaver != null) {
             accountSaver.setAccounts(list);
-            accountSaver.saveAccountToFile();
+            accountSaver.saveToFile();
         }
 
         for (Account account : list) {

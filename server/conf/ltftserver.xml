@@ -211,6 +211,11 @@
     </bean>
     
     <!-- File Save -->
+    <bean id="cumQuantitySaver" class="com.cyanspring.common.staticdata.CumQuantitySaver">
+        <property name="filePath" value="report/"/>
+        <property name="suffix" value="_q"/>
+    </bean>
+    
     <bean id="parentOrderSaver" class="com.cyanspring.common.staticdata.OrderSaver">
         <property name="filePath" value="report/"/>
         <property name="suffix" value="_t"/>

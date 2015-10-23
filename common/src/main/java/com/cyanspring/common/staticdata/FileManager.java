@@ -38,6 +38,15 @@ public class FileManager {
         }
     }
 
+    public void append(String data) {
+        try {
+            writer.append(data);
+            writer.flush();
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
     public void appendToFile(String data) {
         try {
             writer.append(data + "\n");
