@@ -210,6 +210,66 @@ public class AllPositionManager implements IAsyncEventListener {
 		}	
 	}
 
+	public OverallPosition toOverallPosition(String accountId,String symbol,List<OpenPosition> opList, List<ClosedPosition> cpList){
+		OverallPosition oap = new OverallPosition();
+		oap.setAccount(accountId);
+		oap.setSymbol(symbol);
+		for(OpenPosition op : opList){
+			if(!op.getSymbol().equals(symbol))
+				continue;
+			
+			double qty = op.getQty();
+			double price = op.getPrice();
+			if(op.isBuy()){
+				if(PriceUtils.isZero(oap.getBuyPrice()))
+					oap.setBuyPrice(price);
+				else
+					oap.setBuyPrice((oap.getBuyPrice()+price)/2);
+				
+				oap.setBuyQty(oap.getBuyQty()+Math.abs(qty));
+				
+			}else{
+				if(PriceUtils.isZero(oap.getSellPrice()))
+					oap.setSellPrice(price);
+				else
+					oap.setSellPrice((oap.getSellPrice()+price)/2);
+				
+				oap.setSellQty(oap.getSellQty()+Math.abs(qty));
+				
+			}
+			
+			oap.setPnL(op.getPnL()+oap.getPnL());
+			oap.setUrPnL(op.getPnL()+oap.getUrPnL());
+		}
+		
+		for(ClosedPosition cp : cpList){
+			if(!cp.getSymbol().equals(symbol))
+				continue;
+			
+			double qty = cp.getQty();
+			
+			if(PriceUtils.isZero(oap.getBuyPrice()))
+				oap.setBuyPrice(cp.getBuyPrice());
+			else
+				oap.setBuyPrice((oap.getBuyPrice()+cp.getBuyPrice())/2);
+			
+			if(PriceUtils.isZero(oap.getSellPrice()))
+				oap.setSellPrice(cp.getSellPrice());
+			else
+				oap.setSellPrice((oap.getSellPrice()+cp.getSellPrice())/2);
+			
+			if(cp.isBuy())
+				oap.setBuyQty(oap.getBuyQty()+Math.abs(qty));
+			else
+				oap.setSellQty(oap.getSellQty()+Math.abs(qty));
+
+			oap.setPnL(cp.getPnL()+oap.getPnL());
+
+		}
+		oap.setLastUpdate(new Date());
+		return oap;
+	}
+	
 	synchronized private void refreshOverallPosition(String positionAccount) {
 		Set<String> idSet = new HashSet<String>();
 		
@@ -238,73 +298,11 @@ public class AllPositionManager implements IAsyncEventListener {
 				allList = new ArrayList<OverallPosition>();
 			
 			allList.clear();
-			Set <String> symbolSet = collectSymbol(id);
+			Set <String> symbolSet = collectSymbol(id,oList,cList);
 			Set <OverallPosition> tempAllPositionSet = new HashSet<OverallPosition>();
 			for(String symbol : symbolSet){
 				log.info("symbol set:{},{}",id,symbol);
-				
-				OverallPosition oap = getOverallPositionWithSymbol(tempAllPositionSet,symbol);
-				if(null == oap){
-					oap = new OverallPosition();
-					oap.setAccount(id);
-					oap.setSymbol(symbol);
-				}
-				
-
-				for(OpenPosition op : oList){
-					if(!op.getSymbol().equals(symbol))
-						continue;
-					
-					double qty = op.getQty();
-					double price = op.getPrice();
-					if(op.isBuy()){
-						if(PriceUtils.isZero(oap.getBuyPrice()))
-							oap.setBuyPrice(price);
-						else
-							oap.setBuyPrice((oap.getBuyPrice()+price)/2);
-						
-						oap.setBuyQty(oap.getBuyQty()+Math.abs(qty));
-						
-					}else{
-						if(PriceUtils.isZero(oap.getSellPrice()))
-							oap.setSellPrice(price);
-						else
-							oap.setSellPrice((oap.getSellPrice()+price)/2);
-						
-						oap.setSellQty(oap.getSellQty()+Math.abs(qty));
-						
-					}
-					
-					oap.setPnL(op.getPnL()+oap.getPnL());
-					oap.setUrPnL(op.getPnL()+oap.getUrPnL());
-				}
-				
-				for(ClosedPosition cp : cList){
-					if(!cp.getSymbol().equals(symbol))
-						continue;
-					
-					double qty = cp.getQty();
-					
-					if(PriceUtils.isZero(oap.getBuyPrice()))
-						oap.setBuyPrice(cp.getBuyPrice());
-					else
-						oap.setBuyPrice((oap.getBuyPrice()+cp.getBuyPrice())/2);
-					
-					if(PriceUtils.isZero(oap.getSellPrice()))
-						oap.setSellPrice(cp.getSellPrice());
-					else
-						oap.setSellPrice((oap.getSellPrice()+cp.getSellPrice())/2);
-					
-					if(cp.isBuy())
-						oap.setBuyQty(oap.getBuyQty()+Math.abs(qty));
-					else
-						oap.setSellQty(oap.getSellQty()+Math.abs(qty));
-
-					oap.setPnL(cp.getPnL()+oap.getPnL());
-
-				}
-				
-				oap.setLastUpdate(new Date());
+				OverallPosition oap = toOverallPosition(id,symbol,oList,cList);
 				tempAllPositionSet.add(oap);
 			}		
 			
@@ -312,25 +310,12 @@ public class AllPositionManager implements IAsyncEventListener {
 			allList.addAll(tempAllPositionSet);
 			allPositionMap.put(id, allList);
 		}
-//		printOverallPositionMap();
+		printOverallPositionMap();
 		notifyOverallPositionChange();
 	}
 
-	private OverallPosition getOverallPositionWithSymbol(
-			Set<OverallPosition> tempAllPositionSet, String symbol) {
-
-		for(OverallPosition oap : tempAllPositionSet){
-			if(oap.getSymbol().equals(symbol))
-				return oap;
-		}
-		
-		return null;
-	}
-
-	private Set<String> collectSymbol(String id) {
+	private Set<String> collectSymbol(String id,List<OpenPosition> oList,List<ClosedPosition> cList) {
 		Set <String> symbolSet = new HashSet<String>();
-		List<OpenPosition> oList = openPositionMap.get(id);
-		List<ClosedPosition> cList = closedPositionMap.get(id);
 		
 		if(null != oList){
 			for(OpenPosition op : oList){
