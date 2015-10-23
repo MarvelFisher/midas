@@ -72,6 +72,7 @@ public class Activator extends AbstractUIPlugin {
 	    	if (!springFile.startsWith("classpath")){
 	    		File file = new File(springFile);
 		    	if (!file.exists()){
+		    		log.info("File->" + file.getAbsolutePath() + " is not exist, set back to 'classpath*:cstw.xml'"); 
 		    		springFile = "classpath*:cstw.xml";
 		    	}
 	    	}
