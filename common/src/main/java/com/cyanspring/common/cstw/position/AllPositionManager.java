@@ -37,7 +37,7 @@ public class AllPositionManager implements IAsyncEventListener {
 	private ConcurrentHashMap<String, List<OverallPosition>> allPositionMap = new ConcurrentHashMap<String, List<OverallPosition>>();
 	private ConcurrentHashMap<String, List<OpenPosition>> openPositionMap = new ConcurrentHashMap<String, List<OpenPosition>>();
 	private ConcurrentHashMap<String, List<ClosedPosition>> closedPositionMap = new ConcurrentHashMap<String, List<ClosedPosition>>();
-	private List<IPositionChangeListener> listenerList;
+	private List<IPositionChangeListener> listenerList = new ArrayList<IPositionChangeListener>();
 
 	public AllPositionManager() {
 		
@@ -51,6 +51,12 @@ public class AllPositionManager implements IAsyncEventListener {
 	public void onEvent(AsyncEvent event) {
 		if(event instanceof OverAllPositionReplyEvent){
 			OverAllPositionReplyEvent e = (OverAllPositionReplyEvent) event;
+			log.info("receive OverAllPositionReplyEvent - isOk:{}",e.isOk());
+			if(!e.isOk()){
+				log.warn("OverAllPositionReplyEvent fail:{}",e.getMessage());
+				return;
+			}
+			log.info("getOpenPositionList size:{}, getClosedPositionList:{}",e.getOpenPositionList().size(),e.getClosedPositionList().size());
 			updateOpenPositionList(e.getOpenPositionList());
 			updateClosedPositionList(e.getClosedPositionList());
 			refreshOverallPosition(null);
@@ -70,6 +76,7 @@ public class AllPositionManager implements IAsyncEventListener {
 			List<ClosedPosition> closedPositionList) {
 		closedPositionMap.clear();
 		for(ClosedPosition pos : closedPositionList){
+			log.info(" update close pos:{},{},{},{},{}",new Object[]{pos.getSymbol(),pos.getQty(),pos.getPnL(),pos.getBuyPrice(),pos.getSellPrice()});
 			updatePosition(pos,false);
 		}		
 	}
@@ -77,6 +84,7 @@ public class AllPositionManager implements IAsyncEventListener {
 	private void updateOpenPositionList(List<OpenPosition> openPositionList) {
 		openPositionMap.clear();
 		for(OpenPosition pos : openPositionList){
+			log.info(" update open pos:{},{},{},{}",new Object[]{pos.getSymbol(),pos.getQty(),pos.getPnL(),pos.getPrice()});
 			updatePosition(pos,false);
 		}
 	}
@@ -107,13 +115,52 @@ public class AllPositionManager implements IAsyncEventListener {
 			}
 			openPositionMap.put(account, tempList);
 		}
-		
+//		 printOpenPositionMap();
 		if(isDynamic){
-			refreshOverallPosition(position.getId());
+			refreshOverallPosition(position.getAccount());
 			notifyOpenPositionChange(position);
 		}
 	}
 
+	
+	private void printOpenPositionMap(){
+		Iterator <String>keys = openPositionMap.keySet().iterator();
+		while(keys.hasNext()){
+			String key = keys.next();
+			log.info("account:{}",key);
+			List<OpenPosition> ops = openPositionMap.get(key);
+			for(OpenPosition op : ops){
+				log.info(" -op:{},{},{},{}",new Object[]{op.getSymbol(),op.getQty(),op.getPnL(),op.getPrice()});
+			}
+		}
+	}
+	
+	private void printClosedPositionMap(){
+		Iterator <String>keys = closedPositionMap.keySet().iterator();
+		while(keys.hasNext()){
+			String key = keys.next();
+			log.info("account:{}",key);
+			List<ClosedPosition> ops = closedPositionMap.get(key);
+			for(ClosedPosition op : ops){
+				log.info(" -cp:{},{},{},{},{}",new Object[]{op.getSymbol(),op.getQty(),op.getPnL(),op.getBuyPrice(),op.getSellPrice()});
+			}
+		}
+	}
+	
+	private void printOverallPositionMap(){
+		log.info("printOverallPositionMap");
+		Iterator <String>keys = allPositionMap.keySet().iterator();
+		while(keys.hasNext()){
+			String key = keys.next();
+			log.info("account:{}",key);
+			List<OverallPosition> ops = allPositionMap.get(key);
+			for(OverallPosition op : ops){
+				log.info(" -all:{}, {}, {}, {}, {}, {}, {}"
+						,new Object[]{op.getAccount(),op.getSymbol(),op.getBuyPrice(),op.getBuyQty(),op.getSellPrice(),op.getSellQty(),op.getTotalQty()});
+			}
+		}
+	}
+	
 	private void updatePosition(ClosedPosition position,boolean isDynamic){
 		if( null == position || !inGroup(position.getAccount()))
 			return;
@@ -138,9 +185,9 @@ public class AllPositionManager implements IAsyncEventListener {
 		}
 		oldList.add(position);
 		closedPositionMap.put(account, oldList);
-		
+//		printClosedPositionMap();
 		if(isDynamic){
-			refreshOverallPosition(position.getId());
+			refreshOverallPosition(position.getAccount());
 			notifyClosedPositionChange(position);
 		}
 	}
@@ -190,12 +237,20 @@ public class AllPositionManager implements IAsyncEventListener {
 			if( null == allList)
 				allList = new ArrayList<OverallPosition>();
 			
-			Set <String>symbolSet = collectSymbol(id);
-			
+			allList.clear();
+			Set <String> symbolSet = collectSymbol(id);
+			Set <OverallPosition> tempAllPositionSet = new HashSet<OverallPosition>();
 			for(String symbol : symbolSet){
-				OverallPosition oap = new OverallPosition();
-				oap.setAccount(id);
-				oap.setSymbol(symbol);
+				log.info("symbol set:{},{}",id,symbol);
+				
+				OverallPosition oap = getOverallPositionWithSymbol(tempAllPositionSet,symbol);
+				if(null == oap){
+					oap = new OverallPosition();
+					oap.setAccount(id);
+					oap.setSymbol(symbol);
+				}
+				
+
 				for(OpenPosition op : oList){
 					if(!op.getSymbol().equals(symbol))
 						continue;
@@ -250,11 +305,26 @@ public class AllPositionManager implements IAsyncEventListener {
 				}
 				
 				oap.setLastUpdate(new Date());
-				allList.add(oap);
-			}
+				tempAllPositionSet.add(oap);
+			}		
 			
+			log.info("refresh all position:{},size:{}",id,tempAllPositionSet.size());
+			allList.addAll(tempAllPositionSet);
+			allPositionMap.put(id, allList);
 		}
+//		printOverallPositionMap();
 		notifyOverallPositionChange();
+	}
+
+	private OverallPosition getOverallPositionWithSymbol(
+			Set<OverallPosition> tempAllPositionSet, String symbol) {
+
+		for(OverallPosition oap : tempAllPositionSet){
+			if(oap.getSymbol().equals(symbol))
+				return oap;
+		}
+		
+		return null;
 	}
 
 	private Set<String> collectSymbol(String id) {
@@ -262,12 +332,16 @@ public class AllPositionManager implements IAsyncEventListener {
 		List<OpenPosition> oList = openPositionMap.get(id);
 		List<ClosedPosition> cList = closedPositionMap.get(id);
 		
-		for(OpenPosition op : oList){
-			symbolSet.add(op.getSymbol());
+		if(null != oList){
+			for(OpenPosition op : oList){
+				symbolSet.add(op.getSymbol());
+			}
 		}
-		
-		for(ClosedPosition cp : cList){
-			symbolSet.add(cp.getSymbol());
+
+		if(null != cList){
+			for(ClosedPosition cp : cList){
+				symbolSet.add(cp.getSymbol());
+			}
 		}
 		
 		return symbolSet;
@@ -287,6 +361,8 @@ public class AllPositionManager implements IAsyncEventListener {
 	public void init(IRemoteEventManager eventManager
 			,String server,List<String> accountIdList,UserGroup loginUser){
 		
+		log.info("init AllPositionManager");
+		
 		if(null == eventManager || !StringUtils.hasText(server)){
 			log.info("init error: eventManager is null or server is empty");
 		}
@@ -296,10 +372,18 @@ public class AllPositionManager implements IAsyncEventListener {
 		this.accountIdList = accountIdList;
 		this.loginUser = loginUser;
 		
+		if( null == accountIdList){
+			accountIdList = new ArrayList<String>();
+		}
+		
 		subEvent(OverAllPositionReplyEvent.class);
 		subEvent(OpenPositionUpdateEvent.class);
 		subEvent(OpenPositionDynamicUpdateEvent.class);
 		subEvent(ClosedPositionUpdateEvent.class);
+		if(null != loginUser && loginUser.isAdmin()){
+			requestOverAllPosition(null);
+			return;
+		}
 		requestOverAllPosition(accountIdList);
 	}
 	
@@ -323,7 +407,10 @@ public class AllPositionManager implements IAsyncEventListener {
 		OverAllPositionRequestEvent event = new OverAllPositionRequestEvent(IdGenerator
 				.getInstance().getNextID(), server, accountIdList);
 		try {
-			eventManager.sendRemoteEvent(event);
+			if(null != eventManager)
+				eventManager.sendRemoteEvent(event);
+			else
+				log.info("eventManager is null");
 		} catch (Exception e) {
 			log.warn(e.getMessage(), e);
 		}
@@ -344,8 +431,7 @@ public class AllPositionManager implements IAsyncEventListener {
 		List <OverallPosition> list = new ArrayList<OverallPosition>();
 		Iterator <List<OverallPosition>> positionIte = allPositionMap.values().iterator();
 		while(positionIte.hasNext()){
-			List ovps = positionIte.next();
-			list.addAll(ovps);
+			list.addAll(positionIte.next());
 		}
 		return list;
 	}

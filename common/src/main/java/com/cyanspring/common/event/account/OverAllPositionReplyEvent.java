@@ -16,6 +16,8 @@ public class OverAllPositionReplyEvent extends RemoteAsyncEvent {
 	public OverAllPositionReplyEvent(String key, String receiver,boolean isOk
 			,String message,List<OpenPosition> openPositionList,List<ClosedPosition> closedPositionList ) {
 		super(key, receiver);
+		this.isOk = isOk;
+		this.message = message;
 		this.openPositionList = openPositionList;
 		this.closedPositionList = closedPositionList;
 	}

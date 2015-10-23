@@ -13,6 +13,7 @@ import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.cyanspring.common.staticdata.AccountSaver;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +88,8 @@ import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
 import com.cyanspring.common.event.account.OnUserCreatedEvent;
 import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
+import com.cyanspring.common.event.account.OverAllPositionReplyEvent;
+import com.cyanspring.common.event.account.OverAllPositionRequestEvent;
 import com.cyanspring.common.event.account.PmAddCashEvent;
 import com.cyanspring.common.event.account.PmChangeAccountSettingEvent;
 import com.cyanspring.common.event.account.PmCreateAccountEvent;
@@ -179,6 +182,7 @@ public class AccountPositionManager implements IPlugin {
     private String tradeDate;
     private int asyncSendBatch = 3000;
     private long asyncSendInterval = 3000;
+    private int limitUser = 2000;
     private boolean sendDynamicPositionUpdate = false;
     private boolean recoveryDone = false;
     private boolean resetMarginHeld = false;
@@ -272,6 +276,7 @@ public class AccountPositionManager implements IPlugin {
             subscribeToEvent(ChangeAccountStateRequestEvent.class,null);
             subscribeToEvent(ManualClosePositionRequestEvent.class, null);
             subscribeToEvent(UpdateOpenPositionPriceEvent.class, null);
+            subscribeToEvent(OverAllPositionRequestEvent.class, null);
         }
 
         @Override
@@ -498,6 +503,110 @@ public class AccountPositionManager implements IPlugin {
         eventMultiProcessor.uninit();
     }
 
+    public void processOverAllPositionRequestEvent(OverAllPositionRequestEvent event){
+    	
+    	log.info("start processOverAllPositionRequestEvent");
+    	List <Account> accountList = new ArrayList<Account>();
+    	
+    	if(null == event.getAccountIdList()){
+    		
+    		accountList = accountKeeper.getAllAccounts();
+    		if(accountList.size() > limitUser){
+                try {
+                	OverAllPositionReplyEvent reply = new OverAllPositionReplyEvent(event.getKey()
+                			, event.getSender(),false,"over limit user counts:"+limitUser,null,null);
+                    eventManager.sendRemoteEvent(reply);
+                    log.info("OverAllPositionReplyEvent sent fail: over limit user counts:"+limitUser);
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                }
+    		}
+    	}else{
+    		
+    		for(String id : event.getAccountIdList()){
+    			Account account = accountKeeper.getAccount(id);
+    			if( null != account)
+    				accountList.add(account);
+    			else
+            		log.info("(AllPositionRequestEvent) can't find this account:{}",id);
+
+    		}
+    	}
+    	
+    	log.info("accountList size:{}",accountList.size());
+    	asyncSendOverallPosition(event,accountList);
+    }
+    
+    private void asyncSendOverallPosition(final OverAllPositionRequestEvent event, final List<Account> accounts) {
+    	
+        Thread thread = new Thread(new Runnable() {
+        	
+        	private void sendOverAllPositionReplyEvent(List<OpenPosition> openPositionList, List<ClosedPosition> closedPositionList){
+                try {
+                	OverAllPositionReplyEvent reply = new OverAllPositionReplyEvent(event.getKey()
+                			, event.getSender(),true,""
+                			,openPositionList
+                			,closedPositionList);
+
+                    eventManager.sendRemoteEvent(reply);
+                    log.info("OverAllPositionReplyEvent sent: op:{} cp:{}",openPositionList.size(),closedPositionList.size());
+                    Thread.sleep(asyncSendInterval);
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                }
+        	}
+        	
+            @Override
+            public void run() {
+            	
+            	int positionCount = 0;
+                List<OpenPosition> openPositionList = new ArrayList<>();
+                List<ClosedPosition> closedPositionList = new ArrayList<>();
+                for (int i = 0; i < accounts.size(); i++) {
+                	
+                	Account account = accounts.get(i);               	           	
+                    List<OpenPosition> tempOpList = positionKeeper.getOverallPosition(account);
+                    List<ClosedPosition> tempCpList = positionKeeper.getClosedPositions(account.getId());
+                	if ( (null == tempOpList || tempOpList.isEmpty())
+                			&& (null == tempCpList || tempCpList.isEmpty()) ) {
+						continue;
+					}
+     
+                	for (OpenPosition op: tempOpList) {
+                		openPositionList.add(op);
+                		positionCount++;
+                		if (positionCount % asyncSendBatch == 0 ) {
+                			sendOverAllPositionReplyEvent(openPositionList,closedPositionList);
+                			positionCount = 0 ;
+                			openPositionList.clear();
+                			closedPositionList.clear();
+                		}
+                	}
+                	
+                	for (ClosedPosition cp: tempCpList) {
+                		closedPositionList.add(cp);
+                		positionCount++;
+                		if (positionCount % asyncSendBatch == 0 ) {
+                			sendOverAllPositionReplyEvent(openPositionList,closedPositionList);
+                			positionCount = 0 ;
+                			openPositionList.clear();
+                			closedPositionList.clear();
+                		}
+                	}
+                }//for account
+                
+            	if (positionCount != 0) {
+        			sendOverAllPositionReplyEvent(openPositionList,closedPositionList);
+           			positionCount = 0 ;
+           			openPositionList.clear();
+        			closedPositionList.clear();
+            	}
+            }
+            
+        });
+        thread.start();
+    }
+    
     public void processUpdateOpenPositionPriceEvent(UpdateOpenPositionPriceEvent event) {
     	String symbol = event.getSymbol();
     	String account = event.getAccount();
