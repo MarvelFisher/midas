@@ -10,14 +10,6 @@ public enum RefreshEventType {
 	
 	
 	//Trader
-	TraderPositionUseableInstrument,
-	CurrentPositionInfo,
-	CurrentPositionList,
-	MarketDataInfo, 	
-	MarketDataTraderInfo,
-	MarketCurrentOrderList,
-	IndividualInfoChange,
-	BatchOrderList,
 	
 	// Common RiskCtrl
 	InstrumentSummary4RC,	
@@ -32,25 +24,7 @@ public enum RefreshEventType {
 	IndividualStatistics4FrontRC,
 	
 	//Admin	
-	SubAccountList, 
-	SubAccountInstrumentList, 
-	SubAccountTraderList,
-	TraderList,
-	TraderSubAccountList,
-	UserList,
-	BwUserList,
-	BwGroupList,
-	FrontRiskUserList,
-	FrontRiskGroupList,
-	BackRiskUserList,
-	BackRiskGroupList,
-	StockPoolList,
-	StockPoolTraderList,
-	StockPoolInstrumentList,
-	GroupList,
-	ExchangeAccountList,
-	OrderRecordList,
-	TradeRecordList,
+	
 	//常用事件
 	LoginFinished,
 	LoginFailed,

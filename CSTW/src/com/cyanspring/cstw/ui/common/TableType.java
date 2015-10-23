@@ -11,21 +11,51 @@ import org.eclipse.swt.SWT;
 public enum TableType {
 
 	
-	// Common RiskControl
-	AccountTable4RiskCtrl(new String[] { "交易账号", "总交易额", "已实现盈利" }, new int[] {
-			100, 100, 100 }, SWT.CENTER, false, false),
+	// RW
+	RWPosition(new String[] { "Account", "Instrument ID", "Instrument Name",
+			"Direction", "Quantity", "PNL", "Avg Price", "Trader", },
+			new int[] { 100, 100, 100, 100, 100, 100, 100, 100 }, SWT.CENTER,
+			true, false),
+	
+	RWTradeRecord(new String[] { "Account", "Trade ID", "Instrument ID",
+			"Instrument", "Trade Type", "Quantity", "Avg Price",
+			"Consideration", "Time", "Commission", "Trader" }, new int[] { 100,
+			100, 100, 100, 100, 100, 100, 100, 100, 100, 100 }, SWT.CENTER,
+			true, false),
 
-	InstrumentSummary4RiskCtrl(new String[] { "交易账号", "证券代码", "证券名称", "已实现盈利",
-			"交易笔数", "总交易股数", "总交易额", "总交易费用" }, new int[] { 100, 100, 100, 100,
-			100, 100, 100, 100 }, SWT.CENTER, false, false),
+	RWInstrumentStatistics(new String[] { "Account", "Instrument ID",
+			"Instrument Name", "Realized PNL", "Trades", "Total Quantity",
+			"Consideration", "Total Commission", "Trader" }, new int[] { 100,
+			100, 100, 100, 100, 100, 100, 100, 100 }, SWT.CENTER, true, false),
 
-	CapitalTable4RiskCtrl(new String[] { "交易账号", "可用资金", "挂单资金" }, new int[] {
-			100, 100, 100 }, SWT.CENTER, false, false),
+	RWUserStatistics(
+			new String[] { "Trader", "Realized PNL", "Consideration" },
+			new int[] { 100, 100, 100 }, SWT.CENTER, true, false),
 
-	RWPosition(new String[] { "column1", "column2", "column3" }, new int[] {
-			100, 100, 100 }, SWT.CENTER, false, false),
-			
-			;
+	RWInstrumentSummary(new String[] { "Account", "Instrument ID",
+			"Instrument Name", "Realized PNL", "Trades", "Total Quantity",
+			"Consideration", "Commission" }, new int[] { 100, 100, 100, 100,
+			100, 100, 100, 100 }, SWT.CENTER, true, false),
+	
+	// BW
+	BWPosition(new String[]{ "Account", "Instrument ID", "Instrument Name",
+			"Direction", "Quantity", "PNL", "Avg Price", }, new int[]{ 100, 100, 100, 100, 100, 100, 100, }, SWT.CENTER, true, false),
+	
+	BWTradeRecord(new String[]{ "Account", "Trade ID", "Instrument ID",
+			"Instrument", "Trade Type", "Quantity", "Avg Price",
+			"Consideration", "Time", "Commission", }, new int[]{ 100,
+			100, 100, 100, 100, 100, 100, 100, 100, 100, }, SWT.CENTER, true, false),
+	
+	BWInstrumentStatistics(new String[]{ "Account", "Instrument ID",
+			"Instrument Name", "Realized PNL", "Trades", "Total Quantity",
+			"Consideration", "Total Commission", }, new int[]{ 100,
+			100, 100, 100, 100, 100, 100, 100, }, SWT.CENTER, true, false),
+	
+	BWInstrumentSummary(new String[]{ "Account", "Instrument ID",
+			"Instrument Name", "Realized PNL", "Trades", "Total Quantity",
+			"Consideration", "Commission" }, new int[]{ 100, 100, 100, 100,
+			100, 100, 100, 100 }, SWT.CENTER, true, false),
+	;
 
 	private String[] columnTiles;
 

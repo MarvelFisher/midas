@@ -10,7 +10,6 @@ public class PositionLabelProvider extends DefaultLabelProviderAdapter{
 
 	@Override
 	public String getColumnText(Object element, int columnIndex) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
