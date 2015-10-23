@@ -18,7 +18,7 @@ public class DataTimeStat {
     private long quoteOverTimeCount = 0;
     private long maxOverTime;
     private Date lastRecordTime = Clock.getInstance().now();
-    private long timeInterval = 2*1000;
+    private long timeInterval = 60*1000;
 
     public DataTimeStat(String symbol) {
         this.symbol = symbol;

@@ -55,8 +55,8 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     protected Map<String, DataObject> lastTradeDateQuoteExtends = new HashMap<String, DataObject>();
     protected HashMap<String, String> marketTypes = new HashMap<>();
     protected ConcurrentHashMap<String, MarketSessionData> indexSessions = new ConcurrentHashMap<>();
-    protected HashMap<String, ArrayList<String>> indexSessionTypes = new HashMap<String, ArrayList<String>>(); //SymoblArrryByIndex
-    private HashMap<String, String> indexs = new HashMap<>(); //IndexBySymbol
+    protected ConcurrentHashMap<String, ArrayList<String>> indexSessionTypes = new ConcurrentHashMap<String, ArrayList<String>>(); //SymoblArrryByIndex
+    private ConcurrentHashMap<String, String> indexs = new ConcurrentHashMap<>(); //IndexBySymbol
 
     @Autowired
     protected IRemoteEventManager eventManager;
@@ -127,35 +127,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                     RefData refData = (RefData) refDataList.get(i);
                     preSubscriptionList.add(refData.getSymbol());
                     marketTypes.put(refData.getSymbol(), refData.getCommodity());
-                    //process indexSessionType begin
-                    String indexSessionType = refData.getIndexSessionType();
-                    String index = "NONAME";
-                    switch (indexSessionType) {
-                        case "SPOT":
-                            index = refData.getCategory();
-                            break;
-                        case "SETTLEMENT":
-                            index = refData.getSymbol();
-                            break;
-                        case "EXCHANGE":
-                            index = refData.getExchange();
-                            break;
-                        default:
-                            break;
-                    }
-                    ArrayList<String> symbols = null;
-                    if (indexSessionTypes.containsKey(index)) {
-                        symbols = indexSessionTypes.get(index);
-                        symbols.add(refData.getSymbol());
-                    } else {
-                        symbols = new ArrayList<String>();
-                        symbols.add(refData.getSymbol());
-                    }
-                    if (symbols != null) indexSessionTypes.put(index, symbols);
-                    indexs.put(refData.getSymbol(),index);
-                }
-                if (indexSessionTypes.get("NONAME") != null && indexSessionTypes.get("NONAME").size() > 0) {
-                    log.debug("NoName index list:" + indexSessionTypes.get("NONAME"));
+                    if(!checkIndexSessionType(refData)) continue;
                 }
                 checkEventAndSend(event);
                 if (!isInitReqDataEnd) isInitRefDateReceived = true;
@@ -165,6 +137,59 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         } else {
             log.debug("RefData Event NOT OK - " + (event.getRefDataList() != null ? "0" : "null"));
         }
+    }
+
+    public boolean checkIndexSessionType(RefData refData){
+        String indexSessionType = refData.getIndexSessionType();
+        String index = "";
+        switch (indexSessionType) {
+            case "SPOT":
+                index = refData.getCategory();
+                break;
+            case "SETTLEMENT":
+                index = refData.getSymbol();
+                break;
+            case "EXCHANGE":
+                index = refData.getExchange();
+                break;
+            default:
+                break;
+        }
+        if(index == null || index.equals("")) return false;
+        //if symbol this indexSessionType is Settlement,and prev indexSessionType is Exchange/Category,
+        //then delete old indexSessionTypes value symbol
+        //if symbol this indexSessionType is Exchange/Category,and prev indexSessionTypes is Settlement
+        //then delete indexSessionTypes index key
+        if(indexs.get(refData.getSymbol()) != null && !"".equals(indexs.get(refData.getSymbol()))){
+            String prevIndex = indexs.get(refData.getSymbol());
+            if("SETTLEMENT".equals(indexSessionType)){
+                if(!prevIndex.equals(index)) {
+                    ArrayList<String> prevSymbols = indexSessionTypes.get(prevIndex);
+                    prevSymbols.remove(refData.getSymbol());
+                }
+            }else{
+                if(prevIndex.equals(refData.getSymbol())){
+                    if(indexSessionTypes.containsKey(refData.getSymbol())){
+                        indexSessionTypes.remove(refData.getSymbol());
+                    }
+                    if(indexSessions.containsKey(refData.getSymbol())){
+                        indexSessions.remove(refData.getSymbol());
+                    }
+                }
+            }
+        }
+        ArrayList<String> symbols = null;
+        if (indexSessionTypes.containsKey(index)) {
+            symbols = indexSessionTypes.get(index);
+            if(!symbols.contains(refData.getSymbol())) symbols.add(refData.getSymbol());
+        } else {
+            symbols = new ArrayList<String>();
+            symbols.add(refData.getSymbol());
+        }
+        if (symbols != null) indexSessionTypes.put(index, symbols);
+
+        indexs.put(refData.getSymbol(),index);
+        return true;
     }
 
     public void processRefDataUpdateEvent(RefDataUpdateEvent event){
@@ -191,6 +216,10 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                     }
                     break;
                 case MOD:
+                    for(RefData refData : refDataUpdateList) {
+                        marketTypes.put(refData.getSymbol(), refData.getCommodity());
+                        if(!checkIndexSessionType(refData)) continue;
+                    }
                     break;
                 case DEL:
                     for (RefData refData : refDataUpdateList) {
@@ -226,12 +255,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                                     + ",Start=" + marketSessionData.getStart() + ",End=" + marketSessionData.getEnd()
                     );
                     indexSessions.put(index, marketSessionData);
-                    if(indexSessionTypes.get(index) == null){
-                        if(marketTypes.get(index) != null) {
-                            //if indexSessionType not this index & refData not null, this index is settlement index
-                            indexSessionTypes.put(index, new ArrayList<String>(Arrays.asList(index)));
-                        }
-                    }
                 }
                 checkEventAndSend(event);
                 if (!isInitReqDataEnd) isInitIndexSessionReceived = true;

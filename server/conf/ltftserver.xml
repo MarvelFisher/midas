@@ -147,7 +147,7 @@
 
 	<!-- Live Trading -->
     <bean id="stopLiveTradingStartTime" class="java.lang.String">
-        <constructor-arg value="13:40:00" />
+        <constructor-arg value="13:35:00" />
     </bean>
     
     <bean id="stopLiveTradingEndTime" class="java.lang.String">
@@ -211,6 +211,11 @@
     </bean>
     
     <!-- File Save -->
+    <bean id="cumQuantitySaver" class="com.cyanspring.common.staticdata.CumQuantitySaver">
+        <property name="filePath" value="report/"/>
+        <property name="suffix" value="_q"/>
+    </bean>
+    
     <bean id="parentOrderSaver" class="com.cyanspring.common.staticdata.OrderSaver">
         <property name="filePath" value="report/"/>
         <property name="suffix" value="_t"/>

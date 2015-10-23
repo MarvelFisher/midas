@@ -49,6 +49,7 @@ import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
 import com.cyanspring.common.event.strategy.MultiInstrumentStrategyUpdateEvent;
 import com.cyanspring.common.event.strategy.SingleInstrumentStrategyUpdateEvent;
+import com.cyanspring.common.staticdata.CumQuantitySaver;
 import com.cyanspring.common.staticdata.OrderSaver;
 import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.util.DualKeyMap;
@@ -75,6 +76,9 @@ public class OrderManager {
 
     @Autowired(required = false)
     OrderSaver childOrderSaver;
+
+    @Autowired(required = false)
+    CumQuantitySaver cumQuantitySaver;
 
 	@Autowired
 	@Qualifier("fixToOrderMap")
@@ -134,7 +138,7 @@ public class OrderManager {
         		if(null != ids){
             		for(String id: ids){
             			log.info("account id:{}",id);
-            			if(null != parentOrders.getMap(id).values() 
+            			if(null != parentOrders.getMap(id).values()
             					&& parentOrders.getMap(id).values().size()!=0){
             				orderList.addAll(parentOrders.getMap(id).values());
             			}
@@ -157,7 +161,7 @@ public class OrderManager {
 
         		log.info("orderList size:{},instList:{},misdList:{}"
         				,new Object[]{orderList.size(),instList.size(),misdList.size()});
-        		
+
         		if(orderList.size()+instList.size()+misdList.size()>orderLimit){
         			log.info("Over order transfer limit:"+orderLimit);
         			AllStrategySnapshotReplyEvent reply = new AllStrategySnapshotReplyEvent(event.getKey()
@@ -490,7 +494,7 @@ public class OrderManager {
         	}
 
         	parentOrderSaver.addOrderList(lstParentOrder);
-        	parentOrderSaver.saveOrderToFile();
+        	parentOrderSaver.saveToFile();
         }
 
         if (childOrderSaver != null) {
@@ -505,8 +509,21 @@ public class OrderManager {
             }
 
         	childOrderSaver.addOrderList(lstChildOrder);
-        	childOrderSaver.saveOrderToFile();
+        	childOrderSaver.saveToFile();
         }
+
+        if (cumQuantitySaver != null) {
+        	Collection<ParentOrder> cParentOrders = parentOrders.values();
+        	List<ParentOrder> lstParentOrder = new ArrayList<>();
+        	if (cParentOrders instanceof List) {
+        		lstParentOrder = (List<ParentOrder>)cParentOrders;
+        	} else {
+        		lstParentOrder = new ArrayList<>(cParentOrders);
+        	}
+
+        	cumQuantitySaver.addOrderList(lstParentOrder);
+        	cumQuantitySaver.saveToFile();
+		}
     }
 
 	public void init() throws Exception {

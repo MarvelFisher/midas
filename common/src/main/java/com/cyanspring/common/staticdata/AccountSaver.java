@@ -11,18 +11,17 @@ import com.cyanspring.common.account.Account;
 /**
  * @author elviswu
  */
-public class AccountSaver {
-    private FileManager fileManager = new FileManager();
-    private List<Account> accounts;
-    private String filePath;
-    private String prefix = "";
-    private String suffix = "";
+public class AccountSaver extends AbstractReportSaver {
 
-    public void saveAccountToFile() {
+	private List<Account> accounts;
+
+    @Override
+    public void saveToFile() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = Clock.getInstance().now();
         String fileDate = sdf.format(date);
         String path = filePath + "/" + prefix + fileDate + suffix + ".csv";
+        fileManager = new FileManager();
         fileManager.loadFile(path);
         fileManager.appendToFile("ID,Account Value,Account Cash,Cash Available," +
                 "DailyPnl,Pnl,UrPnl");
@@ -37,19 +36,8 @@ public class AccountSaver {
         fileManager.close();
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
     }
 
-    public void setSuffix(String suffix) {
-        this.suffix = suffix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
 }

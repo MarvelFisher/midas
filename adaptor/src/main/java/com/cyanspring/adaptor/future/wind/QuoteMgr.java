@@ -4,6 +4,7 @@ import com.cyanspring.adaptor.future.wind.data.FutureData;
 import com.cyanspring.adaptor.future.wind.data.IndexData;
 import com.cyanspring.adaptor.future.wind.data.StockData;
 import com.cyanspring.adaptor.future.wind.data.TransationData;
+import com.cyanspring.common.util.TimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,11 +46,13 @@ public class QuoteMgr {
                                 }
                                 int type = (int) arr[0];
                                 process(type, arr[1]);
+                            }else{
+                                try {
+                                    TimeUnit.MILLISECONDS.sleep(1);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
                             }
-                        try {
-                            TimeUnit.MILLISECONDS.sleep(1);
-                        } catch (InterruptedException e) {
-                        }
                     }
                 }
             });

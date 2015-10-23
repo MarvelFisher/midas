@@ -358,10 +358,11 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IWindGWListener {
                                     connect();
                                 }
                             }
-                        }
-                        try {
-                            TimeUnit.MILLISECONDS.sleep(1);
-                        } catch (InterruptedException e) {
+                        }else{
+                            try {
+                                TimeUnit.SECONDS.sleep(1);
+                            } catch (InterruptedException e) {
+                            }
                         }
                     }
                 }
