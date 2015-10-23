@@ -147,7 +147,7 @@
 
 	<!-- Live Trading -->
     <bean id="stopLiveTradingStartTime" class="java.lang.String">
-        <constructor-arg value="13:40:00" />
+        <constructor-arg value="13:35:00" />
     </bean>
     
     <bean id="stopLiveTradingEndTime" class="java.lang.String">
