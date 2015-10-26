@@ -397,16 +397,5 @@ public class RefData extends DataObject {
     public int getTradableDays() {
     	return this.get(int.class, RefDataField.TRADABLE_DAYS.value());
     }
-    
-    public boolean isStock() {
-    	return (getInstrumentType() & 0x01) != 0; 
-    }
-    
-    public boolean isFuture() {
-    	return (getInstrumentType() >> 1 & 0x01) != 0; 
-    }
-    
-    public boolean isIndex() {
-    	return (getInstrumentType() >> 4 & 0x01) != 0;
-    }
+
 }

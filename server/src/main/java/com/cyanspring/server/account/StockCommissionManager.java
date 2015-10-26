@@ -4,6 +4,7 @@ import com.cyanspring.common.Default;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.RefDataBitUtil;
 import com.cyanspring.common.staticdata.fu.IType;
 import com.cyanspring.common.type.OrderSide;
 
@@ -25,8 +26,7 @@ public class StockCommissionManager extends CommissionManager {
     @Override
     public double getCommission(RefData refData, AccountSetting settings, double value, Execution execution) {
     	if (refData != null) {
-        	String type = refData.getIType();
-        	if (type != null && !IType.isStock(type)) {
+        	if (!RefDataBitUtil.isStock(refData.getInstrumentType())) {
 				return super.getCommission(refData, settings, value, execution);
 			}
         }
@@ -58,8 +58,7 @@ public class StockCommissionManager extends CommissionManager {
     @Override
     public double getCommission(RefData refData, AccountSetting settings, Execution execution) {
     	if (refData != null) {
-        	String type = refData.getIType();
-        	if (type != null && !IType.isStock(type)) {
+        	if (!RefDataBitUtil.isStock(refData.getInstrumentType())) {
 				return super.getCommission(refData, settings, execution);
 			}
         }
