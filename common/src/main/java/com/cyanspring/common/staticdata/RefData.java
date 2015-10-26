@@ -112,14 +112,6 @@ public class RefData extends DataObject {
         this.set(refSymbol, RefDataField.REF_SYMBOL.value());
     }
 
-    public String getType() {
-        return this.get(String.class, RefDataField.TYPE.value());
-    }
-
-    public void setType(String type) {
-        this.set(type, RefDataField.TYPE.value());
-    }
-
     public String getCategory() {
         return this.get(String.class, RefDataField.CATEGORY.value());
     }
@@ -267,12 +259,8 @@ public class RefData extends DataObject {
         this.set(numberatorDp, RefDataField.NUMERATOR_DP.value());
     }
 
-    public String getTradable() {
-        return this.get(String.class, RefDataField.TRADABLE.value());
-    }
-
-    public void setTradable(String tradable) {
-        this.set(tradable, RefDataField.TRADABLE.value());
+    public boolean getTradable() {
+        return (getInstrumentType() >> 9 & 0x01) != 0;
     }
 
     public String getStrategy() {
@@ -297,14 +285,6 @@ public class RefData extends DataObject {
 
     public void setSpellName(String spellName) {
         this.set(spellName, RefDataField.SPELL_NAME.value());
-    }
-
-    public String getCommodity() {
-        return this.get(String.class, RefDataField.COMMODITY.value());
-    }
-
-    public void setCommodity(String commodity) {
-        this.set(commodity, RefDataField.COMMODITY.value());
     }
 
     public String getDetailEN() {
@@ -386,14 +366,6 @@ public class RefData extends DataObject {
     	return (this.getSymbol().hashCode() * 17);
     }
 
-    public String getIType() {
-        return this.get(String.class, RefDataField.ITYPE.value());
-    }
-
-    public void setIType(String IType) {
-        this.set(IType, RefDataField.ITYPE.value());
-    }
-
     public String getSubscribeSymbol() {
         return this.get(String.class, RefDataField.SUBSCRIBE_SYMBOL.value());
     }
@@ -401,21 +373,40 @@ public class RefData extends DataObject {
     public void setSubscribeSymbol(String subscribeSymbol) {
         this.set(subscribeSymbol, RefDataField.SUBSCRIBE_SYMBOL.value());
     }
-
-    public int getDayTradable() {
-        return this.get(int.class, RefDataField.DAY_TRADABLE.value());
+    
+    public void setInstrumentType(long instrumentType) {
+    	this.set(instrumentType, RefDataField.INSTRUMENT_TYPE.value());
     }
-
-    public void setDayTradable(int dayTradable) {
-        this.set(dayTradable, RefDataField.DAY_TRADABLE.value());
+    
+    public long getInstrumentType() {
+    	return this.get(long.class, RefDataField.INSTRUMENT_TYPE.value());
     }
-
-    public String getDesc() {
-        return this.get(String.class, RefDataField.DESC.value());
+    
+    public void setCommissionTable(String commissionTable) {
+    	this.set(commissionTable, RefDataField.COMMISSION_TABLE.value());
     }
-
-    public void setDesc(String desc) {
-        this.set(desc, RefDataField.DESC.value());
+    
+    public String getCommissionTable() {
+    	return this.get(String.class, RefDataField.COMMISSION_TABLE.value());
     }
-
+    
+    public void setTradableDays(int tradableDays) {
+    	this.set(tradableDays, RefDataField.TRADABLE_DAYS.value());
+    }
+    
+    public int getTradableDays() {
+    	return this.get(int.class, RefDataField.TRADABLE_DAYS.value());
+    }
+    
+    public boolean isStock() {
+    	return (getInstrumentType() & 0x01) != 0; 
+    }
+    
+    public boolean isFuture() {
+    	return (getInstrumentType() >> 1 & 0x01) != 0; 
+    }
+    
+    public boolean isIndex() {
+    	return (getInstrumentType() >> 4 & 0x01) != 0;
+    }
 }
