@@ -26,7 +26,11 @@ import com.cyanspring.common.event.account.OverAllPositionReplyEvent;
 import com.cyanspring.common.event.account.OverAllPositionRequestEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
-
+/**
+ * 
+ * @author jimmy
+ *
+ */
 public class AllPositionManager implements IAsyncEventListener {
 
 	private static final Logger log = LoggerFactory.getLogger(AllPositionManager.class);
@@ -61,12 +65,15 @@ public class AllPositionManager implements IAsyncEventListener {
 			updateClosedPositionList(e.getClosedPositionList());
 			refreshOverallPosition(null);
 		}else if(event instanceof OpenPositionUpdateEvent){
+			log.info("get OpenPositionUpdateEvent");
 			OpenPositionUpdateEvent e = (OpenPositionUpdateEvent) event;
 			updatePosition(e.getPosition(),true);			
 		}else if(event instanceof OpenPositionDynamicUpdateEvent){
+			log.info("get OpenPositionDynamicUpdateEvent");
 			OpenPositionDynamicUpdateEvent e = (OpenPositionDynamicUpdateEvent) event;
 			updatePosition(e.getPosition(),true);			
 		}else if(event instanceof ClosedPositionUpdateEvent){
+			log.info("get ClosedPositionUpdateEvent");
 			ClosedPositionUpdateEvent e = (ClosedPositionUpdateEvent) event;
 			updatePosition(e.getPosition(),true);
 		}
@@ -105,9 +112,11 @@ public class AllPositionManager implements IAsyncEventListener {
 			for(OpenPosition op:oldList){
 				if(position.getSymbol().equals(op.getSymbol())){
 					isNewSymbol = false;
-					tempList.add(position);
+					if(!PriceUtils.isZero(position.getAvailableQty()))
+						tempList.add(position);
 				}else{
-					tempList.add(op);
+					if(!PriceUtils.isZero(op.getAvailableQty()))
+						tempList.add(op);
 				}
 			}
 			if(isNewSymbol){
@@ -127,7 +136,7 @@ public class AllPositionManager implements IAsyncEventListener {
 		Iterator <String>keys = openPositionMap.keySet().iterator();
 		while(keys.hasNext()){
 			String key = keys.next();
-			log.info("account:{}",key);
+			log.info("(open pos)account:{}",key);
 			List<OpenPosition> ops = openPositionMap.get(key);
 			for(OpenPosition op : ops){
 				log.info(" -op:{},{},{},{}",new Object[]{op.getSymbol(),op.getQty(),op.getPnL(),op.getPrice()});
@@ -139,7 +148,7 @@ public class AllPositionManager implements IAsyncEventListener {
 		Iterator <String>keys = closedPositionMap.keySet().iterator();
 		while(keys.hasNext()){
 			String key = keys.next();
-			log.info("account:{}",key);
+			log.info("(close pos)account:{}",key);
 			List<ClosedPosition> ops = closedPositionMap.get(key);
 			for(ClosedPosition op : ops){
 				log.info(" -cp:{},{},{},{},{}",new Object[]{op.getSymbol(),op.getQty(),op.getPnL(),op.getBuyPrice(),op.getSellPrice()});
@@ -284,7 +293,6 @@ public class AllPositionManager implements IAsyncEventListener {
 			idSet.add(positionAccount);
 		}
 
-		
 		for(String id : idSet){
 			List<OpenPosition> oList = openPositionMap.get(id);
 			List<ClosedPosition> cList = closedPositionMap.get(id);
@@ -310,7 +318,7 @@ public class AllPositionManager implements IAsyncEventListener {
 			allList.addAll(tempAllPositionSet);
 			allPositionMap.put(id, allList);
 		}
-		printOverallPositionMap();
+//		printOverallPositionMap();
 		notifyOverallPositionChange();
 	}
 
