@@ -423,7 +423,7 @@
 		</constructor-arg>
 	</bean>
 
-	<bean id="twfStrategy" class="com.cyanspring.common.staticdata.fu.TWFStrategy">
+	<bean id="twfStrategy" class="com.cyanspring.common.strategy.TWFStrategy">
 		<property name="weekOfMonth">
 			<value>3</value>
 		</property>
