@@ -11,6 +11,9 @@ import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.cstw.service.common.BasicServiceImpl;
 import com.cyanspring.cstw.service.common.RefreshEventType;
 import com.cyanspring.cstw.service.iservice.riskmgr.ICurrentPositionService;
+import com.cyanspring.cstw.service.localevent.riskmgr.OpenPositionSnapshotListReplyLocalEvent;
+import com.cyanspring.cstw.service.localevent.riskmgr.OpenPositionSnapshotListRequestLocalEvent;
+import com.cyanspring.cstw.service.localevent.riskmgr.OpenPositionUpdateLocalEvent;
 import com.cyanspring.cstw.service.model.riskmgr.RCOpenPositionModel;
 import com.cyanspring.cstw.service.model.riskmgr.RCOpenPositionModel.RCPositionType;
 import com.cyanspring.cstw.ui.utils.LTWStringUtils;
@@ -41,19 +44,30 @@ public class CurrentPositionServiceImpl extends BasicServiceImpl implements
 
 	@Override
 	public void queryOpenPosition() {
-		
+		OpenPositionSnapshotListRequestLocalEvent event = new OpenPositionSnapshotListRequestLocalEvent(roleType.name());
+		sendEvent(event);
 	}
 
 	@Override
 	protected List<Class<? extends AsyncEvent>> getReplyEventList() {
 		List<Class<? extends AsyncEvent>> list = new ArrayList<Class<? extends AsyncEvent>>();
-		//
+		list.add(OpenPositionSnapshotListReplyLocalEvent.class);
+		list.add(OpenPositionUpdateLocalEvent.class);
 		return list;
 	}
 
 	@Override
 	protected RefreshEventType handleEvent(AsyncEvent event) {
-
+		if (event instanceof OpenPositionSnapshotListReplyLocalEvent) {
+			OpenPositionSnapshotListReplyLocalEvent replyEvent = (OpenPositionSnapshotListReplyLocalEvent) event;
+			overallPositionModelList = replyEvent.getPositionList();
+			currentPositionModelList = getOpenPositionFromOverallPosition(overallPositionModelList);
+		}
+		if (event instanceof OpenPositionUpdateLocalEvent) {
+			OpenPositionUpdateLocalEvent replyEvent = (OpenPositionUpdateLocalEvent) event;
+			overallPositionModelList = replyEvent.getAllPositionModelList();
+			currentPositionModelList = getOpenPositionFromOverallPosition(overallPositionModelList);
+		}
 		return RefreshEventType.Default;
 	}
 	

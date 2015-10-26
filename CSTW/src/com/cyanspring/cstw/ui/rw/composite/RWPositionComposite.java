@@ -8,6 +8,8 @@ import org.eclipse.swt.widgets.Label;
 
 import com.cyanspring.cstw.service.common.RefreshEventType;
 import com.cyanspring.cstw.service.iservice.IBasicService;
+import com.cyanspring.cstw.service.iservice.ServiceFactory;
+import com.cyanspring.cstw.service.iservice.riskmgr.ICurrentPositionService;
 import com.cyanspring.cstw.ui.basic.BasicComposite;
 import com.cyanspring.cstw.ui.rw.composite.table.RWPositionTableComposite;
 
@@ -17,7 +19,7 @@ import com.cyanspring.cstw.ui.rw.composite.table.RWPositionTableComposite;
  */
 public class RWPositionComposite extends BasicComposite {
 
-	//private ICurrentPositionService service;
+	private ICurrentPositionService service;
 	
 	private RWPositionTableComposite tableCompsoite;
 	
@@ -88,23 +90,24 @@ public class RWPositionComposite extends BasicComposite {
 	}
 	
 	private void initQuery() {
-		
+		service.queryOpenPosition();
 	}
 	
 	@Override
 	protected void processByType(RefreshEventType type) {
 		if (type == RefreshEventType.RWCurrentPositionList) {
-//			tableCompsoite.setInput(service.getOpenPositionModelList());
-//			lblAllMarketCapitalization.setText(service.getAllMarketCapitalization());
-//			lblUnrealizedPL.setText(service.getUnrealizedPNL());
-//			lblPNL.setText(service.getPNL());
-//			lblAllPNL.setText(service.getAllPNL());
+			tableCompsoite.setInput(service.getOpenPositionModelList());
+			lblAllMarketCapitalization.setText(service.getAllMarketCapitalization());
+			lblUnrealizedPL.setText(service.getUnrealizedPNL());
+			lblPNL.setText(service.getPNL());
+			lblAllPNL.setText(service.getAllPNL());
 		} 
 	}
 
 	@Override
 	protected IBasicService createService() {
-		return null;
+		service = ServiceFactory.createRWCurrentPositionService();
+		return service;
 	}
 
 }

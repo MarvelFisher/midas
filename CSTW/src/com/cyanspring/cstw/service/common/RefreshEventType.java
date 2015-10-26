@@ -18,7 +18,7 @@ public enum RefreshEventType {
 	RWCurrentPositionList,
 	RWTradeRecordList,
 	RWInstrumentStatistics,
-	RWIndividualStatistics,
+	RWInstrumentSummary,
 	RWUserStatistics,
 	
 	// BW

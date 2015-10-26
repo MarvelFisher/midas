@@ -12,29 +12,29 @@ public enum TableType {
 
 	
 	// RW
-	RWPosition(new String[] { "Account", "Instrument ID", "Instrument Name",
+	RWPosition(new String[] { "Instrument ID", "Instrument Name",
 			"Direction", "Quantity", "PNL", "Avg Price", "Trader", },
-			new int[] { 100, 100, 100, 100, 100, 100, 100, 100 }, SWT.CENTER,
+			new int[] { 100, 100, 100, 100, 100, 100, 100 }, SWT.CENTER,
 			true, false),
 	
-	RWTradeRecord(new String[] { "Account", "Trade ID", "Instrument ID",
-			"Instrument", "Trade Type", "Quantity", "Avg Price",
-			"Consideration", "Time", "Commission", "Trader" }, new int[] { 100,
+	RWTradeRecord(new String[] { "Trade ID", "Instrument ID",
+			"Instrument Name", "Trade Type", "Quantity", "Avg Price",
+			"Consideration", "Time", "Commission", "Trader" }, new int[] {
 			100, 100, 100, 100, 100, 100, 100, 100, 100, 100 }, SWT.CENTER,
 			true, false),
 
-	RWInstrumentStatistics(new String[] { "Account", "Instrument ID",
+	RWInstrumentStatistics(new String[] { "Instrument ID",
 			"Instrument Name", "Realized PNL", "Trades", "Total Quantity",
-			"Consideration", "Total Commission", "Trader" }, new int[] { 100,
+			"Consideration", "Total Commission", "Trader" }, new int[] {
 			100, 100, 100, 100, 100, 100, 100, 100 }, SWT.CENTER, true, false),
 
 	RWUserStatistics(
 			new String[] { "Trader", "Realized PNL", "Consideration" },
 			new int[] { 100, 100, 100 }, SWT.CENTER, true, false),
 
-	RWInstrumentSummary(new String[] { "Account", "Instrument ID",
+	RWInstrumentSummary(new String[] { "Instrument ID",
 			"Instrument Name", "Realized PNL", "Trades", "Total Quantity",
-			"Consideration", "Commission" }, new int[] { 100, 100, 100, 100,
+			"Consideration", "Commission" }, new int[] { 100, 100, 100,
 			100, 100, 100, 100 }, SWT.CENTER, true, false),
 	
 	// BW
