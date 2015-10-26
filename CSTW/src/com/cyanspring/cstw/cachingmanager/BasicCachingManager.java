@@ -36,10 +36,13 @@ public abstract class BasicCachingManager {
 
 	private Map<String, String> eventKeyMap;
 
+	public BasicCachingManager() {
+		business = Business.getInstance();
+	}
+
 	public void init() {
 		replyEventList = getReplyEventList();
 		eventKeyMap = getEventKeyMap();
-		business = Business.getInstance();
 		id = IdGenerator.getInstance().getNextID();
 		txId = IdGenerator.getInstance().getNextID();
 		server = business.getFirstServer();

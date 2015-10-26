@@ -65,6 +65,7 @@ import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.cachingmanager.quote.QuoteCachingManager;
+import com.cyanspring.cstw.cachingmanager.riskcontrol.FrontRCPositionCachingManager;
 import com.cyanspring.cstw.event.SelectUserAccountEvent;
 import com.cyanspring.cstw.event.ServerStatusEvent;
 import com.cyanspring.cstw.gui.ServerStatusDisplay;
@@ -517,7 +518,11 @@ public class Business {
 		log.info("login user:{},{}", user, userGroup.getRole());
 
 		QuoteCachingManager.getInstance().init();
+		FrontRCPositionCachingManager.getInstance().init();
 		allPositionManager.init(eventManager, getFirstServer(), getAccountGroup(), getUserGroup());
+		if (null != accountGroupList){
+			allPositionManager.requestOverAllPosition(accountGroupList);
+		}
 		return true;
 	}
 

@@ -36,6 +36,7 @@ public final class FrontRCPositionCachingManager extends BasicCachingManager {
 	}
 
 	private FrontRCPositionCachingManager() {
+		super();
 		initListener();
 	}
 
@@ -43,18 +44,19 @@ public final class FrontRCPositionCachingManager extends BasicCachingManager {
 		positionChangeListener = new IPositionChangeListener() {
 			@Override
 			public void ClosedPositionChange(ClosedPosition arg0) {
-				// TODO Auto-generated method stub
+				log.info("========================ClosedPositionChange");
 
 			}
 
 			@Override
 			public void OpenPositionChange(OpenPosition arg0) {
-				// TODO Auto-generated method stub
+				log.info("========================OpenPositionChange");
 
 			}
 
 			@Override
 			public void OverAllPositionChange(List<OverallPosition> list) {
+				log.info("========================OverAllPositionChange");
 				FrontRCPositionUpdateLocalEvent updateEvent = new FrontRCPositionUpdateLocalEvent(
 						accountPositionMap);
 				business.getEventManager().sendEvent(updateEvent);
