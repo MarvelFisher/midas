@@ -4,11 +4,13 @@ import com.cyanspring.common.account.UserRole;
 import com.cyanspring.cstw.service.impl.riskmgr.CurrentPositionServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.InstrumentStatisticsServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.InstrumentSummaryServiceImpl;
+import com.cyanspring.cstw.service.impl.riskmgr.OrderRecordServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.TradeRecordServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.UserStatisticsServiceImpl;
 import com.cyanspring.cstw.service.iservice.riskmgr.ICurrentPositionService;
 import com.cyanspring.cstw.service.iservice.riskmgr.IInstrumentStatisticsService;
 import com.cyanspring.cstw.service.iservice.riskmgr.IInstrumentSummaryService;
+import com.cyanspring.cstw.service.iservice.riskmgr.IOrderRecordService;
 import com.cyanspring.cstw.service.iservice.riskmgr.ITradeRecordService;
 import com.cyanspring.cstw.service.iservice.riskmgr.IUserStatisticsService;
 
@@ -51,6 +53,11 @@ public final class ServiceFactory {
 	
 	public static IUserStatisticsService createUserStatisticsService() {
 		UserStatisticsServiceImpl instance = new UserStatisticsServiceImpl();
+		return instance;
+	}
+	
+	public static IOrderRecordService createOrderRecordService() {
+		OrderRecordServiceImpl instance = new OrderRecordServiceImpl();
 		return instance;
 	}
 

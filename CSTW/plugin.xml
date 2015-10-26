@@ -543,6 +543,17 @@
                   commandId="CSTW.FrontRiskManager.OrderData"
                   label="RW Order Data"
                   style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                  <or>
+                     <with
+                           variable="RiskManager">
+                        <equals
+                              value="ENABLED">
+                        </equals>
+                     </with>
+                  </or>
+               </visibleWhen>
             </command>
             <command
                   commandId="CSTW.BackRiskManager.Data"

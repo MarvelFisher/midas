@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.TabItem;
  * @author Junfeng
  * @create 22 Oct 2015
  */
-public class RWMainComposite extends Composite {
+public class RWMainDataComposite extends Composite {
 	
 	private TabItem tbtmPosition;
 	private TabItem tbtmRecord;
@@ -19,7 +19,7 @@ public class RWMainComposite extends Composite {
 	private TabItem tbtmInstrumentSummary;
 	private TabFolder tabFolder;
 	
-	public RWMainComposite(Composite parent, int style) {
+	public RWMainDataComposite(Composite parent, int style) {
 		super(parent, style);
 		setLayout(new FillLayout(SWT.HORIZONTAL));
 		initTabItem();

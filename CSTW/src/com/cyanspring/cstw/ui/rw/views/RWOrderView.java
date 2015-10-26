@@ -1,7 +1,11 @@
 package com.cyanspring.cstw.ui.rw.views;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
+
+import com.cyanspring.cstw.ui.rw.composite.RWMainOrderComposite;
 
 /**
  * @author Junfeng
@@ -9,22 +13,19 @@ import org.eclipse.ui.part.ViewPart;
  */
 public class RWOrderView extends ViewPart {
 	public static String ID = "com.cyanspring.cstw.ui.rw.views.RWOrderView";
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.WorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
-	 */
+	
+	private RWMainOrderComposite composite;
+	
 	@Override
 	public void createPartControl(Composite parent) {
-		// TODO Auto-generated method stub
-
+		Composite container = new Composite(parent, SWT.NONE);
+		container.setLayout(new FillLayout());
+		composite = new RWMainOrderComposite(container, SWT.NONE);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
-	 */
 	@Override
 	public void setFocus() {
-		// TODO Auto-generated method stub
-
+		composite.setFocus();
 	}
 
 }

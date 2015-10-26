@@ -10,6 +10,17 @@ import org.eclipse.swt.SWT;
  */
 public enum TableType {
 
+	//
+	RWPendingOrder(new String[] { "Order ID", "Instrument ID",
+			"Instrument Name", "Trade Type", "Price", "Volume", "Status",
+			"Time", "Trader" },
+			new int[] { 80, 80, 80, 80, 80, 80, 80, 80, 80 }, SWT.LEFT, true,
+			false),
+
+	RWActivityOrder(new String[] { "Order ID", "Instrument ID",
+			"Instrument Name", "Trade Type", "Price", "Volume", "Status",
+			"Consumed Volume", "Time", "Trader" }, new int[] { 80, 80, 80, 80,
+			80, 80, 80, 80, 80, 80 }, SWT.LEFT, true, false),
 	
 	// RW
 	RWPosition(new String[] { "Instrument ID", "Instrument Name",
