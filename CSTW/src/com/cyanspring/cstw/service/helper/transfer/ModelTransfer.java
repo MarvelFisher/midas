@@ -1,12 +1,15 @@
 package com.cyanspring.cstw.service.helper.transfer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.cyanspring.common.account.OverallPosition;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.type.OrdStatus;
+import com.cyanspring.cstw.service.model.riskmgr.RCInstrumentModel;
 import com.cyanspring.cstw.service.model.riskmgr.RCOpenPositionModel;
 import com.cyanspring.cstw.service.model.riskmgr.RCOrderRecordModel;
 import com.cyanspring.cstw.service.model.riskmgr.RCOrderRecordModel.Builder;
@@ -119,6 +122,63 @@ public final class ModelTransfer {
 			orderList.add(builder.build());
 		}
 		return orderList;
+	}
+
+	/**
+	 * 风控管理 - 股票汇总信息 - 包含已平仓和未平仓
+	 * 
+	 * @param positionList
+	 * @param refDataManager
+	 * @return
+	 */
+	public static List<RCInstrumentModel> parseStockSummaryRecordList(
+			List<OverallPosition> positionList) {
+		List<RCInstrumentModel> stockRecordList = new ArrayList<RCInstrumentModel>();
+		Map<String, Map<String, List<OverallPosition>>> subAccountSybmolRecordMap = new HashMap<String, Map<String, List<OverallPosition>>>();
+		Map<String, List<OverallPosition>> symbolRecordMap = null;
+		String subAccount = null;
+		String symbol = null;
+		for (OverallPosition position : positionList) {
+			subAccount = position.getExchangeSubAccount();
+			symbol = position.getSymbol();
+			if (subAccountSybmolRecordMap.containsKey(subAccount)) {
+				symbolRecordMap = subAccountSybmolRecordMap.get(subAccount);
+			} else {
+				symbolRecordMap = new HashMap<String, List<OverallPosition>>();
+				subAccountSybmolRecordMap.put(subAccount, symbolRecordMap);
+			}
+			if (!symbolRecordMap.containsKey(symbol)) {
+				symbolRecordMap.put(symbol, new ArrayList<OverallPosition>());
+			}
+			symbolRecordMap.get(symbol).add(position);
+		}
+
+		RCInstrumentModel stockRecord = null;
+		for (Entry<String, Map<String, List<OverallPosition>>> subAccountEntry : subAccountSybmolRecordMap
+				.entrySet()) {
+			for (Entry<String, List<OverallPosition>> symbolEntry : subAccountEntry
+					.getValue().entrySet()) {
+				double pnl = 0.0;
+				double tradeCount = 0.0;
+				double volume = 0.0;
+				double totalTurnOver = 0.0;
+				double commission = 0.0;
+				symbol = symbolEntry.getKey();
+				for (OverallPosition position : symbolEntry.getValue()) {
+					pnl += position.getPnL();
+					tradeCount += position.getExecCount();
+					volume += position.getTotalQty();
+					totalTurnOver += position.getTurnover();
+					commission += position.getCommission();
+				}
+				stockRecord = new RCInstrumentModel.Builder()
+						.account(subAccountEntry.getKey()).symbol(symbol)
+						.realizedProfit(pnl).trades(tradeCount).volume(volume)
+						.turnover(totalTurnOver).commission(commission).build();
+				stockRecordList.add(stockRecord);
+			}
+		}
+		return stockRecordList;
 	}
 
 }

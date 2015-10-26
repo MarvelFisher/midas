@@ -1,6 +1,5 @@
 package com.cyanspring.cstw.ui.trader.composite.speeddepth;
 
-import java.util.Date;
 import java.util.List;
 
 import org.eclipse.jface.viewers.TableViewer;
@@ -251,18 +250,10 @@ public final class SpeedDepthTableComposite extends Composite {
 		if (tableViewer.getTable().isDisposed()) {
 			return;
 		}
-		Date currentTimeStamp = null;
-		if (currentQuote != null) {
-			currentTimeStamp = currentQuote.getTimeStamp();
-		}
-
-//		if (currentTimeStamp == null
-//				|| quote.getTimeStamp().after(currentTimeStamp)) {
-			currentQuote = quote;
-			List<SpeedDepthModel> list = speedDepthService.getSpeedDepthList(
-					currentQuote, isLock);
-			tableViewer.setInput(list);
-//		}
+		currentQuote = quote;
+		List<SpeedDepthModel> list = speedDepthService.getSpeedDepthList(
+				currentQuote, isLock);
+		tableViewer.setInput(list);
 	}
 
 	public void refresh(int rowLength) {
