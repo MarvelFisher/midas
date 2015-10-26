@@ -13,30 +13,26 @@ import com.cyanspring.cstw.service.model.riskmgr.RCTradeRecordModel;
 
 /**
  * @author Yu-Junfeng
- * @create 14 Sep 2015
+ * @create 12 Aug 2015
  */
-public final class BRCTradeEventAdaptorImpl implements IRCTradeEventAdaptor {
+public final class FRCTradeEventAdaptorImpl implements IRCTradeEventAdaptor {
 
 	@Override
 	public List<RCTradeRecordModel> getTradeRecordModelListByOrderList(
 			BasicRCParentOrderUpdateLocalEvent event) {
 		List<RCTradeRecordModel> result = new ArrayList<RCTradeRecordModel>();
 		Map<String, ParentOrder> orderMap = event.getOrderMap();
-		if (orderMap == null) {
+		if (orderMap == null || orderMap.isEmpty()) {
 			return result;
 		}
-		//
-		// filter no filled order
-		for (ParentOrder trade : orderMap.values()) {
-			if (trade.getOrdStatus() != OrdStatus.FILLED
-					&& trade.getOrdStatus() != OrdStatus.PARTIALLY_FILLED) {
+
+		for (ParentOrder order : orderMap.values()) {
+			if (order.getOrdStatus() != OrdStatus.FILLED
+					&& order.getOrdStatus() != OrdStatus.PARTIALLY_FILLED) {
 				continue;
 			}
-			RCTradeRecordModel model = ModelTransfer
-					.getRCTradeRecordModel(trade);
-			result.add(model);
+			result.add(ModelTransfer.getRCTradeRecordModel(order));
 		}
-
 		return result;
 	}
 }

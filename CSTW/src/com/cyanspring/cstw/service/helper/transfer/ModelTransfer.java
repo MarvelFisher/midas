@@ -1,9 +1,12 @@
 package com.cyanspring.cstw.service.helper.transfer;
 
+import java.util.Map;
+
 import com.cyanspring.common.account.OverallPosition;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.cstw.service.model.riskmgr.RCOpenPositionModel;
 import com.cyanspring.cstw.service.model.riskmgr.RCTradeRecordModel;
+import com.cyanspring.cstw.service.model.riskmgr.RCUserStatisticsModel;
 
 /**
  * 
@@ -56,6 +59,33 @@ public final class ModelTransfer {
 		 * { positionModel.setPositionDirection(RCPositionDirection.Short); }
 		 */
 		return positionModel;
+	}
+
+	/**
+	 * 风控管理 - 个人统计信息转换(包含已平仓和未平仓)
+	 * 
+	 * @param positionMap
+	 * @return
+	 */
+	public static RCUserStatisticsModel parseRCIndividualStatisticsModel(
+			Map<String, OverallPosition> positionMap) {
+		if (positionMap == null || positionMap.isEmpty()) {
+			return null;
+		}
+		String trader = null;
+		double pnl = 0.0;
+		double totalTurnOver = 0.0;
+		for (OverallPosition position : positionMap.values()) {
+			if (trader == null) {
+				trader = position.getUser();
+			}
+			pnl += position.getPnL();
+			totalTurnOver += position.getTurnover();
+		}
+		RCUserStatisticsModel model = new RCUserStatisticsModel.Builder()
+				.trader(trader).realizedProfit(pnl).turnover(totalTurnOver)
+				.build();
+		return model;
 	}
 
 }
