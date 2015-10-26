@@ -1,12 +1,9 @@
 package com.cyanspring.common.marketsession;
 
-import com.cyanspring.common.Clock;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.event.*;
 import com.cyanspring.common.event.marketsession.*;
 import com.cyanspring.common.event.refdata.RefDataEvent;
-import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
-import com.cyanspring.common.event.refdata.RefDataUpdateEvent.Action;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
@@ -44,7 +41,6 @@ public class IndexMarketSessionManager implements IPlugin {
 	private Map<String, MarketSessionData> rawMap;
 	private Map<String, MarketSessionData> currentSessionMap = new HashMap<>();
 	private Queue<RefData> addQueue = new LinkedBlockingQueue<>();
-	private Queue<RefData> delQueue = new LinkedBlockingQueue<>();
 	private Map<String, Date> checkDateMap = new HashMap<>();
 	private Map<String, RefData> refDataMap = new HashMap<String, RefData>();;
 	protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
@@ -58,7 +54,6 @@ public class IndexMarketSessionManager implements IPlugin {
 			subscribeToEvent(IndexSessionRequestEvent.class, null);
 			subscribeToEvent(AllIndexSessionRequestEvent.class, null);
 			subscribeToEvent(RefDataEvent.class, null);
-			subscribeToEvent(RefDataUpdateEvent.class, null);
 			subscribeToEvent(InternalSessionRequestEvent.class, null);
 		}
 
@@ -151,21 +146,6 @@ public class IndexMarketSessionManager implements IPlugin {
 			addQueue.offer(refData);
 	}
 
-	public void processRefDataUpdateEvent(RefDataUpdateEvent event) {
-		List<RefData> list = event.getRefDataList();
-		
-		if (event.getAction() == Action.ADD) {
-			for (RefData refData : list) 
-				addQueue.offer(refData);
-		} else if (event.getAction() == Action.MOD) {
-			for (RefData refData : list) 
-				addQueue.offer(refData);
-		} else if (event.getAction() == Action.DEL) {
-			for (RefData refData : list) 
-				delQueue.offer(refData);
-		}
-	}
-
 	public void processPmSettlementEvent(PmSettlementEvent event) {
 		log.info("Receive PmSettlementEvent, symbol: " + event.getEvent().getSymbol());
 		eventManager.sendEvent(event.getEvent());
@@ -174,7 +154,6 @@ public class IndexMarketSessionManager implements IPlugin {
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		try {
 			checkInteralIndexMarketSession();
-			delRefData();
 			addRefData();
 			checkIndexMarketSession();
 			checkSettlement();
@@ -247,13 +226,6 @@ public class IndexMarketSessionManager implements IPlugin {
 		}
 	}
 	
-	private void delRefData(){
-		RefData refData;
-		while((refData = delQueue.poll()) != null) {
-			refDataMap.remove(refData.getSymbol());
-		}
-	}
-
 	private void checkSettlement() throws ParseException {
 		if (noCheckSettlement)
 			return;
@@ -293,6 +265,7 @@ public class IndexMarketSessionManager implements IPlugin {
 				PmSettlementEvent pmSDEvent = new PmSettlementEvent(null, null, sdEvent);
 				scheduleManager.scheduleTimerEvent(cal.getTime(), eventProcessor, pmSDEvent);
 				log.info("Start SettlementEvent after " + settlementDelay + " mins, symbol: " + refData.getSymbol());
+				refDataMap.remove(refData.getSymbol());
 				currentSessionMap.remove(refData.getSymbol());
 			}
 		}

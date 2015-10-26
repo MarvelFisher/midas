@@ -64,7 +64,7 @@ public class OpenPosition extends Position implements Cloneable {
 	}
 	
 	public double getDetailAvailableQty(RefData refData) {
-		if (refData != null && refData.getDayTradable() == 1)
+		if (refData != null && refData.getTradableDays() == 0)
 			return getQty();
 		if (Default.getSettlementDays() == 0)
 			return getQty();

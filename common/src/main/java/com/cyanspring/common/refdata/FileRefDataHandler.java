@@ -114,12 +114,7 @@ public class FileRefDataHandler implements IPlugin {
 					if (!data.getSessionType().equals(MarketSessionType.PREMARKET))
 						continue;
 					log.info("Update refData index: {}", e.getKey());
-					refDataManager.update(e.getKey(), data.getTradeDateByString());
-					for (RefData refData : refDataManager.getRefDataList()) {
-						if (e.getKey().equals(refData.getCategory()))
-							send.add(refData);
-					}
-
+					send.addAll(refDataManager.update(e.getKey(), data.getTradeDateByString()));
 				}
 
 				if (send.size() > 0)
