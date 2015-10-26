@@ -28,7 +28,7 @@ public abstract class BasicCachingManager {
 
 	protected String server;
 
-	private Business business;
+	protected Business business;
 
 	private IAsyncEventListener eventListener;
 
@@ -75,8 +75,8 @@ public abstract class BasicCachingManager {
 		}
 	}
 
-	protected abstract void processAsyncEvent(AsyncEvent event);
-
 	protected abstract List<Class<? extends AsyncEvent>> getReplyEventList();
+
+	protected abstract void processAsyncEvent(AsyncEvent event);
 
 }
