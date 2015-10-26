@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.IPlugin;
@@ -46,6 +47,7 @@ public class PremiumFollowManager implements IPlugin {
 	private IRemoteEventManager eventManager;
 
 	@Autowired
+	@Qualifier("globalEventManager")
 	private IRemoteEventManager globalEventManager;
 	
 	@Autowired

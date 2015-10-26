@@ -3,7 +3,7 @@
 		<string>ICC1.CF</string>
 		<com.cyanspring.common.staticdata.CodeTableData>
 			<windCode>ICC1.CF</windCode>
-			<cnName>IC当月[IC1510]</cnName>
+			<cnName>IC当月[IC1511]</cnName>
 			<spellName>ICC1</spellName>
 			<shortName>ICC1</shortName>
 			<securityExchange>CF</securityExchange>
@@ -14,7 +14,7 @@
 		<string>ICC2.CF</string>
 		<com.cyanspring.common.staticdata.CodeTableData>
 			<windCode>ICC2.CF</windCode>
-			<cnName>IC下月[IC1511]</cnName>
+			<cnName>IC下月[IC1512]</cnName>
 			<spellName>ICC2</spellName>
 			<shortName>ICC2</shortName>
 			<securityExchange>CF</securityExchange>
@@ -25,7 +25,7 @@
 		<string>ICC3.CF</string>
 		<com.cyanspring.common.staticdata.CodeTableData>
 			<windCode>ICC3.CF</windCode>
-			<cnName>IC下季[IC1512]</cnName>
+			<cnName>IC下季[IC1603]</cnName>
 			<spellName>ICC3</spellName>
 			<shortName>ICC3</shortName>
 			<securityExchange>CF</securityExchange>
@@ -36,7 +36,7 @@
 		<string>ICC4.CF</string>
 		<com.cyanspring.common.staticdata.CodeTableData>
 			<windCode>ICC4.CF</windCode>
-			<cnName>IC隔季[IC1603]</cnName>
+			<cnName>IC隔季[IC1606]</cnName>
 			<spellName>ICC4</spellName>
 			<shortName>ICC4</shortName>
 			<securityExchange>CF</securityExchange>
@@ -47,7 +47,7 @@
 		<string>IHC1.CF</string>
 		<com.cyanspring.common.staticdata.CodeTableData>
 			<windCode>IHC1.CF</windCode>
-			<cnName>IH当月[IH1510]</cnName>
+			<cnName>IH当月[IH1511]</cnName>
 			<spellName>IHC1</spellName>
 			<shortName>IHC1</shortName>
 			<securityExchange>CF</securityExchange>
@@ -58,7 +58,7 @@
 		<string>IHC2.CF</string>
 		<com.cyanspring.common.staticdata.CodeTableData>
 			<windCode>IHC2.CF</windCode>
-			<cnName>IH下月[IH1511]</cnName>
+			<cnName>IH下月[IH1512]</cnName>
 			<spellName>IHC2</spellName>
 			<shortName>IHC2</shortName>
 			<securityExchange>CF</securityExchange>
@@ -69,7 +69,7 @@
 		<string>IHC3.CF</string>
 		<com.cyanspring.common.staticdata.CodeTableData>
 			<windCode>IHC3.CF</windCode>
-			<cnName>IH下季[IH1512]</cnName>
+			<cnName>IH下季[IH1603]</cnName>
 			<spellName>IHC3</spellName>
 			<shortName>IHC3</shortName>
 			<securityExchange>CF</securityExchange>
@@ -80,7 +80,7 @@
 		<string>IHC4.CF</string>
 		<com.cyanspring.common.staticdata.CodeTableData>
 			<windCode>IHC4.CF</windCode>
-			<cnName>IH隔季[IH1603]</cnName>
+			<cnName>IH隔季[IH1606]</cnName>
 			<spellName>IHC4</spellName>
 			<shortName>IHC4</shortName>
 			<securityExchange>CF</securityExchange>
