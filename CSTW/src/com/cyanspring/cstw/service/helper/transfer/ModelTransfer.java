@@ -1,10 +1,15 @@
 package com.cyanspring.cstw.service.helper.transfer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.cyanspring.common.account.OverallPosition;
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.cstw.service.model.riskmgr.RCOpenPositionModel;
+import com.cyanspring.cstw.service.model.riskmgr.RCOrderRecordModel;
+import com.cyanspring.cstw.service.model.riskmgr.RCOrderRecordModel.Builder;
 import com.cyanspring.cstw.service.model.riskmgr.RCTradeRecordModel;
 import com.cyanspring.cstw.service.model.riskmgr.RCUserStatisticsModel;
 
@@ -86,6 +91,34 @@ public final class ModelTransfer {
 				.trader(trader).realizedProfit(pnl).turnover(totalTurnOver)
 				.build();
 		return model;
+	}
+
+	/**
+	 * 风控管理-交易记录(成交/未成交)
+	 * 
+	 * @param orderList
+	 * @param refDataKeeper
+	 * @return
+	 */
+	public static List<RCOrderRecordModel> parseOrderRecordList(
+			List<ParentOrder> parentOrderList) {
+		List<RCOrderRecordModel> orderList = new ArrayList<RCOrderRecordModel>();
+		Builder builder = null;
+		for (ParentOrder parentOrder : parentOrderList) {
+			builder = new RCOrderRecordModel.Builder();
+			builder.orderId(parentOrder.getId());
+			builder.pending(!parentOrder.getOrdStatus().isCompleted());
+			builder.complete(parentOrder.getOrdStatus() == OrdStatus.FILLED);
+			builder.symbol(parentOrder.getSymbol());
+			builder.cumQty(parentOrder.getCumQty());
+			builder.price(parentOrder.getPrice());
+			builder.volume(parentOrder.getQuantity());
+			builder.createTime(parentOrder.getModified().toString());
+			builder.trader(parentOrder.getUser());
+			builder.executionFee(0);
+			orderList.add(builder.build());
+		}
+		return orderList;
 	}
 
 }

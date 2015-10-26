@@ -2,12 +2,14 @@ package com.cyanspring.cstw.service.eventadapter;
 
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCIndividualEventAdaptor;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCOpenPositionEventAdapter;
+import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCOrderEventAdapter;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCTradeEventAdaptor;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.impl.BRCOpenPositionEventAdapterImpl;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.impl.BRCTradeEventAdaptorImpl;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.impl.FRCOpenPositionEventAdapterImpl;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.impl.FRCTradeEventAdaptorImpl;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.impl.RCIndividualEventAdaptorImpl;
+import com.cyanspring.cstw.service.eventadapter.riskcontrol.impl.RCOrderEventAdapterImpl;
 
 /**
  * 
@@ -22,6 +24,7 @@ public final class EventAdaptorPool {
 	private static IRCIndividualEventAdaptor rcIndividualEventAdaptor = new RCIndividualEventAdaptorImpl();
 	private static IRCTradeEventAdaptor bRCTradeRecordEvent4RCManager = new BRCTradeEventAdaptorImpl();
 	private static IRCTradeEventAdaptor fRCTradeRecordEvent4RCManager = new FRCTradeEventAdaptorImpl();
+	private static IRCOrderEventAdapter fRCOrderEventAdapter = new RCOrderEventAdapterImpl();
 
 	public static IRCOpenPositionEventAdapter getfRCPositionEventAdapter() {
 		return fRCPositionEventAdapter;
@@ -41,6 +44,10 @@ public final class EventAdaptorPool {
 
 	public static IRCIndividualEventAdaptor getRCIndividualEventAdaptor() {
 		return rcIndividualEventAdaptor;
+	}
+
+	public static IRCOrderEventAdapter getRCOrderEventAdapter() {
+		return fRCOrderEventAdapter;
 	}
 
 }
