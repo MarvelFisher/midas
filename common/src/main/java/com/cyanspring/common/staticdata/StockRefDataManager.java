@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.staticdata.fu.IType;
-import com.cyanspring.common.strategy.AbstractRefDataStrategy;
+import com.cyanspring.common.staticdata.strategy.AbstractRefDataStrategy;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 

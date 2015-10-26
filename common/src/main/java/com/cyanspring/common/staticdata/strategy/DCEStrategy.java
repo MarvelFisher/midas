@@ -1,6 +1,7 @@
-package com.cyanspring.common.strategy;
+package com.cyanspring.common.staticdata.strategy;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,23 +11,24 @@ import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataException;
 import com.cyanspring.common.staticdata.RefDataUtil;
 
-public class CFStrategy extends AbstractRefDataStrategy  {
+public class DCEStrategy extends AbstractRefDataStrategy {
 	
-	protected static final Logger log = LoggerFactory.getLogger(CFStrategy.class);
+	protected static final Logger log = LoggerFactory.getLogger(DCEStrategy.class);
 	
-    @Override
-    public void init(Calendar cal, RefData template) {
-    	super.init(cal, template);
-    }
-    
+	@Override
+	public void init(Calendar cal, RefData template) {
+		super.init(cal, template);
+	}
+
     @Override
     public void updateRefData(RefData refData) {
+		
 		try {
-			
+
 			setTemplateData(refData);
-			String combineCnName = refData.getCNDisplayName();	
+			String combineCnName = refData.getCNDisplayName();		
 			Calendar cal = getContractDate(combineCnName);
-			refData.setSettlementDate(RefDataUtil.calSettlementDateByWeekDay(refData, cal, 3, Calendar.FRIDAY));
+			refData.setSettlementDate(RefDataUtil.calSettlementDateByTradeDate(refData, cal,10));
 			refData.setIndexSessionType(getIndexSessionType(refData));
 			
 		} catch (RefDataException e){
@@ -38,7 +40,6 @@ public class CFStrategy extends AbstractRefDataStrategy  {
 
     @Override
     public void setRequireData(Object... objects) {
-		super.setRequireData(objects);
+    	super.setRequireData(objects);
     }
-    
 }
