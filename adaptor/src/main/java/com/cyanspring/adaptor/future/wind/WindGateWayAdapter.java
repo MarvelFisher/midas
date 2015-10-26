@@ -1,10 +1,8 @@
 package com.cyanspring.adaptor.future.wind;
 
-<<<<<<< HEAD
 import com.cyanspring.network.transport.FDTFields;
 import com.cyanspring.network.transport.FDTFrameDecoder;
 import com.cyanspring.adaptor.future.wind.data.*;
-=======
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -27,8 +25,6 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.Network.Transport.FDTFields;
-import com.cyanspring.Network.Transport.FDTFrameDecoder;
 import com.cyanspring.adaptor.future.wind.data.DataTimeStat;
 import com.cyanspring.adaptor.future.wind.data.FutureData;
 import com.cyanspring.adaptor.future.wind.data.IndexData;
@@ -36,7 +32,6 @@ import com.cyanspring.adaptor.future.wind.data.StockData;
 import com.cyanspring.adaptor.future.wind.data.TransationData;
 import com.cyanspring.adaptor.future.wind.data.WindDataParser;
 import com.cyanspring.adaptor.future.wind.data.WindIndexSessionCheckData;
->>>>>>> refs/heads/2015-10-02_sprint
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.AsyncEvent;
