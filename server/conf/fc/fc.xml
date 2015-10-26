@@ -364,59 +364,6 @@
 		</property>
 	</bean>
 	
-	<bean id="commodityFilter" class="com.cyanspring.common.filter.CommodityFilter">
-        <property name="lstExcludedSymbols">
-            <list>
-                <!-- <value>IHC1.CF</value>
-				<value>IHC2.CF</value>
-				<value>IHC3.CF</value>
-				<value>IHC4.CF</value>
-				<value>ICC1.CF</value>
-				<value>ICC2.CF</value>
-				<value>ICC3.CF</value>
-				<value>ICC4.CF</value> -->
-			</list>
-        </property>
-        <property name="lstExcludedCategories">
-            <list>
-            </list>
-        </property>
-    </bean>
-    
-    <bean id="categoryFilter" class="com.cyanspring.common.filter.CategoryFilter">
-    	<property name="refDataTplLoader" ref="refDataTplLoader"></property>
-	</bean>
-	
-	<bean id="refSymbolFilter" class="com.cyanspring.common.filter.RefSymbolFilter">
-	</bean>
-	
-	<bean id="itypeFilter" class="com.cyanspring.common.filter.ITypeFilter">
-		<property name="types">
-			<list>
-				<value>FUTURES_CX</value>
-				<value>FUTURES_CX_IDX</value>
-				<value>EXCHANGE_INDEX</value>
-			</list>
-		</property>
-	</bean>
-	
-	<bean id="contractDateFilter" class="com.cyanspring.common.filter.ContractDateFilter">
-		<property name="checkValidContractDate">
-			<value>true</value>
-		</property>
-	</bean>
-	
-	<bean id="refDataFilter" class="com.cyanspring.common.filter.RefDataFilter">
-		<constructor-arg>
-			<list>
-				<ref bean="categoryFilter"/>
-				<ref bean="refSymbolFilter"/>
-				<ref bean="itypeFilter"/>
-				<ref bean="contractDateFilter"/>
-			</list>
-		</constructor-arg>
-	</bean>
-	
 	<bean id="indexMarketSessionManager" class="com.cyanspring.common.marketsession.IndexMarketSessionManager">
         <property name="settlementDelay"><value>45</value></property>
         <property name="eventManager" ref="eventManager"></property>        
