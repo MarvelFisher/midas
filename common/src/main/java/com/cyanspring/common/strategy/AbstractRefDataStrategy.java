@@ -1,4 +1,4 @@
-package com.cyanspring.common.staticdata.fu;
+package com.cyanspring.common.strategy;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,6 +12,7 @@ import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataException;
 import com.cyanspring.common.staticdata.RefDataUtil;
+import com.cyanspring.common.staticdata.fu.IndexSessionType;
 import com.cyanspring.common.util.PriceUtils;
 
 public abstract class AbstractRefDataStrategy implements IRefDataStrategy {

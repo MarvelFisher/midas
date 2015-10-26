@@ -1,4 +1,4 @@
-package com.cyanspring.common.staticdata.fu;
+package com.cyanspring.common.strategy;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
