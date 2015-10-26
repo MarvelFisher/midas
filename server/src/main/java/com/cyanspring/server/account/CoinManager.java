@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.cyanspring.common.Default;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.account.Account;
@@ -38,6 +40,7 @@ public class CoinManager implements IPlugin{
 	protected IRemoteEventManager eventManager;
 
 	@Autowired
+	@Qualifier("globalEventManager")
 	private IRemoteEventManager globalEventManager;
 
 	@Autowired

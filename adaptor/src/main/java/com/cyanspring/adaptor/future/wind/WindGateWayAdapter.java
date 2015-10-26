@@ -3,15 +3,52 @@ package com.cyanspring.adaptor.future.wind;
 import com.cyanspring.network.transport.FDTFields;
 import com.cyanspring.network.transport.FDTFrameDecoder;
 import com.cyanspring.adaptor.future.wind.data.*;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioSocketChannel;
+
+import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.cyanspring.adaptor.future.wind.data.DataTimeStat;
+import com.cyanspring.adaptor.future.wind.data.FutureData;
+import com.cyanspring.adaptor.future.wind.data.IndexData;
+import com.cyanspring.adaptor.future.wind.data.StockData;
+import com.cyanspring.adaptor.future.wind.data.TransationData;
+import com.cyanspring.adaptor.future.wind.data.WindDataParser;
+import com.cyanspring.adaptor.future.wind.data.WindIndexSessionCheckData;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.AsyncEvent;
-import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
-import com.cyanspring.common.marketdata.*;
+import com.cyanspring.common.marketdata.IMarketDataAdaptor;
+import com.cyanspring.common.marketdata.IMarketDataListener;
+import com.cyanspring.common.marketdata.IMarketDataStateListener;
+import com.cyanspring.common.marketdata.InnerQuote;
+import com.cyanspring.common.marketdata.MarketDataException;
+import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.marketdata.QuoteExtDataField;
+import com.cyanspring.common.marketdata.SymbolField;
+import com.cyanspring.common.marketdata.SymbolInfo;
+import com.cyanspring.common.marketdata.Trade;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.staticdata.RefData;
@@ -20,22 +57,6 @@ import com.cyanspring.common.util.DualMap;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
 import com.cyanspring.id.Library.Util.LogUtil;
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
 
 public class WindGateWayAdapter implements IMarketDataAdaptor
         , IWindGWListener, IAsyncEventListener {
@@ -172,7 +193,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
                 if (!dataCheck("S", stockData.getWindCode(), stockData.getTime(), stockData.getTradingDay(), stockData.getStatus()))
                     return;
                 quoteMgr.AddRequest(new Object[]{
-                        WindDef.MSG_DATA_MARKET, stockData.clone()});
+                        WindDef.MSG_DATA_MARKET, stockData});
             }
             break;
             case WindDef.MSG_DATA_INDEX: {
@@ -192,7 +213,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
                 if (!dataCheck("I", indexData.getWindCode(), indexData.getTime(), indexData.getTradingDay(), -1))
                     return;
                 quoteMgr.AddRequest(new Object[]{
-                        WindDef.MSG_DATA_INDEX, indexData.clone()});
+                        WindDef.MSG_DATA_INDEX, indexData});
             }
             break;
             case WindDef.MSG_DATA_FUTURE: {
@@ -209,7 +230,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
                 if (!dataCheck("F", futureData.getWindCode(), futureData.getTime(), futureData.getTradingDay(), -1))
                     return;
                 quoteMgr.AddRequest(new Object[]{
-                        WindDef.MSG_DATA_FUTURE, futureData.clone()});
+                        WindDef.MSG_DATA_FUTURE, futureData});
             }
             break;
             case WindDef.MSG_DATA_TRANSACTION: {
