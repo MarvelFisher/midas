@@ -5,26 +5,22 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.cyanspring.cstw.ui.basic.BasicTableComposite;
 import com.cyanspring.cstw.ui.common.TableType;
+import com.cyanspring.cstw.ui.rw.composite.table.provider.RWInstrumentSummaryLabelProvider;
 
 /**
  * @author Junfeng
  * @create 22 Oct 2015
  */
 public class RWInstrumentSummaryTableComposite extends BasicTableComposite {
-
-	public RWInstrumentSummaryTableComposite(Composite parent, int style,
-			TableType tableType) {
-		super(parent, style, tableType);
-		// TODO Auto-generated constructor stub
+	
+	public RWInstrumentSummaryTableComposite(Composite parent, int style) {
+		super(parent, style, TableType.RWInstrumentSummary);
+		
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cyanspring.cstw.ui.basic.BasicTableComposite#createLabelProvider()
-	 */
 	@Override
 	protected IBaseLabelProvider createLabelProvider() {
-		// TODO Auto-generated method stub
-		return null;
+		return new RWInstrumentSummaryLabelProvider();
 	}
 
 }

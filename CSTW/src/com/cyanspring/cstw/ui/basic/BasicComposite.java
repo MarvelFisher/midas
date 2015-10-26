@@ -34,7 +34,7 @@ public abstract class BasicComposite extends Composite {
 	}
 
 	private void initService() {
-		//basicService = createService();
+		basicService = createService();
 	}
 
 	private void initListener() {
