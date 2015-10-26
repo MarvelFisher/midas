@@ -271,10 +271,9 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 	}
 	protected void doAssign() {
 		IStructuredSelection sel = (IStructuredSelection)nonManageeListView.getSelection();
-		if( null == sel )
+		if( null == sel || null == sel.getFirstElement() || null == sel.getFirstElement())
 			return ;
-		
-		
+				
 		manageeListView.add(sel.getFirstElement());
 		nonManageeListView.remove(sel.getFirstElement());
 		setRoleColor(manageeListView);
@@ -282,8 +281,9 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 
 	protected void doDeAssign() {
 		IStructuredSelection sel = (IStructuredSelection)manageeListView.getSelection();
-		if( null == sel )
+		if( null == sel || null == sel.getFirstElement() || null == sel.getFirstElement())
 			return ;
+		
 		nonManageeListView.add(sel.getFirstElement());
 		manageeListView.remove(sel.getFirstElement());
 		setRoleColor(nonManageeListView);
@@ -333,8 +333,7 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 	
 	protected void sendManageeSet() {
 		
-		java.util.List<GroupManagement> groupList = new ArrayList<GroupManagement>();
-		
+		java.util.List<GroupManagement> groupList = new ArrayList<GroupManagement>();		
 		java.util.List <String>manageeList = getList(manageeTable);
 		for( int i = 0 ; i<manageeList.size() ; i++){		
 			String managee = manageeList.get(i);
