@@ -11,10 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
  * @author elviswu
- * @version 1.0
- * @since 1.0
  */
 public abstract class RefDataService implements IPlugin, IRefDataManager  {
     protected static final Logger log = LoggerFactory

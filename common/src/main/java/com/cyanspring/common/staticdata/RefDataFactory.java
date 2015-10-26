@@ -60,51 +60,32 @@ public class RefDataFactory extends RefDataService {
 	}
 
 	@Override
-	public boolean updateAll(String tradeDate) throws Exception {
-		if (refDataList == null) {
-			log.warn("Not initializing.");
-			return false;
-		}
-		log.info("Updating refData....");
+	public List<RefData> updateAll(String tradeDate) throws Exception {
+		log.info("Updating refData....");	
+		List<RefData> addList = new ArrayList<>();
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(getSettlementDateFormat().parse(tradeDate));
 		for (Entry<String, RefData> entry : refDataTemplateMap.entrySet()) {
 			RefData refData = entry.getValue();
-			updateRefData(cal, refData);
+			List<RefData> list = updateRefData(cal, refData);
+			if (list.size() > 0)
+				addList.addAll(list);
+		}
+		
+		for (RefData refData : addList) {
+			if (refDataList.contains(refData))
+				refDataList.remove(refData);
+			refDataList.add(refData);
 		}
 
-		return true;
-	}
-
-	private RefData searchRefDataTemplate(RefData refData) {
-
-		String spotName = getCategory(refData);
-		RefData templateRefData = null;
-		if (refDataTemplateMap.containsKey(spotName) && null != refDataTemplateMap.get(spotName)) {
-			templateRefData = refDataTemplateMap.get(spotName);
-			return (RefData) templateRefData.clone();
-		}
-
-		log.info("can't find template:{}", spotName);
-		log.info("ref symbol:{}, symbol:{}",refData.getRefSymbol(),refData.getSymbol());
-		return null;
-	}
-
-	protected String getCategory(RefData refData) {
-		return RefDataUtil.getCategory(refData);
+		return refDataList;
 	}
 
 	@SuppressWarnings("unchecked")
-	private void updateRefData(Calendar cal, RefData refData) {
-		AbstractRefDataStrategy strategy;
-		RefData template = searchRefDataTemplate(refData);
-		if (null == template) {
-			return;
-		} else {
-			refData.setStrategy(template.getStrategy());
-		}
+	private List<RefData> updateRefData(Calendar cal, RefData refData) {
 		log.info("update refData:{}, strategy:{}", refData.getRefSymbol(), refData.getStrategy());
 
+		AbstractRefDataStrategy strategy;
 		if (!strategyMap.containsKey(refData.getStrategy())) {
 			try {
 				Class<AbstractRefDataStrategy> tempClz = (Class<AbstractRefDataStrategy>) Class
@@ -114,20 +95,22 @@ public class RefDataFactory extends RefDataService {
 			} catch (Exception e) {
 				log.warn("Can't find strategy: {}", refData.getStrategy());
 				strategy = new AbstractRefDataStrategy() {
-					@Override
-					public void init(Calendar cal, RefData template) {
 
+					@Override
+					public void init(Calendar cal) {
+						
 					}
 
 					@Override
-					public void updateRefData(RefData refData) {
-
+					public List<RefData> updateRefData(RefData refData) {
+						return new ArrayList<>();
 					}
 
 					@Override
 					public void setRequireData(Object... objects) {
-
+						
 					}
+					
 				};
 			}
 			strategyMap.put(refData.getStrategy(), strategy);
@@ -136,9 +119,10 @@ public class RefDataFactory extends RefDataService {
 		} else {
 			strategy = strategyMap.get(refData.getStrategy());
 		}
-		strategy.init(cal, template);
-		strategy.updateRefData(refData);
+		strategy.init(cal);
+		List<RefData> list = strategy.updateRefData(refData);
 		log.info("settlement date:{}, index type:{}", refData.getSettlementDate(), refData.getIndexSessionType());
+		return list;
 	}
 
 	@Override
@@ -166,27 +150,12 @@ public class RefDataFactory extends RefDataService {
 	}
 
 	@Override
-	public void injectRefDataList(List<RefData> refDataList) {
-		this.refDataList.addAll(refDataList);
-	}
-
-	@Override
 	public void clearRefData() {
 		refDataList.clear();
 	}
 
 	public void setStrategyPack(String strategyPack) {
 		this.strategyPack = strategyPack;
-	}
-
-	@Override
-	public RefData add(RefData refData, String tradeDate) throws Exception {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(getSettlementDateFormat().parse(tradeDate));
-		updateRefData(cal, refData);
-		remove(refData);
-		refDataList.add(refData);
-		return refData;
 	}
 
 	public String getRefDataTemplatePath() {
@@ -201,12 +170,12 @@ public class RefDataFactory extends RefDataService {
 	public List<RefData> update(String index, String tradeDate) throws Exception {
 		log.info("Updating refData, index: {}, tradeDate: {}", index, tradeDate);
 		List<RefData> ret = new ArrayList<>();
-		for (RefData refData : refDataList) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(getSettlementDateFormat().parse(tradeDate));
+		for (Entry<String, RefData> entry : refDataTemplateMap.entrySet()) {
+			RefData refData = entry.getValue();
 			if (index.equals(refData.getCategory())) {
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(getSettlementDateFormat().parse(tradeDate));
-				updateRefData(cal, refData);
-				ret.add(refData);
+				ret.addAll(updateRefData(cal, refData));
 			}
 		}
 

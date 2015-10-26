@@ -12,7 +12,6 @@ import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataUtil;
-import com.cyanspring.common.staticdata.fu.IndexSessionType;
 import com.cyanspring.common.util.TimeUtil;
 
 import org.slf4j.Logger;

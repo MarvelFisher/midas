@@ -22,7 +22,6 @@ import java.util.Map;
 public class RefDataManager extends RefDataService {
 
     Map<String, RefData> map = new HashMap<String, RefData>();
-    private XStream xstream = new XStream(new DomDriver("UTF-8"));
     private boolean changeMode = false;
 
     @SuppressWarnings("unchecked")
@@ -51,8 +50,8 @@ public class RefDataManager extends RefDataService {
     }
 
     @Override
-    public boolean updateAll(String tradeDate) throws Exception {
-        return changeMode;
+    public List<RefData> updateAll(String tradeDate) throws Exception {
+        return new ArrayList<RefData>(map.values());
     }
 
     @Override
@@ -72,20 +71,9 @@ public class RefDataManager extends RefDataService {
     }
 
     @Override
-    public void injectRefDataList(List<RefData> refDataList) {
-        changeMode = true;
-        injectionMap(refDataList);
-    }
-
-    @Override
     public void clearRefData() {
         map.clear();
     }
-
-	@Override
-	public RefData add(RefData refData, String tradeDate) throws Exception {
-		return new RefData();
-	}
 
 	@Override
 	public List<RefData> update(String index, String tradeDate) throws Exception {

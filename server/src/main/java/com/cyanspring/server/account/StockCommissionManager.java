@@ -5,7 +5,6 @@ import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataBitUtil;
-import com.cyanspring.common.staticdata.fu.IType;
 import com.cyanspring.common.type.OrderSide;
 
 import webcurve.util.PriceUtils;

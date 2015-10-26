@@ -87,7 +87,7 @@ public class FileRefDataHandler implements IPlugin {
 				return;
 			currentType = event.getSession();
 
-			if (refDataManager.updateAll(event.getTradeDate())) {
+			if (refDataManager.updateAll(event.getTradeDate()).size() > 0) {
 				eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
 				log.info("Update refData size: {}", refDataManager.getRefDataList().size());
 			}

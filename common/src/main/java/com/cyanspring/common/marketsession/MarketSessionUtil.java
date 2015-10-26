@@ -18,7 +18,6 @@ import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataService;
 import com.cyanspring.common.staticdata.RefDataUtil;
-import com.cyanspring.common.staticdata.fu.IndexSessionType;
 
 public class MarketSessionUtil implements IPlugin{
 	private static final Logger log = LoggerFactory.getLogger(MarketSessionUtil.class);
@@ -176,14 +175,6 @@ public class MarketSessionUtil implements IPlugin{
     	return null;
     }
     
-    private boolean compareIndex(String c1, String c2){
-    	if(c1 == null || c2 == null)
-    		return false;
-    	String comp1 = RefDataUtil.getOnlyChars(c1);
-    	String comp2 = RefDataUtil.getOnlyChars(c2);
-    	return comp2.toLowerCase().equals(comp1.toLowerCase());
-    }
-    
     private SessionPair getPair(RefData refData, IMarketSession session) throws Exception {
     	String sessionIndex = refData.getIndexSessionType();
     	if (sessionIndex == null)
@@ -215,7 +206,7 @@ public class MarketSessionUtil implements IPlugin{
     	if (checkExist(index))
 			return index;   	
     	if (StringUtils.hasText(refData.getSymbol()))
-			index = RefDataUtil.getOnlyChars(refData.getSymbol());
+			index = refData.getSymbol();
     	if (checkExist(index))
 			return index;
     	return index;
@@ -225,14 +216,16 @@ public class MarketSessionUtil implements IPlugin{
     	return sessionMap.get(index) != null ? true : false;
     }
 
-    public boolean isHoliday(String symbol, Date date) throws Exception{
+    public boolean isHoliday(RefData refData, Date date) throws Exception{
     	for (Entry<String, IMarketSession> entry : sessionMap.entrySet()) {
-    		if (compareIndex(entry.getKey(), symbol)) {
+    		String index = entry.getKey();
+    		if (index.equals(refData.getSymbol()) || index.equals(refData.getCategory()) ||
+    				index.equals(refData.getExchange())) {
     			ITradeDate checker = entry.getValue().getTradeDateManager();
     			return checker.isHoliday(date);
     		}
     	}
-    	throw new Exception("Symbol: " + symbol + " not found in the map");
+    	throw new Exception("Symbol: " + refData.getSymbol() + " not found in the map");
     }
 
     private class SessionPair {
