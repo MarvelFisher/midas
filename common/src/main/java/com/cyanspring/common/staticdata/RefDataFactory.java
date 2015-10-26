@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.slf4j.Logger;
@@ -19,36 +20,25 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class RefDataFactory extends RefDataService {
-
 	protected static final Logger log = LoggerFactory.getLogger(RefDataFactory.class);
 	List<RefData> refDataList = new CopyOnWriteArrayList<>();
 	private XStream xstream = new XStream(new DomDriver("UTF-8"));
 	private Map<String, AbstractRefDataStrategy> strategyMap = new HashMap<>();
-	private String strategyPack = "com.cyanspring.common.staticdata.fu";
+	private String strategyPack = "com.cyanspring.common.staticdata.strategy";
 	private String refDataTemplatePath;
 	private List<RefData> refDataTemplateList;
 	private Map<String, RefData> refDataTemplateMap = new HashMap<String, RefData>();
-	private boolean templateListAsRefDataList = false;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void init() throws Exception {
-
 		log.info("initialising with " + refDataTemplatePath);
 		if (StringUtils.hasText(refDataTemplatePath)) {
-
-			log.info("read refdata template:{}", refDataTemplatePath);
 			File templateFile = new File(refDataTemplatePath);
 			if (templateFile.exists()) {
 				refDataTemplateList = (List<RefData>) xstream.fromXML(templateFile);
 				if (null != refDataTemplateList && !refDataTemplateList.isEmpty()) {
-
 					buildTemplateMap(refDataTemplateList);
-
-					if(templateListAsRefDataList) {
-						refDataList = refDataTemplateList;
-					}
-
 				}
 			} else {
 				throw new Exception("Missing refdata template: " + refDataTemplatePath);
@@ -72,13 +62,14 @@ public class RefDataFactory extends RefDataService {
 	@Override
 	public boolean updateAll(String tradeDate) throws Exception {
 		if (refDataList == null) {
-			log.warn(this.getClass().getSimpleName() + "is not initial or initialising.");
+			log.warn("Not initializing.");
 			return false;
 		}
 		log.info("Updating refData....");
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(getSettlementDateFormat().parse(tradeDate));
-		for (RefData refData : refDataList) {
+		for (Entry<String, RefData> entry : refDataTemplateMap.entrySet()) {
+			RefData refData = entry.getValue();
 			updateRefData(cal, refData);
 		}
 
@@ -105,7 +96,6 @@ public class RefDataFactory extends RefDataService {
 
 	@SuppressWarnings("unchecked")
 	private void updateRefData(Calendar cal, RefData refData) {
-		initCategory(refData);
 		AbstractRefDataStrategy strategy;
 		RefData template = searchRefDataTemplate(refData);
 		if (null == template) {
@@ -149,20 +139,6 @@ public class RefDataFactory extends RefDataService {
 		strategy.init(cal, template);
 		strategy.updateRefData(refData);
 		log.info("settlement date:{}, index type:{}", refData.getSettlementDate(), refData.getIndexSessionType());
-//		log.debug("XML:"+xstream.toXML(refData));
-	}
-
-	private void initCategory(RefData refData) {
-
-		if(StringUtils.hasText(refData.getCategory())) {
-			return;
-		}
-
-		String commodity = refData.getCommodity();
-		if (!StringUtils.hasText(commodity) || (StringUtils.hasText(commodity)
-				&& commodity.equals(RefDataCommodity.FUTURES.getValue()))) {
-			refData.setCategory(getCategory(refData));
-		}
 	}
 
 	@Override
@@ -252,14 +228,6 @@ public class RefDataFactory extends RefDataService {
 			return remove;
 		}
 		return refDataList.remove(refData);
-	}
-
-	public boolean isTemplateListAsRefDataList() {
-		return templateListAsRefDataList;
-	}
-
-	public void setTemplateListAsRefDataList(boolean templateListAsRefDataList) {
-		this.templateListAsRefDataList = templateListAsRefDataList;
 	}
 
 	private SimpleDateFormat getSettlementDateFormat() {
