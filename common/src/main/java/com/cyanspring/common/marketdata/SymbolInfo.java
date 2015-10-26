@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.cyanspring.common.info.RefSubName;
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.RefDataBitUtil;
 
 public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInfo>{
 //	private static Map<String, RefSubName> subNameMap = null;
@@ -48,7 +49,7 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	private double MarginRate = 0.0;
 	private String Category = null;
 	private double Denominator = 0.0;
-	private String Tradable = null;
+	private boolean Tradable = false;
 	private String SpellName = null;
 	private String Commodity = null;
 	private String indexSessionType = null;
@@ -112,7 +113,15 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 		setDenominator(refdata.getDenominator());
 		setTradable(refdata.getTradable());
 		setSpellName(refdata.getSpellName());
-		setCommodity(refdata.getCommodity());
+        if (RefDataBitUtil.isForex(refdata.getInstrumentType())) {
+        	setCommodity("F");
+        }
+        else if (RefDataBitUtil.isIndex(refdata.getInstrumentType())) {
+        	setCommodity("I");
+        }
+        else if (RefDataBitUtil.isStock(refdata.getInstrumentType())) {
+        	setCommodity("S");
+        }
 		setDetailCN(refdata.getDetailCN());
 		setDetailEN(refdata.getDetailEN());
 		setDetailTW(refdata.getDetailTW());
@@ -424,11 +433,11 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	public void setDenominator(double denominator) {
 		Denominator = denominator;
 	}
-	public String getTradable() {
+	public boolean getTradable() {
 		return Tradable;
 	}
-	public void setTradable(String tradable) {
-		Tradable = tradable;
+	public void setTradable(boolean b) {
+		Tradable = b;
 	}
 //	public static Map<String, RefSubName> getSubNameMap() {
 //		return subNameMap;
