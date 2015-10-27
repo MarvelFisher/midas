@@ -10,8 +10,6 @@ import com.cyanspring.adaptor.future.wind.filter.IWindFilter;
 import com.cyanspring.common.business.RefDataField;
 import com.cyanspring.common.event.*;
 import com.cyanspring.common.event.marketdata.WindBaseInfoEvent;
-import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
-import com.cyanspring.common.filter.IRefDataFilter;
 import com.cyanspring.common.staticdata.*;
 import com.cyanspring.common.util.ChineseConvert;
 import com.cyanspring.common.util.TimeUtil;
@@ -91,7 +89,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IWindGWListener {
     private WindDBHandler windDBHandler;
     private IWindFilter windFilter;
     private IRefDataListener refDataListener;
-    private IRefDataFilter refDataFilter;
     private String refDataAdapterName = "NoName";
     protected ScheduleManager scheduleManager = new ScheduleManager();
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
@@ -562,23 +559,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IWindGWListener {
         this.channelHandlerContext.channel().writeAndFlush(subscribeStr);
     }
 
-    public void sendRefDataUpdate(List<RefData> refDataList, RefDataUpdateEvent.Action action){
-        log.info("send RefDataUpdate Size = " + refDataList.size() + ",Action=" + action.name());
-        for(RefData refData: refDataList){
-            log.debug("S=" + refData.getSymbol() +",CN=" + refData.getCNDisplayName() + ",TW=" + refData.getTWDisplayName());
-        }
-        if(refDataFilter != null){
-            try {
-                refDataList = refDataFilter.filter(refDataList);
-            }catch (Exception e){
-                log.warn(e.getMessage(), e);
-            }
-        }
-        if(refDataListener != null){
-            refDataListener.onRefDataUpdate(refDataList, action);
-        }
-    }
-
     @Override
     public void uninit() {
         status = false;
@@ -627,13 +607,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IWindGWListener {
             exchangeRefData.getRefDataHashMap().put(refData.getSymbol(),refData);
         }
         log.info("Save exchange refdata end");
-        if(refDataFilter != null){
-            try {
-                refDataList = refDataFilter.filter(refDataList);
-            }catch (Exception e){
-                log.warn(e.getMessage(), e);
-            }
-        }
         listener.onRefData(refDataList);
         subscribed = true;
     }
@@ -824,10 +797,6 @@ public class WindRefDataAdapter implements IRefDataAdaptor, IWindGWListener {
 
     public boolean isNeedsubscribe() {
         return needsubscribe;
-    }
-
-    public void setRefDataFilter(IRefDataFilter refDataFilter) {
-        this.refDataFilter = refDataFilter;
     }
 
     public String getRefDataAdapterName() {

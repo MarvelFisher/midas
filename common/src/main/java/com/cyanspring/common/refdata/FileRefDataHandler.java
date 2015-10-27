@@ -2,15 +2,12 @@ package com.cyanspring.common.refdata;
 
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.event.*;
-import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.marketsession.InternalSessionEvent;
 import com.cyanspring.common.event.marketsession.InternalSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
-import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
-import com.cyanspring.common.event.refdata.RefDataUpdateEvent.Action;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.staticdata.IRefDataManager;
@@ -118,7 +115,7 @@ public class FileRefDataHandler implements IPlugin {
 				}
 
 				if (send.size() > 0)
-					eventManager.sendGlobalEvent(new RefDataUpdateEvent(null, null, send, Action.MOD));
+					eventManager.sendGlobalEvent(new RefDataEvent(null, null, send, true));
 			}
 		} catch (Exception err) {
 			log.error(err.getMessage(), err);

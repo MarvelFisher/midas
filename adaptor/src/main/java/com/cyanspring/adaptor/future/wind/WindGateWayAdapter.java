@@ -10,7 +10,6 @@ import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
-import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
 import com.cyanspring.common.marketdata.*;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
@@ -679,27 +678,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
         if (event instanceof RefDataEvent) {
             RefDataEvent refDataEvent = (RefDataEvent) event;
             inputRefDataList(refDataEvent.getRefDataList());
-        }
-
-        if(event instanceof RefDataUpdateEvent){
-            RefDataUpdateEvent refDataUpdateEvent = (RefDataUpdateEvent) event;
-            switch (refDataUpdateEvent.getAction()){
-                case ADD:
-                    inputRefDataList(refDataUpdateEvent.getRefDataList());
-                    break;
-                case MOD:
-                    inputRefDataList(refDataUpdateEvent.getRefDataList());
-                    break;
-                case DEL:
-                    for(RefData refData: refDataUpdateEvent.getRefDataList()){
-                        if(marketRuleBySymbolMap.containsKey(refData.getSymbol())){
-                            marketRuleBySymbolMap.remove(refData.getSymbol());
-                        }
-                    }
-                    break;
-                default:
-                    break;
-            }
         }
 
         if (event instanceof IndexSessionEvent) {

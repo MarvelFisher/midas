@@ -23,7 +23,6 @@ import com.cyanspring.common.event.marketdata.TradeEvent;
 import com.cyanspring.common.event.marketsession.*;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
-import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
@@ -98,7 +97,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         public void subscribeToEvents() {
             subscribeToEvent(IndexSessionEvent.class, null);
             subscribeToEvent(RefDataEvent.class, null);
-            subscribeToEvent(RefDataUpdateEvent.class, null);
         }
 
         @Override
@@ -190,58 +188,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
         indexs.put(refData.getSymbol(),index);
         return true;
-    }
-
-    public void processRefDataUpdateEvent(RefDataUpdateEvent event){
-        log.debug("Receive RefDataUpdate Event - " + event.getAction().name());
-        List<RefData> refDataUpdateList = event.getRefDataList();
-        if(refDataUpdateList != null && refDataUpdateList.size() > 0) {
-            checkEventAndSend(event);
-            //Check Action
-            switch (event.getAction()) {
-                case ADD:
-                    for (RefData refData : refDataUpdateList) {
-                        if (!preSubscriptionList.contains(refData.getSymbol())) {
-                            preSubscriptionList.add(refData.getSymbol());
-                            for (IMarketDataAdaptor adaptor : adaptors) {
-                                if (null != adaptor) {
-                                    try {
-                                        adaptor.subscribeMarketData(refData.getSymbol(), this);
-                                    } catch (Exception e) {
-                                        log.error(e.getMessage(), e);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    break;
-                case MOD:
-                    for(RefData refData : refDataUpdateList) {
-                        instrumentTypes.put(refData.getSymbol(), refData.getInstrumentType());
-                        if(!checkIndexSessionType(refData)) continue;
-                    }
-                    break;
-                case DEL:
-                    for (RefData refData : refDataUpdateList) {
-                        if (preSubscriptionList.contains(refData.getSymbol())) {
-                            log.debug("refDataUpdateEvent Symbol=" + refData.getSymbol() + " exist");
-                            preSubscriptionList.remove(refData.getSymbol());
-                            for (IMarketDataAdaptor adaptor : adaptors) {
-                                if (null != adaptor) {
-                                    try {
-                                        adaptor.unsubscribeMarketData(refData.getSymbol(), this);
-                                    } catch (Exception e) {
-                                        log.error(e.getMessage(), e);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
     }
 
     public void processIndexSessionEvent(IndexSessionEvent event) {

@@ -4,7 +4,6 @@ import com.cyanspring.adaptor.future.wind.WindDef;
 import com.cyanspring.adaptor.future.wind.WindType;
 import com.cyanspring.adaptor.future.wind.data.CodeTableResult;
 import com.cyanspring.adaptor.future.wind.data.ExchangeRefData;
-import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
 import com.cyanspring.common.staticdata.CodeTableData;
 import com.cyanspring.common.staticdata.RefData;
 import org.slf4j.Logger;
@@ -163,79 +162,6 @@ public class RequestMgr{
             case WindDef.MSG_SYS_SNAPSHOTENDS: {
                 log.info("SnapShot Ends");
                 windRefDataAdapter.sendClearSubscribe();
-            }
-            break;
-            case WindDef.MSG_REFDATA_CHECKUPDATE: {
-                log.info("RefDataUpdate Check begin");
-                HashMap<String, ExchangeRefData> refDataUpdateTempMap
-                        = new HashMap<String, ExchangeRefData>(windRefDataAdapter.getExRefDataUpdateHashMap());
-                HashMap<String, ExchangeRefData> refDateTempMap
-                        = new HashMap<String, ExchangeRefData>(windRefDataAdapter.getExRefDataHashMap());
-                if(refDataUpdateTempMap.size() == 0){
-                    log.info("exRefDataUpdateHashMap is empty");
-                    return;
-                }
-                for(String exchange : refDataUpdateTempMap.keySet()) {
-                    log.debug("process exchange refDateUpdate," + exchange);
-                    ExchangeRefData exchangeRefData = refDateTempMap.get(exchange);
-                    ExchangeRefData exchangeRefDataUpdate = refDataUpdateTempMap.get(exchange);
-                    if (exchangeRefData == null || exchangeRefData.getRefDataHashMap().size() == 0) {
-                        log.debug("RefDataUpdate:Origin refData empty-" + exchange);
-                        continue;
-                    }
-                    if (exchangeRefDataUpdate == null || exchangeRefDataUpdate.getRefDataHashMap().size() == 0) {
-                        log.debug("RefDataUpdate:Update refData empty-" + exchange);
-                        continue;
-                    }
-                    //Process RefDataUpdate Event begin
-                    Set<String> keysInRefDataMap = new HashSet<String>(exchangeRefData.getRefDataHashMap().keySet());
-                    Set<String> keysInRefDataUpdateMap = new HashSet<String>(exchangeRefDataUpdate.getRefDataHashMap().keySet());
-                    //Add
-                    Set<String> refDataAdd = new HashSet<>(keysInRefDataUpdateMap);
-                    refDataAdd.removeAll(keysInRefDataMap);
-                    if (refDataAdd.size() > 0) {
-                        List<RefData> refDataAddList = new ArrayList<>();
-                        for (String key : refDataAdd) {
-                            refDataAddList.add(exchangeRefDataUpdate.getRefDataHashMap().get(key));
-                        }
-                        windRefDataAdapter.sendRefDataUpdate(refDataAddList, RefDataUpdateEvent.Action.ADD);
-                    }
-                    //Mod CNName
-                    Set<String> refDataBoth = new HashSet<>(keysInRefDataUpdateMap);
-                    refDataBoth.retainAll(keysInRefDataMap);
-                    if (refDataBoth.size() > 0) {
-                        List<RefData> refDataModList = new ArrayList<>();
-                        for (String key : refDataBoth) {
-                            String originCNName = exchangeRefData.getRefDataHashMap().get(key).getCNDisplayName();
-                            String updateCNName = exchangeRefDataUpdate.getRefDataHashMap().get(key).getCNDisplayName();
-                            if (!originCNName.equals(updateCNName)) {
-                                refDataModList.add(exchangeRefDataUpdate.getRefDataHashMap().get(key));
-                                log.debug("RefDataUpdate S=" + key + ",originCNName=" + originCNName + ",updateCNName=" + updateCNName);
-                            }
-                        }
-                        if (refDataModList.size() > 0) {
-                            windRefDataAdapter.sendRefDataUpdate(refDataModList, RefDataUpdateEvent.Action.MOD);
-                        }
-                    }
-                    //Del
-                    Set<String> refDataDel = new HashSet<>(keysInRefDataMap);
-                    refDataDel.removeAll(refDataBoth);
-                    if (refDataDel.size() > 0) {
-                        List<RefData> refDataDelList = new ArrayList<>();
-                        for (String key : refDataDel) {
-                            refDataDelList.add(exchangeRefData.getRefDataHashMap().get(key));
-                        }
-                        windRefDataAdapter.sendRefDataUpdate(refDataDelList, RefDataUpdateEvent.Action.DEL);
-                    }
-                    //Set Origin RefDataMap
-                    windRefDataAdapter.getExRefDataHashMap().get(exchange).setRefDataUpdate(false);
-                    windRefDataAdapter.getExRefDataHashMap().get(exchange)
-                            .setRefDataHashMap(new HashMap<String, RefData>(exchangeRefDataUpdate.getRefDataHashMap()));
-                    //Process RefDataUpdate Event end
-                }
-                //clean refData update
-                windRefDataAdapter.getExRefDataUpdateHashMap().clear();
-                log.debug("RefDataUpdate Check end");
             }
             break;
             default:
