@@ -1619,6 +1619,8 @@ public class AccountPositionManager implements IPlugin {
         boolean result = false;
         List<OpenPosition> positions = positionKeeper.getOverallPosition(account);
         for (OpenPosition position : positions) {
+        	if (PriceUtils.Equal(position.getAvailableQty(), 0))
+        		continue;
             Quote quote = marketData.get(position.getSymbol());
             if (PriceUtils.EqualLessThan(position.getAcPnL(), -positionStopLoss) &&
                     null != quote &&
