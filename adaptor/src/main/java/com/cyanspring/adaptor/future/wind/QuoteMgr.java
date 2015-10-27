@@ -4,12 +4,14 @@ import com.cyanspring.adaptor.future.wind.data.FutureData;
 import com.cyanspring.adaptor.future.wind.data.IndexData;
 import com.cyanspring.adaptor.future.wind.data.StockData;
 import com.cyanspring.adaptor.future.wind.data.TransationData;
-import com.cyanspring.common.util.TimeUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class QuoteMgr {
 
@@ -19,8 +21,9 @@ public class QuoteMgr {
     private boolean isModifyTickTime = true;
 
     private WindGateWayAdapter windGateWayAdapter;
-    private ConcurrentLinkedQueue queue = new ConcurrentLinkedQueue();
+    private BlockingQueue<Object>queue = new LinkedBlockingQueue<>();
     private Thread controlReqThread = null;
+    private List<Object> qList = new ArrayList<>();
 
     QuoteMgr(WindGateWayAdapter windGateWayAdapter){
         this.windGateWayAdapter = windGateWayAdapter;
@@ -32,27 +35,50 @@ public class QuoteMgr {
             controlReqThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
+                	Object[] arr;
+                	int type,cnt;
+                	int max = 50;
                     while(true){
-                            if (queue.size() > 0) {
-                                Object[] arr;
-                                try {
-                                    arr = (Object[]) queue.poll();
-                                }catch (Exception e){
-                                    log.error(e.getMessage(),e);
-                                    arr = null;
-                                }
-                                if (arr == null || arr.length != 2) {
-                                    continue;
-                                }
-                                int type = (int) arr[0];
-                                process(type, arr[1]);
-                            }else{
-                                try {
-                                    TimeUnit.MILLISECONDS.sleep(1);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
+                    	qList.clear();
+                    	qList.add(queue.poll());
+                    	cnt = queue.drainTo(qList) + 1;   	
+                    	for (Object obj : qList) {
+                    		try {
+                    			arr = (Object[]) obj;                    			
+                    		} catch (Exception e) {
+                    			log.error(e.getMessage(),e);
+                    			continue;
+                    		}
+                    		if (arr == null || arr.length != 2) {
+                                continue;
                             }
+                            type = (int) arr[0];
+                            process(type, arr[1]);
+                    	}
+                    	if(cnt > max) {
+                    		max = cnt;
+                    		log.info("windAdaptor queue reach new max: " + max);
+                    	}
+//                            if (queue.size() > 0) {
+//                                Object[] arr;
+//                                try {
+//                                    arr = (Object[]) queue.poll();
+//                                }catch (Exception e){
+//                                    log.error(e.getMessage(),e);
+//                                    arr = null;
+//                                }
+//                                if (arr == null || arr.length != 2) {
+//                                    continue;
+//                                }
+//                                int type = (int) arr[0];
+//                                process(type, arr[1]);
+//                            }else{
+//                                try {
+//                                    TimeUnit.MILLISECONDS.sleep(1);
+//                                } catch (InterruptedException e) {
+//                                    e.printStackTrace();
+//                                }
+//                            }
                     }
                 }
             });
