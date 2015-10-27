@@ -18,7 +18,7 @@ public class RWPositionLabelProvider extends DefaultLabelProviderAdapter{
 		case 0:
 			return model.getInstrumentCode();
 		case 1:
-			return model.getInstrumentName();
+			return model.getInstrumentCode();
 		case 2:
 			return model.getPositionDirection().toString();
 		case 3:
