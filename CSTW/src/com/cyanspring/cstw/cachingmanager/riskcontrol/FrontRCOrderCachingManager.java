@@ -1,6 +1,7 @@
 package com.cyanspring.cstw.cachingmanager.riskcontrol;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +20,19 @@ import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCParentOrder
 public final class FrontRCOrderCachingManager extends BasicCachingManager {
 
 	private Map<String, ParentOrder> orderMap;
+	
+	private static FrontRCOrderCachingManager instance;
+	
+	public static FrontRCOrderCachingManager getInstance() {
+		if (instance == null) {
+			instance = new FrontRCOrderCachingManager();
+		}
+		return instance;
+	}
+	
+	private FrontRCOrderCachingManager() {
+		orderMap = new HashMap<String, ParentOrder>();
+	}
 
 	@Override
 	protected List<Class<? extends AsyncEvent>> getReplyEventList() {
