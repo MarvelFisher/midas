@@ -747,7 +747,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 					break;
 				}
 			}
-			if (!found && !PriceUtils.isZero(position.getQty()))
+			if (!found && !PriceUtils.isZero(position.getQty()) && position.getAccount().equals(currentAccount))
 				openPositions.add(position);
 		}
 		showOpenPositions(false);
