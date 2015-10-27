@@ -2,7 +2,7 @@ package com.cyanspring.cstw.service.eventadapter.riskcontrol;
 
 import java.util.List;
 
-import com.cyanspring.cstw.service.localevent.riskmgr.FrontRCParentOrderUpdateLocalEvent;
+import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCParentOrderUpdateCachingLocalEvent;
 import com.cyanspring.cstw.service.model.riskmgr.RCOrderRecordModel;
 
 /**
@@ -14,5 +14,5 @@ import com.cyanspring.cstw.service.model.riskmgr.RCOrderRecordModel;
 public interface IRCOrderEventAdapter {
 
 	List<RCOrderRecordModel> getOrderModelListByUpdateEvent(
-			FrontRCParentOrderUpdateLocalEvent event);
+			FrontRCParentOrderUpdateCachingLocalEvent event);
 }

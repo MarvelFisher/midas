@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 import com.cyanspring.common.account.OverallPosition;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCIndividualEventAdaptor;
 import com.cyanspring.cstw.service.helper.transfer.ModelTransfer;
-import com.cyanspring.cstw.service.localevent.riskmgr.FrontRCPositionUpdateLocalEvent;
+import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCPositionUpdateCachingLocalEvent;
 import com.cyanspring.cstw.service.model.riskmgr.RCUserStatisticsModel;
 
 /**
@@ -20,7 +20,7 @@ public final class RCIndividualEventAdaptorImpl implements
 
 	@Override
 	public List<RCUserStatisticsModel> getIndividualModelListByEvent(
-			FrontRCPositionUpdateLocalEvent event) {
+			FrontRCPositionUpdateCachingLocalEvent event) {
 		Map<String, Map<String, OverallPosition>> accountPositionMap = event
 				.getAccountPositionMap();
 		List<RCUserStatisticsModel> individualModelList = new ArrayList<RCUserStatisticsModel>();

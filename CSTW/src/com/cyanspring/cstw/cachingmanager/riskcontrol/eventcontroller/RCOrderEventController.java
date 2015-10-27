@@ -8,9 +8,9 @@ import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.service.eventadapter.EventAdaptorPool;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCOrderEventAdapter;
-import com.cyanspring.cstw.service.localevent.riskmgr.FrontRCParentOrderUpdateLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.OrderRecordsSnapshotRequestLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.OrderRecordsUpdateLocalEvent;
+import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCParentOrderUpdateCachingLocalEvent;
 import com.cyanspring.cstw.service.model.riskmgr.RCOrderRecordModel;
 
 /**
@@ -45,15 +45,15 @@ public final class RCOrderEventController implements IAsyncEventListener {
 	public void init() {
 		// 本地监听
 		business.getEventManager().subscribe(
-				FrontRCParentOrderUpdateLocalEvent.class, this);
+				FrontRCParentOrderUpdateCachingLocalEvent.class, this);
 		business.getEventManager().subscribe(
 				OrderRecordsSnapshotRequestLocalEvent.class, this);
 	}
 
 	@Override
 	public void onEvent(AsyncEvent event) {
-		if (event instanceof FrontRCParentOrderUpdateLocalEvent) {
-			FrontRCParentOrderUpdateLocalEvent updateEvent = (FrontRCParentOrderUpdateLocalEvent) event;
+		if (event instanceof FrontRCParentOrderUpdateCachingLocalEvent) {
+			FrontRCParentOrderUpdateCachingLocalEvent updateEvent = (FrontRCParentOrderUpdateCachingLocalEvent) event;
 			orderRecordList = adapter
 					.getOrderModelListByUpdateEvent(updateEvent);
 			sendOrderRecordsUpdateLocalEvent();

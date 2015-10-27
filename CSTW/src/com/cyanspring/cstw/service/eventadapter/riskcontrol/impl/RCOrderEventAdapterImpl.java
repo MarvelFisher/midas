@@ -7,7 +7,7 @@ import java.util.Map;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCOrderEventAdapter;
 import com.cyanspring.cstw.service.helper.transfer.ModelTransfer;
-import com.cyanspring.cstw.service.localevent.riskmgr.FrontRCParentOrderUpdateLocalEvent;
+import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCParentOrderUpdateCachingLocalEvent;
 import com.cyanspring.cstw.service.model.riskmgr.RCOrderRecordModel;
 
 /**
@@ -18,7 +18,7 @@ public final class RCOrderEventAdapterImpl implements IRCOrderEventAdapter {
 
 	@Override
 	public List<RCOrderRecordModel> getOrderModelListByUpdateEvent(
-			FrontRCParentOrderUpdateLocalEvent event) {
+			FrontRCParentOrderUpdateCachingLocalEvent event) {
 		Map<String, ParentOrder> orderMap = event.getOrderMap();
 		if (orderMap == null || orderMap.isEmpty()) {
 			return new ArrayList<RCOrderRecordModel>();

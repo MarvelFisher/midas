@@ -11,7 +11,7 @@ import com.cyanspring.common.cstw.position.IPositionChangeListener;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.account.OverAllPositionReplyEvent;
 import com.cyanspring.cstw.cachingmanager.BasicCachingManager;
-import com.cyanspring.cstw.service.localevent.riskmgr.FrontRCPositionUpdateLocalEvent;
+import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCPositionUpdateCachingLocalEvent;
 
 /**
  * 
@@ -56,16 +56,22 @@ public final class FrontRCPositionCachingManager extends BasicCachingManager {
 
 			@Override
 			public void OverAllPositionChange(List<OverallPosition> list) {
-				log.info("========================OverAllPositionChange");
-				FrontRCPositionUpdateLocalEvent updateEvent = new FrontRCPositionUpdateLocalEvent(
-						accountPositionMap);
-				business.getEventManager().sendEvent(updateEvent);
+				log.info("========================OverAllPositionChange"+list);
+				sendPositionUpdateEvent();
 			}
 
 		};
 		business.getAllPositionManager().addIPositionChangeListener(
 				positionChangeListener);
 
+	}
+
+	protected void sendPositionUpdateEvent() {
+		log.info("========================sendPositionUpdateEvent"
+				+ accountPositionMap);
+		FrontRCPositionUpdateCachingLocalEvent updateEvent = new FrontRCPositionUpdateCachingLocalEvent(
+				accountPositionMap);
+		business.getEventManager().sendEvent(updateEvent);
 	}
 
 	@Override
@@ -78,7 +84,9 @@ public final class FrontRCPositionCachingManager extends BasicCachingManager {
 	@Override
 	protected void processAsyncEvent(AsyncEvent event) {
 		if (event instanceof OverAllPositionReplyEvent) {
-
+			OverAllPositionReplyEvent replyEvent = (OverAllPositionReplyEvent) event;
+			log.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!OverAllPositionReplyEvent"
+					+ replyEvent);
 		}
 
 	}

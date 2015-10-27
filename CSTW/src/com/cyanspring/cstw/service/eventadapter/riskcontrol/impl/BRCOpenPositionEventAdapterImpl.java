@@ -9,7 +9,7 @@ import com.cyanspring.common.account.OverallPosition;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCOpenPositionEventAdapter;
 import com.cyanspring.cstw.service.helper.transfer.ModelTransfer;
-import com.cyanspring.cstw.service.localevent.riskmgr.BasicRCPositionUpdateLocalEvent;
+import com.cyanspring.cstw.service.localevent.riskmgr.caching.BasicRCPositionUpdateCachingLocalEvent;
 import com.cyanspring.cstw.service.model.riskmgr.RCOpenPositionModel;
 import com.cyanspring.cstw.service.model.riskmgr.RCOpenPositionModel.RCPositionDirection;
 import com.cyanspring.cstw.service.model.riskmgr.RCOpenPositionModel.RCPositionType;
@@ -22,7 +22,7 @@ public final class BRCOpenPositionEventAdapterImpl implements
 
 	@Override
 	public List<RCOpenPositionModel> getOpenPositionModelListByEvent(
-			BasicRCPositionUpdateLocalEvent event) {
+			BasicRCPositionUpdateCachingLocalEvent event) {
 		List<RCOpenPositionModel> result = new ArrayList<RCOpenPositionModel>();
 		Map<String, Map<String, OverallPosition>> accountPositionMap = event
 				.getAccountPositionMap();

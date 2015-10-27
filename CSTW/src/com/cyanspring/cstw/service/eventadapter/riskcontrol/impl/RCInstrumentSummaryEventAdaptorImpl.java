@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 import com.cyanspring.common.account.OverallPosition;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCInstrumentSummaryEventAdaptor;
 import com.cyanspring.cstw.service.helper.transfer.ModelTransfer;
-import com.cyanspring.cstw.service.localevent.riskmgr.BasicRCPositionUpdateLocalEvent;
+import com.cyanspring.cstw.service.localevent.riskmgr.caching.BasicRCPositionUpdateCachingLocalEvent;
 import com.cyanspring.cstw.service.model.riskmgr.RCInstrumentModel;
 
 /**
@@ -22,7 +22,7 @@ public final class RCInstrumentSummaryEventAdaptorImpl implements
 
 	@Override
 	public List<RCInstrumentModel> getInstrumentSummaryModelListByEvent(
-			BasicRCPositionUpdateLocalEvent event) {
+			BasicRCPositionUpdateCachingLocalEvent event) {
 		List<OverallPosition> positionList = new ArrayList<OverallPosition>();
 		for (Entry<String, Map<String, OverallPosition>> accountSymbolEntry : event
 				.getAccountPositionMap().entrySet()) {

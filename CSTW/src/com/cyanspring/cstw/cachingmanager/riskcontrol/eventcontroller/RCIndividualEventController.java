@@ -8,10 +8,10 @@ import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.service.eventadapter.EventAdaptorPool;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCIndividualEventAdaptor;
-import com.cyanspring.cstw.service.localevent.riskmgr.FrontRCPositionUpdateLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.IndividualStatisticsSnapshotReplyLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.IndividualStatisticsSnapshotRequestLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.IndividualStatisticsUpdateLocalEvent;
+import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCPositionUpdateCachingLocalEvent;
 import com.cyanspring.cstw.service.model.riskmgr.RCUserStatisticsModel;
 
 /**
@@ -46,7 +46,7 @@ public final class RCIndividualEventController implements IAsyncEventListener {
 	public void init() {
 		// 本地监听
 		business.getEventManager().subscribe(
-				FrontRCPositionUpdateLocalEvent.class, this);
+				FrontRCPositionUpdateCachingLocalEvent.class, this);
 		business.getEventManager().subscribe(
 				IndividualStatisticsSnapshotRequestLocalEvent.class, this);
 	}
@@ -54,8 +54,8 @@ public final class RCIndividualEventController implements IAsyncEventListener {
 	@Override
 	public void onEvent(AsyncEvent event) {
 		// 本地Event
-		if (event instanceof FrontRCPositionUpdateLocalEvent) {
-			FrontRCPositionUpdateLocalEvent updateLocalEvent = (FrontRCPositionUpdateLocalEvent) event;
+		if (event instanceof FrontRCPositionUpdateCachingLocalEvent) {
+			FrontRCPositionUpdateCachingLocalEvent updateLocalEvent = (FrontRCPositionUpdateCachingLocalEvent) event;
 			individualStatisticsModelList = adapter
 					.getIndividualModelListByEvent(updateLocalEvent);
 			sendIndividualStatisticsUpdateEvent();

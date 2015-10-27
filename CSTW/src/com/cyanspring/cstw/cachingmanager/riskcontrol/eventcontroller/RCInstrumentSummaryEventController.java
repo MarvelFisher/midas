@@ -8,12 +8,12 @@ import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.service.eventadapter.EventAdaptorPool;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCInstrumentSummaryEventAdaptor;
-import com.cyanspring.cstw.service.localevent.riskmgr.BackRCPositionUpdateLocalEvent;
-import com.cyanspring.cstw.service.localevent.riskmgr.BasicRCPositionUpdateLocalEvent;
-import com.cyanspring.cstw.service.localevent.riskmgr.FrontRCPositionUpdateLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.InstrumentSummarySnapshotReplyLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.InstrumentSummarySnapshotRequestLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.InstrumentSummaryUpdateLocalEvent;
+import com.cyanspring.cstw.service.localevent.riskmgr.caching.BackRCPositionUpdateCachingLocalEvent;
+import com.cyanspring.cstw.service.localevent.riskmgr.caching.BasicRCPositionUpdateCachingLocalEvent;
+import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCPositionUpdateCachingLocalEvent;
 import com.cyanspring.cstw.service.model.riskmgr.RCInstrumentModel;
 
 /**
@@ -51,11 +51,11 @@ public final class RCInstrumentSummaryEventController implements
 	public void init() {
 		// 本地监听
 		business.getEventManager().subscribe(
-				BasicRCPositionUpdateLocalEvent.class, this);
+				BasicRCPositionUpdateCachingLocalEvent.class, this);
 		business.getEventManager().subscribe(
-				FrontRCPositionUpdateLocalEvent.class, this);
+				FrontRCPositionUpdateCachingLocalEvent.class, this);
 		business.getEventManager().subscribe(
-				BackRCPositionUpdateLocalEvent.class, this);
+				BackRCPositionUpdateCachingLocalEvent.class, this);
 
 		business.getEventManager().subscribe(
 				InstrumentSummarySnapshotRequestLocalEvent.class, this);
@@ -64,8 +64,8 @@ public final class RCInstrumentSummaryEventController implements
 	@Override
 	public void onEvent(AsyncEvent event) {
 		// 本地Event
-		if (event instanceof BasicRCPositionUpdateLocalEvent) {
-			BasicRCPositionUpdateLocalEvent updateLocalEvent = (BasicRCPositionUpdateLocalEvent) event;
+		if (event instanceof BasicRCPositionUpdateCachingLocalEvent) {
+			BasicRCPositionUpdateCachingLocalEvent updateLocalEvent = (BasicRCPositionUpdateCachingLocalEvent) event;
 			instrumentModeList = adapter
 					.getInstrumentSummaryModelListByEvent(updateLocalEvent);
 			sendPositionUpdateEvent();

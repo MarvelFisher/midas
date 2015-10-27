@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 import com.cyanspring.common.account.OverallPosition;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCOpenPositionEventAdapter;
 import com.cyanspring.cstw.service.helper.transfer.ModelTransfer;
-import com.cyanspring.cstw.service.localevent.riskmgr.BasicRCPositionUpdateLocalEvent;
+import com.cyanspring.cstw.service.localevent.riskmgr.caching.BasicRCPositionUpdateCachingLocalEvent;
 import com.cyanspring.cstw.service.model.riskmgr.RCOpenPositionModel;
 
 /**
@@ -20,7 +20,7 @@ public final class FRCOpenPositionEventAdapterImpl implements
 
 	@Override
 	public List<RCOpenPositionModel> getOpenPositionModelListByEvent(
-			BasicRCPositionUpdateLocalEvent event) {
+			BasicRCPositionUpdateCachingLocalEvent event) {
 		Map<String, Map<String, OverallPosition>> accountPositionMap = event
 				.getAccountPositionMap();
 		List<RCOpenPositionModel> openPositionModelList = new ArrayList<RCOpenPositionModel>();

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.cyanspring.cstw.service.localevent.riskmgr;
+package com.cyanspring.cstw.service.localevent.riskmgr.caching;
 
 import java.util.Map;
 
@@ -13,13 +13,13 @@ import com.cyanspring.common.event.AsyncEvent;
  * @create 14 Sep 2015
  * designed for CachingManager
  */
-public class BasicRCParentOrderUpdateLocalEvent extends AsyncEvent {
+public class BasicRCParentOrderUpdateCachingLocalEvent extends AsyncEvent {
 
 private static final long serialVersionUID = 1L;
 	
 	private Map<String, ParentOrder> orderMap;
 	
-	public BasicRCParentOrderUpdateLocalEvent(Map<String, ParentOrder> orderMap) {
+	public BasicRCParentOrderUpdateCachingLocalEvent(Map<String, ParentOrder> orderMap) {
 		this.orderMap = orderMap;
 	}
 	

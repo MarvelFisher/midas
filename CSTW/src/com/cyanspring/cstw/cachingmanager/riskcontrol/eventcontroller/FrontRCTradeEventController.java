@@ -12,10 +12,10 @@ import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.service.eventadapter.EventAdaptorPool;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCTradeEventAdaptor;
-import com.cyanspring.cstw.service.localevent.riskmgr.FrontRCParentOrderUpdateLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.TradeRecordUpdateEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.TradeRecordsSnapshotReplyLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.TradeRecordsSnapshotRequestLocalEvent;
+import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCParentOrderUpdateCachingLocalEvent;
 import com.cyanspring.cstw.service.model.riskmgr.RCTradeRecordModel;
 
 /**
@@ -54,7 +54,7 @@ public final class FrontRCTradeEventController implements IAsyncEventListener {
 		log.info("FrontRCTradeCachingManager init...");
 		// 本地监听
 		business.getEventManager().subscribe(
-				FrontRCParentOrderUpdateLocalEvent.class, this);
+				FrontRCParentOrderUpdateCachingLocalEvent.class, this);
 		business.getEventManager().subscribe(
 				TradeRecordsSnapshotRequestLocalEvent.class, this);
 	}
@@ -76,8 +76,8 @@ public final class FrontRCTradeEventController implements IAsyncEventListener {
 	@Override
 	public void onEvent(AsyncEvent event) {
 		// 处理本地事件
-		if (event instanceof FrontRCParentOrderUpdateLocalEvent) {
-			FrontRCParentOrderUpdateLocalEvent replyEvent = (FrontRCParentOrderUpdateLocalEvent) event;
+		if (event instanceof FrontRCParentOrderUpdateCachingLocalEvent) {
+			FrontRCParentOrderUpdateCachingLocalEvent replyEvent = (FrontRCParentOrderUpdateCachingLocalEvent) event;
 			tradeRecordModelList = adaptor
 					.getTradeRecordModelListByOrderList(replyEvent);
 			sendTradeRecordsUpdateEvent();

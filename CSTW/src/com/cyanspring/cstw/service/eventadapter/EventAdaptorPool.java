@@ -30,7 +30,7 @@ public final class EventAdaptorPool {
 
 	private static IRCInstrumentSummaryEventAdaptor rCinstrumentSummaryEventAdaptor = new RCInstrumentSummaryEventAdaptorImpl();
 
-	public static IRCOpenPositionEventAdapter getfRCPositionEventAdapter() {
+	public static IRCOpenPositionEventAdapter getFrontRCOpenPositionEventAdapter() {
 		return fRCPositionEventAdapter;
 	}
 
