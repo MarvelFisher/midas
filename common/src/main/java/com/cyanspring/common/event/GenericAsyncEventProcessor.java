@@ -34,15 +34,18 @@ public class GenericAsyncEventProcessor implements IPlugin, IAsyncEventListener 
         try {
             String eventName = event.getSimpleName();
             List<Subscribe> subs = events.get(eventName);
-            if (subs == null)
-                subs = new ArrayList<>();
-            Method method = handler.getClass().getMethod(getEventName(eventName), event.getClasses());
+            if (subs == null) {
+            	subs = new ArrayList<>();
+            	events.put(eventName, subs);
+            }
+            Method method = handler.getClass().getMethod(getEventName(eventName), event);
             Subscribe pair = new Subscribe(method, handler, key);
             if (!subs.contains(pair))
                 subs.add(pair);
             eventManager.subscribe(event, this);
             log.info("Class: " + handler.getClass().getSimpleName() + ", method: " + eventName + " added in method map");
         } catch (Exception e) {
+        	log.error(e.getMessage(), e);
             log.error("Can't subscribe event to " + handler.getClass().getSimpleName() +
                     ", please check this class");
             return false;
@@ -80,11 +83,11 @@ public class GenericAsyncEventProcessor implements IPlugin, IAsyncEventListener 
             log.error("Unhandle event: " + event.getClass().getSimpleName());
             return;
         }
-
+        
         String key = event.getKey();
         for (Subscribe sub : subs) {
             try {
-                if (key != null) {
+                if (sub.key != null) {
                     if (sub.key.equals(key)) {
                         sub.method.invoke(sub.sub, event);
                     }
