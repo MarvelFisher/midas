@@ -9,8 +9,11 @@ import java.util.Map.Entry;
 import com.cyanspring.common.account.OverallPosition;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.type.OrdStatus;
+import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.service.model.riskmgr.RCInstrumentModel;
 import com.cyanspring.cstw.service.model.riskmgr.RCOpenPositionModel;
+import com.cyanspring.cstw.service.model.riskmgr.RCOpenPositionModel.RCPositionDirection;
+import com.cyanspring.cstw.service.model.riskmgr.RCOpenPositionModel.RCPositionType;
 import com.cyanspring.cstw.service.model.riskmgr.RCOrderRecordModel;
 import com.cyanspring.cstw.service.model.riskmgr.RCOrderRecordModel.Builder;
 import com.cyanspring.cstw.service.model.riskmgr.RCTradeRecordModel;
@@ -56,16 +59,20 @@ public final class ModelTransfer {
 				.instrumentCode(position.getSymbol())
 				// .quality(Math.abs(position.getQty()))
 				.urPnl(position.getUrPnL()).pnl(position.getPnL())
-				.trader(position.getUser()).build();
-		/*
-		 * if (PriceUtils.isZero(position.getQty())) {
-		 * positionModel.setType(RCPositionType.Close); } else {
-		 * positionModel.setType(RCPositionType.Open); }
-		 * positionModel.setAveragePrice(position.getPrice()); if
-		 * (PriceUtils.GreaterThan(position.getQty(), 0)) {
-		 * positionModel.setPositionDirection(RCPositionDirection.Long); } else
-		 * { positionModel.setPositionDirection(RCPositionDirection.Short); }
-		 */
+				.trader(position.getAccount()).build();
+
+//		if (PriceUtils.isZero(position.getQty())) {
+//			positionModel.setType(RCPositionType.Close);
+//		} else {
+			positionModel.setType(RCPositionType.Open);
+//		}
+		positionModel.setAveragePrice(position.getPrice());
+		if (PriceUtils.GreaterThan(position.getQty(), 0)) {
+			positionModel.setPositionDirection(RCPositionDirection.Long);
+		} else {
+			positionModel.setPositionDirection(RCPositionDirection.Short);
+		}
+
 		return positionModel;
 	}
 

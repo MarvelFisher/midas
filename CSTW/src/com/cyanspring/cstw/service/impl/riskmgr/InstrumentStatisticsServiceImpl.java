@@ -11,6 +11,9 @@ import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.cstw.service.common.BasicServiceImpl;
 import com.cyanspring.cstw.service.common.RefreshEventType;
 import com.cyanspring.cstw.service.iservice.riskmgr.IInstrumentStatisticsService;
+import com.cyanspring.cstw.service.localevent.riskmgr.InstrumentSnapshotReplyLocalEvent;
+import com.cyanspring.cstw.service.localevent.riskmgr.InstrumentStatisticsSnapshotRequestLocalEvent;
+import com.cyanspring.cstw.service.localevent.riskmgr.InstrumentStatisticsUpdateLocalEvent;
 import com.cyanspring.cstw.service.model.riskmgr.RCInstrumentModel;
 import com.cyanspring.cstw.ui.utils.LTWStringUtils;
 
@@ -37,22 +40,31 @@ public class InstrumentStatisticsServiceImpl extends BasicServiceImpl implements
 
 	@Override
 	public void queryInstrument() {
-		
+		InstrumentStatisticsSnapshotRequestLocalEvent event = new InstrumentStatisticsSnapshotRequestLocalEvent();
+		sendEvent(event);
 	}
 
 	@Override
 	protected List<Class<? extends AsyncEvent>> getReplyEventList() {
 		List<Class<? extends AsyncEvent>> list = new ArrayList<Class<? extends AsyncEvent>>();
-		
+		list.add(InstrumentSnapshotReplyLocalEvent.class);
+		list.add(InstrumentStatisticsUpdateLocalEvent.class);
 		return list;
 	}
 
 	@Override
 	protected RefreshEventType handleEvent(AsyncEvent event) {
-		if ( event.getKey() != roleType.name() ) {
-			return RefreshEventType.Default;
-		}
 		
+		if (event instanceof InstrumentSnapshotReplyLocalEvent) {
+			InstrumentSnapshotReplyLocalEvent replyEvent = (InstrumentSnapshotReplyLocalEvent) event;
+			modelList = replyEvent.getInstrumentModelList();
+			return RefreshEventType.RWInstrumentStatistics;
+		}
+		if (event instanceof InstrumentStatisticsUpdateLocalEvent) {
+			InstrumentStatisticsUpdateLocalEvent replyEvent = (InstrumentStatisticsUpdateLocalEvent) event;
+			modelList = replyEvent.getInstrumentModeList();
+			return RefreshEventType.RWInstrumentStatistics;
+		}
 		return RefreshEventType.Default;
 	}
 

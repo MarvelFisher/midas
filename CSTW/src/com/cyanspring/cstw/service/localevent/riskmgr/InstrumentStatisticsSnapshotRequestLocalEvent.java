@@ -13,7 +13,6 @@ public final class InstrumentStatisticsSnapshotRequestLocalEvent extends
 
 	private static final long serialVersionUID = 7316987111220108462L;
 	
-	public InstrumentStatisticsSnapshotRequestLocalEvent(String key) {
-		super(key);
+	public InstrumentStatisticsSnapshotRequestLocalEvent() {
 	}
 }

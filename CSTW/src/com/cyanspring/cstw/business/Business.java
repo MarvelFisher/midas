@@ -65,7 +65,13 @@ import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.cachingmanager.quote.QuoteCachingManager;
+import com.cyanspring.cstw.cachingmanager.riskcontrol.BackRCPositionCachingManager;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.FrontRCPositionCachingManager;
+import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.FrontRCOpenPositionEventController;
+import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.FrontRCTradeEventController;
+import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCIndividualEventController;
+import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCInstrumentSummaryEventController;
+import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCOrderEventController;
 import com.cyanspring.cstw.event.SelectUserAccountEvent;
 import com.cyanspring.cstw.event.ServerStatusEvent;
 import com.cyanspring.cstw.gui.ServerStatusDisplay;
@@ -519,6 +525,11 @@ public class Business {
 
 		QuoteCachingManager.getInstance().init();
 		FrontRCPositionCachingManager.getInstance().init();
+		FrontRCOpenPositionEventController.getInstance().init();
+		FrontRCTradeEventController.getInstance().init();
+		RCIndividualEventController.getInstance().init();
+		RCInstrumentSummaryEventController.getInstance().init();
+		RCOrderEventController.getInstance().init();
 		allPositionManager.init(eventManager, getFirstServer(), getAccountGroup(), getUserGroup());
 		if (null != accountGroupList){
 			allPositionManager.requestOverAllPosition(accountGroupList);

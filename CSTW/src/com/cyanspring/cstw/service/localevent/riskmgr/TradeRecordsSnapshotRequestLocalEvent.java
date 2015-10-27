@@ -12,8 +12,7 @@ public final class TradeRecordsSnapshotRequestLocalEvent extends AsyncEvent {
 	
 	private static final long serialVersionUID = 1L;
 
-	public TradeRecordsSnapshotRequestLocalEvent(String key) {
-		super(key);
+	public TradeRecordsSnapshotRequestLocalEvent() {
 	}
 		
 }
