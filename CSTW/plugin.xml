@@ -179,6 +179,14 @@
             id="com.cyanspring.cstw.ui.rw.views.RWOrderView"
             name="RW Order"
             restorable="true">
+      </view>
+      <view
+            allowMultiple="false"
+            class="com.cyanspring.cstw.ui.bw.views.BWInfoView"
+            icon="icons/Leaves16.png"
+            id="com.cyanspring.cstw.ui.bw.views.BWInfoView"
+            name="BW Info"
+            restorable="true">
       </view>        
    </extension>
    <extension
@@ -729,6 +737,7 @@
             name="FrontRisk Order Data">
       </command>
       <command
+            defaultHandler="com.cyanspring.cstw.ui.bw.command.BWInfoViewCommand"
             id="CSTW.BackRiskManager.Data"
             name="BackRiskManager Data">
       </command>      

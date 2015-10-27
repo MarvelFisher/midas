@@ -10,7 +10,7 @@ import org.eclipse.swt.SWT;
  */
 public enum TableType {
 
-	//
+	// RW Order
 	RWPendingOrder(new String[] { "Order ID", "Instrument ID",
 			"Instrument Name", "Trade Type", "Price", "Volume", "Status",
 			"Time", "Trader" },
