@@ -15,64 +15,65 @@ import com.cyanspring.common.staticdata.RefDataUtil;
 
 public class LIVECFStrategy extends AbstractRefDataStrategy {
 	protected static final Logger log = LoggerFactory.getLogger(LIVECFStrategy.class);
-	
+
     private List<String> near1List = new ArrayList<>();
     private List<String> near2List = new ArrayList<>();
     private List<String> season1List = new ArrayList<>();
     private List<String> season2List = new ArrayList<>();
-    
+
     private String symbol;
     private String detailCNDisplay = "%s%d年%d月合约";
     private String detailTWDisplay = "%s%d年%d月合約";
-    
+
     private int[] seasons = {Calendar.MARCH, Calendar.JUNE, Calendar.SEPTEMBER, Calendar.DECEMBER};
-	
+
     private StrategyData n0;
     private StrategyData n1;
     private StrategyData f0;
     private StrategyData f1;
     private StateChain stateChain;
     private Calendar cal;
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
-    
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
     @Override
     public void init(Calendar cal, RefData template) {
-    	
+
     	MappingData ifData = new MappingData();
     	ifData.near1 = "IFC1";
     	ifData.near2 = "IFC2";
     	ifData.season1 = "IFC3";
     	ifData.season2 = "IFC4";
     	ifData.symbol = "IF";
-    	
+
     	MappingData icData = new MappingData();
     	icData.near1 = "ICC1";
     	icData.near2 = "ICC2";
     	icData.season1 = "ICC3";
     	icData.season2 = "ICC4";
     	icData.symbol = "IC";
-    	
+
     	MappingData ihData = new MappingData();
     	ihData.near1 = "IHC1";
     	ihData.near2 = "IHC2";
     	ihData.season1 = "IHC3";
     	ihData.season2 = "IHC4";
     	ihData.symbol = "IH";
-    	
+
     	List<MappingData> list = new ArrayList<>();
     	list.add(ifData);
     	list.add(icData);
     	list.add(ihData);
-    	
+
         for (MappingData data : list){
-            if (symbol == null)
-                symbol = data.getSymbol();
+            if (symbol == null) {
+				symbol = data.getSymbol();
+			}
             near1List.add(data.getNear1());
             near2List.add(data.getNear2());
             season1List.add(data.getSeason1());
             season2List.add(data.getSeason2());
         }
-    	
+
         if (this.cal == null) {
         	for(int season : seasons){
         		if(stateChain == null){
@@ -90,16 +91,17 @@ public class LIVECFStrategy extends AbstractRefDataStrategy {
             updateDynamicData((Calendar) cal.clone());
         }
 
-        if (cal.compareTo(this.cal) < 0)
-            return;
+        if (cal.compareTo(this.cal) < 0) {
+			return;
+		}
         this.cal.add(Calendar.MONTH, 1);
         updateDynamicData(this.cal);
-        
-        
+
+
     }
 
     @Override
-    public void updateRefData(RefData refData) {
+    public List<RefData> updateRefData(RefData refData) {
     	String refSymbol = refData.getRefSymbol();
         if (near1List.contains(refSymbol)) {
         	writeToRefData(refData, n0);
@@ -115,7 +117,7 @@ public class LIVECFStrategy extends AbstractRefDataStrategy {
     @Override
     public void setRequireData(Object... objects) {
     }
-    
+
     private void writeToRefData(RefData refData, StrategyData data){
     	refData.setSettlementDate(data.settlementDay);
         refData.setCNDisplayName(refData.getCNDisplayName().substring(0, 2) + data.ID);
@@ -126,15 +128,16 @@ public class LIVECFStrategy extends AbstractRefDataStrategy {
         refData.setDetailTW(String.format(detailTWDisplay, refData.getSpotTWName(), data.year, data.month + 1));
         refData.setDetailEN(String.format(detailCNDisplay, refData.getSpotENName(), data.year, data.month + 1));
     }
-    
+
     private String calSettlementDay(int year, int month) {
         Calendar cal = Calendar.getInstance();
         cal.set(year, month, 0);
         int dayCount = 0;
         while (dayCount != 3) {
             cal.add(Calendar.DAY_OF_MONTH, 1);
-            if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY)
-                dayCount++;
+            if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
+				dayCount++;
+			}
         }
 
         ITradeDate tradeDateManager = RefDataUtil.getTradeManager(symbol);
@@ -144,7 +147,7 @@ public class LIVECFStrategy extends AbstractRefDataStrategy {
 
         return sdf.format(cal.getTime());
     }
-    
+
     private void saveStrategyData(Calendar cal, StrategyData data){
     	data.year = cal.get(Calendar.YEAR);
     	data.month = cal.get(Calendar.MONTH);
@@ -153,14 +156,14 @@ public class LIVECFStrategy extends AbstractRefDataStrategy {
         data.ID = day.substring(2, 7);
         data.ID = data.ID.replace("-", "");
     }
-    
+
     private void updateDynamicData(Calendar cal) {
 		saveStrategyData(cal, n0);
 	    cal.add(Calendar.MONTH, 1);
 	    saveStrategyData(cal, n1);
 	    saveStrategyData(searchNearestSeason(stateChain, cal, seasons.length), f0);
         saveStrategyData(searchNearestSeason(stateChain, cal, seasons.length), f1);
-	            
+
 	    this.cal = Calendar.getInstance();
 	    try {
 	        this.cal.setTime(sdf.parse(n0.settlementDay));
@@ -183,8 +186,9 @@ public class LIVECFStrategy extends AbstractRefDataStrategy {
 
         do {
             chain = chain.getNextState();
-            if (nowState > chain.nowState())
-                cal.add(Calendar.YEAR, 1);
+            if (nowState > chain.nowState()) {
+				cal.add(Calendar.YEAR, 1);
+			}
             nowState = chain.nowState();
             i++;
         }while (month >= nowState && i < depth);
@@ -192,22 +196,22 @@ public class LIVECFStrategy extends AbstractRefDataStrategy {
         cal.set(Calendar.MONTH, chain.nowState());
         return cal;
     }
-	
+
 	public class StrategyData {
 		String settlementDay;
 		String ID;
 		int year;
 		int month;
 	}
-	
+
 	public class StateChain {
 		private StateChain nextState;
 		private int state;
-		
+
 		public StateChain(int month){
 			this.state = month;
 		}
-		
+
 		public int nowState(){
 			return state;
 		}
@@ -215,19 +219,20 @@ public class LIVECFStrategy extends AbstractRefDataStrategy {
 	    public int nextState(){
 	        return nextState.nowState();
 	    }
-		
+
 		public StateChain getNextState(){
 			return nextState;
 		}
-		
+
 		public void addState(StateChain state){
-			if(nextState == null)
+			if(nextState == null) {
 				nextState = state;
-			else
+			} else {
 				nextState.addState(state);
+			}
 		}
 	}
-	
+
 	public class MappingData {
 	    private String symbol;
 	    private String near1;

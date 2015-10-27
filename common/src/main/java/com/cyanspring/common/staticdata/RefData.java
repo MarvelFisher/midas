@@ -353,11 +353,13 @@ public class RefData extends DataObject {
 
     @Override
     public boolean equals(Object object) {
-    	RefData compare = (RefData) object;    	
-    	if (compare.getRefSymbol() != null && this.getRefSymbol() != null)
-    		return compare.getRefSymbol().equals(this.getRefSymbol());
-    	if (compare.getSymbol() != null && this.getSymbol() != null)
+    	RefData compare = (RefData) object;
+    	if (compare.getRefSymbol() != null && this.getRefSymbol() != null) {
+			return compare.getRefSymbol().equals(this.getRefSymbol());
+		}
+    	if (compare.getSymbol() != null && this.getSymbol() != null) {
 			return compare.getSymbol().equals(this.getSymbol());
+		}
     	return super.equals(object);
     }
 
@@ -373,29 +375,37 @@ public class RefData extends DataObject {
     public void setSubscribeSymbol(String subscribeSymbol) {
         this.set(subscribeSymbol, RefDataField.SUBSCRIBE_SYMBOL.value());
     }
-    
+
     public void setInstrumentType(long instrumentType) {
     	this.set(instrumentType, RefDataField.INSTRUMENT_TYPE.value());
     }
-    
+
     public long getInstrumentType() {
     	return this.get(long.class, RefDataField.INSTRUMENT_TYPE.value());
     }
-    
+
     public void setCommissionTable(String commissionTable) {
     	this.set(commissionTable, RefDataField.COMMISSION_TABLE.value());
     }
-    
+
     public String getCommissionTable() {
     	return this.get(String.class, RefDataField.COMMISSION_TABLE.value());
     }
-    
+
     public void setTradableDays(int tradableDays) {
     	this.set(tradableDays, RefDataField.TRADABLE_DAYS.value());
     }
-    
+
     public int getTradableDays() {
     	return this.get(int.class, RefDataField.TRADABLE_DAYS.value());
+    }
+
+    public void setContractPolicy(String contractPolicy) {
+    	this.set(contractPolicy, RefDataField.CONTRACT_POLICY.value());
+    }
+
+    public String getContractPolicy() {
+    	return this.get(String.class, RefDataField.CONTRACT_POLICY.value());
     }
 
 }

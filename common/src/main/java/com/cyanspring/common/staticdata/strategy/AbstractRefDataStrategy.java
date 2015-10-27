@@ -1,5 +1,8 @@
 package com.cyanspring.common.staticdata.strategy;
 
+import java.lang.reflect.Constructor;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,11 +15,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.marketsession.IndexSessionType;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataException;
-import com.cyanspring.common.staticdata.RefDataUtil;
-import com.cyanspring.common.staticdata.fu.IndexSessionType;
+import com.cyanspring.common.staticdata.policy.IContractPolicy;
 import com.cyanspring.common.util.PriceUtils;
 
 public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
@@ -39,23 +42,57 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
     private Calendar cal;
     private String INDEX_FU_CN = "指数";
     private String INDEX_FU_TW = "指數";
+    private final String CONTRACT_POLICY_PACKAGE = "com.cyanspring.common.staticdata.policy";
+    private final String MONTH_PATTERN = "${YYMM}";
 
 	@Override
 	public void init(Calendar cal, Map<String, Quote> map) {
-
-		this.template = template;
 		spotCnName = template.getSpotCNName();
 		spotTwName = template.getSpotTWName();
 
 		if (cal != null) {
 			this.cal = cal;
 		}
-
 	}
 
 	@Override
 	public List<RefData> updateRefData(RefData refData) {
-		return new ArrayList<>();
+		IContractPolicy policy;
+		String contractPolicy = refData.getContractPolicy();
+		try {
+			Class<IContractPolicy> tempClz = (Class<IContractPolicy>) Class
+					.forName(CONTRACT_POLICY_PACKAGE + "." + contractPolicy + "ContractPolicy");
+			Constructor<IContractPolicy> ctor = tempClz.getConstructor();
+			policy = ctor.newInstance();
+		} catch (Exception e) {
+			log.warn("Can't find contract policy: {}", contractPolicy);
+			policy = new IContractPolicy() {
+
+				@Override
+				public List<String> getContractMonths(RefData refData) {
+					return new ArrayList<>();
+				}
+
+			};
+		}
+
+		List<RefData> lstRefData = new ArrayList<>();
+		List<String> lstContractMonth = policy.getContractMonths(refData);
+		int months = lstContractMonth.size();
+		NumberFormat formatter = new DecimalFormat("##00");
+		for (int i = 0; i < months; i++) {
+			String month = lstContractMonth.get(i);
+			String seq = formatter.format(i + 1);
+			RefData data = (RefData)refData.clone();
+			data.setENDisplayName(refData.getENDisplayName().replace(MONTH_PATTERN, month));
+			data.setCNDisplayName(refData.getCNDisplayName().replace(MONTH_PATTERN, month));
+			data.setTWDisplayName(refData.getTWDisplayName().replace(MONTH_PATTERN, month));
+			data.setSymbol(refData.getSymbol().replace(MONTH_PATTERN, month));
+			data.setRefSymbol(refData.getRefSymbol() + seq);
+			lstRefData.add(data);
+		}
+
+		return lstRefData;
 	}
 
 	@Override
@@ -180,10 +217,6 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		return refSymbol.replaceAll("\\.[A-Z]+$", "");
 	}
 
-	protected String getCategory(RefData refData) {
-		return RefDataUtil.getCategory(refData);
-	}
-
 	protected String getCNName(String combineCnName) throws ParseException{
 		String spotName =  getSpotName(combineCnName, Locale.CN).replaceAll("\\d", "");
 		String date = combineCnName.replaceAll("\\W", "").replaceAll("\\D", "");
@@ -290,6 +323,19 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 
 	protected SimpleDateFormat getSettlementDateFormat() {
 		return new SimpleDateFormat("yyyy-MM-dd") ;
+	}
+
+	private List<String> getContractMonths(RefData refData) {
+		String contractPolicy = refData.getContractPolicy();
+		ContractPolicyFactory factory = new ContractPolicyFactory();
+		switch (contractPolicy) {
+		case "Index":
+			return factory.getIndexContractMonths(refData);
+		case "All":
+			return factory.getAllContractMonths(refData);
+		default:
+			return null;
+		}
 	}
 
 }

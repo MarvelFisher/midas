@@ -2,12 +2,15 @@ package com.cyanspring.common.staticdata.strategy;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.staticdata.RefData;
-import com.cyanspring.common.staticdata.RefDataException;
 import com.cyanspring.common.staticdata.RefDataUtil;
 
 public class TWFStrategy extends AbstractRefDataStrategy {
@@ -48,26 +51,19 @@ public class TWFStrategy extends AbstractRefDataStrategy {
 	}
 
 	@Override
-	public void init(Calendar cal, RefData template) {
-		super.init(cal, template);
-	}
+	public List<RefData> updateRefData(RefData refData) {
+		if (refData != null) {
+			setCurrMonthSettleCalendar(refData);
+			List<RefData> lstRefData = new ArrayList<>();
+			for (int i = 0; i < 5; i++) {
+				RefData r = (RefData)refData.clone();
+				lstRefData.add(r);
+			}
 
-	@Override
-	public void updateRefData(RefData refData) {
-		try {
-			setTemplateData(refData);
-			String combineCnName = refData.getCNDisplayName();
-			Calendar cal = getContractDate(combineCnName);
-			// The settlement date is the 3rd Wednesday in month
-			refData.setSettlementDate(RefDataUtil.calSettlementDateByWeekDay(
-					refData, cal, weekOfMonth, dayOfWeek));
-			refData.setIndexSessionType(getIndexSessionType(refData));
-			refData.setRefSymbol(getRefSymbol(refData));
-		} catch (RefDataException e) {
-			log.warn(e.getMessage());
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
+			return lstRefData;
 		}
+
+		return null;
 	}
 
 	@Override
@@ -143,6 +139,87 @@ public class TWFStrategy extends AbstractRefDataStrategy {
 		}
 
 		return refSymbol;
+	}
+
+	private List<String> getTradableMonths() {
+		// recent 2 months and coming 3 quarter months
+		Calendar currCalendar = Calendar.getInstance();
+		int firstTrdMonth = currCalendar.get(Calendar.MONTH);
+		if (currCalendar.after(currMonthSettleCalendar)) {
+			firstTrdMonth += 1;
+		}
+
+		String thisYear = (currCalendar.get(Calendar.YEAR) + "").substring(2);
+		String nextYear = ((currCalendar.get(Calendar.YEAR) + 1) + "").substring(2);
+
+		switch (firstTrdMonth) {
+		case 0:
+			return new ArrayList<>(
+					Arrays.asList(thisYear + "01", thisYear + "02",
+							thisYear + "03", thisYear + "06", thisYear + "09"));
+		case 1:
+			return new ArrayList<>(
+					Arrays.asList(thisYear + "02", thisYear + "03",
+							thisYear + "06", thisYear + "09", thisYear + "12"));
+		case 2:
+			return new ArrayList<>(
+					Arrays.asList(thisYear + "03", thisYear + "04",
+							thisYear + "06", thisYear + "09", thisYear + "12"));
+		case 3:
+			return new ArrayList<>(
+					Arrays.asList(thisYear + "04", thisYear + "05",
+							thisYear + "06", thisYear + "09", thisYear + "12"));
+		case 4:
+			return new ArrayList<>(
+					Arrays.asList(thisYear + "05", thisYear + "06",
+							thisYear + "09", thisYear + "12", nextYear + "03"));
+		case 5:
+			return new ArrayList<>(
+					Arrays.asList(thisYear + "06", thisYear + "07",
+							thisYear + "09", thisYear + "12", nextYear + "03"));
+		case 6:
+			return new ArrayList<>(
+					Arrays.asList(thisYear + "07", thisYear + "08",
+							thisYear + "09", thisYear + "12", nextYear + "03"));
+		case 7:
+			return new ArrayList<>(
+					Arrays.asList(thisYear + "08", thisYear + "09",
+							thisYear + "12", nextYear + "03", nextYear + "06"));
+		case 8:
+			return new ArrayList<>(
+					Arrays.asList(thisYear + "09", thisYear + "10",
+							thisYear + "12", nextYear + "03", nextYear + "06"));
+		case 9:
+			return new ArrayList<>(
+					Arrays.asList(thisYear + "10", thisYear + "11",
+							thisYear + "12", nextYear + "03", nextYear + "06"));
+		case 10:
+			return new ArrayList<>(
+					Arrays.asList(thisYear + "11", thisYear + "12",
+							nextYear + "03", nextYear + "06", nextYear + "09"));
+		case 11:
+			return new ArrayList<>(
+					Arrays.asList(thisYear + "12", nextYear + "01",
+							nextYear + "03", nextYear + "06", nextYear + "09"));
+		default:
+			return null;
+		}
+
+	}
+
+	private void setCurrMonthSettleCalendar(RefData refData) throws ParseException {
+		Calendar currCalendar = Calendar.getInstance();
+		if (currMonthSettleCalendar == null ||
+				(currCalendar.get(Calendar.MONTH) - currMonthSettleCalendar.get(Calendar.MONTH) > 0)) {
+			SimpleDateFormat settleSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+			// Get the settlement date in current month
+			String settleDateInCurrMonth = RefDataUtil.calSettlementDateByWeekDay(
+					refData, currCalendar, weekOfMonth, dayOfWeek);
+			settleDateInCurrMonth = settleDateInCurrMonth + " " + settlementTime;
+			currMonthSettleCalendar = Calendar.getInstance();
+			currMonthSettleCalendar.setTime(settleSdf.parse(settleDateInCurrMonth));
+		}
 	}
 
 }

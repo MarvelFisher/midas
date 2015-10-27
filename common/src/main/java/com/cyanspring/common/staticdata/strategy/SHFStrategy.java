@@ -2,6 +2,7 @@ package com.cyanspring.common.staticdata.strategy;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,7 @@ import com.cyanspring.common.staticdata.RefDataUtil;
  * @since 1.0
  */
 public class SHFStrategy extends AbstractRefDataStrategy {
-	
+
 	protected static final Logger log = LoggerFactory.getLogger(SHFStrategy.class);
 
     @Override
@@ -28,11 +29,11 @@ public class SHFStrategy extends AbstractRefDataStrategy {
     }
 
 	@Override
-    public void updateRefData(RefData refData) {
+    public List<RefData> updateRefData(RefData refData) {
 		try {
 
 			setTemplateData(refData);
-			String combineCnName = refData.getCNDisplayName();		
+			String combineCnName = refData.getCNDisplayName();
 			Calendar cal = getContractDate(combineCnName);
 			if(refData.getCategory().equals("FU")){
 				refData.setSettlementDate(RefDataUtil.calSettlementDateByTradeDate(refData, cal,-1));

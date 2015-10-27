@@ -31,11 +31,15 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>TXFJ5.TWF</string>
+				<string>TXF</string>
 			</entry>
 			<entry>
 				<string>Category</string>
 				<string>FITX</string>
+			</entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>TX</string>
 			</entry>
 			<entry>
 				<string>Spot ENName</string>
@@ -126,9 +130,9 @@
 				<int>0</int>
 			</entry>
 			<entry>
-                <string>Lot CF</string>
-                <double>35</double>
-            </entry>
+				<string>Lot CF</string>
+				<double>35</double>
+			</entry>
 			<entry>
 				<string>Minimal CF</string>
 				<double>0</double>
@@ -171,12 +175,16 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>MXFJ5.TWF</string>
+				<string>MXF</string>
 			</entry>
 			<entry>
 				<string>Category</string>
 				<string>FIMTX</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>TX</string>
+            </entry>
 			<entry>
 				<string>Spot ENName</string>
 				<string>MTX</string>

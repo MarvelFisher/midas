@@ -50,7 +50,8 @@ public enum RefDataField {
 	SUBSCRIBE_SYMBOL("Subscribe symbol"),
 	INSTRUMENT_TYPE("Instrument type"),
 	COMMISSION_TABLE("Commission table"),
-	TRADABLE_DAYS("Tradable days")
+	TRADABLE_DAYS("Tradable days"),
+	CONTRACT_POLICY("Contract policy")
 	;
 
 	static HashMap<String, RefDataField> map = new HashMap<String, RefDataField>();
