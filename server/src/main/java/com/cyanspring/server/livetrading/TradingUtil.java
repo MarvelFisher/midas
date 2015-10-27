@@ -62,6 +62,10 @@ public class TradingUtil {
             return;
         log.info("{} Closing of positions:{} ",account.getId(), positionList.size());
         for (OpenPosition position : positionList) {
+        	if (PriceUtils.Equal(position.getAvailableQty(), 0)) {
+        		log.info("Position: " + position.getSymbol() + ", available qty is zero, skip it");
+        		continue;
+        	}
             Quote quote = positionKeeper.getQuote(position.getSymbol());
             if (checkValidQuote && !isValidQuote(quote)){
             	log.info(" invalid quote:{}",quote.getSymbol());
