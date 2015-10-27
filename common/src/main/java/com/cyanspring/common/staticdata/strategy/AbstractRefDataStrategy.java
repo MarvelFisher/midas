@@ -2,12 +2,16 @@ package com.cyanspring.common.staticdata.strategy;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataException;
@@ -37,7 +41,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
     private String INDEX_FU_TW = "指數";
 
 	@Override
-	public void init(Calendar cal, RefData template) {
+	public void init(Calendar cal, Map<String, Quote> map) {
 
 		this.template = template;
 		spotCnName = template.getSpotCNName();
@@ -50,8 +54,8 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 	}
 
 	@Override
-	public void updateRefData(RefData refData) {
-
+	public List<RefData> updateRefData(RefData refData) {
+		return new ArrayList<>();
 	}
 
 	@Override

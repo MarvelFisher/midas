@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.staticdata.strategy.AbstractRefDataStrategy;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -28,10 +29,15 @@ public class RefDataFactory extends RefDataService {
 	private String refDataTemplatePath;
 	private List<RefData> refDataTemplateList;
 	private Map<String, RefData> refDataTemplateMap = new HashMap<String, RefData>();
+	private Map<String, Quote> qMap;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void init() throws Exception {
+		if (refDataFile != null) {
+			File quoteFile = new File (refDataFile);
+			qMap = (Map<String, Quote>) xstream.fromXML(quoteFile);
+		}
 		log.info("initialising with " + refDataTemplatePath);
 		if (StringUtils.hasText(refDataTemplatePath)) {
 			File templateFile = new File(refDataTemplatePath);
@@ -97,7 +103,7 @@ public class RefDataFactory extends RefDataService {
 				strategy = new AbstractRefDataStrategy() {
 
 					@Override
-					public void init(Calendar cal) {
+					public void init(Calendar cal, Map<String, Quote> map) {
 						
 					}
 
@@ -119,7 +125,7 @@ public class RefDataFactory extends RefDataService {
 		} else {
 			strategy = strategyMap.get(refData.getStrategy());
 		}
-		strategy.init(cal);
+		strategy.init(cal, qMap);
 		List<RefData> list = strategy.updateRefData(refData);
 		log.info("settlement date:{}, index type:{}", refData.getSettlementDate(), refData.getIndexSessionType());
 		return list;
