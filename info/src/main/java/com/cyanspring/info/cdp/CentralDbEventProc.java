@@ -28,7 +28,7 @@ import com.cyanspring.common.event.marketsession.AllIndexSessionEvent;
 import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
-import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
+//import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
 import com.cyanspring.common.marketdata.HistoricalPrice;
 import com.cyanspring.common.marketdata.PriceHighLow;
 import com.cyanspring.common.message.ErrorMessage;
@@ -258,10 +258,10 @@ public class CentralDbEventProc implements Runnable
 		centraldb.onCallRefData(event);
 	}
 	
-	public void processRefDataUpdateEvent(RefDataUpdateEvent event) 
-	{
-		centraldb.onUpdateRefData(event);
-	}
+//	public void processRefDataUpdateEvent(RefDataUpdateEvent event) 
+//	{
+//		centraldb.onUpdateRefData(event);
+//	}
 	
 	public void processGroupListRequestEvent(GroupListRequestEvent event)
 	{
@@ -334,10 +334,10 @@ public class CentralDbEventProc implements Runnable
 		{
 			processIndexSessionEvent((IndexSessionEvent)event);
 		}
-		else if (event instanceof RefDataUpdateEvent)
-		{
-			processRefDataUpdateEvent((RefDataUpdateEvent)event);
-		}
+//		else if (event instanceof RefDataUpdateEvent)
+//		{
+//			processRefDataUpdateEvent((RefDataUpdateEvent)event);
+//		}
 	}
 
 	@Override

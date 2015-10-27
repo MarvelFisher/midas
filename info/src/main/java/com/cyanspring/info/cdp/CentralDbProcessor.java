@@ -55,8 +55,8 @@ import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
-import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
-import com.cyanspring.common.event.refdata.RefDataUpdateEvent.Action;
+//import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
+//import com.cyanspring.common.event.refdata.RefDataUpdateEvent.Action;
 import com.cyanspring.common.info.FCRefSymbolInfo;
 import com.cyanspring.common.info.FXRefSymbolInfo;
 import com.cyanspring.common.info.GroupInfo;
@@ -178,7 +178,7 @@ public class CentralDbProcessor implements IPlugin
 			subscribeToEvent(MarketSessionEvent.class, null);
 			subscribeToEvent(QuoteEvent.class, null);
 			subscribeToEvent(RefDataEvent.class, null);
-			subscribeToEvent(RefDataUpdateEvent.class, null);
+//			subscribeToEvent(RefDataUpdateEvent.class, null);
 			subscribeToEvent(IndexSessionEvent.class, null);
 		}
 
@@ -331,10 +331,10 @@ public class CentralDbProcessor implements IPlugin
 		mapCentralDbEventProc.get(ProcSession).onEvent(event);
 	}
 	
-	public void processRefDataUpdateEvent(RefDataUpdateEvent event) 
-	{
-		mapCentralDbEventProc.get(ProcSession).onEvent(event);
-	}
+//	public void processRefDataUpdateEvent(RefDataUpdateEvent event) 
+//	{
+//		mapCentralDbEventProc.get(ProcSession).onEvent(event);
+//	}
 	
 	public void processRetrieveChartEvent(RetrieveChartEvent event)
 	{
@@ -677,68 +677,68 @@ public class CentralDbProcessor implements IPlugin
 		sendSessionRequest();
 	}
 	
-	public void onUpdateRefData(RefDataUpdateEvent event)
-	{
-		log.info("Update refData start");
-		List<RefData> refList = event.getRefDataList();
-		String symbol, indexSessionType, key;
-		if (event.getAction() == Action.ADD || event.getAction() == Action.MOD)
-		{
-			int nCount = getRefSymbolInfo().setByRefData(refList);
-//			if (nCount == 0)
+//	public void onUpdateRefData(RefDataUpdateEvent event)
+//	{
+//		log.info("Update refData start");
+//		List<RefData> refList = event.getRefDataList();
+//		String symbol, indexSessionType, key;
+//		if (event.getAction() == Action.ADD || event.getAction() == Action.MOD)
+//		{
+//			int nCount = getRefSymbolInfo().setByRefData(refList);
+////			if (nCount == 0)
+////			{
+////				return;
+////			}
+//			for(RefData refdata : refList)
 //			{
-//				return;
+//				if (refdata.getExchange() == null) 
+//					continue;
+//				symbol = refdata.getSymbol();
+//				indexSessionType = refdata.getIndexSessionType();
+//				SymbolInfo info = getRefSymbolInfo().getbySymbol(symbol);
+//				if (info != null)
+//					info.updateByRefData(refdata);
+//				int chefNum = getChefNumber(symbol);
+//				SymbolChef chef = SymbolChefList.get(chefNum);
+//				if (chef.createSymbol(refdata, this))
+//					log.debug("Add symbol " + symbol);
+//				SymbolData data = chef.getSymbolData(symbol);
+//				data.setSessionIndex(indexSessionType);
+//				log.debug("Set symbol:" + symbol + "sesType:" + indexSessionType);
+//				if (IndexSessionType.EXCHANGE.name().equals(indexSessionType))
+//				{
+//					key = info.getExchange();
+//				}
+//				else if (IndexSessionType.SPOT.name().equals(indexSessionType))
+//				{
+//					key = info.getCategory();
+//				}
+//				else if (IndexSessionType.SETTLEMENT.name().equals(indexSessionType))
+//				{
+//					key = info.getCode();
+//				}
+//				else 
+//				{
+//					continue;
+//				}
+//				MarketSessionData sesdata = sessionMap.get(key);
+//				if (sesdata != null)
+//				{
+//					data.setSessionType(sesdata.getSessionType());
+//				}
 //			}
-			for(RefData refdata : refList)
-			{
-				if (refdata.getExchange() == null) 
-					continue;
-				symbol = refdata.getSymbol();
-				indexSessionType = refdata.getIndexSessionType();
-				SymbolInfo info = getRefSymbolInfo().getbySymbol(symbol);
-				if (info != null)
-					info.updateByRefData(refdata);
-				int chefNum = getChefNumber(symbol);
-				SymbolChef chef = SymbolChefList.get(chefNum);
-				if (chef.createSymbol(refdata, this))
-					log.debug("Add symbol " + symbol);
-				SymbolData data = chef.getSymbolData(symbol);
-				data.setSessionIndex(indexSessionType);
-				log.debug("Set symbol:" + symbol + "sesType:" + indexSessionType);
-				if (IndexSessionType.EXCHANGE.name().equals(indexSessionType))
-				{
-					key = info.getExchange();
-				}
-				else if (IndexSessionType.SPOT.name().equals(indexSessionType))
-				{
-					key = info.getCategory();
-				}
-				else if (IndexSessionType.SETTLEMENT.name().equals(indexSessionType))
-				{
-					key = info.getCode();
-				}
-				else 
-				{
-					continue;
-				}
-				MarketSessionData sesdata = sessionMap.get(key);
-				if (sesdata != null)
-				{
-					data.setSessionType(sesdata.getSessionType());
-				}
-			}
-		}
-		else if (event.getAction() == Action.DEL)
-		{
-			getRefSymbolInfo().delByRefData(refList);
-			for(RefData refdata : refList)
-			{
-				int chefNum = getChefNumber(refdata.getSymbol());
-				SymbolChefList.get(chefNum).removeSymbol(refdata.getSymbol());
-			}
-		}
-		log.info("Update refData finish");
-	}
+//		}
+//		else if (event.getAction() == Action.DEL)
+//		{
+//			getRefSymbolInfo().delByRefData(refList);
+//			for(RefData refdata : refList)
+//			{
+//				int chefNum = getChefNumber(refdata.getSymbol());
+//				SymbolChefList.get(chefNum).removeSymbol(refdata.getSymbol());
+//			}
+//		}
+//		log.info("Update refData finish");
+//	}
 	
 	protected void retrieveChart(final RetrieveChartEvent event)
 	{
