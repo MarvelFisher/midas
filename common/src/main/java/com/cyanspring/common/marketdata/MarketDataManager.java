@@ -9,7 +9,7 @@ import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
-import com.cyanspring.common.staticdata.RefDataCommodity;
+import com.cyanspring.common.staticdata.RefDataBitUtil;
 import com.cyanspring.common.staticdata.WindBaseDBData;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
@@ -207,15 +207,15 @@ public class MarketDataManager extends MarketDataReceiver {
                                         Quote quote = quotes.get(symbol);
                                         if (quote != null) {
                                             Quote tempQuote = (Quote) quote.clone();
-                                            if (marketTypes.get(tempQuote.getSymbol()) != null) {
-                                                if (RefDataCommodity.INDEX.getValue().equals(marketTypes.get(tempQuote.getSymbol()))
-                                                        || RefDataCommodity.STOCK.getValue().equals(marketTypes.get(tempQuote.getSymbol()))
-                                                        || RefDataCommodity.FOREX.getValue().equals(marketTypes.get(tempQuote.getSymbol()))
+                                            if (instrumentTypes.get(tempQuote.getSymbol()) != null) {
+                                                if (RefDataBitUtil.isIndex(instrumentTypes.get(tempQuote.getSymbol()))
+                                                        || RefDataBitUtil.isStock(instrumentTypes.get(tempQuote.getSymbol()))
+                                                        || RefDataBitUtil.isForex(instrumentTypes.get(tempQuote.getSymbol()))
                                                         ) {
                                                     tempQuote.setClose(tempQuote.getLast());
                                                     log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = Last = " + tempQuote.getLast());
                                                 }
-                                                if (RefDataCommodity.FUTURES.getValue().equals(marketTypes.get(tempQuote.getSymbol()))) {
+                                                if (RefDataBitUtil.isFutures(instrumentTypes.get(tempQuote.getSymbol()))) {
                                                     if (quoteExtends.containsKey(tempQuote.getSymbol())) {
                                                         DataObject quoteExtend = quoteExtends.get(tempQuote.getSymbol());
                                                         double settlePrice = tempQuote.getLast();
@@ -241,14 +241,14 @@ public class MarketDataManager extends MarketDataReceiver {
                                     if (quoteExtendCleaner != null) {
                                         if (quoteExtends.get(symbol) != null) {
                                             DataObject quoteExtend = (DataObject) quoteExtends.get(symbol).clone();
-                                            if (marketTypes.get(symbol) != null) {
+                                            if (instrumentTypes.get(symbol) != null) {
                                                 double preClose = 0;
                                                 double ceil = 0;
                                                 double floor = 0;
                                                 if (quotes.containsKey(symbol)) {
                                                     preClose = quotes.get(symbol).getLast();
                                                 }
-                                                if (RefDataCommodity.FUTURES.getValue().equals(marketTypes.get(symbol))) {
+                                                if (RefDataBitUtil.isFutures(instrumentTypes.get(symbol))) {
                                                     if (quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value())) {
                                                         preClose = quoteExtend.get(Double.class, QuoteExtDataField.SETTLEPRICE.value());
                                                     }

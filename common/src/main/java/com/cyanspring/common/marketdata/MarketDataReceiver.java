@@ -53,7 +53,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     protected HashMap<String, DataObject> quoteExtends = new HashMap<String, DataObject>();
     protected Map<String, Quote> lastTradeDateQuotes = new HashMap<String, Quote>();
     protected Map<String, DataObject> lastTradeDateQuoteExtends = new HashMap<String, DataObject>();
-    protected HashMap<String, String> marketTypes = new HashMap<>();
+    protected HashMap<String, Long> instrumentTypes = new HashMap<>();
     protected ConcurrentHashMap<String, MarketSessionData> indexSessions = new ConcurrentHashMap<>();
     protected ConcurrentHashMap<String, ArrayList<String>> indexSessionTypes = new ConcurrentHashMap<String, ArrayList<String>>(); //SymoblArrryByIndex
     private ConcurrentHashMap<String, String> indexs = new ConcurrentHashMap<>(); //IndexBySymbol
@@ -126,7 +126,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 for (int i = 0; i < refDataList.size(); i++) {
                     RefData refData = (RefData) refDataList.get(i);
                     preSubscriptionList.add(refData.getSymbol());
-                    marketTypes.put(refData.getSymbol(), refData.getCommodity());
+                    instrumentTypes.put(refData.getSymbol(), refData.getInstrumentType());
                     if(!checkIndexSessionType(refData)) continue;
                 }
                 checkEventAndSend(event);
@@ -217,7 +217,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                     break;
                 case MOD:
                     for(RefData refData : refDataUpdateList) {
-                        marketTypes.put(refData.getSymbol(), refData.getCommodity());
+                        instrumentTypes.put(refData.getSymbol(), refData.getInstrumentType());
                         if(!checkIndexSessionType(refData)) continue;
                     }
                     break;

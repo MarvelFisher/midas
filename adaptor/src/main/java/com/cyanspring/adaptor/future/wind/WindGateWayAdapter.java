@@ -1,5 +1,6 @@
 package com.cyanspring.adaptor.future.wind;
 
+import com.cyanspring.common.marketsession.IndexSessionType;
 import com.cyanspring.network.transport.FDTFields;
 import com.cyanspring.network.transport.FDTFrameDecoder;
 import com.cyanspring.adaptor.future.wind.data.*;
@@ -14,7 +15,6 @@ import com.cyanspring.common.marketdata.*;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.staticdata.RefData;
-import com.cyanspring.common.staticdata.fu.IndexSessionType;
 import com.cyanspring.common.util.DualMap;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.id.Library.Util.FixStringBuilder;
