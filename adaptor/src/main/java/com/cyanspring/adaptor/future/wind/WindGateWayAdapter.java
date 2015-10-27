@@ -6,7 +6,6 @@ import com.cyanspring.adaptor.future.wind.data.*;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.AsyncEvent;
-import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
