@@ -344,8 +344,14 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 		Business.getInstance().getEventManager()
 				.subscribe(QuoteSymbolSelectEvent.class, this);
 		cbSymbol.notifyListeners(SWT.Selection, new Event());
-		if(cbSymbol != null && cbSymbol.getItem(0) != null) 
-			cbSymbol.setText(cbSymbol.getItem(0) + " ");
+		
+		try{
+			if(cbSymbol != null&& cbSymbol.getItems().length>0 && cbSymbol.getItem(0) != null) 
+				cbSymbol.setText(cbSymbol.getItem(0) + " ");
+
+		}catch(Exception e){
+			log.info(e.getMessage(),e);
+		}
 
 		quoteChangeListener = new IQuoteChangeListener() {
 			@Override
