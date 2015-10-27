@@ -1,6 +1,7 @@
 package com.cyanspring.cstw.cachingmanager.riskcontrol;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,33 +38,45 @@ public final class FrontRCPositionCachingManager extends BasicCachingManager {
 
 	private FrontRCPositionCachingManager() {
 		super();
+		accountPositionMap = new HashMap<String, Map<String, OverallPosition>>();
 		initListener();
 	}
 
 	private void initListener() {
 		positionChangeListener = new IPositionChangeListener() {
+
 			@Override
 			public void ClosedPositionChange(ClosedPosition arg0) {
-				log.info("========================ClosedPositionChange");
+				// TODO Auto-generated method stub
 
 			}
 
 			@Override
 			public void OpenPositionChange(OpenPosition arg0) {
-				log.info("========================OpenPositionChange");
+				// TODO Auto-generated method stub
 
 			}
 
 			@Override
 			public void OverAllPositionChange(List<OverallPosition> list) {
-				log.info("========================OverAllPositionChange"+list);
-				sendPositionUpdateEvent();
+				if (list != null) {
+					for (OverallPosition position : list) {
+						String account = position.getAccount();
+						if (accountPositionMap.get(account) == null) {
+							Map<String, OverallPosition> map = new HashMap<String, OverallPosition>();
+							accountPositionMap.put(account, map);
+						}
+						accountPositionMap.get(account).put(position.getId(),
+								position);
+					}
+					sendPositionUpdateEvent();
+				}
 			}
 
 		};
+
 		business.getAllPositionManager().addIPositionChangeListener(
 				positionChangeListener);
-
 	}
 
 	protected void sendPositionUpdateEvent() {
