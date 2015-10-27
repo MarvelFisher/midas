@@ -12,7 +12,7 @@ import com.cyanspring.common.Clock;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
 
-public class MarketSessionChecker implements IMarketSession {
+public class MarketSessionChecker implements IMarketSessionChecker {
 	private static final Logger log = LoggerFactory.getLogger(MarketSessionChecker.class);
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private Date tradeDate;
