@@ -629,7 +629,7 @@ public class BusinessManager implements ApplicationContextAware {
 
 			OpenPosition position = positionKeeper.getOverallPosition(account,
 					symbol);
-			double qty = Math.abs(position.getQty());
+			double qty = Math.abs(position.getAvailableQty());
 
 			if (PriceUtils.isZero(qty)) {
 				clientMessage = ErrorMessage.POSITION_NOT_FOUND;
