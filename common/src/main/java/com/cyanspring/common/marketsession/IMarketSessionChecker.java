@@ -6,7 +6,7 @@ import java.util.Map;
 import com.cyanspring.common.staticdata.RefData;
 
 
-public interface IMarketSession {
+public interface IMarketSessionChecker {
 	public void init(Date date, RefData refData) throws Exception;
 	public MarketSessionData getState(RefData refData) throws Exception;
     public MarketSessionData searchState(Date date, RefData refData) throws Exception;

@@ -22,21 +22,21 @@ import com.cyanspring.common.staticdata.fu.IndexSessionType;
 
 public class MarketSessionUtil implements IPlugin{
 	private static final Logger log = LoggerFactory.getLogger(MarketSessionUtil.class);
-    private Map<String, IMarketSession> sessionMap;
+    private Map<String, IMarketSessionChecker> sessionMap;
     
     @Autowired
     private RefDataService refDataManager; 
     
-    public MarketSessionUtil(List<IMarketSession> sessionList) {
+    public MarketSessionUtil(List<IMarketSessionChecker> sessionList) {
     	sessionMap = new HashMap<>();
-    	for(IMarketSession session : sessionList){
+    	for(IMarketSessionChecker session : sessionList){
     		sessionMap.put(session.getIndex(), session);
     	}
     }
     
     public Map<String, MarketSessionData> getMarketSession() throws Exception {
     	Map<String, MarketSessionData> ret = new HashMap<>();
-    	for (Entry<String, IMarketSession> entry : sessionMap.entrySet()) {
+    	for (Entry<String, IMarketSessionChecker> entry : sessionMap.entrySet()) {
     		ret.put(entry.getKey(), entry.getValue().getState(null));
     	}
     	return ret;
@@ -138,7 +138,7 @@ public class MarketSessionUtil implements IPlugin{
     	String index = searchIndex(refData);
     	if (!StringUtils.hasText(index)) 
     		return null;
-    	IMarketSession session = sessionMap.get(index);
+    	IMarketSessionChecker session = sessionMap.get(index);
     	if (session == null)
     		return null;
     	return session.getMarketSession(refData, date);
@@ -169,10 +169,9 @@ public class MarketSessionUtil implements IPlugin{
     
     private SessionPair getSession(RefData refData) throws Exception{
     	String index = searchIndex(refData);
-    	for (Entry<String, IMarketSession> entry : sessionMap.entrySet()) {
-    		if(entry.getKey().equals(index))
-    			return getPair(refData, entry.getValue());
-    	}
+    	IMarketSessionChecker marketSession = sessionMap.get(index);
+    	if (marketSession != null)
+    		return getPair(refData, marketSession);
     	return null;
     }
     
@@ -184,7 +183,7 @@ public class MarketSessionUtil implements IPlugin{
     	return comp2.toLowerCase().equals(comp1.toLowerCase());
     }
     
-    private SessionPair getPair(RefData refData, IMarketSession session) throws Exception {
+    private SessionPair getPair(RefData refData, IMarketSessionChecker session) throws Exception {
     	String sessionIndex = refData.getIndexSessionType();
     	if (sessionIndex == null)
     		throw new Exception("Null indexSessionType, symbol: " + refData.getSymbol());
@@ -226,7 +225,7 @@ public class MarketSessionUtil implements IPlugin{
     }
 
     public boolean isHoliday(String symbol, Date date) throws Exception{
-    	for (Entry<String, IMarketSession> entry : sessionMap.entrySet()) {
+    	for (Entry<String, IMarketSessionChecker> entry : sessionMap.entrySet()) {
     		if (compareIndex(entry.getKey(), symbol)) {
     			ITradeDate checker = entry.getValue().getTradeDateManager();
     			return checker.isHoliday(date);
@@ -237,8 +236,8 @@ public class MarketSessionUtil implements IPlugin{
 
     private class SessionPair {
     	private String index;
-    	private IMarketSession session;
-    	public SessionPair(String index, IMarketSession session){
+    	private IMarketSessionChecker session;
+    	public SessionPair(String index, IMarketSessionChecker session){
     		this.index = index;
     		this.session = session;
     	}
@@ -247,7 +246,7 @@ public class MarketSessionUtil implements IPlugin{
 	@Override
 	public void init() throws Exception {
 		Date date = Clock.getInstance().now();
-		for (Entry<String, IMarketSession> e : sessionMap.entrySet()) {
+		for (Entry<String, IMarketSessionChecker> e : sessionMap.entrySet()) {
 			e.getValue().init(date, null);
 		}
 	}

@@ -44,7 +44,7 @@ public class MarketSessionManager implements IPlugin, IAsyncEventListener {
 
     private MarketSessionType currentSessionType;
     private String currentTradeDate;
-    private IMarketSession sessionChecker;
+    private IMarketSessionChecker sessionChecker;
 
     protected AsyncTimerEvent timerEvent = new AsyncTimerEvent();
     protected long timerInterval = 1 * 1000;
