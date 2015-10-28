@@ -106,29 +106,20 @@ public class LIVECFStrategy extends AbstractRefDataStrategy {
     public List<RefData> updateRefData(RefData refData) {
     	String refSymbol = refData.getRefSymbol();
         if (near1List.contains(refSymbol)) {
-        	writeToRefData(refData, n0);
+        	refData.setSettlementDate(n0.settlementDay);
         } else if (near2List.contains(refSymbol)){
-        	writeToRefData(refData, n1);
+        	refData.setSettlementDate(n1.settlementDay);
         } else if (season1List.contains(refSymbol)){
-        	writeToRefData(refData, f0);
+        	refData.setSettlementDate(f0.settlementDay);
         } else if (season2List.contains(refSymbol)){
-        	writeToRefData(refData, f1);
+        	refData.setSettlementDate(f1.settlementDay);
         }
+
+        return super.updateRefData(refData);
     }
 
     @Override
     public void setRequireData(Object... objects) {
-    }
-
-    private void writeToRefData(RefData refData, StrategyData data){
-    	refData.setSettlementDate(data.settlementDay);
-        refData.setCNDisplayName(refData.getCNDisplayName().substring(0, 2) + data.ID);
-        refData.setENDisplayName(refData.getENDisplayName().substring(0, 2) + data.ID);
-        refData.setTWDisplayName(refData.getTWDisplayName().substring(0, 2) + data.ID);
-        refData.setSymbol(refData.getSymbol().substring(0, 2) + data.ID + "." + refData.getExchange());
-        refData.setDetailCN(String.format(detailCNDisplay, refData.getSpotCNName(), data.year, data.month + 1)); // The first month of the year in the Gregorian and Julian calendars is JANUARY which is 0
-        refData.setDetailTW(String.format(detailTWDisplay, refData.getSpotTWName(), data.year, data.month + 1));
-        refData.setDetailEN(String.format(detailCNDisplay, refData.getSpotENName(), data.year, data.month + 1));
     }
 
     private String calSettlementDay(int year, int month) {
