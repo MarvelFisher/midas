@@ -99,7 +99,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>IF${YYMM}</string>
+				<string>IF${YYMM}.CF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -215,7 +215,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>IH${YYMM}</string>
+				<string>IH${YYMM}.CF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -331,7 +331,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>IC${YYMM}</string>
+				<string>IC${YYMM}.CF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -435,7 +435,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>AG${YYMM}</string>
+				<string>ag${YYMM}.SHF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -539,7 +539,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>CU${YYMM}</string>
+				<string>cu${YYMM}.SHF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -647,7 +647,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>AU${YYMM}</string>
+				<string>au${YYMM}.SHF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -751,7 +751,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>RB${YYMM}</string>
+				<string>rb${YYMM}.SHF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -855,7 +855,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>RU${YYMM}</string>
+				<string>ru${YYMM}.SHF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -959,7 +959,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>ZN${YYMM}</string>
+				<string>zn${YYMM}.SHF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -1063,7 +1063,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>M${YYMM}</string>
+				<string>m${YYMM}.DCE</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -1167,7 +1167,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>I${YYMM}</string>
+				<string>i${YYMM}.DCE</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -1271,7 +1271,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>L${YYMM}</string>
+				<string>l${YYMM}.DCE</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -1375,7 +1375,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>Y${YYMM}</string>
+				<string>y${YYMM}.DCE</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -1479,7 +1479,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>PP${YYMM}</string>
+				<string>pp${YYMM}.DCE</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -1583,7 +1583,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>P${YYMM}</string>
+				<string>p${YYMM}.DCE</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -1687,7 +1687,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>J${YYMM}</string>
+				<string>j${YYMM}.DCE</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -1791,7 +1791,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>JD${YYMM}</string>
+				<string>jd${YYMM}.DCE</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -1895,7 +1895,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>FG${YYMM}</string>
+				<string>FG${YYMM}.CZC</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -1999,7 +1999,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>RM${YYMM}</string>
+				<string>RM${YYMM}.CZC</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -2107,7 +2107,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>TA${YYMM}</string>
+				<string>TA${YYMM}.CZC</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -2219,7 +2219,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>SR${YYMM}</string>
+				<string>SR${YYMM}.CZC</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -2327,7 +2327,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>MA${YYMM}</string>
+				<string>MA${YYMM}.CZC</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -2439,7 +2439,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>CF${YYMM}</string>
+				<string>CF${YYMM}.CZC</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -2543,7 +2543,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>Ni${YYMM}</string>
+				<string>ni${YYMM}.SHF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -2647,7 +2647,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>AL${YYMM}</string>
+				<string>al${YYMM}.SHF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -2755,7 +2755,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>BU${YYMM}</string>
+				<string>bu${YYMM}.SHF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -2859,7 +2859,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>PB${YYMM}</string>
+				<string>pb${YYMM}.SHF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -2963,7 +2963,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>HC${YYMM}</string>
+				<string>hc${YYMM}.SHF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -3067,7 +3067,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>SN${YYMM}</string>
+				<string>sn${YYMM}.SHF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -3175,7 +3175,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>FU${YYMM}</string>
+				<string>fu${YYMM}.SHF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -3279,7 +3279,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>WR${YYMM}</string>
+				<string>wr${YYMM}.SHF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -3383,7 +3383,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>JM${YYMM}</string>
+				<string>jm${YYMM}.DCE</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -3491,7 +3491,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>C${YYMM}</string>
+				<string>c${YYMM}.DCE</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -3599,7 +3599,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>CS${YYMM}</string>
+				<string>cs${YYMM}.DCE</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -3703,7 +3703,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>V${YYMM}</string>
+				<string>v${YYMM}.DCE</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -3807,7 +3807,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>BB${YYMM}</string>
+				<string>bb${YYMM}.DCE</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -3915,7 +3915,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>B${YYMM}</string>
+				<string>b${YYMM}.DCE</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -4019,7 +4019,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>FB${YYMM}</string>
+				<string>fb${YYMM}.DCE</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -4127,7 +4127,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>TC${YYMM}</string>
+				<string>TC${YYMM}.CZC</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -4235,7 +4235,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>RS${YYMM}</string>
+				<string>RS${YYMM}.CZC</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -4347,7 +4347,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>Ri${YYMM}</string>
+				<string>RI${YYMM}.CZC</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -4455,7 +4455,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>SF${YYMM}</string>
+				<string>SF${YYMM}.CZC</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -4567,7 +4567,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>LR${YYMM}</string>
+				<string>LR${YYMM}.CZC</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -4675,7 +4675,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>SM${YYMM}</string>
+				<string>SM${YYMM}.CZC</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -4787,7 +4787,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>JR${YYMM}</string>
+				<string>JR${YYMM}.CZC</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
