@@ -67,15 +67,12 @@ public class AllPositionManager implements IAsyncEventListener {
 			refreshOverallPosition(null);
 			notifyInitSucess();
 		}else if(event instanceof OpenPositionUpdateEvent){
-			log.info("get OpenPositionUpdateEvent");
 			OpenPositionUpdateEvent e = (OpenPositionUpdateEvent) event;
 			updatePosition(e.getPosition(),true);			
 		}else if(event instanceof OpenPositionDynamicUpdateEvent){
-			log.info("get OpenPositionDynamicUpdateEvent");
 			OpenPositionDynamicUpdateEvent e = (OpenPositionDynamicUpdateEvent) event;
 			updatePosition(e.getPosition(),true);			
 		}else if(event instanceof ClosedPositionUpdateEvent){
-			log.info("get ClosedPositionUpdateEvent");
 			ClosedPositionUpdateEvent e = (ClosedPositionUpdateEvent) event;
 			updatePosition(e.getPosition(),true);
 		}
@@ -245,6 +242,7 @@ public class AllPositionManager implements IAsyncEventListener {
 					oap.setBuyPrice((oap.getBuyPrice()+price)/2);
 				
 				oap.setBuyQty(oap.getBuyQty()+Math.abs(qty));
+				oap.setQty(oap.getBuyQty()+Math.abs(qty));
 				
 			}else{
 				if(PriceUtils.isZero(oap.getSellPrice()))
@@ -253,6 +251,7 @@ public class AllPositionManager implements IAsyncEventListener {
 					oap.setSellPrice((oap.getSellPrice()+price)/2);
 				
 				oap.setSellQty(oap.getSellQty()+Math.abs(qty));
+				oap.setQty(oap.getSellQty()+Math.abs(qty));
 				
 			}
 			
@@ -405,7 +404,7 @@ public class AllPositionManager implements IAsyncEventListener {
 		listenerList.remove(listener);
 	}
 	
-	public void requestOverAllPosition(List<String> accountIdList) {
+	private void requestOverAllPosition(List<String> accountIdList) {
 		OverAllPositionRequestEvent event = new OverAllPositionRequestEvent(IdGenerator
 				.getInstance().getNextID(), server, accountIdList);
 		try {
