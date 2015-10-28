@@ -16,6 +16,7 @@
 	<import resource="view/QuoteView.xml" />
 	<import resource="view/TraderPropertyView.xml" />
 	<import resource="view/MarketDataView.xml" />
+	<import resource="view/ExecutionView.xml" />
 	
 	<bean id="viewActionList" class="java.util.ArrayList">
     	<constructor-arg>
@@ -54,6 +55,8 @@
             	<ref bean="quoteView"/>
             	<ref bean="quoteViewPopAction1"/>
             	<ref bean="marketDataView"/>
+            	<ref bean="executionView"/>
+            	<ref bean="executionViewToolBarAction1"/>
         	</list>
    		</constructor-arg>
 	</bean>
