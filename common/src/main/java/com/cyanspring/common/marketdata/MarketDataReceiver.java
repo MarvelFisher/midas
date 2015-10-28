@@ -402,7 +402,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         for (String key : quoteExtend.getFields().keySet()) {
             sbQuoteExtendLog.append("," + (key.length() >= 3 ? key.substring(0, 2) + key.substring(key.length() - 1, key.length()) : key) + "=" + quoteExtend.getFields().get(key));
         }
-        quoteLog.info("QuoteExtend Receive : " + "Sc=" + quoteSource.getValue() + sbQuoteExtendLog.toString());
+        if(quoteLogIsOpen) quoteLog.debug("QuoteExtend Receive : " + "Sc=" + quoteSource.getValue() + sbQuoteExtendLog.toString());
     }
 
     public void processAsyncTimerEvent(AsyncTimerEvent event) {
