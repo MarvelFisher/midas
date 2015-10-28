@@ -55,7 +55,7 @@
             	<ref bean="quoteView"/>
             	<ref bean="quoteViewPopAction1"/>
             	<ref bean="marketDataView"/>
-            	<ref bean="executionView"/>
+            	<ref bean="executionsView"/>
             	<ref bean="executionViewToolBarAction1"/>
         	</list>
    		</constructor-arg>

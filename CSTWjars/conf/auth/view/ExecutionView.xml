@@ -16,6 +16,15 @@
 			<value>RiskManager</value>
 		</array>
 		</constructor-arg>
+	</bean>
+	<bean id="executionViewToolBarAction1" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="Executions"/><!-- view name -->
+		<constructor-arg value="TOOLBAR_PIN"/> <!-- action id -->
+		<constructor-arg >					   <!-- permission:UserRole -->
+		<array>
+			<value>RiskManager</value>
+		</array>
+		</constructor-arg>
 	</bean>	
 		
 </beans>
