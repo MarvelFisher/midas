@@ -30,7 +30,6 @@
 				<ref bean="marketSessionUtil" />
 				<ref bean="apiBridgeManager" />
                 <ref bean="indexMarketSessionManager"/>
-                <ref bean="refDataHandler" />
 				<ref bean="mdManager" />
 				<ref bean="downStreamManager" />
 				<ref bean="accountPositionManager" />
@@ -287,17 +286,6 @@
 	<bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
 	</bean>
 
-	<bean id="refDataHandler" class="com.cyanspring.common.refdata.DealerRefDataHandler">
-		<constructor-arg>
-			<list>
-				<!--<ref bean="refDataAdapterFCI"/>-->
-				<!--<ref bean="refDataAdapterFCC"/>-->
-				<!--<ref bean="simRefDataAdaptor"/>-->
-			</list>
-		</constructor-arg>
-		<property name="eventManager" ref="eventManager"/>
-    </bean>
-    
     <!--<bean id="simRefDataAdaptor" class="com.cyanspring.server.sim.SimRefDataAdaptor">
         <property name="filePath">
             <value>refdata/template/codetable_cf.xml</value>
