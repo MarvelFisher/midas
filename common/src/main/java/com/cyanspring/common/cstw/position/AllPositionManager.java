@@ -65,7 +65,6 @@ public class AllPositionManager implements IAsyncEventListener {
 			updateOpenPositionList(e.getOpenPositionList());
 			updateClosedPositionList(e.getClosedPositionList());
 			refreshOverallPosition(null);
-			notifyInitSucess();
 		}else if(event instanceof OpenPositionUpdateEvent){
 			OpenPositionUpdateEvent e = (OpenPositionUpdateEvent) event;
 			updatePosition(e.getPosition(),true);			
@@ -78,13 +77,6 @@ public class AllPositionManager implements IAsyncEventListener {
 		}
 	}
 	
-	private void notifyInitSucess() {
-		initSuccess = true;
-		for(IPositionChangeListener listener : listenerList){
-			listener.notifyInitStatus(initSuccess);
-		}			
-	}
-
 	private void updateClosedPositionList(
 			List<ClosedPosition> closedPositionList) {
 		closedPositionMap.clear();
