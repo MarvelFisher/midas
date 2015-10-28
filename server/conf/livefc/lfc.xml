@@ -224,14 +224,6 @@
      <bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler">
 		<property name="eventManager" ref="eventManager"/>
 	</bean>
-    <!--<bean id="refDataHandler" class="com.cyanspring.common.refdata.DealerRefDataHandler">
-		<constructor-arg>
-			<list>
-				<ref bean="refDataAdapterFCI"/>
-			</list>
-		</constructor-arg>    
-		<property name="eventManager" ref="eventManager"/>
-	</bean> -->
     
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
 		<property name="refDataTemplatePath">

@@ -16,6 +16,14 @@ public class ContractPolicy {
 
 	List<Integer> contractMonths;
 
+	public List<Integer> getContractMonths() {
+		return contractMonths;
+	}
+
+	public void setContractMonths(List<Integer> contractMonths) {
+		this.contractMonths = contractMonths;
+	}
+
 	public List<String> getContractMonths(RefData refData) {
 		List<String> lstContractMonth = new ArrayList<>();
 		Calendar firstContractMonth = getFirstContractMonth(refData);

@@ -17,7 +17,6 @@
 		<property name="plugins">
 			<list>
 				<ref bean="marketSessionUtil"/>
-                <ref bean="refDataHandler" />
                 <ref bean="indexMarketSessionManager"/>
 				<ref bean="mdManager" />
 				<ref bean="downStreamManager" />
@@ -259,16 +258,6 @@
     <bean id="commissionManager" class="com.cyanspring.server.account.StockCommissionManager">
         <property name="brokerage" value="0.0000487"/>
     </bean>
-
-
-	<bean id="refDataHandler" class="com.cyanspring.common.refdata.DealerRefDataHandler">
-		<constructor-arg>
-			<list>
-				<ref bean="refDataAdaptor" />
-			</list>
-		</constructor-arg>
-		<property name="eventManager" ref="eventManager" />
-	</bean>
 
 	<bean id="refDataAdaptor" class="com.cyanspring.server.sim.SimRefDataAdaptor">
 		<property name="filePath" value="./conf/sim/codetable_sc.xml"></property>
