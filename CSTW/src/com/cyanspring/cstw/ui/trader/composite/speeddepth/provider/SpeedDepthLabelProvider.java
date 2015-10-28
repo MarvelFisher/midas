@@ -69,11 +69,11 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 			if (model.isLastPrice()) {
 				return SWTResourceManager.getColor(SWT.COLOR_DARK_YELLOW);
 			}
-			return null;
+			return SWTResourceManager.getColor(SWT.COLOR_WHITE);
 		case 3:
 			return SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN);
 		}
-		return null;
+		return SWTResourceManager.getColor(SWT.COLOR_WHITE);
 	}
 
 	@Override
@@ -99,4 +99,5 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 	public void setSelectIndex(int selectIndex) {
 		this.selectIndex = selectIndex;
 	}
+
 }

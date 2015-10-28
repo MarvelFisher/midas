@@ -76,7 +76,6 @@ public final class SpeedDepthMainComposite extends Composite implements
 		super(parent, style);
 		initComponent();
 		initListener();
-
 		timer = new SpeedTimer();
 	}
 
@@ -153,21 +152,24 @@ public final class SpeedDepthMainComposite extends Composite implements
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.character == SWT.CR) {
-
-					// check if same symbol
-					if (symbol != null && symbol.length() > 0
+					// check if the same symbol
+					if (symbol != null && symbolText.getText().length() > 0
 							&& symbol.equals(symbolText.getText())) {
 						return;
 					}
 					symbol = symbolText.getText();
+
 					String qty = PreferenceStoreManager.getInstance()
 							.getDefaultQty(symbol);
+
 					if (qty == null || qty.length() == 0) {
 						qty = "1";
 					}
+
 					defaultQuantityText.setText(qty);
 					rowLengthCombo.select(0);
 					tableComposite.clear();
+
 					QuoteSubEvent quoteSubEvent = new QuoteSubEvent(receiverId,
 							Business.getInstance().getFirstServer(), symbol);
 					try {
@@ -176,8 +178,7 @@ public final class SpeedDepthMainComposite extends Composite implements
 					} catch (Exception en) {
 						log.error(en.getMessage(), en);
 					}
-
-					registerQuoteChnageListener(symbol);
+					registerQuoteChangeListener(symbol);
 				}
 			}
 		});
@@ -202,7 +203,7 @@ public final class SpeedDepthMainComposite extends Composite implements
 
 	}
 
-	private void registerQuoteChnageListener(final String quoteSymbol) {
+	private void registerQuoteChangeListener(final String quoteSymbol) {
 		if (quoteChangeListener != null) {
 			QuoteCachingManager.getInstance().removeIQuoteChangeListener(
 					quoteChangeListener);
@@ -283,7 +284,7 @@ public final class SpeedDepthMainComposite extends Composite implements
 			tableComposite.getDisplay().asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					tableComposite.refresh(-1);
+					tableComposite.refresh(0);
 				}
 			});
 
@@ -327,10 +328,6 @@ public final class SpeedDepthMainComposite extends Composite implements
 		private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 
 		private boolean isRuning = false;
-
-		public SpeedTimer() {
-
-		}
 
 		public void cleanMessage() {
 			if (isRuning) {

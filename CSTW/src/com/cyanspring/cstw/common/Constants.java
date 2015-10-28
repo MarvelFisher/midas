@@ -18,6 +18,9 @@ public final class Constants {
 	public static Font M_FONT = SWTResourceManager.getFont(
 			"Microsoft YaHei UI", 13, SWT.NORMAL);
 
+	public static Font TABLE_FONT = SWTResourceManager.getFont(
+			"Microsoft YaHei UI", 14, SWT.BOLD);
+
 	public static Font L_FONT = SWTResourceManager.getFont(
 			"Microsoft YaHei UI", 16, SWT.NORMAL);
 
