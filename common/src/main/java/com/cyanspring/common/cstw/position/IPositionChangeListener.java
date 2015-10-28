@@ -14,4 +14,6 @@ public interface IPositionChangeListener {
 	public void OpenPositionChange(OpenPosition position);
 	
 	public void ClosedPositionChange(ClosedPosition position);
+	
+	public boolean notifyInitStatus(boolean sucess);
 }

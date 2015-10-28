@@ -42,6 +42,7 @@ public class AllPositionManager implements IAsyncEventListener {
 	private ConcurrentHashMap<String, List<OpenPosition>> openPositionMap = new ConcurrentHashMap<String, List<OpenPosition>>();
 	private ConcurrentHashMap<String, List<ClosedPosition>> closedPositionMap = new ConcurrentHashMap<String, List<ClosedPosition>>();
 	private List<IPositionChangeListener> listenerList = new ArrayList<IPositionChangeListener>();
+	private boolean initSuccess = false;
 
 	public AllPositionManager() {
 		
@@ -64,6 +65,7 @@ public class AllPositionManager implements IAsyncEventListener {
 			updateOpenPositionList(e.getOpenPositionList());
 			updateClosedPositionList(e.getClosedPositionList());
 			refreshOverallPosition(null);
+			notifyInitSucess();
 		}else if(event instanceof OpenPositionUpdateEvent){
 			log.info("get OpenPositionUpdateEvent");
 			OpenPositionUpdateEvent e = (OpenPositionUpdateEvent) event;
@@ -79,6 +81,13 @@ public class AllPositionManager implements IAsyncEventListener {
 		}
 	}
 	
+	private void notifyInitSucess() {
+		initSuccess = true;
+		for(IPositionChangeListener listener : listenerList){
+			listener.notifyInitStatus(initSuccess);
+		}			
+	}
+
 	private void updateClosedPositionList(
 			List<ClosedPosition> closedPositionList) {
 		closedPositionMap.clear();
@@ -427,5 +436,9 @@ public class AllPositionManager implements IAsyncEventListener {
 			list.addAll(positionIte.next());
 		}
 		return list;
+	}
+
+	public boolean isInitSuccess() {
+		return initSuccess;
 	}
 }

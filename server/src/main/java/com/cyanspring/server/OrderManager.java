@@ -13,6 +13,7 @@ package com.cyanspring.server;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,6 +36,8 @@ import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
 import com.cyanspring.common.event.account.PmEndOfDayRollEvent;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
+import com.cyanspring.common.event.order.AllExecutionSnapshotReplyEvent;
+import com.cyanspring.common.event.order.AllExecutionSnapshotRequestEvent;
 import com.cyanspring.common.event.order.AllStrategySnapshotReplyEvent;
 import com.cyanspring.common.event.order.AllStrategySnapshotRequestEvent;
 import com.cyanspring.common.event.order.ChildOrderSnapshotEvent;
@@ -101,6 +104,8 @@ public class OrderManager {
 			subscribeToEvent(InternalResetAccountRequestEvent.class, null);
 			subscribeToEvent(PmEndOfDayRollEvent.class, null);
 			subscribeToEvent(AllStrategySnapshotRequestEvent.class,null);
+			subscribeToEvent(AllExecutionSnapshotRequestEvent.class,null);
+
 		}
 
 		@Override
@@ -116,6 +121,84 @@ public class OrderManager {
 	public OrderManager() {
 	}
 
+	public void processAllExecutionSnapshotRequestEvent(AllExecutionSnapshotRequestEvent event) {
+		log.info("start send AllExecutionSnapshotRequestEvent");
+		
+		asyncSendExecutionSnapshot(event);
+	}
+	
+    private void asyncSendExecutionSnapshot(final AllExecutionSnapshotRequestEvent event) {
+        
+    	Thread thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				List<String> idList = event.getAccountIdList();
+				List<Execution> exeList = new ArrayList<>();
+				
+				if(null == idList){ // get all
+					Iterator <List<Execution>>ite = executions.values().iterator();
+					while(ite.hasNext()){
+						exeList.addAll(ite.next());
+						if(isOverOrderLimit(exeList))
+							return;
+					}
+					
+				}else{
+					for(String id:idList){
+						exeList.addAll(executions.get(id));
+						if(isOverOrderLimit(exeList))
+							return;
+					}
+				}
+				
+				List<Execution> tempList = new ArrayList<>();
+				for(Execution exe : exeList){
+					tempList.add(exe);
+					if(tempList.size()>= asyncSendBatch){
+						sendExecutionReplyEvent(tempList);
+						tempList.clear();
+					}
+				}
+				
+				if(tempList.size()>0){
+					sendExecutionReplyEvent(tempList);
+					tempList.clear();
+				}
+			}
+
+			private void sendExecutionReplyEvent(List<Execution> tempList) {
+                try {
+                	log.info("send AllExecutionSnapshotReplyEvent:{}",tempList.size());
+					AllExecutionSnapshotReplyEvent e = new AllExecutionSnapshotReplyEvent(event.getKey()
+							,event.getSender(),true,"",tempList);
+					eventManager.sendRemoteEvent(e);
+					Thread.sleep(asyncSendInterval);
+				} catch (InterruptedException e) {
+					log.warn(e.getMessage(),e);
+				} catch (Exception e){
+					log.warn(e.getMessage(),e);
+				}
+			}
+
+			private boolean isOverOrderLimit(List<Execution> exeList) {
+				if(exeList.size() > orderLimit){
+					AllExecutionSnapshotReplyEvent e = new AllExecutionSnapshotReplyEvent(event.getKey()
+							,event.getSender(),false,"Over transfer limit:"+orderLimit,null);
+					try {
+						eventManager.sendRemoteEvent(e);
+					} catch (Exception e1) {
+						log.warn(e1.getMessage(),e1);
+					}
+					return true;
+				}
+				return false;
+			}
+        	
+        });
+        thread.start();
+    }
+	
 	public void processAllStrategySnapshotRequestEvent(AllStrategySnapshotRequestEvent event) {
 		log.info("start send All StrategySnapshotRequest");
 		asyncSendStrategySnapshot(event);
@@ -581,5 +664,12 @@ public class OrderManager {
 		this.publishChildOrder = publishChildOrder;
 	}
 
+	public long getOrderLimit() {
+		return orderLimit;
+	}
+
+	public void setOrderLimit(long orderLimit) {
+		this.orderLimit = orderLimit;
+	}
 
 }
