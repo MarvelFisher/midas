@@ -533,9 +533,7 @@ public class Business {
 		RCInstrumentSummaryEventController.getInstance().init();
 		RCOrderEventController.getInstance().init();
 		allPositionManager.init(eventManager, getFirstServer(), getAccountGroup(), getUserGroup());
-		if (null != accountGroupList){
-			allPositionManager.requestOverAllPosition(accountGroupList);
-		}
+		
 		return true;
 	}
 
