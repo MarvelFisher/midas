@@ -1,6 +1,6 @@
 package com.cyanspring.adaptor.future.wind.refdata;
 
-import com.cyanspring.common.staticdata.WindBaseDBData;
+import com.cyanspring.common.staticdata.BaseDBData;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.data.JdbcSQLHandler;
@@ -19,21 +19,21 @@ import java.util.HashMap;
 /**
  * Created by Shuwei.Kuo.
  */
-public class WindDBHandler {
+public class WindBaseDataDBHandler implements IBaseDataDBHandler{
 
     private static final Logger log = LoggerFactory
-            .getLogger(WindDBHandler.class);
+            .getLogger(WindBaseDataDBHandler.class);
 
     private BasicDataSource basicDataSource;
     private String lastQuoteExtendFile;
     private String executeTime = "08:15:00";
 
-    public void saveDBDataToQuoteExtendFile(HashMap<String,WindBaseDBData> windBaseDBDataHashMap){
+    public void saveDBDataToQuoteExtendFile(HashMap<String,BaseDBData> BaseDBDataHashMap){
         log.debug("write quoteExtend file begin");
-        HashMap<String, DataObject> quoteExtends = RefDataParser.getHashMapFromFile(lastQuoteExtendFile);
-        if(windBaseDBDataHashMap != null && windBaseDBDataHashMap.size() > 0){
-            for(String symbol: windBaseDBDataHashMap.keySet()){
-                WindBaseDBData windBaseDBData = windBaseDBDataHashMap.get(symbol);
+        HashMap<String, DataObject> quoteExtends = FileUtil.getHashMapFromFile(lastQuoteExtendFile);
+        if(BaseDBDataHashMap != null && BaseDBDataHashMap.size() > 0){
+            for(String symbol: BaseDBDataHashMap.keySet()){
+                BaseDBData baseDBData = BaseDBDataHashMap.get(symbol);
                 DataObject quoteExtend;
                 if(quoteExtends.containsKey(symbol)){
                     quoteExtend = quoteExtends.get(symbol);
@@ -45,19 +45,19 @@ public class WindDBHandler {
                 if(!quoteExtend.fieldExists(QuoteExtDataField.TIMESTAMP.value())) {
                     quoteExtend.put(QuoteExtDataField.TIMESTAMP.value(), Clock.getInstance().now());
                 }
-                quoteExtend.put(QuoteExtDataField.FREESHARES.value(), windBaseDBData.getFreeShares());
-                quoteExtend.put(QuoteExtDataField.TOTOALSHARES.value(),windBaseDBData.getTotalShares());
-                quoteExtend.put(QuoteExtDataField.PERATIO.value(),windBaseDBData.getPERatio());
+                quoteExtend.put(QuoteExtDataField.FREESHARES.value(), baseDBData.getFreeShares());
+                quoteExtend.put(QuoteExtDataField.TOTOALSHARES.value(), baseDBData.getTotalShares());
+                quoteExtend.put(QuoteExtDataField.PERATIO.value(), baseDBData.getPERatio());
             }
-            RefDataParser.saveHashMapToFile(lastQuoteExtendFile, quoteExtends);
+            FileUtil.saveHashMapToFile(lastQuoteExtendFile, quoteExtends);
         }
         log.debug("write quoteExtend file end");
     }
 
-    public HashMap<String, WindBaseDBData> getWindBaseDBData() {
+    public HashMap<String, BaseDBData> getBaseDBData() {
         log.debug("wind baseDB process start");
-        HashMap<String, WindBaseDBData> windBaseDBDataHashMap = new HashMap<>();
-        WindBaseDBData windBaseDBData = null;
+        HashMap<String, BaseDBData> BaseDBDataHashMap = new HashMap<>();
+        BaseDBData baseDBData = null;
         Date timeStamp;
         Connection conn = null;
         Statement stmt = null;
@@ -126,17 +126,17 @@ public class WindDBHandler {
                 Number freeShares = rs.getBigDecimal("FREESHARES");
                 Number totalShares = rs.getBigDecimal("TOTALSHARES");
                 Number peRatio = rs.getBigDecimal("PERATIO");
-                windBaseDBData = new WindBaseDBData();
-                windBaseDBData.setSymbol(windcode);
-                windBaseDBData.setSpellName(pinyin);
-                windBaseDBData.setCNDisplayName(cnName);
-                windBaseDBData.setENDisplayName(enName);
-                windBaseDBData.setFreeShares(freeShares.longValue());
-                windBaseDBData.setTotalShares(totalShares.longValue());
-                windBaseDBData.setPERatio(peRatio.doubleValue());
+                baseDBData = new BaseDBData();
+                baseDBData.setSymbol(windcode);
+                baseDBData.setSpellName(pinyin);
+                baseDBData.setCNDisplayName(cnName);
+                baseDBData.setENDisplayName(enName);
+                baseDBData.setFreeShares(freeShares.longValue());
+                baseDBData.setTotalShares(totalShares.longValue());
+                baseDBData.setPERatio(peRatio.doubleValue());
                 timeStamp = Clock.getInstance().now();
-                windBaseDBData.setTimeStamp(timeStamp);
-                windBaseDBDataHashMap.put(windcode, windBaseDBData);
+                baseDBData.setTimeStamp(timeStamp);
+                BaseDBDataHashMap.put(windcode, baseDBData);
             }
             rs.close();
             stmt.close();
@@ -157,7 +157,7 @@ public class WindDBHandler {
             }
         }
         log.debug("wind baseDB process end");
-        return windBaseDBDataHashMap;
+        return BaseDBDataHashMap;
     }
 
     public void setLastQuoteExtendFile(String lastQuoteExtendFile) {

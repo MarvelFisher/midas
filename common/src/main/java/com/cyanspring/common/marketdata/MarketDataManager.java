@@ -9,8 +9,8 @@ import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.staticdata.BaseDBData;
 import com.cyanspring.common.staticdata.RefDataBitUtil;
-import com.cyanspring.common.staticdata.WindBaseDBData;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import org.slf4j.Logger;
@@ -47,7 +47,7 @@ public class MarketDataManager extends MarketDataReceiver {
 
     private List<Class<? extends AsyncEvent>> subscribeEvent() {
         ArrayList<Class<? extends AsyncEvent>> clzList = new ArrayList<Class<? extends AsyncEvent>>();
-        clzList.add(WindBaseInfoEvent.class);
+        clzList.add(BaseDataDBInfoEvent.class);
         clzList.add(TradeSubEvent.class);
         clzList.add(QuoteSubEvent.class);
         clzList.add(QuoteExtSubEvent.class);
@@ -106,18 +106,18 @@ public class MarketDataManager extends MarketDataReceiver {
         super.init();
     }
 
-    public void processWindBaseInfoEvent(WindBaseInfoEvent event) {
-        log.debug("Receive windBaseInfoEvent");
-        HashMap<String, WindBaseDBData> windBaseDBDataHashMap = event.getWindBaseDBDataHashMap();
-        if (windBaseDBDataHashMap != null && windBaseDBDataHashMap.size() > 0) {
-            for (String symbol : windBaseDBDataHashMap.keySet()) {
-                WindBaseDBData windBaseDBData = windBaseDBDataHashMap.get(symbol);
+    public void processBaseDataDBInfoEvent(BaseDataDBInfoEvent event) {
+        log.debug("Receive BaseDataDBInfoEvent");
+        HashMap<String, BaseDBData> baseDBDataHashMap = event.getBaseDBDataHashMap();
+        if (baseDBDataHashMap != null && baseDBDataHashMap.size() > 0) {
+            for (String symbol : baseDBDataHashMap.keySet()) {
+                BaseDBData baseDBData = baseDBDataHashMap.get(symbol);
                 DataObject quoteExtend = new DataObject();
                 quoteExtend.put(QuoteExtDataField.SYMBOL.value(), symbol);
                 quoteExtend.put(QuoteExtDataField.TIMESTAMP.value(), event.getTimeStamp());
-                quoteExtend.put(QuoteExtDataField.FREESHARES.value(), windBaseDBData.getFreeShares());
-                quoteExtend.put(QuoteExtDataField.TOTOALSHARES.value(), windBaseDBData.getTotalShares());
-                quoteExtend.put(QuoteExtDataField.PERATIO.value(), windBaseDBData.getPERatio());
+                quoteExtend.put(QuoteExtDataField.FREESHARES.value(), baseDBData.getFreeShares());
+                quoteExtend.put(QuoteExtDataField.TOTOALSHARES.value(), baseDBData.getTotalShares());
+                quoteExtend.put(QuoteExtDataField.PERATIO.value(), baseDBData.getPERatio());
                 onQuoteExt(quoteExtend, QuoteSource.WIND_GENERAL);
             }
         }

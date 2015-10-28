@@ -290,8 +290,8 @@
 	<bean id="refDataHandler" class="com.cyanspring.common.refdata.DealerRefDataHandler">
 		<constructor-arg>
 			<list>
-				<ref bean="refDataAdapterFCI"/>
-				<ref bean="refDataAdapterFCC"/>
+				<!--<ref bean="refDataAdapterFCI"/>-->
+				<!--<ref bean="refDataAdapterFCC"/>-->
 				<!--<ref bean="simRefDataAdaptor"/>-->
 			</list>
 		</constructor-arg>

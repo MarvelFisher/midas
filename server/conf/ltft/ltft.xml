@@ -299,7 +299,7 @@
 	<bean id="refDataHandler" class="com.cyanspring.common.refdata.DealerRefDataHandler">
 		<constructor-arg>
 			<list>
-				<ref bean="refDataAdapterFT" />
+				<!--<ref bean="refDataAdapterFT" />-->
 			</list>
 		</constructor-arg>
 		<property name="eventManager" ref="eventManager" />

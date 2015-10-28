@@ -6,7 +6,7 @@ import com.cyanspring.common.marketdata.QuoteExtDataField;
 
 import java.util.Date;
 
-public class WindBaseDBData extends DataObject {
+public class BaseDBData extends DataObject {
 
     public String getSymbol() {
         return this.get(String.class, RefDataField.SYMBOL.value());

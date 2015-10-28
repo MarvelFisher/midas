@@ -1,0 +1,38 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/context
+	    http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+    <bean id="baseDataDBManager" class="com.cyanspring.adaptor.future.wind.refdata.BaseDataDBManager">
+        <property name="baseDataFile" value="ticks/baseData.xml"/>
+        <property name="baseDataDBHandler" ref="windBaseDataDBHandler"/>
+    </bean>
+
+    <bean id="windBaseDataDBHandler" class="com.cyanspring.adaptor.future.wind.refdata.WindBaseDataDBHandler">
+        <property name="basicDataSource" ref="refDataSource"/>
+        <property name="lastQuoteExtendFile" value="ticks/lastExtend.xml"/>
+        <property name="executeTime" value="08:15:00" />
+    </bean>
+
+    <bean id="refDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://10.0.0.10/WindFileSync"/>
+        <property name="username" value="tqt001"/>
+        <property name="password" value="tqt001"/>
+        <property name="maxActive"><value>20</value></property>
+        <property name="initialSize"><value>1</value></property>
+        <property name="maxWait"><value>60000</value></property>
+        <property name="maxIdle"><value>20</value></property>
+        <property name="minIdle"><value>3</value></property>
+        <property name= "testOnBorrow" ><value> true </value></property>
+        <property name="validationQuery"><value>SELECT 1 from dual</value> </property>
+        <property name="validationQueryTimeout" ><value>3</value></property>
+        <property name= "timeBetweenEvictionRunsMillis" ><value>60000</value></property>
+        <property name= "numTestsPerEvictionRun" ><value>20</value></property>
+    </bean>
+
+</beans>

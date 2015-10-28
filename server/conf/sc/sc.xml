@@ -30,7 +30,8 @@
 				<ref bean="marketSessionUtil" />
 				<ref bean="apiBridgeManager" />
                 <!-- <ref bean="marketSessionManager" />  -->
-                <ref bean="refDataHandler" />
+				<ref bean="baseDataDBManager"/>
+				<ref bean="refDataHandler" />
                 <ref bean="indexMarketSessionManager"/>
 				<ref bean="mdManager" />
 				<ref bean="downStreamManager" />
@@ -258,8 +259,8 @@
 	<bean id="refDataHandler" class="com.cyanspring.common.refdata.DealerRefDataHandler">
 		<constructor-arg>
 			<list>
-				<ref bean="refDataAdapterSC"/>
-				<ref bean="refDataAdapterFCI"/>
+				<!--<ref bean="refDataAdapterSC"/>-->
+				<!--<ref bean="refDataAdapterFCI"/>-->
 				<!--<ref bean="simRefDataAdaptor"/>-->
 			</list>
 		</constructor-arg>   
@@ -358,6 +359,18 @@
 	</bean>
 	
 	<bean id="coinControlRecoveryProcessor" class="com.cyanspring.server.CoinControlRecoveryProcessor">
+	</bean>
+
+	<!-- base DB control -->
+	<bean id="baseDataDBManager" class="com.cyanspring.adaptor.future.wind.refdata.BaseDataDBManager">
+		<property name="baseDataFile" value="ticks/baseData.xml"/>
+		<property name="baseDataDBHandler" ref="windBaseDataDBHandler"/>
+	</bean>
+
+	<bean id="windBaseDataDBHandler" class="com.cyanspring.adaptor.future.wind.refdata.WindBaseDataDBHandler">
+		<property name="basicDataSource" ref="refDataSource"/>
+		<property name="lastQuoteExtendFile" value="ticks/lastExtend.xml"/>
+		<property name="executeTime" value="08:15:00" />
 	</bean>
 	
 </beans>
