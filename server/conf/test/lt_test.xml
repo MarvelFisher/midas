@@ -16,6 +16,7 @@
         </property>
         <property name="plugins">
             <list>
+            	<ref bean="genericAsyncEventProcessor"/>
                 <ref bean="marketSessionUtil"/>
 				<ref bean="indexMarketSessionManager"/>
 				<ref bean="refDataHandler" />
@@ -40,6 +41,10 @@
             </map>
         </property>
     </bean>
+    
+    <bean id="genericAsyncEventProcessor" class="com.cyanspring.common.event.GenericAsyncEventProcessor">
+		<property name="eventManager" ref="eventManager"></property>
+	</bean>
     
     <bean id="transactionValidator" class="com.cyanspring.server.validation.transaction.TransactionValidator">
         <property name="validators">

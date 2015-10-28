@@ -18,6 +18,7 @@ import com.cyanspring.common.account.Account;
 import com.cyanspring.common.business.CoinControl;
 import com.cyanspring.common.business.CoinType;
 import com.cyanspring.common.event.AsyncEventProcessor;
+import com.cyanspring.common.event.GenericAsyncEventProcessor;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.account.CoinSettingReplyEvent;
@@ -42,23 +43,12 @@ public class CoinManager implements IPlugin{
 	@Autowired
 	@Qualifier("globalEventManager")
 	private IRemoteEventManager globalEventManager;
+	
+	@Autowired
+	private GenericAsyncEventProcessor genericAsyncEventProcessor;
 
 	@Autowired
     AccountKeeper accountKeeper;
-	
-	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
-
-		@Override
-		public void subscribeToEvents() {		
-			subscribeToEvent(CoinSettingRequestEvent.class, null);
-		}
-
-		@Override
-		public IAsyncEventManager getEventManager() {
-			return eventManager;
-		}
-	};
-
 
 	private AsyncEventProcessor globalEventProcessor = new AsyncEventProcessor() {
 
@@ -77,22 +67,18 @@ public class CoinManager implements IPlugin{
 	@Override
 	public void init() throws Exception {
 		log.info("init coinControl");
-		eventProcessor.setHandler(this);
-		eventProcessor.init();
-		if (eventProcessor.getThread() != null){
-			eventProcessor.getThread().setName("CoinManager");
-		}
 
 		globalEventProcessor.setHandler(this);
 		globalEventProcessor.init();
 		if(globalEventProcessor.getThread() != null)
 			globalEventProcessor.getThread().setName("CoinManager");
 
+		genericAsyncEventProcessor.subscribeToEvent(CoinSettingRequestEvent.class, this, null);
 	}
 
 	@Override
 	public void uninit() {
-		eventProcessor.uninit();
+		globalEventProcessor.uninit();
 	}
 	
 	public Account getAccountFromUserId(String userId){

@@ -27,6 +27,7 @@
 		</property>
 		<property name="plugins">
 			<list>
+				<ref bean="genericAsyncEventProcessor"/>
 				<!-- <ref bean="kdbPersistenceManager"/> -->
 			    <ref bean="marketSessionUtil"/>
 				<ref bean="indexMarketSessionManager"/>
@@ -51,6 +52,10 @@
 				<entry key="RefData" value="false" />
 			</map>
 		</property>
+	</bean>
+	
+	<bean id="genericAsyncEventProcessor" class="com.cyanspring.common.event.GenericAsyncEventProcessor">
+		<property name="eventManager" ref="eventManager"></property>
 	</bean>
 	
 	<bean id="kdbQuoteListener" class="com.cyanspring.server.marketdata.KDBQuoteListener">
