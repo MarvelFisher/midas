@@ -21,7 +21,7 @@ public class ActivityOrderLabelProvider extends DefaultLabelProviderAdapter {
 		case 1:
 			return model.getSymbol();
 		case 2:
-			return model.getSymbolName();
+			return model.getSymbol();
 		case 3:
 			return model.getSide();
 		case 4:

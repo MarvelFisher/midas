@@ -18,7 +18,7 @@ public class RWTradeRecordLabelProvider extends DefaultLabelProviderAdapter {
 		case 1:
 			return model.getSymbol();
 		case 2:
-			return model.getSymbolName();
+			return model.getSymbol();
 		case 3:
 			return model.getType();
 		case 4:

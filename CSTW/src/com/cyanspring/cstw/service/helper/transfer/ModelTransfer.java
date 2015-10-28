@@ -67,11 +67,11 @@ public final class ModelTransfer {
 			positionModel.setType(RCPositionType.Open);
 //		}
 		positionModel.setAveragePrice(position.getPrice());
-		if (PriceUtils.GreaterThan(position.getQty(), 0)) {
-			positionModel.setPositionDirection(RCPositionDirection.Long);
-		} else {
-			positionModel.setPositionDirection(RCPositionDirection.Short);
-		}
+//		if (PriceUtils.GreaterThan(position.getQty(), 0)) {
+		positionModel.setPositionDirection(RCPositionDirection.Long);
+//		} else {
+//			positionModel.setPositionDirection(RCPositionDirection.Short);
+//		}
 
 		return positionModel;
 	}

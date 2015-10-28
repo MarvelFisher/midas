@@ -19,7 +19,7 @@ public class RWInstrumentSummaryLabelProvider extends DefaultLabelProviderAdapte
 		case 0:
 			return model.getSymbol();
 		case 1:
-			return model.getSymbolName();
+			return model.getSymbol();
 		case 2:
 			return model.getRealizedProfit().toString();
 		case 3:
