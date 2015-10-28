@@ -16,7 +16,6 @@ public class OverallPosition implements Serializable, Cloneable {
 	private String exchangeSubAccount;
 	private String symbol;
 	private double qty;	  //current quantity
-	private double price; // current price
 	private double buyPrice;
 	private double sellPrice; // close price is always sell price
 	private double buyQty;
@@ -73,7 +72,7 @@ public class OverallPosition implements Serializable, Cloneable {
 		return buyQty + sellQty;
 	}
 
-	public double getRemianingQty() {
+	public double getRemainingQty() {
 		return buyQty - sellQty;
 	}
 
@@ -209,12 +208,8 @@ public class OverallPosition implements Serializable, Cloneable {
 		this.qty = qty;
 	}
 
-	public double getPrice() {
-		return price;
-	}
-
-	public void setPrice(double price) {
-		this.price = price;
+	public double getAvgPrice() {
+		return ((buyPrice+sellPrice)/2);
 	}
 
 	@Override
