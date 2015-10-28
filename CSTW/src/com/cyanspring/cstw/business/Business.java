@@ -68,6 +68,7 @@ import com.cyanspring.cstw.cachingmanager.quote.QuoteCachingManager;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.BackRCPositionCachingManager;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.FrontRCOrderCachingManager;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.FrontRCPositionCachingManager;
+import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.FrontRCInstrumentStatisticsEventController;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.FrontRCOpenPositionEventController;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.FrontRCTradeEventController;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCIndividualEventController;
@@ -539,6 +540,7 @@ public class Business {
 		FrontRCOrderCachingManager.getInstance().init();
 		FrontRCOpenPositionEventController.getInstance().init();
 		FrontRCTradeEventController.getInstance().init();
+		FrontRCInstrumentStatisticsEventController.getInstance().init();
 		RCIndividualEventController.getInstance().init();
 		RCInstrumentSummaryEventController.getInstance().init();
 		RCOrderEventController.getInstance().init();

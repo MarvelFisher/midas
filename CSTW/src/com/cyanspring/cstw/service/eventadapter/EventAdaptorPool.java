@@ -1,12 +1,14 @@
 package com.cyanspring.cstw.service.eventadapter;
 
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCIndividualEventAdaptor;
+import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCInstrumentStatisticsEventAdaptor;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCInstrumentSummaryEventAdaptor;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCOpenPositionEventAdapter;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCOrderEventAdapter;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCTradeEventAdaptor;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.impl.BRCOpenPositionEventAdapterImpl;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.impl.BRCTradeEventAdaptorImpl;
+import com.cyanspring.cstw.service.eventadapter.riskcontrol.impl.FRCInstrumentStatisticsEventAdaptorImpl;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.impl.FRCOpenPositionEventAdapterImpl;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.impl.FRCTradeEventAdaptorImpl;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.impl.RCIndividualEventAdaptorImpl;
@@ -29,6 +31,7 @@ public final class EventAdaptorPool {
 	private static IRCOrderEventAdapter fRCOrderEventAdapter = new RCOrderEventAdapterImpl();
 
 	private static IRCInstrumentSummaryEventAdaptor rCinstrumentSummaryEventAdaptor = new RCInstrumentSummaryEventAdaptorImpl();
+	private static IRCInstrumentStatisticsEventAdaptor fRCInstrumentEventAdaptor = new FRCInstrumentStatisticsEventAdaptorImpl();
 
 	public static IRCOpenPositionEventAdapter getFrontRCOpenPositionEventAdapter() {
 		return fRCPositionEventAdapter;
@@ -56,6 +59,10 @@ public final class EventAdaptorPool {
 
 	public static IRCInstrumentSummaryEventAdaptor getRCinstrumentSummaryEventAdaptor() {
 		return rCinstrumentSummaryEventAdaptor;
+	}
+
+	public static IRCInstrumentStatisticsEventAdaptor getFrontRCInstrumentStatisticsEventAdaptor() {
+		return fRCInstrumentEventAdaptor;
 	}
 
 }

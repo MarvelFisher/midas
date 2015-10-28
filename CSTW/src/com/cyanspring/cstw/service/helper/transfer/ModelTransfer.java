@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import com.cyanspring.common.account.OverallPosition;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.type.OrdStatus;
-import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.service.model.riskmgr.RCInstrumentModel;
 import com.cyanspring.cstw.service.model.riskmgr.RCOpenPositionModel;
 import com.cyanspring.cstw.service.model.riskmgr.RCOpenPositionModel.RCPositionDirection;
@@ -74,6 +73,25 @@ public final class ModelTransfer {
 		// }
 
 		return positionModel;
+	}
+
+	/**
+	 * 风控管理 - 股票统计信息转换(包含已平仓和未平仓)
+	 * 
+	 * @param position
+	 * @param refDataManager
+	 * @return
+	 */
+	public static RCInstrumentModel parseStockStatisticModel(
+			OverallPosition position) {
+		RCInstrumentModel model = new RCInstrumentModel.Builder()
+				.account(position.getExchangeSubAccount())
+				.symbol(position.getSymbol()).realizedProfit(position.getPnL())
+				.trades(position.getExecCount()).volume(position.getTotalQty())
+				.turnover(position.getTurnover())
+				.commission(position.getCommission())
+				.trader(position.getUser()).build();
+		return model;
 	}
 
 	/**
