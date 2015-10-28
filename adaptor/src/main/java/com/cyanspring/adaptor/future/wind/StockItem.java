@@ -238,8 +238,9 @@ public class StockItem implements AutoCloseable {
             quote.setClose((double) stockData.getPreClose() / 10000);
             quote.setTurnover((double) stockData.getTurnover());
 
-            // if last is change , then calc peratio
+            // if last is change , then calc peratio use last/epsttm
             if(PriceUtils.Compare(quote.getLast(), item.last) != 0) {
+                item.last = quote.getLast();
                 if (baseDBData != null) {
                     double epsttm = baseDBData.getEpsTTM();
                     if(PriceUtils.GreaterThan(epsttm,0)){
