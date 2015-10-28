@@ -51,6 +51,8 @@ public class StockItem implements AutoCloseable {
     private long freeshares = 0;
     private long totalshares = 0;
     private double peRatio = 0;
+    private double epsttm = 0;
+    private double last = 0;
 
     public static StockItem getItem(String symbolId, boolean enableCreateNew) {
 
@@ -104,6 +106,9 @@ public class StockItem implements AutoCloseable {
         String symbolId = stockData.getWindCode();
         StockItem item = getItem(symbolId, true);
         BaseDBData baseDBData = BaseDataDBManager.baseDBDataHashMap.get(symbolId);
+        boolean quoteExtendIsChange = false;
+        boolean specialQuoteExtendIsChange = false;
+        DataObject quoteExtend = new DataObject();
 
         //Get MarketSession
         String index = windGateWayAdapter.getMarketRuleBySymbolMap().get(symbolId);
@@ -233,6 +238,20 @@ public class StockItem implements AutoCloseable {
             quote.setClose((double) stockData.getPreClose() / 10000);
             quote.setTurnover((double) stockData.getTurnover());
 
+            // if last is change , then calc peratio
+            if(PriceUtils.Compare(quote.getLast(), item.last) != 0) {
+                if (baseDBData != null) {
+                    double epsttm = baseDBData.getEpsTTM();
+                    if(PriceUtils.GreaterThan(epsttm,0)){
+                        double peRatio = quote.getLast() / epsttm;
+                        if (peRatio != item.peRatio) {
+                            item.peRatio = peRatio;
+                            quoteExtend.put(QuoteExtDataField.PERATIO.value(), peRatio);
+                            quoteExtendIsChange = true;
+                        }
+                    }
+                }
+            }
             // volume
             long totalVolume = stockData.getVolume();
 
@@ -251,10 +270,6 @@ public class StockItem implements AutoCloseable {
         } else {
             log.debug(WindDef.TITLE_STOCK + " " + WindDef.WARN_PRECLOSE_LESS_THAN_ZERO + "," + stockData.getWindCode());
         }
-
-        boolean quoteExtendIsChange = false;
-        boolean specialQuoteExtendIsChange = false;
-        DataObject quoteExtend = new DataObject();
 
         double highLimit = (double) stockData.getHighLimited() / 10000;
         if (PriceUtils.Compare(item.highLimit, highLimit) != 0) {
@@ -348,12 +363,6 @@ public class StockItem implements AutoCloseable {
             if (totalshares != item.totalshares) {
                 item.totalshares = totalshares;
                 quoteExtend.put(QuoteExtDataField.TOTOALSHARES.value(), totalshares);
-                quoteExtendIsChange = true;
-            }
-            double peRatio = baseDBData.getPERatio();
-            if (peRatio != item.peRatio) {
-                item.peRatio = peRatio;
-                quoteExtend.put(QuoteExtDataField.PERATIO.value(), peRatio);
                 quoteExtendIsChange = true;
             }
         }
