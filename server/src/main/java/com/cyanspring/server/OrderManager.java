@@ -122,8 +122,7 @@ public class OrderManager {
 	}
 
 	public void processAllExecutionSnapshotRequestEvent(AllExecutionSnapshotRequestEvent event) {
-		log.info("start send AllExecutionSnapshotRequestEvent");
-		
+		log.info("start send AllExecutionSnapshotRequestEvent:{}",event.getSender());
 		asyncSendExecutionSnapshot(event);
 	}
 	
@@ -146,11 +145,25 @@ public class OrderManager {
 					
 				}else{
 					for(String id:idList){
-						exeList.addAll(executions.get(id));
+						
+						Iterator <List<Execution>>ite = executions.values().iterator();
+						while(ite.hasNext()){
+							List<Execution> tmpList = ite.next();
+							if(null == tmpList)
+								continue;
+					
+							for(Execution exe:tmpList){
+								if(exe.getAccount().equals(id)){
+									exeList.add(exe);
+    							}
+							}
+						}
+						
 						if(isOverOrderLimit(exeList))
 							return;
 					}
 				}
+				log.info("total executions:{} ready to send",exeList.size());
 				
 				List<Execution> tempList = new ArrayList<>();
 				for(Execution exe : exeList){
@@ -183,6 +196,7 @@ public class OrderManager {
 
 			private boolean isOverOrderLimit(List<Execution> exeList) {
 				if(exeList.size() > orderLimit){
+					log.info("Execution list over limit number:{},{}",exeList.size(),orderLimit);
 					AllExecutionSnapshotReplyEvent e = new AllExecutionSnapshotReplyEvent(event.getKey()
 							,event.getSender(),false,"Over transfer limit:"+orderLimit,null);
 					try {
@@ -439,7 +453,7 @@ public class OrderManager {
 		if (event.getExecution() != null) {
 			addExecution(event.getExecution());
 		}
-
+		log.info("send child order update:{},{}",publishChildOrder,child.getAccount());
 		if (publishChildOrder) {
 			eventManager.sendRemoteEvent(new ChildOrderUpdateEvent(child
 					.getStrategyId(), null, event.getExecType(),
