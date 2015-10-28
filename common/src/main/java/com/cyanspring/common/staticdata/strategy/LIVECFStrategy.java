@@ -5,10 +5,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketsession.ITradeDate;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataUtil;
@@ -36,7 +38,7 @@ public class LIVECFStrategy extends AbstractRefDataStrategy {
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
-    public void init(Calendar cal, RefData template) {
+    public void init(Calendar cal, Map<String, Quote> map) {
 
     	MappingData ifData = new MappingData();
     	ifData.near1 = "IFC1";

@@ -111,7 +111,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>IF</string>
+				<string>IF${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -227,7 +227,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>IH</string>
+				<string>IH${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -343,7 +343,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>IC</string>
+				<string>IC${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -430,10 +430,6 @@
 				<string>AG</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -451,7 +447,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>AG</string>
+				<string>AG${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -538,10 +534,6 @@
 				<string>CU</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -559,7 +551,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>CU</string>
+				<string>CU${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -667,7 +659,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>AU</string>
+				<string>AU${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -754,10 +746,6 @@
 				<string>RB</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -775,7 +763,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>RB</string>
+				<string>RB${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -862,10 +850,6 @@
 				<string>RU</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>RU</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -883,7 +867,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>RU</string>
+				<string>RU${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -970,10 +954,6 @@
 				<string>ZN</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -991,7 +971,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>ZN</string>
+				<string>ZN${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -1078,10 +1058,6 @@
 				<string>M</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>MY</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -1099,7 +1075,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>M</string>
+				<string>M${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -1186,10 +1162,6 @@
 				<string>I</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -1207,7 +1179,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>I</string>
+				<string>I${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -1294,10 +1266,6 @@
 				<string>L</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -1315,7 +1283,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>L</string>
+				<string>L${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -1402,10 +1370,6 @@
 				<string>Y</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>MY</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -1423,7 +1387,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>Y</string>
+				<string>Y${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -1510,10 +1474,6 @@
 				<string>PP</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -1531,7 +1491,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>PP</string>
+				<string>PP${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -1618,10 +1578,6 @@
 				<string>P</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -1639,7 +1595,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>P</string>
+				<string>P${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -1726,10 +1682,6 @@
 				<string>J</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -1747,7 +1699,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>J</string>
+				<string>J${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -1834,10 +1786,6 @@
 				<string>JD</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>JD</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -1855,7 +1803,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>JD</string>
+				<string>JD${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -1942,10 +1890,6 @@
 				<string>FG</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -1963,7 +1907,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>FG</string>
+				<string>FG${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -2050,10 +1994,6 @@
 				<string>RM</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>RM</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -2071,7 +2011,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>RM</string>
+				<string>RM${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -2162,10 +2102,6 @@
 				<string>TA</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -2183,7 +2119,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>TA</string>
+				<string>TA${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -2295,7 +2231,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>SR</string>
+				<string>SR${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -2386,10 +2322,6 @@
 				<string>MA</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -2407,7 +2339,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>MA</string>
+				<string>MA${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -2519,7 +2451,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>CF</string>
+				<string>CF${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -2606,10 +2538,6 @@
 				<string>NI</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -2627,7 +2555,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>NI</string>
+				<string>NI${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -2714,10 +2642,6 @@
 				<string>AL</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -2735,7 +2659,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>AL</string>
+				<string>AL${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -2843,7 +2767,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>BU</string>
+				<string>BU${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -2930,10 +2854,6 @@
 				<string>PB</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -2951,7 +2871,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>PB</string>
+				<string>PB${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -3038,10 +2958,6 @@
 				<string>HC</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -3059,7 +2975,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>HC</string>
+				<string>HC${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -3146,10 +3062,6 @@
 				<string>SN</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -3167,7 +3079,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>SN</string>
+				<string>SN${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -3275,7 +3187,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>FU</string>
+				<string>FU${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -3362,10 +3274,6 @@
 				<string>WR</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -3383,7 +3291,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>WR</string>
+				<string>WR${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -3470,10 +3378,6 @@
 				<string>JM</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -3491,7 +3395,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>JM</string>
+				<string>JM${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -3599,7 +3503,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>C</string>
+				<string>C${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -3707,7 +3611,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>CS</string>
+				<string>CS${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -3794,10 +3698,6 @@
 				<string>V</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -3815,7 +3715,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>V</string>
+				<string>V${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -3902,10 +3802,6 @@
 				<string>BB</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -3923,7 +3819,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>BB</string>
+				<string>BB${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -4031,7 +3927,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>B</string>
+				<string>B${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -4118,10 +4014,6 @@
 				<string>FB</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -4139,7 +4031,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>FB</string>
+				<string>FB${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -4230,10 +4122,6 @@
 				<string>TC</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -4251,7 +4139,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>TC</string>
+				<string>TC${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -4342,10 +4230,6 @@
 				<string>RS</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>RS</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -4363,7 +4247,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>RS</string>
+				<string>RS${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -4475,7 +4359,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>RI</string>
+				<string>RI${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -4566,10 +4450,6 @@
 				<string>SF</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -4587,7 +4467,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>SF</string>
+				<string>SF${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -4699,7 +4579,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>LR</string>
+				<string>LR${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -4790,10 +4670,6 @@
 				<string>SM</string>
 			</entry>
 			<entry>
-				<string>Contract policy</string>
-				<string>All</string>
-			</entry>
-			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
@@ -4811,7 +4687,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>SM</string>
+				<string>SM${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -4923,7 +4799,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>JR</string>
+				<string>JR${SEQ}</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>

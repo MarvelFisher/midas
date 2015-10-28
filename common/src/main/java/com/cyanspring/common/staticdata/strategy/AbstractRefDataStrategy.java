@@ -12,6 +12,8 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.marketdata.Quote;
@@ -19,7 +21,7 @@ import com.cyanspring.common.marketsession.IndexSessionType;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataException;
-import com.cyanspring.common.staticdata.policy.IContractPolicy;
+import com.cyanspring.common.staticdata.policy.ContractPolicy;
 import com.cyanspring.common.util.PriceUtils;
 
 public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
@@ -44,51 +46,96 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
     private String INDEX_FU_TW = "指數";
     private final String CONTRACT_POLICY_PACKAGE = "com.cyanspring.common.staticdata.policy";
     private final String MONTH_PATTERN = "${YYMM}";
+    private final String SEQ_PATTERN = "${SEQ}";
+    Map<String, Quote> mapHot;
+
+    @Autowired
+    @Qualifier("allContractPolicy")
+    private ContractPolicy allContractPolicy;
+
+    @Autowired
+    @Qualifier("jdContractPolicy")
+    private ContractPolicy jdContractPolicy;
+
+    @Autowired
+    @Qualifier("myContractPolicy")
+    private ContractPolicy myContractPolicy;
+
+    @Autowired
+    @Qualifier("rmContractPolicy")
+    private ContractPolicy rmContractPolicy;
+
+    @Autowired
+    @Qualifier("rsContractPolicy")
+    private ContractPolicy rsContractPolicy;
+
+    @Autowired
+    @Qualifier("ruContractPolicy")
+    private ContractPolicy ruContractPolicy;
 
 	@Override
 	public void init(Calendar cal, Map<String, Quote> map) {
-		spotCnName = template.getSpotCNName();
-		spotTwName = template.getSpotTWName();
-
 		if (cal != null) {
 			this.cal = cal;
+		}
+
+		if (map != null && map.size() > 0) {
+			mapHot = map;
 		}
 	}
 
 	@Override
 	public List<RefData> updateRefData(RefData refData) {
-		IContractPolicy policy;
+		ContractPolicy policy = allContractPolicy;
 		String contractPolicy = refData.getContractPolicy();
-		try {
-			Class<IContractPolicy> tempClz = (Class<IContractPolicy>) Class
-					.forName(CONTRACT_POLICY_PACKAGE + "." + contractPolicy + "ContractPolicy");
-			Constructor<IContractPolicy> ctor = tempClz.getConstructor();
-			policy = ctor.newInstance();
-		} catch (Exception e) {
-			log.warn("Can't find contract policy: {}", contractPolicy);
-			policy = new IContractPolicy() {
-
-				@Override
-				public List<String> getContractMonths(RefData refData) {
-					return new ArrayList<>();
-				}
-
-			};
+		if (contractPolicy != null) {
+			try {
+				Class<ContractPolicy> tempClz = (Class<ContractPolicy>) Class
+						.forName(CONTRACT_POLICY_PACKAGE + "." + contractPolicy + "ContractPolicy");
+				Constructor<ContractPolicy> ctor = tempClz.getConstructor();
+				policy = ctor.newInstance();
+			} catch (Exception e) {
+				log.warn("Can't find contract policy: {}", contractPolicy);
+				policy = allContractPolicy;
+			}
+		} else {
+			String category = refData.getCategory();
+			switch (category) {
+			case "JD":
+				policy = jdContractPolicy;
+				break;
+			case "M":
+			case "Y":
+				policy = myContractPolicy;
+				break;
+			case "RM":
+				policy = rmContractPolicy;
+				break;
+			case "RS":
+				policy = rsContractPolicy;
+				break;
+			case "RU":
+				policy = ruContractPolicy;
+				break;
+			default:
+				policy = allContractPolicy;
+				break;
+			}
 		}
 
 		List<RefData> lstRefData = new ArrayList<>();
 		List<String> lstContractMonth = policy.getContractMonths(refData);
-		int months = lstContractMonth.size();
+		int num = lstContractMonth.size();
 		NumberFormat formatter = new DecimalFormat("##00");
-		for (int i = 0; i < months; i++) {
+		for (int i = 0; i < num; i++) {
 			String month = lstContractMonth.get(i);
-			String seq = formatter.format(i + 1);
+			String seq = formatter.format(i);
 			RefData data = (RefData)refData.clone();
 			data.setENDisplayName(refData.getENDisplayName().replace(MONTH_PATTERN, month));
 			data.setCNDisplayName(refData.getCNDisplayName().replace(MONTH_PATTERN, month));
 			data.setTWDisplayName(refData.getTWDisplayName().replace(MONTH_PATTERN, month));
 			data.setSymbol(refData.getSymbol().replace(MONTH_PATTERN, month));
-			data.setRefSymbol(refData.getRefSymbol() + seq);
+			data.setRefSymbol(refData.getRefSymbol().replace(SEQ_PATTERN, seq));
 			lstRefData.add(data);
 		}
 

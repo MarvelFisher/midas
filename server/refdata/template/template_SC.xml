@@ -119,7 +119,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>IF</string>
+				<string>IF${SEQ}</string>
 			</entry>
 			<entry>
 				<string>Tradable</string>
@@ -251,7 +251,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>IH</string>
+				<string>IH${SEQ}</string>
 			</entry>
 			<entry>
 				<string>Tradable</string>
@@ -383,7 +383,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>IC</string>
+				<string>IC${SEQ}</string>
 			</entry>
 			<entry>
 				<string>Tradable</string>

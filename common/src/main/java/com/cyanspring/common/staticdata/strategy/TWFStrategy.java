@@ -133,7 +133,6 @@ public class TWFStrategy extends AbstractRefDataStrategy {
 		case 11:
 			refSymbol += "04";
 			break;
-
 		default:
 			break;
 		}

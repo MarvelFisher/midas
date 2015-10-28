@@ -423,13 +423,110 @@
 	
 	<!-- coin control -->
 	<bean id="coinManager" class="com.cyanspring.server.account.CoinManager">
-		<property name="activePositionCoinControl" value="false"></property>
-		<property name="activeDailyCoinControl" value="false"></property>
-		<property name="activeTrailingStopCoinControl" value="false"></property>
-		<property name="activeDayTradingModeCoinControl" value="false"></property>
+		<property name="activePositionCoinControl" value="false" />
+		<property name="activeDailyCoinControl" value="false" />
+		<property name="activeTrailingStopCoinControl" value="false" />
+		<property name="activeDayTradingModeCoinControl" value="false" />
 	</bean>
 	
 	<bean id="coinControlRecoveryProcessor" class="com.cyanspring.server.CoinControlRecoveryProcessor">
+	</bean>
+	
+	<bean id="allContractPolicy" class="com.cyanspring.common.staticdata.policy.ContractPolicy">
+       <property name="contractMonths">
+            <list>
+                <value>0</value>
+                <value>1</value>
+                <value>2</value>
+                <value>3</value>
+                <value>4</value>
+                <value>5</value>
+                <value>6</value>
+                <value>7</value>
+                <value>8</value>
+                <value>9</value>
+                <value>10</value>
+                <value>11</value>
+            </list>
+        </property>
+    </bean>
+    
+	<bean id="jdContractPolicy" class="com.cyanspring.common.staticdata.policy.ContractPolicy">
+       <property name="contractMonths">
+            <list>
+                <value>0</value>
+                <value>1</value>
+                <value>2</value>
+                <value>3</value>
+                <value>4</value>
+                <value>5</value>
+                <value>8</value>
+                <value>9</value>
+                <value>10</value>
+                <value>11</value>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="myContractPolicy" class="com.cyanspring.common.staticdata.policy.ContractPolicy">
+       <property name="contractMonths">
+            <list>
+                <value>0</value>
+                <value>2</value>
+                <value>4</value>
+                <value>6</value>
+                <value>7</value>
+                <value>8</value>
+                <value>10</value>
+                <value>11</value>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="rmContractPolicy" class="com.cyanspring.common.staticdata.policy.ContractPolicy">
+       <property name="contractMonths">
+            <list>
+                <value>0</value>
+                <value>2</value>
+                <value>4</value>
+                <value>6</value>
+                <value>7</value>
+                <value>8</value>
+                <value>10</value>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="rsContractPolicy" class="com.cyanspring.common.staticdata.policy.ContractPolicy">
+       <property name="contractMonths">
+            <list>
+                <value>6</value>
+                <value>7</value>
+                <value>8</value>
+                <value>10</value>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="ruContractPolicy" class="com.cyanspring.common.staticdata.policy.ContractPolicy">
+       <property name="contractMonths">
+            <list>
+                <value>0</value>
+                <value>2</value>
+                <value>3</value>
+                <value>4</value>
+                <value>5</value>
+                <value>6</value>
+                <value>7</value>
+                <value>8</value>
+                <value>9</value>
+                <value>10</value>
+            </list>
+        </property>
+    </bean>
+    
+	<bean id="noCNYContractPolicy" class="com.cyanspring.common.staticdata.policy.NoCNYContractPolicy">
+	   <property name="cnyMonth" value="1" />
 	</bean>
 	
 </beans>
