@@ -532,8 +532,22 @@
     </bean>
     
     <!-- 燃油 1 ~ 12 月（春节月份除外） -->
-	<bean id="noCNYContractPolicy" class="com.cyanspring.common.staticdata.policy.NoCNYContractPolicy">
-	   <property name="cnyMonth" value="1" />
+	<bean id="fuContractPolicy" class="com.cyanspring.common.staticdata.policy.ContractPolicy">
+	   <property name="contractMonths">
+            <list>
+                <value>0</value>
+                <value>2</value>
+                <value>3</value>
+                <value>4</value>
+                <value>5</value>
+                <value>6</value>
+                <value>7</value>
+                <value>8</value>
+                <value>9</value>
+                <value>10</value>
+                <value>11</value>
+            </list>
+        </property>
 	</bean>
 	
 </beans>

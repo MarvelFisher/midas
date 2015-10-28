@@ -61,6 +61,10 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
     @Qualifier("ruContractPolicy")
     private ContractPolicy ruContractPolicy;
 
+    @Autowired
+    @Qualifier("fuContractPolicy")
+    private ContractPolicy fuContractPolicy;
+
 	@Override
 	public void init(Calendar cal, Map<String, Quote> map) {
 		if (cal != null) {
@@ -143,6 +147,8 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 			return rsContractPolicy;
 		case "RU":
 			return ruContractPolicy;
+		case "FU":
+			return fuContractPolicy;
 		default:
 			return allContractPolicy;
 		}
