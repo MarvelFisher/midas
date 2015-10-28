@@ -54,7 +54,7 @@ public final class FrontRCPositionCachingManager extends BasicCachingManager {
 			@Override
 			public void OpenPositionChange(OpenPosition arg0) {
 				// TODO Auto-generated method stub
-				
+
 				String str = arg0.getId();
 				log.info(str);
 			}
@@ -73,12 +73,6 @@ public final class FrontRCPositionCachingManager extends BasicCachingManager {
 					}
 					sendPositionUpdateEvent();
 				}
-			}
-
-			@Override
-			public boolean notifyInitStatus(boolean sucess) {
-				// TODO Auto-generated method stub
-				return false;
 			}
 
 		};

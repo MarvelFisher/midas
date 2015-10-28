@@ -118,6 +118,7 @@ public class Business {
 	private TraderInfoListener traderInfoListener = null;
 	private DataReceiver quoteDataReceiver = null;
 	private AllPositionManager allPositionManager = null;
+
 	// singleton implementation
 	private Business() {
 	}
@@ -172,9 +173,10 @@ public class Business {
 				processCSTWUserLoginReplyEvent(evt);
 				if (evt.isOk()) {
 					tickManager.init(getFirstServer());
-					if(null != loginAccount);
-						traderInfoListener.init(loginAccount);
-						
+					if (null != loginAccount)
+						;
+					traderInfoListener.init(loginAccount);
+
 				}
 				if (isLoginRequired() && evt.isOk()) {
 					requestStrategyInfo(evt.getSender());
@@ -230,7 +232,7 @@ public class Business {
 	private void requestStrategyInfo(String server) {
 		try {
 			orderManager.init();
-			eventManager.sendEvent(new ServerStatusEvent(server, true));	
+			eventManager.sendEvent(new ServerStatusEvent(server, true));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			e.printStackTrace();
@@ -337,17 +339,21 @@ public class Business {
 		ServerStatusDisplay.getInstance().init();
 
 		eventManager.subscribe(NodeInfoEvent.class, listener);
-		eventManager.subscribe(InitClientEvent.class, listener);		
-		eventManager.subscribe(UserLoginReplyEvent.class, listener);		
-		eventManager.subscribe(SelectUserAccountEvent.class, listener);		
-		eventManager.subscribe(ServerHeartBeatEvent.class, listener);		
-		eventManager.subscribe(ServerReadyEvent.class, listener);		
-		eventManager.subscribe(SingleOrderStrategyFieldDefUpdateEvent.class, listener);		
-		eventManager.subscribe(MultiInstrumentStrategyFieldDefUpdateEvent.class, listener);		
-		eventManager.subscribe(CSTWUserLoginReplyEvent.class, listener);		
-		eventManager.subscribe(AccountSettingSnapshotReplyEvent.class, listener);
-		//schedule timer
-		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval , listener, timerEvent);	
+		eventManager.subscribe(InitClientEvent.class, listener);
+		eventManager.subscribe(UserLoginReplyEvent.class, listener);
+		eventManager.subscribe(SelectUserAccountEvent.class, listener);
+		eventManager.subscribe(ServerHeartBeatEvent.class, listener);
+		eventManager.subscribe(ServerReadyEvent.class, listener);
+		eventManager.subscribe(SingleOrderStrategyFieldDefUpdateEvent.class,
+				listener);
+		eventManager.subscribe(
+				MultiInstrumentStrategyFieldDefUpdateEvent.class, listener);
+		eventManager.subscribe(CSTWUserLoginReplyEvent.class, listener);
+		eventManager
+				.subscribe(AccountSettingSnapshotReplyEvent.class, listener);
+		// schedule timer
+		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval, listener,
+				timerEvent);
 		traderInfoListener = new TraderInfoListener();
 		initSessionListener();
 	}
@@ -525,6 +531,10 @@ public class Business {
 		log.info("login user:{},{}", user, userGroup.getRole());
 
 		QuoteCachingManager.getInstance().init();
+
+		allPositionManager.init(eventManager, getFirstServer(),
+				getAccountGroup(), getUserGroup());
+
 		FrontRCPositionCachingManager.getInstance().init();
 		FrontRCOrderCachingManager.getInstance().init();
 		FrontRCOpenPositionEventController.getInstance().init();
@@ -532,7 +542,6 @@ public class Business {
 		RCIndividualEventController.getInstance().init();
 		RCInstrumentSummaryEventController.getInstance().init();
 		RCOrderEventController.getInstance().init();
-		allPositionManager.init(eventManager, getFirstServer(), getAccountGroup(), getUserGroup());
 
 		return true;
 	}
@@ -627,7 +636,7 @@ public class Business {
 
 		return symbolList;
 	}
-	
+
 	public List<RefData> getRefDataList() {
 		return tickManager.getRefDataList();
 	}
@@ -648,16 +657,16 @@ public class Business {
 					}
 				});
 	}
-	
-	public DataReceiver getQuoteDataReceiver(){
+
+	public DataReceiver getQuoteDataReceiver() {
 		return quoteDataReceiver;
 	}
-	
-	public AllPositionManager getAllPositionManager(){
+
+	public AllPositionManager getAllPositionManager() {
 		return allPositionManager;
 	}
-	
-	public List<OverallPosition> getOverallPositionList(){
+
+	public List<OverallPosition> getOverallPositionList() {
 		return allPositionManager.getOverAllPositionList();
 	}
 }

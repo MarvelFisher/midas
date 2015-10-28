@@ -61,17 +61,17 @@ public final class ModelTransfer {
 				.urPnl(position.getUrPnL()).pnl(position.getPnL())
 				.trader(position.getAccount()).build();
 
-//		if (PriceUtils.isZero(position.getQty())) {
-//			positionModel.setType(RCPositionType.Close);
-//		} else {
-			positionModel.setType(RCPositionType.Open);
-//		}
-		positionModel.setAveragePrice(position.getPrice());
-//		if (PriceUtils.GreaterThan(position.getQty(), 0)) {
+		// if (PriceUtils.isZero(position.getQty())) {
+		// positionModel.setType(RCPositionType.Close);
+		// } else {
+		positionModel.setType(RCPositionType.Open);
+		// }
+		positionModel.setAveragePrice(position.getAvgPrice());
+		// if (PriceUtils.GreaterThan(position.getQty(), 0)) {
 		positionModel.setPositionDirection(RCPositionDirection.Long);
-//		} else {
-//			positionModel.setPositionDirection(RCPositionDirection.Short);
-//		}
+		// } else {
+		// positionModel.setPositionDirection(RCPositionDirection.Short);
+		// }
 
 		return positionModel;
 	}
