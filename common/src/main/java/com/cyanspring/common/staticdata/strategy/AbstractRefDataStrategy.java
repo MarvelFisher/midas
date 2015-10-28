@@ -88,6 +88,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 				policy = getContractPolicy(category);
 			}
 		} else {
+			log.warn("contract policy is not set for category: {}", category);
 			policy = getContractPolicy(category);
 		}
 
