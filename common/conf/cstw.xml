@@ -13,7 +13,7 @@
 	<import resource="classpath:kdb/SignalSettings.xml" />
  
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
-		<property name="url" value="failover:(nio://localhost:61616)"></property>
+		<property name="url" value="nio://localhost:61616"></property>
 	</bean>
 
 	<bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
