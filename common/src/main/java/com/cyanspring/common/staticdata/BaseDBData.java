@@ -50,6 +50,12 @@ public class BaseDBData extends DataObject {
     public void setPERatio(double peRatio) {
         this.set(peRatio, QuoteExtDataField.PERATIO.value());
     }
+    public double getEpsTTM(){
+        return this.get(double.class, QuoteExtDataField.EPSTTM.value());
+    }
+    public void setEpsTTM(double epsTTM) {
+        this.set(epsTTM, QuoteExtDataField.EPSTTM.value());
+    }
     public Date getTimeStamp(){
         return this.get(Date.class, QuoteExtDataField.TIMESTAMP.value());
     }

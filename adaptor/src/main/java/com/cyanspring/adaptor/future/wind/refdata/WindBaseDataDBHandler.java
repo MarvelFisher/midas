@@ -68,7 +68,7 @@ public class WindBaseDataDBHandler implements IBaseDataDBHandler{
             String sql =
                     "SELECT \n" +
                             "\tMAIN.*,IFNULL(SFREE.FREESHARES,0) FREESHARES,IFNULL(STOTAL.TOTALSHARES,0) TOTALSHARES\n" +
-                            "    ,IFNULL(SPE.PERATIO,0) PERATIO\n" +
+                            "    ,IFNULL(SPE.PERATIO,0) PERATIO,IFNULL(SEPS.EPSTTM,0) EPSTTM\n" +
                             "FROM\n" +
                             "(\n" +
                             "SELECT \n" +
@@ -116,7 +116,14 @@ public class WindBaseDataDBHandler implements IBaseDataDBHandler{
                             "\tgroup by S_INFO_WINDCODE\n" +
                             "\t) MAXSEOD ON SEOD.S_INFO_WINDCODE = MAXSEOD.WINDCODE AND SEOD.TRADE_DT = MAXSEOD.MAXDT\n" +
                             ") SPE ON SPE.WINDCODE = MAIN.WINDCODE\n" +
+                            "LEFT JOIN\n" +
+                            "(\n" +
+                            "\tSELECT S_INFO_WINDCODE WINDCODE,S_FA_EPS_TTM EPSTTM\n" +
+                            "\tFROM ASHARETTMANDMRQ\n" +
+                            "\tWHERE S_FA_EPS_TTM IS NOT NULL\n" +
+                            ") SEPS ON SEPS.WINDCODE = MAIN.WINDCODE\n" +
                             "ORDER BY MAIN.MARKETTYPE,MAIN.WINDCODE;";
+//            log.debug("BaseDataDB SQL = " + sql);
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 String windcode = rs.getString("WINDCODE");
@@ -126,6 +133,7 @@ public class WindBaseDataDBHandler implements IBaseDataDBHandler{
                 Number freeShares = rs.getBigDecimal("FREESHARES");
                 Number totalShares = rs.getBigDecimal("TOTALSHARES");
                 Number peRatio = rs.getBigDecimal("PERATIO");
+                Number epsttm = rs.getBigDecimal("EPSTTM");
                 baseDBData = new BaseDBData();
                 baseDBData.setSymbol(windcode);
                 baseDBData.setSpellName(pinyin);
@@ -134,6 +142,7 @@ public class WindBaseDataDBHandler implements IBaseDataDBHandler{
                 baseDBData.setFreeShares(freeShares.longValue());
                 baseDBData.setTotalShares(totalShares.longValue());
                 baseDBData.setPERatio(peRatio.doubleValue());
+                baseDBData.setEpsTTM(epsttm.doubleValue());
                 timeStamp = Clock.getInstance().now();
                 baseDBData.setTimeStamp(timeStamp);
                 BaseDBDataHashMap.put(windcode, baseDBData);
