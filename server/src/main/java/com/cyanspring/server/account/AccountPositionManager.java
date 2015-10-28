@@ -1824,6 +1824,8 @@ public class AccountPositionManager implements IPlugin {
 
                 for (int i = 0; i < positions.size(); i++) {
                     OpenPosition position = positions.get(i);
+                    if (PriceUtils.Equal(position.getAvailableQty(), 0))
+                    	continue;
                     Quote quote = marketData.get(position.getSymbol());
                     if (!quoteIsValid(quote)) {
 						continue;
@@ -1855,7 +1857,7 @@ public class AccountPositionManager implements IPlugin {
         				long n = ((long)lossQty)/lot;
                     	qty = Default.getMarginCut() * (n+1);
                     }
-                    qty = Math.min(Math.abs(position.getQty()), qty);
+                    qty = Math.min(Math.abs(position.getAvailableQty()), qty);
 
             		if (!TradingUtil.checkRiskOrderCount(riskOrderController, account.getId())) {
 						return true;
