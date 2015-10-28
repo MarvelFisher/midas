@@ -30,15 +30,8 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 	}
 
 	protected static final Logger log = LoggerFactory.getLogger(AbstractRefDataStrategy.class);
-    private SimpleDateFormat yearSdf = new SimpleDateFormat("yyyy");
-    private RefData template;
-    private String spotCnName;
-    private String spotTwName;
-    private MarketSessionUtil marketSessionUtil;
-    private String detailDisplayPttern = "%s%s年%s月合约";
-    private Calendar cal;
-    private String INDEX_FU_CN = "指数";
-    private String INDEX_FU_TW = "指數";
+	private MarketSessionUtil marketSessionUtil;
+	private Calendar cal;
     private final String CONTRACT_POLICY_PACKAGE = "com.cyanspring.common.staticdata.policy";
     private final String MONTH_PATTERN = "${YYMM}";
     private final String SEQ_PATTERN = "${SEQ}";
@@ -81,7 +74,8 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 
 	@Override
 	public List<RefData> updateRefData(RefData refData) {
-		ContractPolicy policy = allContractPolicy;
+		ContractPolicy policy;
+		String category = refData.getCategory();
 		String contractPolicy = refData.getContractPolicy();
 		if (contractPolicy != null) {
 			try {
@@ -91,31 +85,10 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 				policy = ctor.newInstance();
 			} catch (Exception e) {
 				log.warn("Can't find contract policy: {}", contractPolicy);
-				policy = allContractPolicy;
+				policy = getContractPolicy(category);
 			}
 		} else {
-			String category = refData.getCategory();
-			switch (category) {
-			case "JD":
-				policy = jdContractPolicy;
-				break;
-			case "M":
-			case "Y":
-				policy = myContractPolicy;
-				break;
-			case "RM":
-				policy = rmContractPolicy;
-				break;
-			case "RS":
-				policy = rsContractPolicy;
-				break;
-			case "RU":
-				policy = ruContractPolicy;
-				break;
-			default:
-				policy = allContractPolicy;
-				break;
-			}
+			policy = getContractPolicy(category);
 		}
 
 		List<RefData> lstRefData = new ArrayList<>();
@@ -154,6 +127,24 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 
 	protected SimpleDateFormat getSettlementDateFormat() {
 		return new SimpleDateFormat("yyyy-MM-dd") ;
+	}
+
+	private ContractPolicy getContractPolicy(String category) {
+		switch (category) {
+		case "JD":
+			return jdContractPolicy;
+		case "M":
+		case "Y":
+			return myContractPolicy;
+		case "RM":
+			return rmContractPolicy;
+		case "RS":
+			return rsContractPolicy;
+		case "RU":
+			return ruContractPolicy;
+		default:
+			return allContractPolicy;
+		}
 	}
 
 }
