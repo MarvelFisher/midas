@@ -62,10 +62,13 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 	private Action createManualRefreshAction;
 
 	private GroupManagementDialog createGroupDialog;
+	private CreateUserDialog createUserDialog;
+	private Action createUserAction;
 
 	private final String ID_GROUP_MANAGEMENT_ACTION = "GROUP_MANAGEMENT";
 	private final String ID_CHANGE_ROLE = "CHANGE_ROLE";
 	private final String ID_MANUAL_REFRESH_ACTION = "MANUAL_REFRESH";
+	private final String ID_CREATE_USER_ACTION = "CREATE_USER";
 
 	@Override
 	public void onEvent(AsyncEvent event) {
@@ -137,6 +140,26 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 			}
 		});
 	}
+	
+	private void createUserAccountAction(final Composite parent) {
+		createUserDialog = new CreateUserDialog(parent.getShell());
+		// create local toolbars
+		createUserAction = new Action() {
+			public void run() {
+				createUserDialog.open();
+			}
+		};
+		createUserAction.setId(ID_CREATE_USER_ACTION);
+		createUserAction.setText("Creat a user & account");
+		createUserAction.setToolTipText("Create a user & account");
+
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.PLUS_ICON.toString());
+		createUserAction.setImageDescriptor(imageDesc);
+
+		IActionBars bars = getViewSite().getActionBars();
+		bars.getToolBarManager().add(createUserAction);		
+	}
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -171,8 +194,9 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 		
 		createManualRefreshToggleAction(parent);
 		createGroupManagementAction(parent);
-		createChangeRoleAction(parent);
-		
+		createChangeRoleAction(parent);		
+		createUserAccountAction(parent);
+
 		sendAllUserRequest();	
 		subEvent(AllUserSnapshotReplyEvent.class);
 		subEvent(UserUpdateEvent.class);
