@@ -67,20 +67,22 @@ public class RefDataFactory extends RefDataService {
 
 	@Override
 	public List<RefData> updateAll(String tradeDate) throws Exception {
-		log.info("Updating refData....");	
+		log.info("Updating refData....");
 		List<RefData> addList = new ArrayList<>();
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(getSettlementDateFormat().parse(tradeDate));
 		for (Entry<String, RefData> entry : refDataTemplateMap.entrySet()) {
 			RefData refData = entry.getValue();
 			List<RefData> list = updateRefData(cal, refData);
-			if (list.size() > 0)
+			if (list.size() > 0) {
 				addList.addAll(list);
+			}
 		}
-		
+
 		for (RefData refData : addList) {
-			if (refDataList.contains(refData))
+			if (refDataList.contains(refData)) {
 				refDataList.remove(refData);
+			}
 			refDataList.add(refData);
 		}
 
@@ -104,7 +106,7 @@ public class RefDataFactory extends RefDataService {
 
 					@Override
 					public void init(Calendar cal, Map<String, Quote> map) {
-						
+
 					}
 
 					@Override
@@ -116,9 +118,9 @@ public class RefDataFactory extends RefDataService {
 
 					@Override
 					public void setRequireData(Object... objects) {
-						
+
 					}
-					
+
 				};
 			}
 			strategyMap.put(refData.getStrategy(), strategy);
@@ -185,6 +187,13 @@ public class RefDataFactory extends RefDataService {
 			if (index.equals(refData.getCategory())) {
 				ret.addAll(updateRefData(cal, refData));
 			}
+		}
+
+		for (RefData refData : ret) {
+			if (refDataList.contains(refData)) {
+				refDataList.remove(refData);
+			}
+			refDataList.add(refData);
 		}
 
 		return ret;
