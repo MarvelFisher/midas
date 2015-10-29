@@ -368,6 +368,10 @@ public class OrderCachingManager implements IAsyncEventListener {
 			eventManager.subscribe(ParentOrderUpdateEvent.class,this);
 		}else
 			subGroupEvent(Business.getInstance().getAccountGroup());
+		
+		// setting ready
+		setReady(true);
+		eventManager.sendEvent(new OrderCacheReadyEvent(null));
 	}
 	
 	
