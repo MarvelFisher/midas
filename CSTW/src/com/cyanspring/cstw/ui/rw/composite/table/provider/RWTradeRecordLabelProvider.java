@@ -28,8 +28,6 @@ public class RWTradeRecordLabelProvider extends DefaultLabelProviderAdapter {
 		case 6:
 			return model.getTradeTime();
 		case 7:
-			return model.getExecutionRate().toString();
-		case 8:
 			return model.getTrader();
 		default:
 			return "";

@@ -4,13 +4,9 @@
 package com.cyanspring.cstw.service.impl.riskmgr;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.event.AsyncEvent;
-import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.service.common.BasicServiceImpl;
 import com.cyanspring.cstw.service.common.RefreshEventType;
 import com.cyanspring.cstw.service.iservice.riskmgr.ITradeRecordService;
@@ -36,10 +32,6 @@ public final class TradeRecordServiceImpl extends BasicServiceImpl implements
 	public void queryTradeRecord() {
 		TradeRecordsSnapshotRequestLocalEvent event = new TradeRecordsSnapshotRequestLocalEvent();
 		sendEvent(event);
-//		List<Map<String, Object>> orders = Business.getInstance().getOrderManager().getAllParentOrders();
-//		for(Map<String, Object> fields : orders) {
-//			ParentOrder parentOrder = new ParentOrder((HashMap<String, Object>) fields);
-//		}
 	}
 
 	@Override

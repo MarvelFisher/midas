@@ -8,7 +8,6 @@ import java.util.Map;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
-import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.cachingmanager.BasicCachingManager;
 import com.cyanspring.cstw.event.OrderCacheReadyEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCParentOrderUpdateCachingLocalEvent;
@@ -34,20 +33,16 @@ public final class FrontRCOrderCachingManager extends BasicCachingManager {
 	
 	private FrontRCOrderCachingManager() {
 		super();
-		initData();		
+		orderMap = new HashMap<String, ParentOrder>();
+		refreshData();		
 	}
 
-	private void initData() {
-		orderMap = new HashMap<String, ParentOrder>();
-		List<Map<String, Object>> orders = business.getOrderManager().getAllParentOrders();
-		if (orders != null) {
-			for(Map<String, Object> fields : orders) {
-				ParentOrder order = new ParentOrder((HashMap<String, Object>) fields);
-				
-				orderMap.put(order.getId(), order);
-			}
-		}
-		
+	private void refreshData() {
+		orderMap.clear();
+		List<ParentOrder> orders = business.getOrderManager().getAllParentOrderList();
+		for(ParentOrder ord : orders) {
+			orderMap.put(ord.getId(), ord);
+		}		
 	}
 
 	@Override
@@ -61,7 +56,7 @@ public final class FrontRCOrderCachingManager extends BasicCachingManager {
 	@Override
 	protected void processAsyncEvent(AsyncEvent event) {
 		if (event instanceof OrderCacheReadyEvent) {
-			initData();
+			refreshData();
 			sendParentOrderUpdateEvent();
 		}
 		if (event instanceof ParentOrderUpdateEvent) {
@@ -69,13 +64,11 @@ public final class FrontRCOrderCachingManager extends BasicCachingManager {
 					.getOrder();
 			log.info("ParentOrderCachingManager : Update parent order recieved: "
 					+ parentOrder);
-			orderMap.put(parentOrder.getId(), parentOrder);
-//			List<Map<String, Object>> orders = business.getOrderManager().getAllParentOrders();
-//			for ( Map<String, Object> fields : orders ) {
-//				ParentOrder parentOrder = new ParentOrder((HashMap<String, Object>) fields);
-//				orderMap.put(parentOrder.getId(), parentOrder);
-//			}
-			sendParentOrderUpdateEvent();
+			if (business.getUserGroup().isManageeExist(parentOrder.getUser())){
+				orderMap.put(parentOrder.getId(), parentOrder);
+				sendParentOrderUpdateEvent();
+			}			
+			
 		}
 
 	}
