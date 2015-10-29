@@ -14,13 +14,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +37,8 @@ import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.ScheduleManager;
-import com.cyanspring.common.event.account.CreateGroupManagementEvent;
 import com.cyanspring.common.event.account.CreateUserEvent;
+import com.cyanspring.common.event.account.PmCreateGroupManagementEvent;
 import com.cyanspring.common.event.order.EnterParentOrderEvent;
 import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyEvent;
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyEvent;
@@ -172,14 +170,14 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 			for(int i = 1; i < 5; i++) {
 				group1.add(new GroupManagement(frontUser.getId(), "test"+i));
 			}
-			CreateGroupManagementEvent groupEvent1 = new CreateGroupManagementEvent(null, null, group1);
+			PmCreateGroupManagementEvent groupEvent1 = new PmCreateGroupManagementEvent(null, null, group1);
 			eventManager.sendEvent(groupEvent1);
 			
 			List<GroupManagement> group2 = new ArrayList<GroupManagement>();
 			for(int i = 4; i < 8; i++) {
 				group2.add(new GroupManagement(backUser.getId(), "test"+i));
 			}
-			CreateGroupManagementEvent groupEvent2 = new CreateGroupManagementEvent(null, null, group2);
+			PmCreateGroupManagementEvent groupEvent2 = new PmCreateGroupManagementEvent(null, null, group2);
 			eventManager.sendEvent(groupEvent2);
 		}
 		
