@@ -15,6 +15,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -182,6 +184,19 @@ public final class SpeedDepthTableComposite extends Composite {
 						speedDepthService.cancelOrder(model.getSymbol(),
 								Double.valueOf(model.getPrice()));
 					}
+				}
+			}
+		});
+
+		table.addListener(SWT.MouseExit, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				if (currentMouseSelectedItem != null
+						&& currentMouseSelectedItem != currentKeySelectedItem) {
+					changeItemColor(currentMouseSelectedItem, SWT.COLOR_WHITE);
+					labelProvider.setSelectIndex(-1);
+					currentMouseSelectedItem = null;
+					return;
 				}
 			}
 		});
