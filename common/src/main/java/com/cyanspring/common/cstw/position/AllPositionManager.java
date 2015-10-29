@@ -2,9 +2,11 @@ package com.cyanspring.common.cstw.position;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.OverallPosition;
@@ -36,13 +39,13 @@ public class AllPositionManager implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory.getLogger(AllPositionManager.class);
 	private IRemoteEventManager eventManager;
 	private String server = "";
-	private List<String> accountIdList = null;
+	private List<String> accountIdList = new ArrayList<String>();
+	private Map<String,Account> accountMap = new HashMap<String,Account>();
 	private UserGroup loginUser = null;
 	private ConcurrentHashMap<String, List<OverallPosition>> allPositionMap = new ConcurrentHashMap<String, List<OverallPosition>>();
 	private ConcurrentHashMap<String, List<OpenPosition>> openPositionMap = new ConcurrentHashMap<String, List<OpenPosition>>();
 	private ConcurrentHashMap<String, List<ClosedPosition>> closedPositionMap = new ConcurrentHashMap<String, List<ClosedPosition>>();
 	private List<IPositionChangeListener> listenerList = new ArrayList<IPositionChangeListener>();
-	private boolean initSuccess = false;
 
 	public AllPositionManager() {
 		
@@ -162,8 +165,16 @@ public class AllPositionManager implements IAsyncEventListener {
 			log.info("account:{}",key);
 			List<OverallPosition> ops = allPositionMap.get(key);
 			for(OverallPosition op : ops){
-				log.info(" -all:{}, {}, {}, {}, {}, {}, {}"
-						,new Object[]{op.getAccount(),op.getSymbol(),op.getBuyPrice(),op.getBuyQty(),op.getSellPrice(),op.getSellQty(),op.getTotalQty()});
+				log.info(" -all:{}, {}, {}, {}, {}, {}, {}, {}, {}"
+						,new Object[]{op.getAccount()
+								,op.getUser()
+								,op.getSymbol()
+								,op.getBuyPrice()
+								,op.getBuyQty()
+								,op.getSellPrice()
+								,op.getSellQty()
+								,op.getTotalQty()
+								,op.getQty()});
 			}
 		}
 	}
@@ -217,10 +228,9 @@ public class AllPositionManager implements IAsyncEventListener {
 		}	
 	}
 
-	public OverallPosition toOverallPosition(String accountId,String symbol,List<OpenPosition> opList, List<ClosedPosition> cpList){
-		OverallPosition oap = new OverallPosition();
-		oap.setAccount(accountId);
-		oap.setSymbol(symbol);
+	public OverallPosition toOverallPosition(Account account,String symbol,List<OpenPosition> opList, List<ClosedPosition> cpList){
+		OverallPosition oap = new OverallPosition(account.getUserId(),account.getId(),"",symbol);
+		
 		for(OpenPosition op : opList){
 			if(!op.getSymbol().equals(symbol))
 				continue;
@@ -234,7 +244,6 @@ public class AllPositionManager implements IAsyncEventListener {
 					oap.setBuyPrice((oap.getBuyPrice()+price)/2);
 				
 				oap.setBuyQty(oap.getBuyQty()+Math.abs(qty));
-				oap.setQty(oap.getBuyQty()+Math.abs(qty));
 				
 			}else{
 				if(PriceUtils.isZero(oap.getSellPrice()))
@@ -243,7 +252,6 @@ public class AllPositionManager implements IAsyncEventListener {
 					oap.setSellPrice((oap.getSellPrice()+price)/2);
 				
 				oap.setSellQty(oap.getSellQty()+Math.abs(qty));
-				oap.setQty(oap.getSellQty()+Math.abs(qty));
 				
 			}
 			
@@ -308,9 +316,14 @@ public class AllPositionManager implements IAsyncEventListener {
 			allList.clear();
 			Set <String> symbolSet = collectSymbol(id,oList,cList);
 			Set <OverallPosition> tempAllPositionSet = new HashSet<OverallPosition>();
+			Account account = accountMap.get(id);
+			if(null == account){
+				log.warn("can't find account in accountMap:{}",id);
+				continue;
+			}
 			for(String symbol : symbolSet){
-				log.info("symbol set:{},{}",id,symbol);
-				OverallPosition oap = toOverallPosition(id,symbol,oList,cList);
+				log.info("symbol set:{},{}",id,symbol);			
+				OverallPosition oap = toOverallPosition(account,symbol,oList,cList);
 				tempAllPositionSet.add(oap);
 			}		
 			
@@ -352,7 +365,7 @@ public class AllPositionManager implements IAsyncEventListener {
 	}
 	
 	public void init(IRemoteEventManager eventManager
-			,String server,List<String> accountIdList,UserGroup loginUser){
+			,String server,List<Account> accountList,UserGroup loginUser){
 		
 		log.info("init AllPositionManager");
 		
@@ -362,7 +375,15 @@ public class AllPositionManager implements IAsyncEventListener {
 		
 		this.eventManager = eventManager;
 		this.server = server;
-		this.accountIdList = accountIdList;
+		if(null != accountList){
+			log.info("put accountList:{}",accountList.size());
+			for(Account account: accountList){
+//				log.info("put account Map:{}",account.getId());
+				accountMap.put(account.getId(), account);
+			}
+		}
+		
+		accountIdList.addAll(accountMap.keySet());
 		this.loginUser = loginUser;
 		
 		if( null == accountIdList){
@@ -429,7 +450,4 @@ public class AllPositionManager implements IAsyncEventListener {
 		return list;
 	}
 
-	public boolean isInitSuccess() {
-		return initSuccess;
-	}
 }

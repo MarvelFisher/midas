@@ -65,7 +65,6 @@ import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.cachingmanager.quote.QuoteCachingManager;
-import com.cyanspring.cstw.cachingmanager.riskcontrol.BackRCPositionCachingManager;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.FrontRCOrderCachingManager;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.FrontRCPositionCachingManager;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.FrontRCInstrumentStatisticsEventController;
@@ -115,11 +114,12 @@ public class Business {
 	private AccountSetting accountSetting = null;
 	private UserGroup userGroup = new UserGroup("Admin", UserRole.Admin);
 	private List<String> accountGroupList = new ArrayList<String>();
+	private List<Account> accountList = new ArrayList<Account>();
 	private List<String> symbolList = new ArrayList<String>();
 	private TraderInfoListener traderInfoListener = null;
 	private DataReceiver quoteDataReceiver = null;
 	private AllPositionManager allPositionManager = null;
-
+	
 	// singleton implementation
 	private Business() {
 	}
@@ -516,8 +516,9 @@ public class Business {
 		}
 		Map<String, Account> user2AccoutMap = event.getUser2AccountMap();
 		if (null != user2AccoutMap && !user2AccoutMap.isEmpty()) {
+			accountList.addAll(user2AccoutMap.values());
 			for (Account acc : user2AccoutMap.values()) {
-				accountGroupList.add(acc.getId());
+				accountGroupList.add(acc.getId());		
 			}
 		}
 		UserGroup userGroup = event.getUserGroup();
@@ -534,7 +535,7 @@ public class Business {
 		QuoteCachingManager.getInstance().init();
 
 		allPositionManager.init(eventManager, getFirstServer(),
-				getAccountGroup(), getUserGroup());
+				accountList, getUserGroup());
 
 		FrontRCPositionCachingManager.getInstance().init();
 		FrontRCOrderCachingManager.getInstance().init();
@@ -670,5 +671,9 @@ public class Business {
 
 	public List<OverallPosition> getOverallPositionList() {
 		return allPositionManager.getOverAllPositionList();
+	}
+
+	public List<Account> getAccountList() {
+		return this.accountList;
 	}
 }

@@ -944,6 +944,22 @@ public class AccountPositionManager implements IPlugin {
 
     	if (isAdminRole) {
     		userGroup = new UserGroup(id,UserRole.Admin);
+	    	accountList = accountKeeper.getAllAccounts();
+	    	user2AccountMap = new HashMap<>();
+    		if(null == accountList)
+    			accountList = new ArrayList<>();
+    		
+	    	if(accountList.size() < limitUser){
+	    		log.info("get all Account:{}",accountList.size());
+	    		for(Account account:accountList){
+	    			if(account != null){
+	    				user2AccountMap.put(account.getId(), account);
+	    			}
+	    		}
+	    	}else{    		
+	    		log.info("over user limit:{},{}",accountList.size(),limitUser);
+	    	}
+
     		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(event.getKey(),event.getSender(),true,"",userGroup,accountList,user2AccountMap );
     		try {
     			eventManager.sendRemoteEvent(reply);
