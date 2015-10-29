@@ -51,7 +51,7 @@ public class CategoryFilter implements IRefDataFilter {
 					// Only filter RefData whose commodity is "F", or add directly without filtering
 					String commodity = refData.getCommodity();
 					if (!StringUtils.hasText(commodity)
-							|| !commodity.equals(RefDataCommodity.FUTURES.getValue())) {
+							|| !commodity.equals(RefDataCommodity.FUTUREINDEX.getValue())) {
 						fLstRefData.add(refData);
 						continue;
 					}

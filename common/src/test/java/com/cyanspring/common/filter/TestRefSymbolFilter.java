@@ -48,7 +48,7 @@ public class TestRefSymbolFilter {
 		refData1.setCategory("AG");
 		refData1.setExchange("SHF");
 		refData1.setRefSymbol("AG12");
-		refData1.setCommodity(RefDataCommodity.FUTURES.getValue());
+		refData1.setCommodity(RefDataCommodity.FUTUREINDEX.getValue());
 
 		// AG 活躍
 		refData2 = new RefData();
@@ -57,7 +57,7 @@ public class TestRefSymbolFilter {
 		refData2.setCategory("AG");
 		refData2.setExchange("SHF");
 		refData2.setRefSymbol("AG");
-		refData2.setCommodity(RefDataCommodity.FUTURES.getValue());
+		refData2.setCommodity(RefDataCommodity.FUTUREINDEX.getValue());
 
 		lstRefData.add(refData1);
 		lstRefData.add(refData2);

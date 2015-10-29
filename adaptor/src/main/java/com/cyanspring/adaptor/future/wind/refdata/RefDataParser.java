@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.cyanspring.adaptor.future.wind.WindType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ public class RefDataParser {
             }
         }
         if(commodity.equals("FT")){
-            commodity = RefDataCommodity.FUTURES.getValue();
+            commodity = RefDataCommodity.FUTUREINDEX.getValue();
             try {
                 String extractYYMMStr = codeTableData.getWindCode().replaceAll("\\D+", "").substring(2);
                 refData.setSymbol(codeTableData.getShowID());
@@ -71,7 +72,19 @@ public class RefDataParser {
             }
         }
         if(commodity.equals("FC")){
-            commodity = RefDataCommodity.FUTURES.getValue();
+            switch(codeTableData.getSecurityType()){
+                case WindType.FC_INDEX:
+                case WindType.FC_INDEX_CX:
+                    commodity = RefDataCommodity.FUTUREINDEX.getValue();
+                    break;
+                case WindType.FC_COMMODITY:
+                case WindType.FC_COMMODITY_CX:
+                    commodity = RefDataCommodity.FUTURECOMMODITY.getValue();
+                    break;
+                default:
+                    commodity = RefDataCommodity.FUTUREINDEX.getValue();
+                    break;
+            }
         }
         refData.setCommodity(commodity);
         if (commodity.equals(RefDataCommodity.STOCK.getValue())) {

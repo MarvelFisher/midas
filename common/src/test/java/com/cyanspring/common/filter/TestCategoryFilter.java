@@ -44,7 +44,7 @@ public class TestCategoryFilter {
 		refData1.setCategory("AG");
 		refData1.setExchange("SHF");
 		refData1.setRefSymbol("AG12.SHF");
-		refData1.setCommodity(RefDataCommodity.FUTURES.getValue());
+		refData1.setCommodity(RefDataCommodity.FUTUREINDEX.getValue());
 
 		// This record doesn't exist in FcRefDataTemplate thus will be excluded.
 		refData2 = new RefData();
@@ -53,7 +53,7 @@ public class TestCategoryFilter {
 		refData2.setCategory("BG");
 		refData2.setExchange("SHF");
 		refData2.setRefSymbol("AG11.SHF");
-		refData2.setCommodity(RefDataCommodity.FUTURES.getValue());
+		refData2.setCommodity(RefDataCommodity.FUTUREINDEX.getValue());
 
 		refData3 = new RefData();
 		refData3.setIType(IType.FUTURES_CX.getValue());
@@ -61,7 +61,7 @@ public class TestCategoryFilter {
 		refData3.setCategory("AG");
 		refData3.setExchange("SHF");
 		refData3.setRefSymbol("AG.SHF");
-		refData3.setCommodity(RefDataCommodity.FUTURES.getValue());
+		refData3.setCommodity(RefDataCommodity.FUTUREINDEX.getValue());
 		
 		// Commodity is not "F", won't be filtered out
 		refData4 = new RefData();

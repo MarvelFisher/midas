@@ -11,7 +11,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -23,7 +23,7 @@
       </entry>
       <entry>
         <string>CNName</string>
-        <string>IF下月[IF1511]</string>
+        <string>IF下月[IF1512]</string>
       </entry>
       <entry>
         <string>IType</string>
@@ -31,7 +31,7 @@
       </entry>
       <entry>
         <string>TWName</string>
-        <string>IF下月[IF1511]</string>
+        <string>IF下月[IF1512]</string>
       </entry>
       <entry>
         <string>Ref symbol</string>
@@ -55,51 +55,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
-      </entry>
-      <entry>
-        <string>Symbol</string>
-        <string>IH1603.CF</string>
-      </entry>
-      <entry>
-        <string>ENName</string>
-        <null/>
-      </entry>
-      <entry>
-        <string>CNName</string>
-        <string>IH1603</string>
-      </entry>
-      <entry>
-        <string>IType</string>
-        <string>112</string>
-      </entry>
-      <entry>
-        <string>TWName</string>
-        <string>IH1603</string>
-      </entry>
-      <entry>
-        <string>Ref symbol</string>
-        <string>IH1603.CF</string>
-      </entry>
-      <entry>
-        <string>Code</string>
-        <string>IH1603</string>
-      </entry>
-    </fields>
-  </com.cyanspring.common.staticdata.RefData>
-  <com.cyanspring.common.staticdata.RefData>
-    <fields>
-      <entry>
-        <string>Lot size</string>
-        <int>1</int>
-      </entry>
-      <entry>
-        <string>Exchange</string>
-        <string>CF</string>
-      </entry>
-      <entry>
-        <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -143,7 +99,51 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>IH1603.CF</string>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <null/>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>IH1603</string>
+      </entry>
+      <entry>
+        <string>IType</string>
+        <string>112</string>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>IH1603</string>
+      </entry>
+      <entry>
+        <string>Ref symbol</string>
+        <string>IH1603.CF</string>
+      </entry>
+      <entry>
+        <string>Code</string>
+        <string>IH1603</string>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Lot size</string>
+        <int>1</int>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>CF</string>
+      </entry>
+      <entry>
+        <string>Commodity</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -155,7 +155,7 @@
       </entry>
       <entry>
         <string>CNName</string>
-        <string>IC隔季[IC1603]</string>
+        <string>IC隔季[IC1606]</string>
       </entry>
       <entry>
         <string>IType</string>
@@ -163,7 +163,7 @@
       </entry>
       <entry>
         <string>TWName</string>
-        <string>IC隔季[IC1603]</string>
+        <string>IC隔季[IC1606]</string>
       </entry>
       <entry>
         <string>Ref symbol</string>
@@ -187,7 +187,51 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>IC1606.CF</string>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <null/>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>IC1606</string>
+      </entry>
+      <entry>
+        <string>IType</string>
+        <string>112</string>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>IC1606</string>
+      </entry>
+      <entry>
+        <string>Ref symbol</string>
+        <string>IC1606.CF</string>
+      </entry>
+      <entry>
+        <string>Code</string>
+        <string>IC1606</string>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Lot size</string>
+        <int>1</int>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>CF</string>
+      </entry>
+      <entry>
+        <string>Commodity</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -199,7 +243,7 @@
       </entry>
       <entry>
         <string>CNName</string>
-        <string>IC下季[IC1512]</string>
+        <string>IC下季[IC1603]</string>
       </entry>
       <entry>
         <string>IType</string>
@@ -207,7 +251,7 @@
       </entry>
       <entry>
         <string>TWName</string>
-        <string>IC下季[IC1512]</string>
+        <string>IC下季[IC1603]</string>
       </entry>
       <entry>
         <string>Ref symbol</string>
@@ -231,7 +275,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -243,7 +287,7 @@
       </entry>
       <entry>
         <string>CNName</string>
-        <string>IH下季[IH1512]</string>
+        <string>IH下季[IH1603]</string>
       </entry>
       <entry>
         <string>IType</string>
@@ -251,7 +295,7 @@
       </entry>
       <entry>
         <string>TWName</string>
-        <string>IH下季[IH1512]</string>
+        <string>IH下季[IH1603]</string>
       </entry>
       <entry>
         <string>Ref symbol</string>
@@ -275,51 +319,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
-      </entry>
-      <entry>
-        <string>Symbol</string>
-        <string>IC1510.CF</string>
-      </entry>
-      <entry>
-        <string>ENName</string>
-        <null/>
-      </entry>
-      <entry>
-        <string>CNName</string>
-        <string>IC1510</string>
-      </entry>
-      <entry>
-        <string>IType</string>
-        <string>112</string>
-      </entry>
-      <entry>
-        <string>TWName</string>
-        <string>IC1510</string>
-      </entry>
-      <entry>
-        <string>Ref symbol</string>
-        <string>IC1510.CF</string>
-      </entry>
-      <entry>
-        <string>Code</string>
-        <string>IC1510</string>
-      </entry>
-    </fields>
-  </com.cyanspring.common.staticdata.RefData>
-  <com.cyanspring.common.staticdata.RefData>
-    <fields>
-      <entry>
-        <string>Lot size</string>
-        <int>1</int>
-      </entry>
-      <entry>
-        <string>Exchange</string>
-        <string>CF</string>
-      </entry>
-      <entry>
-        <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -331,7 +331,7 @@
       </entry>
       <entry>
         <string>CNName</string>
-        <string>IF下季[IF1512]</string>
+        <string>IF下季[IF1603]</string>
       </entry>
       <entry>
         <string>IType</string>
@@ -339,7 +339,7 @@
       </entry>
       <entry>
         <string>TWName</string>
-        <string>IF下季[IF1512]</string>
+        <string>IF下季[IF1603]</string>
       </entry>
       <entry>
         <string>Ref symbol</string>
@@ -363,7 +363,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -375,7 +375,7 @@
       </entry>
       <entry>
         <string>CNName</string>
-        <string>IC当月[IC1510]</string>
+        <string>IC当月[IC1511]</string>
       </entry>
       <entry>
         <string>IType</string>
@@ -383,7 +383,7 @@
       </entry>
       <entry>
         <string>TWName</string>
-        <string>IC當月[IC1510]</string>
+        <string>IC當月[IC1511]</string>
       </entry>
       <entry>
         <string>Ref symbol</string>
@@ -407,7 +407,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -451,7 +451,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -463,7 +463,7 @@
       </entry>
       <entry>
         <string>CNName</string>
-        <string>IH下月[IH1511]</string>
+        <string>IH下月[IH1512]</string>
       </entry>
       <entry>
         <string>IType</string>
@@ -471,7 +471,7 @@
       </entry>
       <entry>
         <string>TWName</string>
-        <string>IH下月[IH1511]</string>
+        <string>IH下月[IH1512]</string>
       </entry>
       <entry>
         <string>Ref symbol</string>
@@ -495,7 +495,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -631,7 +631,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -643,7 +643,7 @@
       </entry>
       <entry>
         <string>CNName</string>
-        <string>IC下月[IC1511]</string>
+        <string>IC下月[IC1512]</string>
       </entry>
       <entry>
         <string>IType</string>
@@ -651,7 +651,7 @@
       </entry>
       <entry>
         <string>TWName</string>
-        <string>IC下月[IC1511]</string>
+        <string>IC下月[IC1512]</string>
       </entry>
       <entry>
         <string>Ref symbol</string>
@@ -675,7 +675,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -704,6 +704,50 @@
       <entry>
         <string>Code</string>
         <string>T1512</string>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Lot size</string>
+        <int>1</int>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>CF</string>
+      </entry>
+      <entry>
+        <string>Commodity</string>
+        <string>FC</string>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>IHC4.CF</string>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <null/>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>IH隔季[IH1606]</string>
+      </entry>
+      <entry>
+        <string>IType</string>
+        <string>120</string>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>IH隔季[IH1606]</string>
+      </entry>
+      <entry>
+        <string>Ref symbol</string>
+        <string>IHC4.CF</string>
+      </entry>
+      <entry>
+        <string>Code</string>
+        <string>IHC4</string>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -811,139 +855,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
-      </entry>
-      <entry>
-        <string>Symbol</string>
-        <string>IFC4.CF</string>
-      </entry>
-      <entry>
-        <string>ENName</string>
-        <null/>
-      </entry>
-      <entry>
-        <string>CNName</string>
-        <string>IF隔季[IF1603]</string>
-      </entry>
-      <entry>
-        <string>IType</string>
-        <string>120</string>
-      </entry>
-      <entry>
-        <string>TWName</string>
-        <string>IF隔季[IF1603]</string>
-      </entry>
-      <entry>
-        <string>Ref symbol</string>
-        <string>IFC4.CF</string>
-      </entry>
-      <entry>
-        <string>Code</string>
-        <string>IFC4</string>
-      </entry>
-    </fields>
-  </com.cyanspring.common.staticdata.RefData>
-  <com.cyanspring.common.staticdata.RefData>
-    <fields>
-      <entry>
-        <string>Lot size</string>
-        <int>1</int>
-      </entry>
-      <entry>
-        <string>Exchange</string>
-        <string>CF</string>
-      </entry>
-      <entry>
-        <string>Commodity</string>
-        <string>F</string>
-      </entry>
-      <entry>
-        <string>Symbol</string>
-        <string>IF1510.CF</string>
-      </entry>
-      <entry>
-        <string>ENName</string>
-        <null/>
-      </entry>
-      <entry>
-        <string>CNName</string>
-        <string>IF1510</string>
-      </entry>
-      <entry>
-        <string>IType</string>
-        <string>112</string>
-      </entry>
-      <entry>
-        <string>TWName</string>
-        <string>IF1510</string>
-      </entry>
-      <entry>
-        <string>Ref symbol</string>
-        <string>IF1510.CF</string>
-      </entry>
-      <entry>
-        <string>Code</string>
-        <string>IF1510</string>
-      </entry>
-    </fields>
-  </com.cyanspring.common.staticdata.RefData>
-  <com.cyanspring.common.staticdata.RefData>
-    <fields>
-      <entry>
-        <string>Lot size</string>
-        <int>1</int>
-      </entry>
-      <entry>
-        <string>Exchange</string>
-        <string>CF</string>
-      </entry>
-      <entry>
-        <string>Commodity</string>
-        <string>F</string>
-      </entry>
-      <entry>
-        <string>Symbol</string>
-        <string>IHC4.CF</string>
-      </entry>
-      <entry>
-        <string>ENName</string>
-        <null/>
-      </entry>
-      <entry>
-        <string>CNName</string>
-        <string>IH隔季[IH1603]</string>
-      </entry>
-      <entry>
-        <string>IType</string>
-        <string>120</string>
-      </entry>
-      <entry>
-        <string>TWName</string>
-        <string>IH隔季[IH1603]</string>
-      </entry>
-      <entry>
-        <string>Ref symbol</string>
-        <string>IHC4.CF</string>
-      </entry>
-      <entry>
-        <string>Code</string>
-        <string>IHC4</string>
-      </entry>
-    </fields>
-  </com.cyanspring.common.staticdata.RefData>
-  <com.cyanspring.common.staticdata.RefData>
-    <fields>
-      <entry>
-        <string>Lot size</string>
-        <int>1</int>
-      </entry>
-      <entry>
-        <string>Exchange</string>
-        <string>CF</string>
-      </entry>
-      <entry>
-        <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -987,11 +899,11 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
-        <string>IC1512.CF</string>
+        <string>IFC4.CF</string>
       </entry>
       <entry>
         <string>ENName</string>
@@ -999,23 +911,23 @@
       </entry>
       <entry>
         <string>CNName</string>
-        <string>IC1512</string>
+        <string>IF隔季[IF1606]</string>
       </entry>
       <entry>
         <string>IType</string>
-        <string>112</string>
+        <string>120</string>
       </entry>
       <entry>
         <string>TWName</string>
-        <string>IC1512</string>
+        <string>IF隔季[IF1606]</string>
       </entry>
       <entry>
         <string>Ref symbol</string>
-        <string>IC1512.CF</string>
+        <string>IFC4.CF</string>
       </entry>
       <entry>
         <string>Code</string>
-        <string>IC1512</string>
+        <string>IFC4</string>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -1031,7 +943,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -1043,7 +955,7 @@
       </entry>
       <entry>
         <string>CNName</string>
-        <string>IF当月[IF1510]</string>
+        <string>IF当月[IF1511]</string>
       </entry>
       <entry>
         <string>IType</string>
@@ -1051,7 +963,7 @@
       </entry>
       <entry>
         <string>TWName</string>
-        <string>IF當月[IF1510]</string>
+        <string>IF當月[IF1511]</string>
       </entry>
       <entry>
         <string>Ref symbol</string>
@@ -1075,7 +987,51 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>IC1512.CF</string>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <null/>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>IC1512</string>
+      </entry>
+      <entry>
+        <string>IType</string>
+        <string>112</string>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>IC1512</string>
+      </entry>
+      <entry>
+        <string>Ref symbol</string>
+        <string>IC1512.CF</string>
+      </entry>
+      <entry>
+        <string>Code</string>
+        <string>IC1512</string>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Lot size</string>
+        <int>1</int>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>CF</string>
+      </entry>
+      <entry>
+        <string>Commodity</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -1119,7 +1075,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -1148,50 +1104,6 @@
       <entry>
         <string>Code</string>
         <string>T1603</string>
-      </entry>
-    </fields>
-  </com.cyanspring.common.staticdata.RefData>
-  <com.cyanspring.common.staticdata.RefData>
-    <fields>
-      <entry>
-        <string>Lot size</string>
-        <int>1</int>
-      </entry>
-      <entry>
-        <string>Exchange</string>
-        <string>CF</string>
-      </entry>
-      <entry>
-        <string>Commodity</string>
-        <string>F</string>
-      </entry>
-      <entry>
-        <string>Symbol</string>
-        <string>IH1510.CF</string>
-      </entry>
-      <entry>
-        <string>ENName</string>
-        <null/>
-      </entry>
-      <entry>
-        <string>CNName</string>
-        <string>IH1510</string>
-      </entry>
-      <entry>
-        <string>IType</string>
-        <string>112</string>
-      </entry>
-      <entry>
-        <string>TWName</string>
-        <string>IH1510</string>
-      </entry>
-      <entry>
-        <string>Ref symbol</string>
-        <string>IH1510.CF</string>
-      </entry>
-      <entry>
-        <string>Code</string>
-        <string>IH1510</string>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -1391,7 +1303,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -1435,7 +1347,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -1479,7 +1391,51 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>IH1606.CF</string>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <null/>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>IH1606</string>
+      </entry>
+      <entry>
+        <string>IType</string>
+        <string>112</string>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>IH1606</string>
+      </entry>
+      <entry>
+        <string>Ref symbol</string>
+        <string>IH1606.CF</string>
+      </entry>
+      <entry>
+        <string>Code</string>
+        <string>IH1606</string>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Lot size</string>
+        <int>1</int>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>CF</string>
+      </entry>
+      <entry>
+        <string>Commodity</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -1523,7 +1479,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -1567,7 +1523,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -1611,7 +1567,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -1747,7 +1703,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -1791,7 +1747,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -1835,7 +1791,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -1847,7 +1803,7 @@
       </entry>
       <entry>
         <string>CNName</string>
-        <string>IH当月[IH1510]</string>
+        <string>IH当月[IH1511]</string>
       </entry>
       <entry>
         <string>IType</string>
@@ -1855,7 +1811,7 @@
       </entry>
       <entry>
         <string>TWName</string>
-        <string>IH當月[IH1510]</string>
+        <string>IH當月[IH1511]</string>
       </entry>
       <entry>
         <string>Ref symbol</string>
@@ -1879,7 +1835,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FC</string>
       </entry>
       <entry>
         <string>Symbol</string>
@@ -2000,6 +1956,50 @@
       <entry>
         <string>Decimal point</string>
         <int>2</int>
+      </entry>
+    </fields>
+  </com.cyanspring.common.staticdata.RefData>
+  <com.cyanspring.common.staticdata.RefData>
+    <fields>
+      <entry>
+        <string>Lot size</string>
+        <int>1</int>
+      </entry>
+      <entry>
+        <string>Exchange</string>
+        <string>CF</string>
+      </entry>
+      <entry>
+        <string>Commodity</string>
+        <string>FC</string>
+      </entry>
+      <entry>
+        <string>Symbol</string>
+        <string>IF1606.CF</string>
+      </entry>
+      <entry>
+        <string>ENName</string>
+        <null/>
+      </entry>
+      <entry>
+        <string>CNName</string>
+        <string>IF1606</string>
+      </entry>
+      <entry>
+        <string>IType</string>
+        <string>112</string>
+      </entry>
+      <entry>
+        <string>TWName</string>
+        <string>IF1606</string>
+      </entry>
+      <entry>
+        <string>Ref symbol</string>
+        <string>IF1606.CF</string>
+      </entry>
+      <entry>
+        <string>Code</string>
+        <string>IF1606</string>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
