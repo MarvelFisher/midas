@@ -22,18 +22,15 @@ public class IMThread extends Thread{
 			.getLogger(IMThread.class);	
 
 	//********************************************************************************************
-    //Dev
-    //X-Parse-Application-Id = Rmttn76LwwEockQ9x6CiWaTqNyMuqfu9OMUC1Ejt
-    //X-Parse-REST-API-KEY = RzndFe8IHT4iVszcpUAedsqGpors63ADlAvQIdsG
-    //Test
-    //X-Parse-Application-Id = G8513GzfsKMt1my24Ozq6w7RF2tEuJGYOXGWCV0D
-    //X-Parse-REST-API-KEY = kb1xamZbPR2sbh7eIuKGCVQtIIyKXsFivLJWB2v0
-    //UAT
-	//X-Parse-Application-Id = Ek9KqTvVcJYTtZPzsUF6KxqaZJ5vRrYJ88UkrIbX 
-	//X-Parse-REST-API-KEY = iNKzjbL02cEiZapYGcCEiWlsvutdQp89vEfHcZOm
-    //Prod
-    //X-Parse-Application-Id = 74bgubpHxaoHYAPqx5jgNIa4x6G85NPZ6pBvJwp2 
-    //X-Parse-REST-API-KEY = asld9nAPrLLPJQM9qlS3SegDE4sTkMfroUEVqBEp
+    //Dev-FX
+    //App-Key = c146348b9dd8f246cef2f42750f160a8
+    //App-Secret = b6eb8125c0ea
+    //Dev-FC
+    //App-Key = cad6d11d672277363d74635554e3f523
+    //App-Secret = 184463f69a1b
+    //Dev-SC
+    //App-Key = e3138df7761d041bdaf39d73b4289b10
+    //App-Secret = dd9712c1d9a5
     //********************************************************************************************	
 	
 	public IMThread(String strThreadId, ConcurrentLinkedQueue<ParseData> parseDataQueue, 
