@@ -87,6 +87,11 @@
         <width>100</width>
         <editable>false</editable>
       </com.cyanspring.cstw.gui.common.ColumnProperty>
+      <com.cyanspring.cstw.gui.common.ColumnProperty>
+        <title>Stop Loss</title>
+        <width>100</width>
+        <editable>false</editable>
+      </com.cyanspring.cstw.gui.common.ColumnProperty>
     </list>
   </entry>
 </map>
