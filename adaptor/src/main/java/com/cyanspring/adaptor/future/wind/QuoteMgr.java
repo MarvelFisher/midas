@@ -58,6 +58,9 @@ public class QuoteMgr {
                     	if(cnt > max) {
                     		max = cnt;
                     		log.info("windAdaptor queue reach new max: " + max);
+                    	} else if ( cnt < (max/2)) {
+                    		max = cnt;
+                    		log.info("windAdaptor queue down to: " + max);
                     	}
 //                            if (queue.size() > 0) {
 //                                Object[] arr;
