@@ -7,7 +7,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FI</string>
       </entry>
       <entry>
         <string>Type</string>
@@ -121,6 +121,10 @@
         <string>Tradable</string>
         <string>1</string>
       </entry>
+      <entry>
+        <string>Day tradable</string>
+        <int>1</int>
+      </entry>      
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -131,7 +135,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FI</string>
       </entry>
       <entry>
         <string>Type</string>
@@ -245,6 +249,10 @@
         <string>Tradable</string>
         <string>1</string>
       </entry>
+      <entry>
+        <string>Day tradable</string>
+        <int>1</int>
+      </entry>      
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -255,7 +263,7 @@
       </entry>
       <entry>
         <string>Commodity</string>
-        <string>F</string>
+        <string>FI</string>
       </entry>
       <entry>
         <string>Type</string>
@@ -369,6 +377,10 @@
         <string>Tradable</string>
         <string>1</string>
       </entry>
+      <entry>
+        <string>Day tradable</string>
+        <int>1</int>
+      </entry>      
     </fields>
   </com.cyanspring.common.staticdata.RefData>
 </list>

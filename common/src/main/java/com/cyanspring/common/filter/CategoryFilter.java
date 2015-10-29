@@ -12,9 +12,9 @@ import com.cyanspring.common.staticdata.RefDataCommodity;
 import com.cyanspring.common.staticdata.RefDataTplLoader;
 
 public class CategoryFilter implements IRefDataFilter {
-	
+
 	RefDataTplLoader refDataTplLoader;
-	
+
 	public RefDataTplLoader getRefDataTplLoader() {
 		return refDataTplLoader;
 	}
@@ -27,8 +27,8 @@ public class CategoryFilter implements IRefDataFilter {
 
 	/**
 	 * Compare Category of RefData between template_FC and lstRefData
-	 * RefData with Category in FC template will be returned as a RefData list. 
-	 * 
+	 * RefData with Category in FC template will be returned as a RefData list.
+	 *
 	 * @param lstRefData
 	 *            The RefData list to be filtered
 	 * @return The filtered RefData list
@@ -46,28 +46,29 @@ public class CategoryFilter implements IRefDataFilter {
 				for (RefData data : lstRefDataTpl) {
 					lstCategory.add(data.getCategory());
 				}
-				
+
 				for (RefData refData : lstRefData) {
-					// Only filter RefData whose commodity is "F", or add directly without filtering
+					// Only filter RefData whose commodity is "FI"/"FC", or add directly without filtering
 					String commodity = refData.getCommodity();
 					if (!StringUtils.hasText(commodity)
-							|| !commodity.equals(RefDataCommodity.FUTUREINDEX.getValue())) {
+							|| (!commodity.equals(RefDataCommodity.FUTUREINDEX.getValue())
+									&& !commodity.equals(RefDataCommodity.FUTURECOMMODITY.getValue()))) {
 						fLstRefData.add(refData);
 						continue;
 					}
-					
+
 					String category = refData.getCategory();
 					if (!StringUtils.hasText(category)) {
 						continue;
 					}
-					
+
 					if (lstCategory.contains(category)) {
 						fLstRefData.add(refData);
 					}
 				}
 			}
 		}
-		
+
 		return fLstRefData;
 	}
 
