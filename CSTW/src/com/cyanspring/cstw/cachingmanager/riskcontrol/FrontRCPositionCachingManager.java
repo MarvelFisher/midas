@@ -38,8 +38,26 @@ public final class FrontRCPositionCachingManager extends BasicCachingManager {
 
 	private FrontRCPositionCachingManager() {
 		super();
-		accountPositionMap = new HashMap<String, Map<String, OverallPosition>>();
+
+		initData();
 		initListener();
+	}
+
+	private void initData() {
+		accountPositionMap = new HashMap<String, Map<String, OverallPosition>>();
+		List<OverallPosition> list = business.getAllPositionManager()
+				.getOverAllPositionList();
+		if (list != null) {
+			for (OverallPosition position : list) {
+				String account = position.getAccount();
+				if (accountPositionMap.get(account) == null) {
+					Map<String, OverallPosition> map = new HashMap<String, OverallPosition>();
+					accountPositionMap.put(account, map);
+				}
+				accountPositionMap.get(account).put(position.getId(), position);
+			}
+			sendPositionUpdateEvent();
+		}
 	}
 
 	private void initListener() {
@@ -82,8 +100,6 @@ public final class FrontRCPositionCachingManager extends BasicCachingManager {
 	}
 
 	protected void sendPositionUpdateEvent() {
-		log.info("========================sendPositionUpdateEvent"
-				+ accountPositionMap);
 		FrontRCPositionUpdateCachingLocalEvent updateEvent = new FrontRCPositionUpdateCachingLocalEvent(
 				accountPositionMap);
 		business.getEventManager().sendEvent(updateEvent);

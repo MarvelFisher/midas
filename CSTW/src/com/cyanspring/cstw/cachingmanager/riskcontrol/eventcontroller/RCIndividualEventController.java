@@ -62,6 +62,7 @@ public final class RCIndividualEventController implements IAsyncEventListener {
 		}
 
 		if (event instanceof IndividualStatisticsSnapshotRequestLocalEvent) {
+			
 			sendIndividualStatisticsSnapshotReplyLocalEvent();
 		}
 	}
