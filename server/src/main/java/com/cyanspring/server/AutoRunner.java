@@ -30,13 +30,16 @@ import com.cyanspring.common.Clock;
 import com.cyanspring.common.Clock.Mode;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.account.User;
+import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.account.UserType;
+import com.cyanspring.common.business.GroupManagement;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.account.CreateGroupManagementEvent;
 import com.cyanspring.common.event.account.CreateUserEvent;
 import com.cyanspring.common.event.order.EnterParentOrderEvent;
 import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyEvent;
@@ -133,7 +136,7 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 //	}
 	
 	private void asyncRun() {
-
+		// add Trader User
 		for (int i = 1; i <= 10; i++) {
 			if (threadSentinel) {
 				User user = new User("test" + i, "xxx");
@@ -146,6 +149,40 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 				eventManager.sendEvent(event);
 			}
 		}
+		// add RW / BW User
+		if (threadSentinel) {
+			User frontUser = new User("front_risk", "xxx");
+			frontUser.setName("front_risk");
+			frontUser.setEmail("front_risk@test.com");
+			frontUser.setPhone("110110");
+			frontUser.setUserType(UserType.FRONTMANAGER);
+			frontUser.setRole(UserRole.RiskManager);
+			CreateUserEvent event1 = new CreateUserEvent(null, null, frontUser, "", "", "123");
+			eventManager.sendEvent(event1);
+			User backUser = new User("back_risk", "xxx");
+			backUser.setName("back_risk");
+			backUser.setEmail("back_risk@test.com");
+			backUser.setPhone("110110");
+			backUser.setUserType(UserType.BACKMANAGER);
+			backUser.setRole(UserRole.BackEndRiskManager);
+			CreateUserEvent event2 = new CreateUserEvent(null, null, backUser, "", "", "123");
+			eventManager.sendEvent(event2);
+			
+			List<GroupManagement> group1 = new ArrayList<GroupManagement>();
+			for(int i = 1; i < 5; i++) {
+				group1.add(new GroupManagement(frontUser.getId(), "test"+i));
+			}
+			CreateGroupManagementEvent groupEvent1 = new CreateGroupManagementEvent(null, null, group1);
+			eventManager.sendEvent(groupEvent1);
+			
+			List<GroupManagement> group2 = new ArrayList<GroupManagement>();
+			for(int i = 4; i < 8; i++) {
+				group2.add(new GroupManagement(backUser.getId(), "test"+i));
+			}
+			CreateGroupManagementEvent groupEvent2 = new CreateGroupManagementEvent(null, null, group2);
+			eventManager.sendEvent(groupEvent2);
+		}
+		
 	}
 
 	@Override
