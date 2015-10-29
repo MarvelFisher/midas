@@ -34,6 +34,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -84,6 +85,7 @@ import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.util.IdGenerator;
+import com.cyanspring.common.util.TimeThrottler;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
@@ -195,6 +197,8 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private final DecimalFormat defaultPriceFormat = new DecimalFormat(
 			"#.#####");
 	private Ticker ticker = null;
+	private TimeThrottler keyThrottler;
+	private long keyInterval = 500;
 
 	private enum StrategyAction {
 		Pause, Stop, Start, ClearAlert, MultiAmend, Create, Cancel, ForceCancel, Save
@@ -219,6 +223,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 	@Override
 	public void createPartControl(final Composite parent) {
 		log.info("Creating parent order view");
+		keyThrottler = new TimeThrottler(keyInterval);
 		// create ImageRegistery
 		imageRegistry = Activator.getDefault().getImageRegistry();
 
@@ -459,7 +464,14 @@ public class SingleOrderStrategyView extends ViewPart implements
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.character == SWT.CR) {
-					quickEnterOrder();
+					if(keyThrottler.check()){
+						quickEnterOrder();
+					}else{
+						log.warn("keyThrottler stop enter order too fast");
+					}
+					if(panelComposite.isVisible())
+						panelComposite.setVisible(false);
+					
 				} else if (e.keyCode == SWT.ARROW_UP
 						|| e.keyCode == SWT.ARROW_DOWN
 						|| e.keyCode == SWT.ARROW_LEFT
@@ -636,14 +648,26 @@ public class SingleOrderStrategyView extends ViewPart implements
 		btCancel = new Button(panelComposite, SWT.FLAT);
 		btCancel.setText("Cancel");
 		btCancel.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
-
-		btEnter.addListener(SWT.Selection, new Listener() {
+		btEnter.addMouseListener(new MouseListener() {
+			
 			@Override
-			public void handleEvent(Event event) {
+			public void mouseUp(MouseEvent e) {
 				quickEnterOrder();
+				panelComposite.setFocus();
+			}
+			
+			@Override
+			public void mouseDown(MouseEvent e) {
+				
+			}
+			
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
 			}
 		});
-
+	
 		btAmend.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
