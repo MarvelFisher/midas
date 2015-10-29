@@ -190,19 +190,26 @@ public final class SpeedDepthTableComposite extends Composite {
 			@Override
 			public void mouseMove(MouseEvent e) {
 				TableItem item = table.getItem(new Point(e.x, e.y));
-				if (item == null) {
-					return;
-				}
-				changeItemColor(item, SWT.COLOR_BLACK);
-				if (currentMouseSelectedItem != null
-						&& !currentMouseSelectedItem.isDisposed()
-						&& currentMouseSelectedItem != item) {
+				if (item == null && currentMouseSelectedItem != null
+						&& currentMouseSelectedItem != currentKeySelectedItem) {
 					changeItemColor(currentMouseSelectedItem, SWT.COLOR_WHITE);
+					labelProvider.setSelectIndex(-1);
+					currentMouseSelectedItem = null;
+					return;
+				} else if (item == null && currentMouseSelectedItem == null) {
+					return;
+				} else {
+					changeItemColor(item, SWT.COLOR_BLACK);
+					if (currentMouseSelectedItem != null
+							&& !currentMouseSelectedItem.isDisposed()
+							&& currentMouseSelectedItem != item) {
+						changeItemColor(currentMouseSelectedItem,
+								SWT.COLOR_WHITE);
+					}
+					currentMouseSelectedItem = item;
+					SpeedDepthModel model = (SpeedDepthModel) item.getData();
+					labelProvider.setSelectIndex(model.getIndex());
 				}
-				currentMouseSelectedItem = item;
-				SpeedDepthModel model = (SpeedDepthModel) item.getData();
-				labelProvider.setSelectIndex(model.getIndex());
-
 			}
 		});
 
