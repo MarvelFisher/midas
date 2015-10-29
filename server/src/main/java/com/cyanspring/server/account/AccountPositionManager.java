@@ -2112,4 +2112,12 @@ public class AccountPositionManager implements IPlugin {
     public void setCheckMargincut(boolean checkMargincut) {
         this.checkMargincut = checkMargincut;
     }
+
+	public int getLimitUser() {
+		return limitUser;
+	}
+
+	public void setLimitUser(int limitUser) {
+		this.limitUser = limitUser;
+	}
 }
