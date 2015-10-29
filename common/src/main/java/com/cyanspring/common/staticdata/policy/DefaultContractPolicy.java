@@ -14,13 +14,13 @@ public class DefaultContractPolicy {
 	public SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	public SimpleDateFormat ymSdf = new SimpleDateFormat("yyMM");
 
-	List<Integer> contractMonths;
+	private List<Integer> contractMonths;
 
 	public List<Integer> getContractMonths() {
 		return contractMonths;
 	}
 
-	public void setContractMonths(List<Integer> contractMonths) {
+	public void setContractMonths(final List<Integer> contractMonths) {
 		this.contractMonths = contractMonths;
 	}
 

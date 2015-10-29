@@ -11,9 +11,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketsession.IndexSessionType;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
@@ -37,34 +34,6 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
     private final String MONTH_PATTERN = "${YYMM}";
     private final String SEQ_PATTERN = "${SEQ}";
     Map<String, Quote> mapHot;
-
-    @Autowired(required = false)
-    @Qualifier("allContractPolicy")
-    private DefaultContractPolicy allContractPolicy;
-
-    @Autowired(required = false)
-    @Qualifier("jdContractPolicy")
-    private DefaultContractPolicy jdContractPolicy;
-
-    @Autowired(required = false)
-    @Qualifier("myContractPolicy")
-    private DefaultContractPolicy myContractPolicy;
-
-    @Autowired(required = false)
-    @Qualifier("rmContractPolicy")
-    private DefaultContractPolicy rmContractPolicy;
-
-    @Autowired(required = false)
-    @Qualifier("rsContractPolicy")
-    private DefaultContractPolicy rsContractPolicy;
-
-    @Autowired(required = false)
-    @Qualifier("ruContractPolicy")
-    private DefaultContractPolicy ruContractPolicy;
-
-    @Autowired(required = false)
-    @Qualifier("fuContractPolicy")
-    private DefaultContractPolicy fuContractPolicy;
 
 	@Override
 	public void init(Calendar cal, Map<String, Quote> map) {
@@ -146,23 +115,100 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 	}
 
 	private DefaultContractPolicy getContractPolicy(String category) {
+		DefaultContractPolicy contractPolicy = new DefaultContractPolicy();
+		List<Integer> lstMonth = new ArrayList<>();
+
 		switch (category) {
 		case "JD":
-			return jdContractPolicy;
+			// 鸡蛋 1、2、3、4、5、6、9、10、11、12月
+			lstMonth.add(0);
+			lstMonth.add(1);
+			lstMonth.add(2);
+			lstMonth.add(3);
+			lstMonth.add(4);
+			lstMonth.add(5);
+			lstMonth.add(8);
+			lstMonth.add(9);
+			lstMonth.add(10);
+			lstMonth.add(11);
+			break;
 		case "M":
 		case "Y":
-			return myContractPolicy;
+			// 豆粕 豆油 1，3，5，7，8，9，11，12月
+			lstMonth.add(0);
+			lstMonth.add(2);
+			lstMonth.add(4);
+			lstMonth.add(6);
+			lstMonth.add(7);
+			lstMonth.add(8);
+			lstMonth.add(10);
+			lstMonth.add(11);
+			break;
 		case "RM":
-			return rmContractPolicy;
+			// 菜籽粕 1、3、5、7、8、9、11月
+			lstMonth.add(0);
+			lstMonth.add(2);
+			lstMonth.add(4);
+			lstMonth.add(6);
+			lstMonth.add(7);
+			lstMonth.add(8);
+			lstMonth.add(10);
+			break;
 		case "RS":
-			return rsContractPolicy;
+			// 油菜籽 7、8、9、11月
+			lstMonth.add(6);
+			lstMonth.add(7);
+			lstMonth.add(8);
+			lstMonth.add(10);
+			break;
 		case "RU":
-			return ruContractPolicy;
+			// 橡胶 1、3、4、5、6、7、8、9、10、11月
+			lstMonth.add(0);
+			lstMonth.add(2);
+			lstMonth.add(3);
+			lstMonth.add(4);
+			lstMonth.add(5);
+			lstMonth.add(6);
+			lstMonth.add(7);
+			lstMonth.add(8);
+			lstMonth.add(9);
+			lstMonth.add(10);
+			break;
 		case "FU":
-			return fuContractPolicy;
+			// 燃油 1 ~ 12 月（春节月份除外）
+			lstMonth.add(0);
+			lstMonth.add(2);
+			lstMonth.add(3);
+			lstMonth.add(4);
+			lstMonth.add(5);
+			lstMonth.add(6);
+			lstMonth.add(7);
+			lstMonth.add(8);
+			lstMonth.add(9);
+			lstMonth.add(10);
+			lstMonth.add(11);
+			break;
 		default:
-			return allContractPolicy;
+			// 1 ~ 12 月
+			lstMonth.add(0);
+			lstMonth.add(1);
+			lstMonth.add(2);
+			lstMonth.add(3);
+			lstMonth.add(4);
+			lstMonth.add(5);
+			lstMonth.add(6);
+			lstMonth.add(7);
+			lstMonth.add(8);
+			lstMonth.add(9);
+			lstMonth.add(10);
+			lstMonth.add(11);
+			break;
 		}
+
+		contractPolicy.setContractMonths(lstMonth);
+
+		return contractPolicy;
 	}
+
 
 }
