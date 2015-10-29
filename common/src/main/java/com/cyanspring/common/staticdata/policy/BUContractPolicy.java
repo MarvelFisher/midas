@@ -17,7 +17,7 @@ public class BUContractPolicy extends DefaultContractPolicy {
 		// 最近1-6个月为连续月份合约
 		for (int i = 0; i < 6; i++) {
 			Calendar contractMonth = (Calendar)firstContractMonth.clone();
-			firstContractMonth.add(Calendar.MONTH, i);
+			contractMonth.add(Calendar.MONTH, i);
 			lstContractMonth.add(ymSdf.format(contractMonth.getTime()));
 		}
 
