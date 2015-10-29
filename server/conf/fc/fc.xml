@@ -29,6 +29,7 @@
 			<list>
 				<ref bean="marketSessionUtil" />
 				<ref bean="apiBridgeManager" />
+				<ref bean="refDataHandler" />
                 <ref bean="indexMarketSessionManager"/>
 				<ref bean="mdManager" />
 				<ref bean="downStreamManager" />
@@ -291,6 +292,10 @@
             <value>refdata/template/codetable_cf.xml</value>
         </property>
     </bean>-->
+    
+    <bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler">
+		<property name="eventManager" ref="eventManager"/>
+	</bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
 		<property name="refDataTemplatePath">

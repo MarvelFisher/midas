@@ -30,6 +30,7 @@
 				<ref bean="marketSessionUtil" />
 				<ref bean="apiBridgeManager" />
                 <!-- <ref bean="marketSessionManager" />  -->
+                <ref bean="refDataHandler"/>
 				<ref bean="baseDataDBManager"/>
                 <ref bean="indexMarketSessionManager"/>
 				<ref bean="mdManager" />
@@ -255,23 +256,15 @@
 	<bean id="leverageManager" class="com.cyanspring.server.account.LeverageManager">
 	</bean>
 
-	<!--<bean id="simRefDataAdaptor" class="com.cyanspring.server.sim.SimRefDataAdaptor">
-        <property name="filePath">
-            <value>refdata/template/codetable_cf.xml</value>
-        </property>
-    </bean>-->
+    <bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler">
+		<property name="eventManager" ref="eventManager"/>
+	</bean>
 
-	<bean id="refDataManager" class="com.cyanspring.common.staticdata.StockRefDataManager">
+	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
 		<property name="refDataTemplatePath">
 			<value>refdata/template/template_SC.xml</value>
 		</property>
     </bean>
-	
-	<bean id="refDataTplLoader" class="com.cyanspring.common.staticdata.RefDataTplLoader">
-		<property name="tplPath">
-			<value>refdata/template/template_SC.xml</value>
-		</property>
-	</bean>
 	
 	<bean id="refDataUtil" class="com.cyanspring.common.staticdata.RefDataUtil">
     </bean>
