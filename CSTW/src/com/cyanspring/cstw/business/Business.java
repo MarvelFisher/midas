@@ -65,13 +65,12 @@ import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.cachingmanager.quote.QuoteCachingManager;
-import com.cyanspring.cstw.cachingmanager.riskcontrol.BackRCPositionCachingManager;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.FrontRCOrderCachingManager;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.FrontRCPositionCachingManager;
-import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.FrontRCInstrumentStatisticsEventController;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.FrontRCOpenPositionEventController;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.FrontRCTradeEventController;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCIndividualEventController;
+import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCInstrumentStatisticsEventController;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCInstrumentSummaryEventController;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCOrderEventController;
 import com.cyanspring.cstw.event.SelectUserAccountEvent;
@@ -541,7 +540,7 @@ public class Business {
 		
 		FrontRCOpenPositionEventController.getInstance().init();
 		FrontRCTradeEventController.getInstance().init();
-		FrontRCInstrumentStatisticsEventController.getInstance().init();
+		RCInstrumentStatisticsEventController.getInstance().init();
 		RCIndividualEventController.getInstance().init();
 		RCInstrumentSummaryEventController.getInstance().init();
 		RCOrderEventController.getInstance().init();
