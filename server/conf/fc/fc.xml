@@ -426,7 +426,7 @@
 	</bean>
 	
 	<!-- 1 ~ 12 月 -->
-	<bean id="allContractPolicy" class="com.cyanspring.common.staticdata.policy.ContractPolicy">
+	<bean id="allContractPolicy" class="com.cyanspring.common.staticdata.policy.DefaultContractPolicy">
        <property name="contractMonths">
             <list>
                 <value>0</value>
@@ -446,7 +446,7 @@
     </bean>
     
     <!-- 鸡蛋 1、2、3、4、5、6、9、10、11、12月 -->
-	<bean id="jdContractPolicy" class="com.cyanspring.common.staticdata.policy.ContractPolicy">
+	<bean id="jdContractPolicy" class="com.cyanspring.common.staticdata.policy.DefaultContractPolicy">
        <property name="contractMonths">
             <list>
                 <value>0</value>
@@ -464,7 +464,7 @@
     </bean>
     
     <!-- 豆粕 豆油 1，3，5，7，8，9，11，12月 -->
-    <bean id="myContractPolicy" class="com.cyanspring.common.staticdata.policy.ContractPolicy">
+    <bean id="myContractPolicy" class="com.cyanspring.common.staticdata.policy.DefaultContractPolicy">
        <property name="contractMonths">
             <list>
                 <value>0</value>
@@ -480,7 +480,7 @@
     </bean>
     
     <!-- 菜籽粕 1、3、5、7、8、9、11月 -->
-    <bean id="rmContractPolicy" class="com.cyanspring.common.staticdata.policy.ContractPolicy">
+    <bean id="rmContractPolicy" class="com.cyanspring.common.staticdata.policy.DefaultContractPolicy">
        <property name="contractMonths">
             <list>
                 <value>0</value>
@@ -495,7 +495,7 @@
     </bean>
     
     <!-- 油菜籽 7、8、9、11月 -->
-    <bean id="rsContractPolicy" class="com.cyanspring.common.staticdata.policy.ContractPolicy">
+    <bean id="rsContractPolicy" class="com.cyanspring.common.staticdata.policy.DefaultContractPolicy">
        <property name="contractMonths">
             <list>
                 <value>6</value>
@@ -507,7 +507,7 @@
     </bean>
     
     <!-- 橡胶 1、3、4、5、6、7、8、9、10、11月 -->
-    <bean id="ruContractPolicy" class="com.cyanspring.common.staticdata.policy.ContractPolicy">
+    <bean id="ruContractPolicy" class="com.cyanspring.common.staticdata.policy.DefaultContractPolicy">
        <property name="contractMonths">
             <list>
                 <value>0</value>
@@ -525,7 +525,7 @@
     </bean>
     
     <!-- 燃油 1 ~ 12 月（春节月份除外） -->
-	<bean id="fuContractPolicy" class="com.cyanspring.common.staticdata.policy.ContractPolicy">
+	<bean id="fuContractPolicy" class="com.cyanspring.common.staticdata.policy.DefaultContractPolicy">
 	   <property name="contractMonths">
             <list>
                 <value>0</value>
