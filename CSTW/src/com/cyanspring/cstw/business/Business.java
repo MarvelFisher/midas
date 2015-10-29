@@ -165,8 +165,8 @@ public class Business {
 				processCSTWUserLoginReplyEvent(evt);
 				if (evt.isOk()) {
 					tickManager.init(getFirstServer());
-					if(null != loginAccount);
-						traderInfoListener.init(loginAccount);
+//					if(null != loginAccount);
+//						traderInfoListener.init(loginAccount);
 						
 				}
 				if (isLoginRequired() && evt.isOk()) {
@@ -340,8 +340,9 @@ public class Business {
 		eventManager.subscribe(AccountSettingSnapshotReplyEvent.class, listener);
 		//schedule timer
 		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval , listener, timerEvent);	
-		traderInfoListener = new TraderInfoListener();
-		initSessionListener();
+		log.info("TraderInfoListener not init version");
+//		traderInfoListener = new TraderInfoListener();
+//		initSessionListener();
 	}
 
 	public void start() throws Exception {
