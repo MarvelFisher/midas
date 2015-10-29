@@ -538,6 +538,7 @@ public class Business {
 
 		FrontRCPositionCachingManager.getInstance().init();
 		FrontRCOrderCachingManager.getInstance().init();
+		
 		FrontRCOpenPositionEventController.getInstance().init();
 		FrontRCTradeEventController.getInstance().init();
 		FrontRCInstrumentStatisticsEventController.getInstance().init();

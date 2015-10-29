@@ -18,16 +18,14 @@ public class RWPositionLabelProvider extends DefaultLabelProviderAdapter{
 		case 0:
 			return model.getInstrumentCode();
 		case 1:
-			return model.getInstrumentCode();
-		case 2:
 			return model.getPositionDirection().toString();
-		case 3:
+		case 2:
 			return LTWStringUtils.doubleToString(model.getInstrumentQuality());
-		case 4:
+		case 3:
 			return LTWStringUtils.doubleToString(model.getUrPnl());
-		case 5:
+		case 4:
 			return LTWStringUtils.doubleToString(model.getAveragePrice());
-		case 6:
+		case 5:
 			return model.getTrader();
 		default:
 			return "";			
