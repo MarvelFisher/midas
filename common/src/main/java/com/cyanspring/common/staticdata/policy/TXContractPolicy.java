@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.cyanspring.common.staticdata.RefData;
 
-public class TXContractPolicy extends ContractPolicy {
+public class TXContractPolicy extends DefaultContractPolicy {
 
 	// 近二遠三, 當月 下月及隨後三個季月
 	@Override

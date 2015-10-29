@@ -6,10 +6,6 @@
 				<int>2500</int>
 			</entry>
 			<entry>
-				<string>Commodity</string>
-				<string>F</string>
-			</entry>
-			<entry>
 				<string>Type</string>
 				<string>INDEX_FU</string>
 			</entry>
@@ -43,11 +39,11 @@
 			</entry>
 			<entry>
 				<string>ENName</string>
-				<string>IF1502</string>
+				<string>IF${YYMM}</string>
 			</entry>
 			<entry>
 				<string>CNName</string>
-				<string>沪深300当月1502</string>
+				<string>沪深300-${YYMM}</string>
 			</entry>
 			<entry>
 				<string>Numerator DP</string>
@@ -97,17 +93,17 @@
 				<string>Category</string>
 				<string>IF</string>
 			</entry>
-			<entry>
-				<string>Contract policy</string>
-				<string>Index</string>
-			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Index</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>IF1502</string>
+				<string>IF${YYMM}.CF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -115,15 +111,11 @@
 			</entry>
 			<entry>
 				<string>TWName</string>
-				<string>沪深300当月1502</string>
+				<string>滬深300-${YYMM}</string>
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
 				<string>IF${SEQ}</string>
-			</entry>
-			<entry>
-				<string>Tradable</string>
-				<string>1</string>
 			</entry>
 			<entry>
 				<string>Day tradable</string>
@@ -136,10 +128,6 @@
 			<entry>
 				<string>Maximum hold</string>
 				<int>100000</int>
-			</entry>
-			<entry>
-				<string>Commodity</string>
-				<string>F</string>
 			</entry>
 			<entry>
 				<string>Type</string>
@@ -175,11 +163,11 @@
 			</entry>
 			<entry>
 				<string>ENName</string>
-				<string>IH1505</string>
+				<string>IH${YYMM}</string>
 			</entry>
 			<entry>
 				<string>CNName</string>
-				<string>上证50当月1505</string>
+				<string>上证50-${YYMM}</string>
 			</entry>
 			<entry>
 				<string>Numerator DP</string>
@@ -239,7 +227,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>IH1505</string>
+				<string>IH${YYMM}.CF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -247,15 +235,11 @@
 			</entry>
 			<entry>
 				<string>TWName</string>
-				<string>上证50當月1505</string>
+				<string>上證50-${YYMM}</string>
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
 				<string>IH${SEQ}</string>
-			</entry>
-			<entry>
-				<string>Tradable</string>
-				<string>1</string>
 			</entry>
 			<entry>
 				<string>Day tradable</string>
@@ -268,10 +252,6 @@
 			<entry>
 				<string>Maximum hold</string>
 				<int>100000</int>
-			</entry>
-			<entry>
-				<string>Commodity</string>
-				<string>F</string>
 			</entry>
 			<entry>
 				<string>Type</string>
@@ -307,11 +287,11 @@
 			</entry>
 			<entry>
 				<string>ENName</string>
-				<string>IC1505</string>
+				<string>IC${YYMM}</string>
 			</entry>
 			<entry>
 				<string>CNName</string>
-				<string>中证500当月1505</string>
+				<string>中证500-${YYMM}</string>
 			</entry>
 			<entry>
 				<string>Numerator DP</string>
@@ -371,7 +351,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>IC1505</string>
+				<string>IC${YYMM}.CF</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -379,15 +359,11 @@
 			</entry>
 			<entry>
 				<string>TWName</string>
-				<string>中证500當月1505</string>
+				<string>中證500-${YYMM}</string>
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
 				<string>IC${SEQ}</string>
-			</entry>
-			<entry>
-				<string>Tradable</string>
-				<string>1</string>
 			</entry>
 			<entry>
 				<string>Day tradable</string>

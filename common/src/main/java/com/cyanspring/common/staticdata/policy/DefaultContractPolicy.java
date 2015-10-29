@@ -9,7 +9,7 @@ import java.util.List;
 
 import com.cyanspring.common.staticdata.RefData;
 
-public class ContractPolicy {
+public class DefaultContractPolicy {
 
 	public SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	public SimpleDateFormat ymSdf = new SimpleDateFormat("yyMM");

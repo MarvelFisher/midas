@@ -429,6 +429,10 @@
 				<string>Category</string>
 				<string>AG</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -533,6 +537,10 @@
 				<string>Category</string>
 				<string>CU</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -745,6 +753,10 @@
 				<string>Category</string>
 				<string>RB</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -849,6 +861,10 @@
 				<string>Category</string>
 				<string>RU</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -953,6 +969,10 @@
 				<string>Category</string>
 				<string>ZN</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -1057,6 +1077,10 @@
 				<string>Category</string>
 				<string>M</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -1161,6 +1185,10 @@
 				<string>Category</string>
 				<string>I</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -1265,6 +1293,10 @@
 				<string>Category</string>
 				<string>L</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -1369,6 +1401,10 @@
 				<string>Category</string>
 				<string>Y</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -1473,6 +1509,10 @@
 				<string>Category</string>
 				<string>PP</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -1577,6 +1617,10 @@
 				<string>Category</string>
 				<string>P</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -1681,6 +1725,10 @@
 				<string>Category</string>
 				<string>J</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -1785,6 +1833,10 @@
 				<string>Category</string>
 				<string>JD</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -1889,6 +1941,10 @@
 				<string>Category</string>
 				<string>FG</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -1993,6 +2049,10 @@
 				<string>Category</string>
 				<string>RM</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -2101,6 +2161,10 @@
 				<string>Category</string>
 				<string>TA</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -2321,6 +2385,10 @@
 				<string>Category</string>
 				<string>MA</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -2537,6 +2605,10 @@
 				<string>Category</string>
 				<string>NI</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -2641,6 +2713,10 @@
 				<string>Category</string>
 				<string>AL</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -2853,6 +2929,10 @@
 				<string>Category</string>
 				<string>PB</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -2957,6 +3037,10 @@
 				<string>Category</string>
 				<string>HC</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -3061,6 +3145,10 @@
 				<string>Category</string>
 				<string>SN</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -3167,7 +3255,7 @@
 			</entry>
 			<entry>
 				<string>Contract policy</string>
-				<string>NoCNY</string>
+				<string>Default</string>
 			</entry>
 			<entry>
 				<string>Denominator</string>
@@ -3273,6 +3361,10 @@
 				<string>Category</string>
 				<string>WR</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -3377,6 +3469,10 @@
 				<string>Category</string>
 				<string>JM</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -3697,6 +3793,10 @@
 				<string>Category</string>
 				<string>V</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -3801,6 +3901,10 @@
 				<string>Category</string>
 				<string>BB</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -4013,6 +4117,10 @@
 				<string>Category</string>
 				<string>FB</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -4121,6 +4229,10 @@
 				<string>Category</string>
 				<string>TC</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -4229,6 +4341,10 @@
 				<string>Category</string>
 				<string>RS</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -4449,6 +4565,10 @@
 				<string>Category</string>
 				<string>SF</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -4669,6 +4789,10 @@
 				<string>Category</string>
 				<string>SM</string>
 			</entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>

@@ -109,7 +109,9 @@ public class RefDataFactory extends RefDataService {
 
 					@Override
 					public List<RefData> updateRefData(RefData refData) {
-						return new ArrayList<>();
+						List<RefData> lstRefData = new ArrayList<>();
+						lstRefData.add(refData);
+						return lstRefData;
 					}
 
 					@Override

@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.cyanspring.common.staticdata.RefData;
 
-public class BUContractPolicy extends ContractPolicy {
+public class BUContractPolicy extends DefaultContractPolicy {
 
 	// 24个月以内，其中最近1-6个月为连续月份合约，6个月以后为季月合约。
 	@Override

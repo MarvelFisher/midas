@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.cyanspring.common.staticdata.RefData;
 
-public class OddsContractPolicy extends ContractPolicy {
+public class OddsContractPolicy extends DefaultContractPolicy {
 
 	// 1、3、5、7、9、11月
 	@Override

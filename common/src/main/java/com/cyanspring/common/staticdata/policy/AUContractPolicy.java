@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.cyanspring.common.staticdata.RefData;
 
-public class AUContractPolicy extends ContractPolicy {
+public class AUContractPolicy extends DefaultContractPolicy {
 
 	// 最近三个连续月份的合约以及最近11个月以内的双月合约
 	@Override
