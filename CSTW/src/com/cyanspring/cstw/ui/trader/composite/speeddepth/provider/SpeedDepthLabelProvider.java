@@ -17,7 +17,7 @@ import com.cyanspring.cstw.ui.trader.composite.speeddepth.model.SpeedDepthModel;
 public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 		implements ITableColorProvider {
 
-	private int selectIndex = 0;
+	private int selectIndex = -1;
 
 	@Override
 	public String getColumnText(Object element, int columnIndex) {
