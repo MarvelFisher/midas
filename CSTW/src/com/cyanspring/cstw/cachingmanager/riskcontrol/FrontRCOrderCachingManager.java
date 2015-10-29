@@ -9,6 +9,7 @@ import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
 import com.cyanspring.cstw.cachingmanager.BasicCachingManager;
+import com.cyanspring.cstw.event.OrderCacheReadyEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCParentOrderUpdateCachingLocalEvent;
 
 /**
@@ -31,25 +32,43 @@ public final class FrontRCOrderCachingManager extends BasicCachingManager {
 	}
 	
 	private FrontRCOrderCachingManager() {
+		super();
 		orderMap = new HashMap<String, ParentOrder>();
+		refreshData();		
+	}
+
+	private void refreshData() {
+		orderMap.clear();
+		List<ParentOrder> orders = business.getOrderManager().getAllParentOrderList();
+		for(ParentOrder ord : orders) {
+			orderMap.put(ord.getId(), ord);
+		}		
 	}
 
 	@Override
 	protected List<Class<? extends AsyncEvent>> getReplyEventList() {
 		List<Class<? extends AsyncEvent>> list = new ArrayList<Class<? extends AsyncEvent>>();
+		list.add(OrderCacheReadyEvent.class);
 		list.add(ParentOrderUpdateEvent.class);
 		return list;
 	}
 
 	@Override
 	protected void processAsyncEvent(AsyncEvent event) {
+		if (event instanceof OrderCacheReadyEvent) {
+			refreshData();
+			sendParentOrderUpdateEvent();
+		}
 		if (event instanceof ParentOrderUpdateEvent) {
 			ParentOrder parentOrder = ((ParentOrderUpdateEvent) event)
 					.getOrder();
 			log.info("ParentOrderCachingManager : Update parent order recieved: "
 					+ parentOrder);
-			orderMap.put(parentOrder.getId(), parentOrder);
-			sendParentOrderUpdateEvent();
+			if (business.getUserGroup().isManageeExist(parentOrder.getUser())){
+				orderMap.put(parentOrder.getId(), parentOrder);
+				sendParentOrderUpdateEvent();
+			}			
+			
 		}
 
 	}

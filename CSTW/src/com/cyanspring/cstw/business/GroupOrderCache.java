@@ -141,4 +141,18 @@ public class GroupOrderCache {
 		return orders;
 	}
 	
+	public List<ParentOrder> getAllParentOrderList() {
+		List<ParentOrder> orders = new ArrayList<ParentOrder>();
+		Iterator <Map<String,ParentOrder>>ite = orderMap.values().iterator();
+		while(ite.hasNext()) {
+			Map <String,ParentOrder> tempMap= ite.next();
+			Set <Entry<String,ParentOrder>>entryOrder = tempMap.entrySet();
+			for(Entry <String,ParentOrder> order:entryOrder){
+				ParentOrder tempParentOrder = order.getValue();
+				orders.add(tempParentOrder);
+			}
+		}
+		return orders;
+	}
+	
 }

@@ -21,18 +21,16 @@ public class PendingOrderLabelProvider extends DefaultLabelProviderAdapter {
 		case 1:
 			return model.getSymbol();
 		case 2:
-			return model.getSymbol();
-		case 3:
 			return model.getSide();
-		case 4:
+		case 3:
 			return model.getPrice().toString();
-		case 5:
+		case 4:
 			return model.getVolume().toString();
-		case 6:
+		case 5:
 			return model.getOrderStatus();
-		case 7:
+		case 6:
 			return model.getCreateTime();
-		case 8:
+		case 7:
 			return model.getTrader();
 		default:
 			return "";

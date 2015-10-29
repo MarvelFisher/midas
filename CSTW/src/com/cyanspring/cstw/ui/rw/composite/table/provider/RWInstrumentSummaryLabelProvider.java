@@ -19,17 +19,13 @@ public class RWInstrumentSummaryLabelProvider extends DefaultLabelProviderAdapte
 		case 0:
 			return model.getSymbol();
 		case 1:
-			return model.getSymbol();
-		case 2:
 			return model.getRealizedProfit().toString();
-		case 3:
+		case 2:
 			return model.getTrades().toString();
-		case 4:
+		case 3:
 			return model.getVolume().toString();
-		case 5:
+		case 4:
 			return model.getTurnover().toString();
-		case 6:
-			return model.getCommission().toString();
 		default:
 			return "";			
 		}

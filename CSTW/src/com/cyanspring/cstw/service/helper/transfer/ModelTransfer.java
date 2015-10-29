@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import com.cyanspring.common.account.OverallPosition;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.type.OrdStatus;
+import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.service.model.riskmgr.RCInstrumentModel;
 import com.cyanspring.cstw.service.model.riskmgr.RCOpenPositionModel;
 import com.cyanspring.cstw.service.model.riskmgr.RCOpenPositionModel.RCPositionDirection;
@@ -56,21 +57,21 @@ public final class ModelTransfer {
 				.id(position.getId())
 				.subAccount(position.getExchangeSubAccount())
 				.instrumentCode(position.getSymbol())
-				// .quality(Math.abs(position.getQty()))
+				.quality(Math.abs(position.getQty()))
 				.urPnl(position.getUrPnL()).pnl(position.getPnL())
 				.trader(position.getAccount()).build();
 
-		// if (PriceUtils.isZero(position.getQty())) {
-		// positionModel.setType(RCPositionType.Close);
-		// } else {
-		positionModel.setType(RCPositionType.Open);
-		// }
+		if (PriceUtils.isZero(position.getQty())) {
+			positionModel.setType(RCPositionType.Close);
+		} else {
+			positionModel.setType(RCPositionType.Open);
+		}
 		positionModel.setAveragePrice(position.getAvgPrice());
-		// if (PriceUtils.GreaterThan(position.getQty(), 0)) {
-		positionModel.setPositionDirection(RCPositionDirection.Long);
-		// } else {
-		// positionModel.setPositionDirection(RCPositionDirection.Short);
-		// }
+		if (PriceUtils.GreaterThan(position.getQty(), 0)) {
+			positionModel.setPositionDirection(RCPositionDirection.Long);
+		} else {
+			positionModel.setPositionDirection(RCPositionDirection.Short);
+		}
 
 		return positionModel;
 	}
@@ -90,7 +91,7 @@ public final class ModelTransfer {
 				.trades(position.getExecCount()).volume(position.getTotalQty())
 				.turnover(position.getTurnover())
 				.commission(position.getCommission())
-				.trader(position.getUser()).build();
+				.trader(position.getAccount()).build();
 		return model;
 	}
 
@@ -110,7 +111,7 @@ public final class ModelTransfer {
 		double totalTurnOver = 0.0;
 		for (OverallPosition position : positionMap.values()) {
 			if (trader == null) {
-				trader = position.getUser();
+				trader = position.getAccount();
 			}
 			pnl += position.getPnL();
 			totalTurnOver += position.getTurnover();

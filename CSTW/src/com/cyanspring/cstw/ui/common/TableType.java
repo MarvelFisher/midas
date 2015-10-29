@@ -11,61 +11,59 @@ import org.eclipse.swt.SWT;
 public enum TableType {
 
 	// RW Order
-	RWPendingOrder(new String[] { "Order ID", "Instrument ID",
-			"Instrument Name", "Trade Type", "Price", "Volume", "Status",
-			"Time", "Trader" },
+	RWPendingOrder(new String[] { "Order ID", "Instrument ID", "Trade Type",
+			"Price", "Volume", "Status", "Time", "Trader" }, new int[] { 80,
+			80, 80, 80, 80, 80, 80, 80 }, SWT.LEFT, true, false),
+
+	RWActivityOrder(new String[] { "Order ID", "Instrument ID", "Trade Type",
+			"Price", "Volume", "Status", "Consumed Volume", "Time", "Trader" },
 			new int[] { 80, 80, 80, 80, 80, 80, 80, 80, 80 }, SWT.LEFT, true,
 			false),
-
-	RWActivityOrder(new String[] { "Order ID", "Instrument ID",
-			"Instrument Name", "Trade Type", "Price", "Volume", "Status",
-			"Consumed Volume", "Time", "Trader" }, new int[] { 80, 80, 80, 80,
-			80, 80, 80, 80, 80, 80 }, SWT.LEFT, true, false),
 	
 	// RW
-	RWPosition(new String[] { "Instrument ID", "Instrument Name",
+	RWPosition(new String[] { "Instrument ID",
 			"Direction", "Quantity", "PNL", "Avg Price", "Trader", },
-			new int[] { 100, 100, 100, 100, 100, 100, 100 }, SWT.CENTER,
+			new int[] { 100, 100, 100, 100, 100, 100 }, SWT.CENTER,
 			true, false),
 	
 	RWTradeRecord(new String[] { "Trade ID", "Instrument ID",
-			"Instrument Name", "Trade Type", "Quantity", "Avg Price",
-			"Consideration", "Time", "Commission", "Trader" }, new int[] {
-			100, 100, 100, 100, 100, 100, 100, 100, 100, 100 }, SWT.CENTER,
+			"Trade Type", "Quantity", "Avg Price",
+			"Consideration", "Time", "Trader" }, new int[] {
+			100, 100, 100, 100, 100, 100, 100, 100, }, SWT.CENTER,
 			true, false),
 
 	RWInstrumentStatistics(new String[] { "Instrument ID",
-			"Instrument Name", "Realized PNL", "Trades", "Total Quantity",
-			"Consideration", "Total Commission", "Trader" }, new int[] {
-			100, 100, 100, 100, 100, 100, 100, 100 }, SWT.CENTER, true, false),
+			"Realized PNL", "Trades", "Total Quantity",
+			"Consideration", "Trader" }, new int[] {
+			100, 100, 100, 100, 100, 100, }, SWT.CENTER, true, false),
 
 	RWUserStatistics(
 			new String[] { "Trader", "Realized PNL", "Consideration" },
 			new int[] { 100, 100, 100 }, SWT.CENTER, true, false),
 
 	RWInstrumentSummary(new String[] { "Instrument ID",
-			"Instrument Name", "Realized PNL", "Trades", "Total Quantity",
-			"Consideration", "Commission" }, new int[] { 100, 100, 100,
-			100, 100, 100, 100 }, SWT.CENTER, true, false),
+			"Realized PNL", "Trades", "Total Quantity",
+			"Consideration" }, new int[] { 100, 100, 100,
+			100, 100, }, SWT.CENTER, true, false),
 	
 	// BW
-	BWPosition(new String[]{ "Account", "Instrument ID", "Instrument Name",
-			"Direction", "Quantity", "PNL", "Avg Price", }, new int[]{ 100, 100, 100, 100, 100, 100, 100, }, SWT.CENTER, true, false),
+	BWPosition(new String[]{ "Account", "Instrument ID",
+			"Direction", "Quantity", "PNL", "Avg Price", }, new int[]{ 100, 100, 100, 100, 100, 100, }, SWT.CENTER, true, false),
 	
 	BWTradeRecord(new String[]{ "Account", "Trade ID", "Instrument ID",
-			"Instrument", "Trade Type", "Quantity", "Avg Price",
-			"Consideration", "Time", "Commission", }, new int[]{ 100,
-			100, 100, 100, 100, 100, 100, 100, 100, 100, }, SWT.CENTER, true, false),
-	
-	BWInstrumentStatistics(new String[]{ "Account", "Instrument ID",
-			"Instrument Name", "Realized PNL", "Trades", "Total Quantity",
-			"Consideration", "Total Commission", }, new int[]{ 100,
+			"Trade Type", "Quantity", "Avg Price",
+			"Consideration", "Time", }, new int[]{ 100,
 			100, 100, 100, 100, 100, 100, 100, }, SWT.CENTER, true, false),
 	
+	BWInstrumentStatistics(new String[]{ "Account", "Instrument ID",
+			"Realized PNL", "Trades", "Total Quantity",
+			"Consideration", }, new int[]{ 100,
+			100, 100, 100, 100, 100, }, SWT.CENTER, true, false),
+	
 	BWInstrumentSummary(new String[]{ "Account", "Instrument ID",
-			"Instrument Name", "Realized PNL", "Trades", "Total Quantity",
-			"Consideration", "Commission" }, new int[]{ 100, 100, 100, 100,
-			100, 100, 100, 100 }, SWT.CENTER, true, false),
+			"Realized PNL", "Trades", "Total Quantity",
+			"Consideration" }, new int[]{ 100, 100, 100, 100,
+			100, 100, }, SWT.CENTER, true, false),
 	;
 
 	private String[] columnTiles;

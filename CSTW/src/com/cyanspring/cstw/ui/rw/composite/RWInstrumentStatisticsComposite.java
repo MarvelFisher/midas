@@ -85,7 +85,7 @@ public class RWInstrumentStatisticsComposite extends BasicComposite {
 
 	@Override
 	protected void processByType(RefreshEventType type) {
-		if (type == RefreshEventType.RWInstrumentSummary) {
+		if (type == RefreshEventType.RWInstrumentStatistics) {
 			tableComposite.setInput(service.getInstrumentModelList());
 		}
 	}

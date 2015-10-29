@@ -366,8 +366,13 @@ public class OrderCachingManager implements IAsyncEventListener {
 		groupOrderCache.updateMultiInstrumentStrategyData(event.getStrategyData());
 		if(Business.getInstance().getUserGroup().isAdmin()){
 			eventManager.subscribe(ParentOrderUpdateEvent.class,this);
-		}else
+		}else {
 			subGroupEvent(Business.getInstance().getAccountGroup());
+		}			
+		
+		// setting ready
+		setReady(true);
+		eventManager.sendEvent(new OrderCacheReadyEvent(null));
 	}
 	
 	
@@ -381,5 +386,9 @@ public class OrderCachingManager implements IAsyncEventListener {
 	
 	public List <Map<String,Object>> getAllParentOrders(){
 		return groupOrderCache.getAllParentOrders();
+	}
+	
+	public List<ParentOrder> getAllParentOrderList() {
+		return groupOrderCache.getAllParentOrderList();
 	}
 }

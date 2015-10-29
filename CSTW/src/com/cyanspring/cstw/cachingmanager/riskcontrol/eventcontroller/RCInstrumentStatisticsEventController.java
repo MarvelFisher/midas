@@ -21,10 +21,10 @@ import com.cyanspring.cstw.service.model.riskmgr.RCInstrumentModel;
  * @create date 2015/09/02
  *
  */
-public final class FrontRCInstrumentStatisticsEventController implements
+public final class RCInstrumentStatisticsEventController implements
 		IAsyncEventListener {
 
-	private static FrontRCInstrumentStatisticsEventController instance;
+	private static RCInstrumentStatisticsEventController instance;
 
 	private Business business;
 
@@ -32,15 +32,15 @@ public final class FrontRCInstrumentStatisticsEventController implements
 
 	private List<RCInstrumentModel> instrumentModeList;
 
-	public static FrontRCInstrumentStatisticsEventController getInstance() {
+	public static RCInstrumentStatisticsEventController getInstance() {
 		if (instance == null) {
-			instance = new FrontRCInstrumentStatisticsEventController();
+			instance = new RCInstrumentStatisticsEventController();
 		}
 
 		return instance;
 	}
 
-	private FrontRCInstrumentStatisticsEventController() {
+	private RCInstrumentStatisticsEventController() {
 		business = Business.getInstance();
 		adapter = EventAdaptorPool.getFrontRCInstrumentStatisticsEventAdaptor();
 		instrumentModeList = new ArrayList<RCInstrumentModel>();
