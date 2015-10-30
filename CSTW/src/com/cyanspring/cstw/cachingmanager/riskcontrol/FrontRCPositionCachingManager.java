@@ -10,7 +10,6 @@ import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.OverallPosition;
 import com.cyanspring.common.cstw.position.IPositionChangeListener;
 import com.cyanspring.common.event.AsyncEvent;
-import com.cyanspring.common.event.account.OverAllPositionReplyEvent;
 import com.cyanspring.cstw.cachingmanager.BasicCachingManager;
 import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCPositionUpdateCachingLocalEvent;
 
@@ -54,7 +53,8 @@ public final class FrontRCPositionCachingManager extends BasicCachingManager {
 					Map<String, OverallPosition> map = new HashMap<String, OverallPosition>();
 					accountPositionMap.put(account, map);
 				}
-				accountPositionMap.get(account).put(position.getId(), position);
+				accountPositionMap.get(account).put(
+						position.getAccount() + position.getSymbol(), position);
 			}
 			sendPositionUpdateEvent();
 		}
@@ -72,7 +72,7 @@ public final class FrontRCPositionCachingManager extends BasicCachingManager {
 			@Override
 			public void OpenPositionChange(OpenPosition arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
@@ -84,7 +84,8 @@ public final class FrontRCPositionCachingManager extends BasicCachingManager {
 							Map<String, OverallPosition> map = new HashMap<String, OverallPosition>();
 							accountPositionMap.put(account, map);
 						}
-						accountPositionMap.get(account).put(position.getId(),
+						accountPositionMap.get(account).put(
+								position.getAccount() + position.getSymbol(),
 								position);
 					}
 					sendPositionUpdateEvent();
@@ -106,17 +107,11 @@ public final class FrontRCPositionCachingManager extends BasicCachingManager {
 	@Override
 	protected List<Class<? extends AsyncEvent>> getReplyEventList() {
 		List<Class<? extends AsyncEvent>> list = new ArrayList<Class<? extends AsyncEvent>>();
-		list.add(OverAllPositionReplyEvent.class);
 		return list;
 	}
 
 	@Override
 	protected void processAsyncEvent(AsyncEvent event) {
-		if (event instanceof OverAllPositionReplyEvent) {
-			OverAllPositionReplyEvent replyEvent = (OverAllPositionReplyEvent) event;
-			log.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!OverAllPositionReplyEvent"
-					+ replyEvent);
-		}
 
 	}
 
