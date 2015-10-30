@@ -535,7 +535,9 @@ public abstract class SingleOrderStrategy extends Strategy {
 				cancelRetry++;
 			}
 			return;
-		} else if(order.getOrdStatus().equals(OrdStatus.REJECTED) && rejectOnReject) {
+		} else if(!parentOrder.getOrdStatus().isCompleted() && 
+				order.getOrdStatus().equals(OrdStatus.REJECTED) && 
+				rejectOnReject) {
 			parentOrder.setOrdStatus(OrdStatus.REJECTED);
 			parentOrder.touch();
 			terminate();

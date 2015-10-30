@@ -38,6 +38,7 @@ public class QuoteMgr {
                 	Object[] arr;
                 	int type,cnt;
                 	int max = 50;
+                	int min = 1000;
                     while(true){
                     	qList.clear();
                     	qList.add(queue.poll());
@@ -55,30 +56,12 @@ public class QuoteMgr {
                             type = (int) arr[0];
                             process(type, arr[1]);
                     	}
-                    	if(cnt > max) {
+                    	if(cnt > min && cnt > max) {
                     		max = cnt;
                     		log.info("windAdaptor queue reach new max: " + max);
+                    	} else if ( cnt > min && cnt < (max/2)) {
+                    		max = cnt;
                     	}
-//                            if (queue.size() > 0) {
-//                                Object[] arr;
-//                                try {
-//                                    arr = (Object[]) queue.poll();
-//                                }catch (Exception e){
-//                                    log.error(e.getMessage(),e);
-//                                    arr = null;
-//                                }
-//                                if (arr == null || arr.length != 2) {
-//                                    continue;
-//                                }
-//                                int type = (int) arr[0];
-//                                process(type, arr[1]);
-//                            }else{
-//                                try {
-//                                    TimeUnit.MILLISECONDS.sleep(1);
-//                                } catch (InterruptedException e) {
-//                                    e.printStackTrace();
-//                                }
-//                            }
                     }
                 }
             });

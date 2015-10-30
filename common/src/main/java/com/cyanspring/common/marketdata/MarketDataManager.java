@@ -215,7 +215,8 @@ public class MarketDataManager extends MarketDataReceiver {
                                                     tempQuote.setClose(tempQuote.getLast());
                                                     log.debug("Symbol=" + tempQuote.getSymbol() + " update preClose = Last = " + tempQuote.getLast());
                                                 }
-                                                if (RefDataCommodity.FUTURES.getValue().equals(marketTypes.get(tempQuote.getSymbol()))) {
+                                                if (RefDataCommodity.FUTUREINDEX.getValue().equals(marketTypes.get(tempQuote.getSymbol()))
+                                                        || RefDataCommodity.FUTURECOMMODITY.getValue().equals(marketTypes.get(tempQuote.getSymbol()))) {
                                                     if (quoteExtends.containsKey(tempQuote.getSymbol())) {
                                                         DataObject quoteExtend = quoteExtends.get(tempQuote.getSymbol());
                                                         double settlePrice = tempQuote.getLast();
@@ -248,7 +249,8 @@ public class MarketDataManager extends MarketDataReceiver {
                                                 if (quotes.containsKey(symbol)) {
                                                     preClose = quotes.get(symbol).getLast();
                                                 }
-                                                if (RefDataCommodity.FUTURES.getValue().equals(marketTypes.get(symbol))) {
+                                                if (RefDataCommodity.FUTUREINDEX.getValue().equals(marketTypes.get(symbol))
+                                                        || RefDataCommodity.FUTURECOMMODITY.getValue().equals(marketTypes.get(symbol))) {
                                                     if (quoteExtend.fieldExists(QuoteExtDataField.SETTLEPRICE.value())) {
                                                         preClose = quoteExtend.get(Double.class, QuoteExtDataField.SETTLEPRICE.value());
                                                     }

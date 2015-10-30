@@ -175,10 +175,10 @@ public class Business {
 				processCSTWUserLoginReplyEvent(evt);
 				if (evt.isOk()) {
 					tickManager.init(getFirstServer());
-					if (null != loginAccount)
-						;
-					traderInfoListener.init(loginAccount);
 
+					if(null != loginAccount);
+						traderInfoListener.init(loginAccount);
+						
 				}
 				if (isLoginRequired() && evt.isOk()) {
 					requestStrategyInfo(evt.getSender());
@@ -341,23 +341,22 @@ public class Business {
 		ServerStatusDisplay.getInstance().init();
 
 		eventManager.subscribe(NodeInfoEvent.class, listener);
-		eventManager.subscribe(InitClientEvent.class, listener);
-		eventManager.subscribe(UserLoginReplyEvent.class, listener);
-		eventManager.subscribe(SelectUserAccountEvent.class, listener);
-		eventManager.subscribe(ServerHeartBeatEvent.class, listener);
-		eventManager.subscribe(ServerReadyEvent.class, listener);
-		eventManager.subscribe(SingleOrderStrategyFieldDefUpdateEvent.class,
-				listener);
-		eventManager.subscribe(
-				MultiInstrumentStrategyFieldDefUpdateEvent.class, listener);
-		eventManager.subscribe(CSTWUserLoginReplyEvent.class, listener);
-		eventManager
-				.subscribe(AccountSettingSnapshotReplyEvent.class, listener);
-		// schedule timer
-		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval, listener,
-				timerEvent);
-		traderInfoListener = new TraderInfoListener();
-		initSessionListener();
+
+		eventManager.subscribe(InitClientEvent.class, listener);		
+		eventManager.subscribe(UserLoginReplyEvent.class, listener);		
+		eventManager.subscribe(SelectUserAccountEvent.class, listener);		
+		eventManager.subscribe(ServerHeartBeatEvent.class, listener);		
+		eventManager.subscribe(ServerReadyEvent.class, listener);		
+		eventManager.subscribe(SingleOrderStrategyFieldDefUpdateEvent.class, listener);		
+		eventManager.subscribe(MultiInstrumentStrategyFieldDefUpdateEvent.class, listener);		
+		eventManager.subscribe(CSTWUserLoginReplyEvent.class, listener);		
+		eventManager.subscribe(AccountSettingSnapshotReplyEvent.class, listener);
+		//schedule timer
+		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval , listener, timerEvent);	
+		log.info("TraderInfoListener not init version");
+//		traderInfoListener = new TraderInfoListener();
+//		initSessionListener();
+
 	}
 
 	public void start() throws Exception {

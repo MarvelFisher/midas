@@ -139,7 +139,7 @@ public class SymbolData implements Comparable<SymbolData>
 			{
 				if (commodity == null)
 					continue;
-				if (commodity.equals("F") &&
+				if ((commodity.equals("FC") || commodity.equals("FI")) &&
 						PriceUtils.isZero(q.getTotalVolume()))
 				{
 					continue;

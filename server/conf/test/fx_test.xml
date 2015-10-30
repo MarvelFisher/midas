@@ -31,7 +31,7 @@
 				<ref bean="liveTradingSession" />
 				<ref bean="statisticManager" />
             	<ref bean="systemSuspendValidator"/>
-			</list>
+ 			</list>
 		</property>
 		<property name="readyMap">
 			<map key-type="java.lang.String" value-type="java.lang.Boolean">
@@ -161,6 +161,12 @@
 		</constructor-arg>
 		<property name="quoteSource" value="IB"/>
 	</bean>
+	
+	<bean id="simDownStreamAdaptor" class="com.cyanspring.server.sim.SimDownStreamAdaptor">
+		<constructor-arg>
+			<ref bean="simExchange" />
+		</constructor-arg>
+	</bean>	
 
 	<bean id="simExchange" class="webcurve.exchange.Exchange">
 	</bean>
@@ -397,8 +403,4 @@
 	
 	<bean id="quoteAggregator" class="com.cyanspring.common.marketdata.QuoteAggregatorSimple">
 	</bean>
-	
-	<bean id="coinControlRecoveryProcessor" class="com.cyanspring.server.CoinControlRecoveryProcessor">
-	</bean>
-	
 </beans>

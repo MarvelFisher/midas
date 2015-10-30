@@ -160,7 +160,8 @@ public class RefDataFactory extends RefDataService {
 
 		String commodity = refData.getCommodity();
 		if (!StringUtils.hasText(commodity) || (StringUtils.hasText(commodity)
-				&& commodity.equals(RefDataCommodity.FUTURES.getValue()))) {
+				&& (commodity.equals(RefDataCommodity.FUTUREINDEX.getValue())
+						|| commodity.equals(RefDataCommodity.FUTURECOMMODITY.getValue())))) {
 			refData.setCategory(getCategory(refData));
 		}
 	}

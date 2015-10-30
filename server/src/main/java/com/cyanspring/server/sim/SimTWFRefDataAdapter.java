@@ -53,7 +53,7 @@ public class SimTWFRefDataAdapter extends SimRefDataAdaptor {
             refData.setCode(codeTableData.getWindCode());
             refData.setExchange(codeTableData.getSecurityExchange());
             refData.setIType(IType.FUTURES_FT.getValue());
-            refData.setCommodity(RefDataCommodity.FUTURES.getValue());
+            refData.setCommodity(RefDataCommodity.FUTUREINDEX.getValue());
 			refDataList.add(refData);
 		}
 

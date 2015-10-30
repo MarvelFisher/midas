@@ -25,14 +25,14 @@ public class StockRefDataManager extends RefDataService {
     protected static final Logger log = LoggerFactory.getLogger(StockRefDataManager.class);
     private List<RefData> refDataList = new CopyOnWriteArrayList<>();
     private XStream xstream = new XStream(new DomDriver("UTF-8"));
-    
+
     //Futures
     private Map<String, AbstractRefDataStrategy> strategyMap = new HashMap<>();
     private String strategyPack = "com.cyanspring.common.staticdata.fu";
     private String refDataTemplatePath;
     private List<RefData> refDataTemplateList;
     private Map<String,RefData> refDataTemplateMap = new HashMap<String,RefData>();
-   
+
     @SuppressWarnings("unchecked")
     @Override
     public void init() throws Exception {
@@ -60,7 +60,7 @@ public class StockRefDataManager extends RefDataService {
 				continue;
 			}else{
 				log.info("build template category:{},strategy:{}",spotName,ref.getStrategy());
-				refDataTemplateMap.put(spotName, ref);			
+				refDataTemplateMap.put(spotName, ref);
 			}
 		}
 	}
@@ -87,15 +87,15 @@ public class StockRefDataManager extends RefDataService {
     	if(refDataTemplateMap.containsKey(spotName) && null != refDataTemplateMap.get(spotName)){
     		templateRefData = refDataTemplateMap.get(spotName);
     		return (RefData)templateRefData.clone();
-    	}	
+    	}
     	log.info("can't find template:{}",spotName);
     	return  null;
     }
-    
+
 	protected String getCategory(RefData refData){
 		return RefDataUtil.getCategory(refData);
 	}
-	
+
 	private void updateRefData(Calendar cal, RefData refData) {
 		String iType = refData.getIType();
 		if(IType.isFuture(iType)){
@@ -126,8 +126,9 @@ public class StockRefDataManager extends RefDataService {
         	if(!StringUtils.hasText(tempRefData.getSymbol())){
         		continue;
         	}
-            if (tempRefData.getSymbol().equals(symbol))
-                return tempRefData;
+            if (tempRefData.getSymbol().equals(symbol)) {
+				return tempRefData;
+			}
     	}
 
         return null;
@@ -153,7 +154,7 @@ public class StockRefDataManager extends RefDataService {
     }
 
 	@Override
-	public RefData add(RefData refData, String tradeDate) throws Exception {	
+	public RefData add(RefData refData, String tradeDate) throws Exception {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(getSettlementDateFormat().parse(tradeDate));
 		updateRefData(cal, refData);
@@ -171,7 +172,7 @@ public class StockRefDataManager extends RefDataService {
 	}
 
 	private void updateFutureRefData(Calendar cal, RefData refData){
-		
+
 		initCategory(refData);
 		AbstractRefDataStrategy strategy;
 		RefData template = searchRefDataTemplate(refData);
@@ -222,50 +223,54 @@ public class StockRefDataManager extends RefDataService {
 	}
 
 	private void initCategory(RefData refData) {
-		
-		if(StringUtils.hasText(refData.getCategory()))
+
+		if(StringUtils.hasText(refData.getCategory())) {
 			return;
-		
+		}
+
 		String commodity = refData.getCommodity();
 		if (!StringUtils.hasText(commodity) || (StringUtils.hasText(commodity)
-				&& commodity.equals(RefDataCommodity.FUTURES.getValue()))) {
+				&& (commodity.equals(RefDataCommodity.FUTUREINDEX.getValue())))) {
 			refData.setCategory(getCategory(refData));
-		}	
+		}
 	}
-	
+
 	@Override
 	public List<RefData> update(String index, String tradeDate) throws Exception {
 		List<RefData> ret = new ArrayList<>();
-		
+
 		for (RefData refData : refDataList) {
 			if (index.equals(refData.getCategory())) {
 				ret.add(refData);
 			}
 		}
-		
+
 		for(RefData refData : ret){
 			add(refData, tradeDate);
 		}
-		
+
 		return ret;
 	}
 
 	@Override
 	public boolean remove(RefData refData) {
-		
+
 		boolean remove = false;
-		if(null == refDataList || refDataList.isEmpty())
+		if(null == refDataList || refDataList.isEmpty()) {
 			return remove;
-		
-		List<RefData> delList = new ArrayList<RefData>();
-		
-		for (RefData ref : refDataList) {
-			if (ref.getRefSymbol().equals(refData.getRefSymbol()))
-				delList.add(ref);
 		}
 
-		if (!delList.isEmpty())
+		List<RefData> delList = new ArrayList<RefData>();
+
+		for (RefData ref : refDataList) {
+			if (ref.getRefSymbol().equals(refData.getRefSymbol())) {
+				delList.add(ref);
+			}
+		}
+
+		if (!delList.isEmpty()) {
 			remove = true;
+		}
 
 		for (RefData ref : delList) {
 			refDataList.remove(ref);
@@ -273,7 +278,7 @@ public class StockRefDataManager extends RefDataService {
 
 		return remove;
 	}
-	
+
 	public Map<String, RefData> getRefDataTemplateMap() {
 		return refDataTemplateMap;
 	}
@@ -281,7 +286,7 @@ public class StockRefDataManager extends RefDataService {
 	public void setRefDataTemplateMap(Map<String, RefData> refDataTemplateMap) {
 		this.refDataTemplateMap = refDataTemplateMap;
 	}
-	
+
 	private SimpleDateFormat getSettlementDateFormat() {
 		return new SimpleDateFormat("yyyy-MM-dd") ;
 	}
