@@ -537,19 +537,24 @@ public class Business {
 
 		QuoteCachingManager.getInstance().init();
 
-		allPositionManager.init(eventManager, getFirstServer(),
-				accountList, getUserGroup());
+		if (this.userGroup.getRole() == UserRole.RiskManager
+				|| this.userGroup.getRole() == UserRole.BackEndRiskManager) {
+			allPositionManager.init(eventManager, getFirstServer(),
+					accountList, getUserGroup());
+			FrontRCPositionCachingManager.getInstance().init();
+			FrontRCOrderCachingManager.getInstance().init();
 
-		FrontRCPositionCachingManager.getInstance().init();
-		FrontRCOrderCachingManager.getInstance().init();
-		
-		FrontRCOpenPositionEventController.getInstance().init();
-		RCTradeEventController.getInstance().init();
-		BackRCOpenPositionEventController.getInstance().init();
-		RCInstrumentStatisticsEventController.getInstance().init();
-		RCIndividualEventController.getInstance().init();
-		RCInstrumentSummaryEventController.getInstance().init();
-		RCOrderEventController.getInstance().init();
+			if (this.userGroup.getRole() == UserRole.RiskManager) {
+				FrontRCOpenPositionEventController.getInstance().init();
+			} else if (this.userGroup.getRole() == UserRole.BackEndRiskManager) {
+				BackRCOpenPositionEventController.getInstance().init();
+			}
+			RCTradeEventController.getInstance().init();
+			RCInstrumentStatisticsEventController.getInstance().init();
+			RCIndividualEventController.getInstance().init();
+			RCInstrumentSummaryEventController.getInstance().init();
+			RCOrderEventController.getInstance().init();
+		}	
 
 		return true;
 	}
