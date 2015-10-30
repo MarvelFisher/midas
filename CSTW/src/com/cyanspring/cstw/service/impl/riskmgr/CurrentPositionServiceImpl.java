@@ -6,8 +6,12 @@ package com.cyanspring.cstw.service.impl.riskmgr;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.common.event.order.ClosePositionRequestEvent;
+import com.cyanspring.common.util.IdGenerator;
+import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.service.common.BasicServiceImpl;
 import com.cyanspring.cstw.service.common.RefreshEventType;
 import com.cyanspring.cstw.service.iservice.riskmgr.ICurrentPositionService;
@@ -123,6 +127,24 @@ public class CurrentPositionServiceImpl extends BasicServiceImpl implements
 	public String getAllPNL() {
 		allPnl = unrealizedPnl + pnl;
 		return LTWStringUtils.cashDoubleToString(allPnl);
+	}
+
+	@Override
+	public void forceClosePosition(String account, String symbol) {
+		String server = Business.getInstance().getFirstServer();
+		
+		ClosePositionRequestEvent request = new ClosePositionRequestEvent(
+				account, server,
+				account, symbol,
+				0.0, OrderReason.ManualClose, IdGenerator
+						.getInstance().getNextID());
+		try {
+			Business.getInstance().getEventManager()
+					.sendRemoteEvent(request);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+		
 	}
 
 }

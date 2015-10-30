@@ -1,5 +1,6 @@
 package com.cyanspring.cstw.ui.rw.composite.table;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -30,6 +31,10 @@ public class RWPendingOrderTableComposite extends BasicTableComposite {
 		tableViewer.getTable().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
+				if (!MessageDialog.openConfirm(getShell(), "Comfirm",
+						"Are you sure to cancel the order?")) {
+					return;
+				}
 				RCOrderRecordModel model = (RCOrderRecordModel) getSelectedObject();
 				service.cancelOrder(model.getOrderId());
 			}

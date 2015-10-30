@@ -17,6 +17,8 @@ public interface ICurrentPositionService extends IBasicService {
 
 	void queryOpenPosition();
 	
+	void forceClosePosition(String user, String symbol);
+	
 	List<RCOpenPositionModel> getOpenPositionModelList();
 	
 	String getAllMarketCapitalization();
