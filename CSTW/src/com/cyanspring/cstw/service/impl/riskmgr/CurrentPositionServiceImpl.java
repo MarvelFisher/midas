@@ -64,9 +64,9 @@ public class CurrentPositionServiceImpl extends BasicServiceImpl implements
 			currentPositionModelList = getOpenPositionFromOverallPosition(overallPositionModelList);
 			return RefreshEventType.RWCurrentPositionList;
 		}
-		if (event instanceof OpenPositionUpdateLocalEvent) {
+		if (event instanceof OpenPositionUpdateLocalEvent) {						
 			OpenPositionUpdateLocalEvent replyEvent = (OpenPositionUpdateLocalEvent) event;
-			overallPositionModelList = replyEvent.getAllPositionModelList();
+			overallPositionModelList = replyEvent.getAllPositionModelList();			
 			currentPositionModelList = getOpenPositionFromOverallPosition(overallPositionModelList);
 			return RefreshEventType.RWCurrentPositionList;
 		}
