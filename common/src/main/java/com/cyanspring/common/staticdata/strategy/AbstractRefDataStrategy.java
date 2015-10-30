@@ -37,20 +37,22 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
     private final String MONTH_PATTERN2 = "${YYMM}";
     private final String MONTH_PATTERN3 = "${MY}";
     private final String SEQ_PATTERN = "${SEQ}";
-    private final Map<Integer, String> mapMonthAlphabet = new HashMap<Integer, String>(){{
-    		put(0, "A"); // Jan
-    		put(1, "B"); // Feb
-    		put(2, "C"); // Mar
-    		put(3, "D"); // Apr
-    		put(4, "E"); // May
-    		put(5, "F"); // Jun
-    		put(6, "G"); // Jul
-    		put(7, "H"); // Aug
-    		put(8, "I"); // Sep
-    		put(9, "J"); // Oct
-    		put(10, "K"); // Nov
-    		put(11, "L"); // Dec
-    	}};
+	private final Map<String, String> mapMonthAlphabet = new HashMap<String, String>() {
+		{
+			put("01", "A"); // Jan
+			put("02", "B"); // Feb
+			put("03", "C"); // Mar
+			put("04", "D"); // Apr
+			put("05", "E"); // May
+			put("06", "F"); // Jun
+			put("07", "G"); // Jul
+			put("08", "H"); // Aug
+			put("09", "I"); // Sep
+			put("10", "J"); // Oct
+			put("11", "K"); // Nov
+			put("12", "L"); // Dec
+		}
+	};
     Map<String, Quote> mapHot;
 
 	@Override
@@ -101,7 +103,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		for (int i = 0; i < num; i++) {
 			String month = lstContractMonth.get(i);
 			String y = month.substring(1, 2);
-			int m = Integer.parseInt(month.substring(2)) - 1;
+			String m = month.substring(2);
 			String a = mapMonthAlphabet.get(m);
 			String seq = formatter.format(i);
 			RefData data = (RefData)refData.clone();
