@@ -429,10 +429,10 @@
 				<string>Category</string>
 				<string>AG</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -537,10 +537,10 @@
 				<string>Category</string>
 				<string>CU</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -753,10 +753,10 @@
 				<string>Category</string>
 				<string>RB</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -861,10 +861,10 @@
 				<string>Category</string>
 				<string>RU</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -969,10 +969,10 @@
 				<string>Category</string>
 				<string>ZN</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -1077,10 +1077,10 @@
 				<string>Category</string>
 				<string>M</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -1185,10 +1185,10 @@
 				<string>Category</string>
 				<string>I</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -1293,10 +1293,10 @@
 				<string>Category</string>
 				<string>L</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -1401,10 +1401,10 @@
 				<string>Category</string>
 				<string>Y</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -1509,10 +1509,10 @@
 				<string>Category</string>
 				<string>PP</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -1617,10 +1617,10 @@
 				<string>Category</string>
 				<string>P</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -1725,10 +1725,10 @@
 				<string>Category</string>
 				<string>J</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -1833,10 +1833,10 @@
 				<string>Category</string>
 				<string>JD</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -1941,10 +1941,10 @@
 				<string>Category</string>
 				<string>FG</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -2049,10 +2049,10 @@
 				<string>Category</string>
 				<string>RM</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -2161,10 +2161,10 @@
 				<string>Category</string>
 				<string>TA</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -2385,10 +2385,10 @@
 				<string>Category</string>
 				<string>MA</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -2605,10 +2605,10 @@
 				<string>Category</string>
 				<string>NI</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -2713,10 +2713,10 @@
 				<string>Category</string>
 				<string>AL</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -2929,10 +2929,10 @@
 				<string>Category</string>
 				<string>PB</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -3037,10 +3037,10 @@
 				<string>Category</string>
 				<string>HC</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -3145,10 +3145,10 @@
 				<string>Category</string>
 				<string>SN</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -3361,10 +3361,10 @@
 				<string>Category</string>
 				<string>WR</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -3469,10 +3469,10 @@
 				<string>Category</string>
 				<string>JM</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -3793,10 +3793,10 @@
 				<string>Category</string>
 				<string>V</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -3901,10 +3901,10 @@
 				<string>Category</string>
 				<string>BB</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -4117,10 +4117,10 @@
 				<string>Category</string>
 				<string>FB</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -4229,10 +4229,10 @@
 				<string>Category</string>
 				<string>TC</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -4341,10 +4341,10 @@
 				<string>Category</string>
 				<string>RS</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -4565,10 +4565,10 @@
 				<string>Category</string>
 				<string>SF</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -4789,10 +4789,10 @@
 				<string>Category</string>
 				<string>SM</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>Default</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>Default</string>
+			</entry>
 			<entry>
 				<string>Denominator</string>
 				<double>0</double>
@@ -4924,6 +4924,486 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>JR${SEQ}</string>
+			</entry>
+		</fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+		<fields>
+			<entry>
+				<string>Maximum hold</string>
+				<int>0</int>
+			</entry>
+			<entry>
+				<string>Price per unit</string>
+				<double>0.0</double>
+			</entry>
+			<entry>
+				<string>Index Session Type</string>
+				<string>SPOT</string>
+			</entry>
+			<entry>
+				<string>Strategy</string>
+				<string>INDEX</string>
+			</entry>
+			<entry>
+				<string>Limit maximum lot</string>
+				<int>1000000</int>
+			</entry>
+			<entry>
+				<string>Margin Rate</string>
+				<double>0.0</double>
+			</entry>
+			<entry>
+				<string>Code</string>
+				<string>399905</string>
+			</entry>
+			<entry>
+				<string>Lot size</string>
+				<int>0</int>
+			</entry>
+			<entry>
+				<string>Category</string>
+				<string>INDEX</string>
+			</entry>
+			<entry>
+				<string>Exchange</string>
+				<string>SZ</string>
+			</entry>
+			<entry>
+				<string>Market maximum lot</string>
+				<int>1000000</int>
+			</entry>
+			<entry>
+				<string>Symbol</string>
+				<string>399905.SZ</string>
+			</entry>
+			<entry>
+				<string>ENName</string>
+				<null />
+			</entry>
+			<entry>
+				<string>CNName</string>
+				<string>中证500</string>
+			</entry>
+			<entry>
+				<string>Ref symbol</string>
+				<string>399905.SZ</string>
+			</entry>
+			<entry>
+				<string>TWName</string>
+				<string>中證500</string>
+			</entry>
+			<entry>
+				<string>Spell name</string>
+				<string>zz500</string>
+			</entry>
+			<entry>
+				<string>Tick table</string>
+				<string>SC</string>
+			</entry>
+			<entry>
+				<string>Decimal point</string>
+				<int>2</int>
+			</entry>
+		</fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+		<fields>
+			<entry>
+				<string>Maximum hold</string>
+				<int>0</int>
+			</entry>
+			<entry>
+				<string>Price per unit</string>
+				<double>0.0</double>
+			</entry>
+			<entry>
+				<string>Index Session Type</string>
+				<string>SPOT</string>
+			</entry>
+			<entry>
+				<string>Strategy</string>
+				<string>INDEX</string>
+			</entry>
+			<entry>
+				<string>Limit maximum lot</string>
+				<int>1000000</int>
+			</entry>
+			<entry>
+				<string>Margin Rate</string>
+				<double>0.0</double>
+			</entry>
+			<entry>
+				<string>Code</string>
+				<string>999987</string>
+			</entry>
+			<entry>
+				<string>Lot size</string>
+				<int>0</int>
+			</entry>
+			<entry>
+				<string>Category</string>
+				<string>INDEX</string>
+			</entry>
+			<entry>
+				<string>Exchange</string>
+				<string>SH</string>
+			</entry>
+			<entry>
+				<string>Market maximum lot</string>
+				<int>1000000</int>
+			</entry>
+			<entry>
+				<string>Symbol</string>
+				<string>999987.SH</string>
+			</entry>
+			<entry>
+				<string>ENName</string>
+				<null />
+			</entry>
+			<entry>
+				<string>CNName</string>
+				<string>上证50</string>
+			</entry>
+			<entry>
+				<string>Ref symbol</string>
+				<string>999987.SH</string>
+			</entry>
+			<entry>
+				<string>TWName</string>
+				<string>上證50</string>
+			</entry>
+			<entry>
+				<string>Spell name</string>
+				<string>sz50</string>
+			</entry>
+			<entry>
+				<string>Tick table</string>
+				<string>SC</string>
+			</entry>
+			<entry>
+				<string>Decimal point</string>
+				<int>2</int>
+			</entry>
+		</fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+		<fields>
+			<entry>
+				<string>Maximum hold</string>
+				<int>0</int>
+			</entry>
+			<entry>
+				<string>Price per unit</string>
+				<double>0.0</double>
+			</entry>
+			<entry>
+				<string>Index Session Type</string>
+				<string>SPOT</string>
+			</entry>
+			<entry>
+				<string>Strategy</string>
+				<string>INDEX</string>
+			</entry>
+			<entry>
+				<string>Limit maximum lot</string>
+				<int>1000000</int>
+			</entry>
+			<entry>
+				<string>Margin Rate</string>
+				<double>0.0</double>
+			</entry>
+			<entry>
+				<string>Code</string>
+				<string>399300</string>
+			</entry>
+			<entry>
+				<string>Lot size</string>
+				<int>0</int>
+			</entry>
+			<entry>
+				<string>Category</string>
+				<string>INDEX</string>
+			</entry>
+			<entry>
+				<string>Exchange</string>
+				<string>SZ</string>
+			</entry>
+			<entry>
+				<string>Market maximum lot</string>
+				<int>1000000</int>
+			</entry>
+			<entry>
+				<string>Symbol</string>
+				<string>399300.SZ</string>
+			</entry>
+			<entry>
+				<string>ENName</string>
+				<null />
+			</entry>
+			<entry>
+				<string>CNName</string>
+				<string>沪深300</string>
+			</entry>
+			<entry>
+				<string>Ref symbol</string>
+				<string>399300.SZ</string>
+			</entry>
+			<entry>
+				<string>TWName</string>
+				<string>滬深300</string>
+			</entry>
+			<entry>
+				<string>Spell name</string>
+				<string>hs300</string>
+			</entry>
+			<entry>
+				<string>Tick table</string>
+				<string>SC</string>
+			</entry>
+			<entry>
+				<string>Decimal point</string>
+				<int>2</int>
+			</entry>
+		</fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+		<fields>
+			<entry>
+				<string>Maximum hold</string>
+				<int>0</int>
+			</entry>
+			<entry>
+				<string>Price per unit</string>
+				<double>0.0</double>
+			</entry>
+			<entry>
+				<string>Index Session Type</string>
+				<string>SPOT</string>
+			</entry>
+			<entry>
+				<string>Strategy</string>
+				<string>INDEX</string>
+			</entry>
+			<entry>
+				<string>Limit maximum lot</string>
+				<int>1000000</int>
+			</entry>
+			<entry>
+				<string>Margin Rate</string>
+				<double>0.0</double>
+			</entry>
+			<entry>
+				<string>Code</string>
+				<string>999999</string>
+			</entry>
+			<entry>
+				<string>Lot size</string>
+				<int>0</int>
+			</entry>
+			<entry>
+				<string>Category</string>
+				<string>INDEX</string>
+			</entry>
+			<entry>
+				<string>Exchange</string>
+				<string>SH</string>
+			</entry>
+			<entry>
+				<string>Market maximum lot</string>
+				<int>1000000</int>
+			</entry>
+			<entry>
+				<string>Symbol</string>
+				<string>999999.SH</string>
+			</entry>
+			<entry>
+				<string>ENName</string>
+				<null />
+			</entry>
+			<entry>
+				<string>CNName</string>
+				<string>上证指数</string>
+			</entry>
+			<entry>
+				<string>Ref symbol</string>
+				<string>999999.SH</string>
+			</entry>
+			<entry>
+				<string>TWName</string>
+				<string>上證指數</string>
+			</entry>
+			<entry>
+				<string>Spell name</string>
+				<string>szzs</string>
+			</entry>
+			<entry>
+				<string>Tick table</string>
+				<string>SC</string>
+			</entry>
+			<entry>
+				<string>Decimal point</string>
+				<int>2</int>
+			</entry>
+		</fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+		<fields>
+			<entry>
+				<string>Maximum hold</string>
+				<int>0</int>
+			</entry>
+			<entry>
+				<string>Price per unit</string>
+				<double>0.0</double>
+			</entry>
+			<entry>
+				<string>Index Session Type</string>
+				<string>SPOT</string>
+			</entry>
+			<entry>
+				<string>Strategy</string>
+				<string>INDEX</string>
+			</entry>
+			<entry>
+				<string>Limit maximum lot</string>
+				<int>1000000</int>
+			</entry>
+			<entry>
+				<string>Margin Rate</string>
+				<double>0.0</double>
+			</entry>
+			<entry>
+				<string>Code</string>
+				<string>399006</string>
+			</entry>
+			<entry>
+				<string>Lot size</string>
+				<int>0</int>
+			</entry>
+			<entry>
+				<string>Category</string>
+				<string>INDEX</string>
+			</entry>
+			<entry>
+				<string>Exchange</string>
+				<string>SZ</string>
+			</entry>
+			<entry>
+				<string>Market maximum lot</string>
+				<int>1000000</int>
+			</entry>
+			<entry>
+				<string>Symbol</string>
+				<string>399006.SZ</string>
+			</entry>
+			<entry>
+				<string>ENName</string>
+				<null />
+			</entry>
+			<entry>
+				<string>CNName</string>
+				<string>创业板指</string>
+			</entry>
+			<entry>
+				<string>Ref symbol</string>
+				<string>399006.SZ</string>
+			</entry>
+			<entry>
+				<string>TWName</string>
+				<string>創業板指</string>
+			</entry>
+			<entry>
+				<string>Spell name</string>
+				<string>cybz</string>
+			</entry>
+			<entry>
+				<string>Tick table</string>
+				<string>SC</string>
+			</entry>
+			<entry>
+				<string>Decimal point</string>
+				<int>2</int>
+			</entry>
+		</fields>
+	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+		<fields>
+			<entry>
+				<string>Maximum hold</string>
+				<int>0</int>
+			</entry>
+			<entry>
+				<string>Price per unit</string>
+				<double>0.0</double>
+			</entry>
+			<entry>
+				<string>Index Session Type</string>
+				<string>SPOT</string>
+			</entry>
+			<entry>
+				<string>Strategy</string>
+				<string>INDEX</string>
+			</entry>
+			<entry>
+				<string>Limit maximum lot</string>
+				<int>1000000</int>
+			</entry>
+			<entry>
+				<string>Margin Rate</string>
+				<double>0.0</double>
+			</entry>
+			<entry>
+				<string>Code</string>
+				<string>399001</string>
+			</entry>
+			<entry>
+				<string>Lot size</string>
+				<int>0</int>
+			</entry>
+			<entry>
+				<string>Category</string>
+				<string>INDEX</string>
+			</entry>
+			<entry>
+				<string>Exchange</string>
+				<string>SZ</string>
+			</entry>
+			<entry>
+				<string>Market maximum lot</string>
+				<int>1000000</int>
+			</entry>
+			<entry>
+				<string>Symbol</string>
+				<string>399001.SZ</string>
+			</entry>
+			<entry>
+				<string>ENName</string>
+				<null />
+			</entry>
+			<entry>
+				<string>CNName</string>
+				<string>深证成指</string>
+			</entry>
+			<entry>
+				<string>Ref symbol</string>
+				<string>399001.SZ</string>
+			</entry>
+			<entry>
+				<string>TWName</string>
+				<string>深證成指</string>
+			</entry>
+			<entry>
+				<string>Spell name</string>
+				<string>szcz</string>
+			</entry>
+			<entry>
+				<string>Tick table</string>
+				<string>SC</string>
+			</entry>
+			<entry>
+				<string>Decimal point</string>
+				<int>2</int>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>

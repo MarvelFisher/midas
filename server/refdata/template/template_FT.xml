@@ -181,10 +181,10 @@
 				<string>Category</string>
 				<string>FIMTX</string>
 			</entry>
-            <entry>
-                <string>Contract policy</string>
-                <string>TX</string>
-            </entry>
+			<entry>
+				<string>Contract policy</string>
+				<string>TX</string>
+			</entry>
 			<entry>
 				<string>Spot ENName</string>
 				<string>MTX</string>
