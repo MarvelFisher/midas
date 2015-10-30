@@ -64,6 +64,7 @@ public class OrderManager {
 	private HashMap<String, List<Execution>> executions = new HashMap<String, List<Execution>>();
 	private DualKeyMap<String, String, MultiInstrumentStrategyData> strategyData = new DualKeyMap<String, String, MultiInstrumentStrategyData>();
 	private DualKeyMap<String, String, Instrument> instruments = new DualKeyMap<String, String, Instrument>();
+	private List<String> removedOrders = new ArrayList<>();
 	private boolean publishChildOrder;
 
 	@Autowired
@@ -263,6 +264,7 @@ public class OrderManager {
 			archiveChildOrders.remove(parent.getId());
 			activeChildOrders.remove(parent.getId());
 			executions.remove(parent.getId());
+			removedOrders.add(parent.getId());
 		}
 		log.info("Reset account removes orders: " + map.size());
 	}
@@ -450,7 +452,8 @@ public class OrderManager {
 
 			ParentOrder old = parentOrders.get(newParent.getId());
 			if (old == null) {
-				log.error("Cant find parentOrder id during udpate: "
+				if (!removedOrders.contains(newParent.getId()))
+					log.error("Cant find parentOrder id during udpate: "
 						+ newParent.getId());
 				return;
 			}
