@@ -275,9 +275,6 @@
                   	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
-		               <with variable="RiskManager">
-		                  <equals value="ENABLED"></equals>        
-		               </with>
 		               <with variable="Trader">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
@@ -330,9 +327,6 @@
                   	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
-		               <with variable="RiskManager">
-		                  <equals value="ENABLED"></equals>        
-		               </with>
 		               <with variable="Trader">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
@@ -348,9 +342,6 @@
                   	   <with variable="Admin">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
-		               <with variable="RiskManager">
-		                  <equals value="ENABLED"></equals>        
-		               </with>
                   	</or>
             	  </visibleWhen>
             </command>
@@ -361,9 +352,6 @@
                   <visibleWhen checkEnabled="false">
                   	<or>
                   	   <with variable="Admin">
-		                  <equals value="ENABLED"></equals>        
-		               </with>
-		               <with variable="RiskManager">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
                   	</or>
@@ -377,9 +365,6 @@
                   <visibleWhen checkEnabled="false">
                   	<or>
                   	   <with variable="Admin">
-		                  <equals value="ENABLED"></equals>        
-		               </with>
-		               <with variable="RiskManager">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
 		               <with variable="Trader">
@@ -396,9 +381,6 @@
                   <visibleWhen checkEnabled="false">
                   	<or>
                   	   <with variable="Admin">
-		                  <equals value="ENABLED"></equals>        
-		               </with>
-		               <with variable="RiskManager">
 		                  <equals value="ENABLED"></equals>        
 		               </with>
 		               <with variable="Trader">
@@ -453,9 +435,6 @@
 	                  	   <with variable="Admin">
 			                  <equals value="ENABLED"></equals>        
 			               </with>
-			               <with variable="RiskManager">
-		                  	  <equals value="ENABLED"></equals>        
-		               	   </with>
 		                   <with variable="Trader">
 		                      <equals value="ENABLED"></equals>        
 		                   </with>
@@ -533,7 +512,7 @@
             </command>
             <command
                   commandId="CSTW.FrontRiskManager.Data"
-                  label="RWManager Data"
+                  label="RW Manager Data"
                   style="push">
                <visibleWhen
                      checkEnabled="false">
@@ -565,7 +544,7 @@
             </command>
             <command
                   commandId="CSTW.BackRiskManager.Data"
-                  label="BWManager Data"
+                  label="BW Manager Data"
                   style="push">
                <visibleWhen
                      checkEnabled="false">
