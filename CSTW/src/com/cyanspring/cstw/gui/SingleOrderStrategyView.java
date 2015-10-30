@@ -493,10 +493,10 @@ public class SingleOrderStrategyView extends ViewPart implements
 						value = tickDown(price);
 						break;
 					case SWT.ARROW_LEFT:
-						value = tickTenTimes(price);
-						break;
-					case SWT.ARROW_RIGHT:
 						value = tickMinusTenTimes(price);
+						break;
+					case SWT.ARROW_RIGHT:	
+						value = tickTenTimes(price);
 						break;
 					default:
 						break;
