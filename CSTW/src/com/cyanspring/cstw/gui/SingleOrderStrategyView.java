@@ -726,7 +726,10 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 	private void showQuickOrderStatus(boolean show) {
 		gdStatus.exclude = !show;
-		lbStatus.setVisible(show);
+		lbStatus.setVisible(show);	
+		if(!panelComposite.isVisible() && show)
+			panelComposite.setVisible(true);
+		
 		panelComposite.getParent().layout();
 	}
 

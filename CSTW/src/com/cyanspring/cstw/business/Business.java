@@ -287,6 +287,8 @@ public class Business {
 	}
 
 	public void init() throws Exception {
+		Version ver = new Version();
+		log.info(ver.getVersionDetails());
 		log.info("Initializing business obj...");
 		this.systemInfo = BeanHolder.getInstance().getSystemInfo();
 		this.user = Default.getUser();
