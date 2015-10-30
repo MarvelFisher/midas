@@ -604,7 +604,7 @@ public class CentralDbProcessor implements IPlugin
 			sqlcmd += String.format("('%s','%s','%s','%s',%d,%d)", 
 					userEn, market, groupIDEn, groupNameEn, ginfo.getSymbolCount(), groups.indexOf(ginfo));
 		}
-		sqlcmd += ";" ;
+		sqlcmd += "ON DUPLICATE KEY UPDATE `GROUP_NAME`=Values(GROUP_NAME);" ;
 		getDbhnd().updateSQL(sqlcmd);
 		userRequestGroupList(retEvent);
 	}
