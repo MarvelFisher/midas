@@ -253,16 +253,16 @@ public class WindDataParser extends AbstractWindDataParser {
         FutureData futureData = null;
         if (inputHashMap != null && inputHashMap.size() > 0) {
             String symbol = new String((byte[]) inputHashMap.get(FDTFields.WindSymbolCode), "UTF-8");
-            String exchange = null;
-            String code = null;
-            try {
-                code = symbol.split("\\.")[0];
-                exchange = symbol.split("\\.")[1];
-            }catch (Exception e){}
-            //if exchange is DCE/SHF , code convert lower case
-            if(exchange != null && code != null && ("DCE".equals(exchange) || "SHF".equals(exchange))){
-                symbol = code.toLowerCase() + "." + exchange;
-            }
+//            String exchange = null;
+//            String code = null;
+//            try {
+//                code = symbol.split("\\.")[0];
+//                exchange = symbol.split("\\.")[1];
+//            }catch (Exception e){}
+//            //if exchange is DCE/SHF , code convert lower case
+//            if(exchange != null && code != null && ("DCE".equals(exchange) || "SHF".equals(exchange))){
+//                symbol = code.toLowerCase() + "." + exchange;
+//            }
             if (futureDataBySymbolMap.containsKey(symbol)) {
                 futureData = futureDataBySymbolMap.get(symbol);
             } else {
