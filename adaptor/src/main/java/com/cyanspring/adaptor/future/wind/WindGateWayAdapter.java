@@ -814,6 +814,20 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
     }
 
     public void processMsgPackRead(HashMap hashMap) {
+        int packType = (int) hashMap.get(FDTFields.PacketType);
+        if (packType == FDTFields.PacketArray) {
+            ArrayList<HashMap> arrayList = (ArrayList<HashMap>) hashMap.get(FDTFields.ArrayOfPacket);
+            for (HashMap innerHashMap : arrayList) {
+                printMsgPackLog(innerHashMap);
+                processGateWayMessage(parsePackTypeToDataType((int) innerHashMap.get(FDTFields.PacketType), innerHashMap), null, innerHashMap);
+            }
+        } else {
+            printMsgPackLog(hashMap);
+            processGateWayMessage(parsePackTypeToDataType(packType, hashMap), null, hashMap);
+        }
+    }
+
+    public void printMsgPackLog(HashMap hashMap){
         if (marketDataLog){
             StringBuffer sb = new StringBuffer();
             for (Object key : hashMap.keySet()) {
@@ -830,15 +844,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
                 }
             }
             log.debug(sb.toString());
-        }
-        int packType = (int) hashMap.get(FDTFields.PacketType);
-        if (packType == FDTFields.PacketArray) {
-            ArrayList<HashMap> arrayList = (ArrayList<HashMap>) hashMap.get(FDTFields.ArrayOfPacket);
-            for (HashMap innerHashMap : arrayList) {
-                processGateWayMessage(parsePackTypeToDataType((int) innerHashMap.get(FDTFields.PacketType), innerHashMap), null, innerHashMap);
-            }
-        } else {
-            processGateWayMessage(parsePackTypeToDataType(packType, hashMap), null, hashMap);
         }
     }
 
