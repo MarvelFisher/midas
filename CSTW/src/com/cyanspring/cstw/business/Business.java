@@ -176,8 +176,8 @@ public class Business {
 				if (evt.isOk()) {
 					tickManager.init(getFirstServer());
 
-					if(null != loginAccount);
-						traderInfoListener.init(loginAccount);
+//					if(null != loginAccount);
+//						traderInfoListener.init(loginAccount);
 						
 				}
 				if (isLoginRequired() && evt.isOk()) {
