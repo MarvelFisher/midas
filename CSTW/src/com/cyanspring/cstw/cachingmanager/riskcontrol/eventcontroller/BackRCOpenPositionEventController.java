@@ -13,6 +13,7 @@ import com.cyanspring.cstw.service.localevent.riskmgr.OpenPositionSnapshotListRe
 import com.cyanspring.cstw.service.localevent.riskmgr.OpenPositionSnapshotListRequestLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.OpenPositionUpdateLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.caching.BackRCPositionUpdateCachingLocalEvent;
+import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCPositionUpdateCachingLocalEvent;
 import com.cyanspring.cstw.service.model.riskmgr.RCOpenPositionModel;
 
 /**
@@ -45,15 +46,15 @@ public class BackRCOpenPositionEventController implements IAsyncEventListener {
 	public void init() {
 		// 本地监听
 		business.getEventManager().subscribe(
-				BackRCPositionUpdateCachingLocalEvent.class, this);
+				FrontRCPositionUpdateCachingLocalEvent.class, this);
 		business.getEventManager().subscribe(
 				OpenPositionSnapshotListRequestLocalEvent.class, this);
 	}
 
 	@Override
 	public void onEvent(AsyncEvent event) {
-		if (event instanceof BackRCPositionUpdateCachingLocalEvent) {
-			BackRCPositionUpdateCachingLocalEvent updateLocalEvent = (BackRCPositionUpdateCachingLocalEvent) event;
+		if (event instanceof FrontRCPositionUpdateCachingLocalEvent) {
+			FrontRCPositionUpdateCachingLocalEvent updateLocalEvent = (FrontRCPositionUpdateCachingLocalEvent) event;
 			openPositionModelList = adapter
 					.getOpenPositionModelListByEvent(updateLocalEvent);
 			sendPositionUpdateEvent();

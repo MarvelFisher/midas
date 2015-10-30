@@ -47,23 +47,22 @@ public enum TableType {
 			100, 100, }, SWT.CENTER, true, false),
 	
 	// BW
-	BWPosition(new String[]{ "Account", "Instrument ID",
-			"Direction", "Quantity", "PNL", "Avg Price", }, new int[]{ 100, 100, 100, 100, 100, 100, }, SWT.CENTER, true, false),
-	
-	BWTradeRecord(new String[]{ "Account", "Trade ID", "Instrument ID",
-			"Trade Type", "Quantity", "Avg Price",
-			"Consideration", "Time", }, new int[]{ 100,
+	BWPosition(new String[] { "Instrument ID", "Direction", "Quantity", "PNL",
+			"Avg Price", }, new int[] { 100, 100, 100, 100, 100, }, SWT.CENTER,
+			true, false),
+
+	BWTradeRecord(new String[] { "Trade ID", "Instrument ID", "Trade Type",
+			"Quantity", "Avg Price", "Consideration", "Time", }, new int[] {
 			100, 100, 100, 100, 100, 100, 100, }, SWT.CENTER, true, false),
 	
-	BWInstrumentStatistics(new String[]{ "Account", "Instrument ID",
-			"Realized PNL", "Trades", "Total Quantity",
-			"Consideration", }, new int[]{ 100,
-			100, 100, 100, 100, 100, }, SWT.CENTER, true, false),
+	BWInstrumentStatistics(new String[] { "Instrument ID", "Realized PNL",
+			"Trades", "Total Quantity", "Consideration", }, new int[] { 100,
+			100, 100, 100, 100, }, SWT.CENTER, true, false),
 	
-	BWInstrumentSummary(new String[]{ "Account", "Instrument ID",
+	BWInstrumentSummary(new String[]{ "Instrument ID",
 			"Realized PNL", "Trades", "Total Quantity",
 			"Consideration" }, new int[]{ 100, 100, 100, 100,
-			100, 100, }, SWT.CENTER, true, false),
+			100, }, SWT.CENTER, true, false),
 	;
 
 	private String[] columnTiles;

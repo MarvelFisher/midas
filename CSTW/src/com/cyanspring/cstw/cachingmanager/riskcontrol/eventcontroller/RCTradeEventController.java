@@ -24,12 +24,12 @@ import com.cyanspring.cstw.service.model.riskmgr.RCTradeRecordModel;
  * @create date 2015/08/27
  *
  */
-public final class FrontRCTradeEventController implements IAsyncEventListener {
+public final class RCTradeEventController implements IAsyncEventListener {
 
 	private static final Logger log = LoggerFactory
-			.getLogger(FrontRCTradeEventController.class);
+			.getLogger(RCTradeEventController.class);
 
-	private static FrontRCTradeEventController instance;
+	private static RCTradeEventController instance;
 
 	private Business business;
 
@@ -37,14 +37,14 @@ public final class FrontRCTradeEventController implements IAsyncEventListener {
 
 	private IRCTradeEventAdaptor adaptor;
 
-	public static FrontRCTradeEventController getInstance() {
+	public static RCTradeEventController getInstance() {
 		if (instance == null) {
-			instance = new FrontRCTradeEventController();
+			instance = new RCTradeEventController();
 		}
 		return instance;
 	}
 
-	private FrontRCTradeEventController() {
+	private RCTradeEventController() {
 		business = Business.getInstance();
 		adaptor = EventAdaptorPool.getFrontRCTradeEventAdaptor();
 		tradeRecordModelList = new ArrayList<RCTradeRecordModel>();
