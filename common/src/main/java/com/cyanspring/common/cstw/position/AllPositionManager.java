@@ -19,6 +19,7 @@ import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.OverallPosition;
 import com.cyanspring.common.account.UserGroup;
+import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.IRemoteEventManager;
@@ -27,8 +28,15 @@ import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
 import com.cyanspring.common.event.account.OverAllPositionReplyEvent;
 import com.cyanspring.common.event.account.OverAllPositionRequestEvent;
+import com.cyanspring.common.event.order.AllStrategySnapshotReplyEvent;
+import com.cyanspring.common.event.order.AllStrategySnapshotRequestEvent;
+import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
+import com.cyanspring.common.type.OrdStatus;
+import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
+import com.cyanspring.common.util.TimeUtil;
+
 /**
  * 
  * @author jimmy
@@ -45,6 +53,8 @@ public class AllPositionManager implements IAsyncEventListener {
 	private ConcurrentHashMap<String, List<OverallPosition>> allPositionMap = new ConcurrentHashMap<String, List<OverallPosition>>();
 	private ConcurrentHashMap<String, List<OpenPosition>> openPositionMap = new ConcurrentHashMap<String, List<OpenPosition>>();
 	private ConcurrentHashMap<String, List<ClosedPosition>> closedPositionMap = new ConcurrentHashMap<String, List<ClosedPosition>>();
+	private ConcurrentHashMap<String,Map<String,ParentOrder>> orderMap = new ConcurrentHashMap<String,Map<String,ParentOrder>>();
+
 	private List<IPositionChangeListener> listenerList = new ArrayList<IPositionChangeListener>();
 
 	public AllPositionManager() {
@@ -77,6 +87,92 @@ public class AllPositionManager implements IAsyncEventListener {
 		}else if(event instanceof ClosedPositionUpdateEvent){
 			ClosedPositionUpdateEvent e = (ClosedPositionUpdateEvent) event;
 			updatePosition(e.getPosition(),true);
+		}else if(event instanceof AllStrategySnapshotReplyEvent){
+			AllStrategySnapshotReplyEvent e = (AllStrategySnapshotReplyEvent) event;
+			processAllStrategySnapshotReplyEvent(e);
+			refreshOverallPosition(null);
+		}else if(event instanceof ParentOrderUpdateEvent){
+			ParentOrderUpdateEvent e = (ParentOrderUpdateEvent) event;
+			updateOrder(e.getOrder());
+		}
+	}
+	
+	private void processAllStrategySnapshotReplyEvent(
+			AllStrategySnapshotReplyEvent event) {
+		if(!event.isOk()){
+			log.warn("processAllStrategySnapshotReplyEvent is not ok:{}",event.getMessage());
+			return;
+		}
+		updateOrder(event.getOrders());
+
+		if(null != loginUser && loginUser.isAdmin()){
+			eventManager.subscribe(ParentOrderUpdateEvent.class,this);
+		}else {
+			subGroupEvent(accountIdList);
+		}			
+	}
+	
+	synchronized private void updateOrder(List<ParentOrder> orders) {
+		if(null == orders || orders.isEmpty())
+			return ;
+		
+		
+		for(ParentOrder order : orders){
+			
+//			log.info("order symbol :{},state:{}, status:{} , cumqty:{}, time:{}",new Object[]{
+//					order.getSymbol()
+//					,order.getState()
+//					,order.getOrdStatus()
+//					,order.getCumQty()
+//					,order.getTimeModified()
+//			});
+			if(!TimeUtil.sameDate(TimeUtil.getOnlyDate(new Date()), order.getModified()))
+				continue;
+			
+			if(!order.getState().equals(StrategyState.Terminated)
+					|| !order.getOrdStatus().equals(OrdStatus.FILLED) 
+					|| !PriceUtils.GreaterThan(order.getCumQty(), 0)
+					){
+				continue;
+			}		
+			String account = order.getAccount();
+			log.info("receive order:{},{}",account,order.getId());
+			Map<String,ParentOrder> tempMap = null;
+
+			if(orderMap.containsKey(account)){
+				tempMap = orderMap.get(account);
+				if(null == tempMap)
+					tempMap = new HashMap<String,ParentOrder>();
+				else{
+					if(tempMap.containsKey(order.getId()))
+						continue;
+				}
+				
+				tempMap.put(order.getId(),order);
+				orderMap.put(account, tempMap);
+			}else{
+				tempMap = new HashMap<String,ParentOrder>();
+				tempMap.put(order.getId(),order);
+				orderMap.put(account, tempMap);
+			}
+		}
+	}
+	
+	synchronized public void updateOrder(ParentOrder order){
+		if( null == order)
+			return;
+		
+		List <ParentOrder> tmpList = new ArrayList<ParentOrder>();
+		tmpList.add(order);
+		updateOrder(tmpList);
+		refreshOverallPosition(order.getAccount());
+	}
+
+	private void subGroupEvent(List<String> accountList){
+		for(String id : accountList){
+			eventManager.unsubscribe(ParentOrderUpdateEvent.class, id, this);
+			eventManager.subscribe(ParentOrderUpdateEvent.class, id, this);
+			log.info("sub ParentOrderUpdateEvent:{}",id);
 		}
 	}
 	
@@ -167,7 +263,7 @@ public class AllPositionManager implements IAsyncEventListener {
 			log.info("account:{}",key);
 			List<OverallPosition> ops = allPositionMap.get(key);
 			for(OverallPosition op : ops){
-				log.info(" -all:{}, {}, {}, {}, {}, {}, {}, {}, {}"
+				log.info(" -all:{}, {}, {}, {}, {}, {}, {}, {}, {}, {}"
 						,new Object[]{op.getAccount()
 								,op.getUser()
 								,op.getSymbol()
@@ -176,7 +272,9 @@ public class AllPositionManager implements IAsyncEventListener {
 								,op.getSellPrice()
 								,op.getSellQty()
 								,op.getTotalQty()
-								,op.getQty()});
+								,op.getQty()
+								,op.getExecCount()
+						});
 			}
 		}
 	}
@@ -285,9 +383,29 @@ public class AllPositionManager implements IAsyncEventListener {
 			oap.setSellPrice(sellSum/totalSellQty);
 	
 		oap.setLastUpdate(new Date());
+		oap.setExecCount(getExeCount(account.getId(), symbol));
 		return oap;
 	}
 	
+	private double getExeCount(String id,String symbol) {
+		if(!StringUtils.hasText(id))
+			return 0;
+				
+		if(orderMap.containsKey(id)){
+			double count = 0;
+			Map<String,ParentOrder> tempMap = orderMap.get(id);
+			Iterator<ParentOrder> orders = tempMap.values().iterator();
+			while(orders.hasNext()){
+				ParentOrder order = orders.next();
+				if(order.getSymbol().equals(symbol)){
+					count++;
+				}
+			}
+			return count;
+		}
+		return 0;
+	}
+
 	synchronized private void refreshOverallPosition(String positionAccount) {
 		Set<String> idSet = new HashSet<String>();
 		
@@ -395,11 +513,23 @@ public class AllPositionManager implements IAsyncEventListener {
 		subEvent(OpenPositionUpdateEvent.class);
 		subEvent(OpenPositionDynamicUpdateEvent.class);
 		subEvent(ClosedPositionUpdateEvent.class);
-		if(null != loginUser && loginUser.isAdmin()){
-			requestOverAllPosition(null);
-			return;
+		subEvent(AllStrategySnapshotReplyEvent.class);
+		subEvent(ParentOrderUpdateEvent.class);
+
+		try {
+			if(null != loginUser && loginUser.isAdmin()){
+				eventManager.sendRemoteEvent(new AllStrategySnapshotRequestEvent(IdGenerator.getInstance().getNextID(),server, null));	
+				requestOverAllPosition(null);
+				return;
+			}else if(null != loginUser && loginUser.getRole().isManagerLevel()){
+				eventManager.sendRemoteEvent(new AllStrategySnapshotRequestEvent(IdGenerator.getInstance().getNextID(), server, accountIdList));
+			}	
+			
+			requestOverAllPosition(accountIdList);
+
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
 		}
-		requestOverAllPosition(accountIdList);
 	}
 	
 	public void unInit(){
@@ -407,6 +537,8 @@ public class AllPositionManager implements IAsyncEventListener {
 		unSubEvent(OpenPositionUpdateEvent.class);
 		unSubEvent(OpenPositionDynamicUpdateEvent.class);
 		unSubEvent(ClosedPositionUpdateEvent.class);
+		unSubEvent(AllStrategySnapshotReplyEvent.class);
+		unSubEvent(ParentOrderUpdateEvent.class);
 	}
 	
 	

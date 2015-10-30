@@ -83,7 +83,7 @@ public class OverallPosition implements Serializable, Cloneable {
 		return execCount;
 	}
 
-	void setExecCount(double execCount) {
+	public void setExecCount(double execCount) {
 		this.execCount = execCount;
 	}
 
