@@ -101,20 +101,31 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 
 		NumberFormat formatter = new DecimalFormat("##00");
 		for (int i = 0; i < num; i++) {
-			String month = lstContractMonth.get(i);
-			String y = month.substring(1, 2);
-			String m = month.substring(2);
+			String yyyymm = lstContractMonth.get(i);
+			String yymm = yyyymm.substring(2);
+			String y = yymm.substring(1, 2);
+			String m = yymm.substring(2);
 			String a = mapMonthAlphabet.get(m);
 			String seq = formatter.format(i);
 			RefData data = (RefData)refData.clone();
-			data.setENDisplayName(refData.getENDisplayName().replace(MONTH_PATTERN2, month));
-			data.setCNDisplayName(refData.getCNDisplayName().replace(MONTH_PATTERN2, month));
-			data.setTWDisplayName(refData.getTWDisplayName().replace(MONTH_PATTERN2, month));
+			data.setENDisplayName(refData.getENDisplayName().replace(MONTH_PATTERN2, yymm));
+			data.setCNDisplayName(refData.getCNDisplayName().replace(MONTH_PATTERN2, yymm));
+			data.setTWDisplayName(refData.getTWDisplayName().replace(MONTH_PATTERN2, yymm));
 			String symbol = refData.getSymbol();
-			symbol = symbol.replace(MONTH_PATTERN2, month); // except LTFT
+			symbol = symbol.replace(MONTH_PATTERN2, yymm); // except LTFT
 			symbol = symbol.replace(MONTH_PATTERN3, a + y); // only for LTFT, ex: C6 means 2016.03
 			data.setSymbol(symbol);
 			data.setRefSymbol(refData.getRefSymbol().replace(SEQ_PATTERN, seq));
+			String code = refData.getCode();
+			if (code != null) {
+				code = code.replace(MONTH_PATTERN1, yyyymm);
+				data.setCode(code);
+			}
+			String subscribeSymbol = refData.getSubscribeSymbol();
+			if (subscribeSymbol != null) {
+				subscribeSymbol = subscribeSymbol.replace(MONTH_PATTERN1, yyyymm);
+				data.setSubscribeSymbol(subscribeSymbol);
+			}
 			lstRefData.add(data);
 		}
 
