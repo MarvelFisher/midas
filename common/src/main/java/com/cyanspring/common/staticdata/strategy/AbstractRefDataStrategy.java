@@ -6,11 +6,13 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketsession.IndexSessionType;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
@@ -31,8 +33,24 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 	private MarketSessionUtil marketSessionUtil;
 	private Calendar cal;
     private final String CONTRACT_POLICY_PACKAGE = "com.cyanspring.common.staticdata.policy";
-    private final String MONTH_PATTERN = "${YYMM}";
+    private final String MONTH_PATTERN1 = "${YYYYMM}";
+    private final String MONTH_PATTERN2 = "${YYMM}";
+    private final String MONTH_PATTERN3 = "${MY}";
     private final String SEQ_PATTERN = "${SEQ}";
+    private final Map<Integer, String> mapMonthAlphabet = new HashMap<Integer, String>(){{
+    		put(0, "A"); // Jan
+    		put(1, "B"); // Feb
+    		put(2, "C"); // Mar
+    		put(3, "D"); // Apr
+    		put(4, "E"); // May
+    		put(5, "F"); // Jun
+    		put(6, "G"); // Jul
+    		put(7, "H"); // Aug
+    		put(8, "I"); // Sep
+    		put(9, "J"); // Oct
+    		put(10, "K"); // Nov
+    		put(11, "L"); // Dec
+    	}};
     Map<String, Quote> mapHot;
 
 	@Override
@@ -82,12 +100,18 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		NumberFormat formatter = new DecimalFormat("##00");
 		for (int i = 0; i < num; i++) {
 			String month = lstContractMonth.get(i);
+			String y = month.substring(1, 2);
+			int m = Integer.parseInt(month.substring(2)) - 1;
+			String a = mapMonthAlphabet.get(m);
 			String seq = formatter.format(i);
 			RefData data = (RefData)refData.clone();
-			data.setENDisplayName(refData.getENDisplayName().replace(MONTH_PATTERN, month));
-			data.setCNDisplayName(refData.getCNDisplayName().replace(MONTH_PATTERN, month));
-			data.setTWDisplayName(refData.getTWDisplayName().replace(MONTH_PATTERN, month));
-			data.setSymbol(refData.getSymbol().replace(MONTH_PATTERN, month));
+			data.setENDisplayName(refData.getENDisplayName().replace(MONTH_PATTERN2, month));
+			data.setCNDisplayName(refData.getCNDisplayName().replace(MONTH_PATTERN2, month));
+			data.setTWDisplayName(refData.getTWDisplayName().replace(MONTH_PATTERN2, month));
+			String symbol = refData.getSymbol();
+			symbol = symbol.replace(MONTH_PATTERN2, month); // except LTFT
+			symbol = symbol.replace(MONTH_PATTERN3, a + y); // only for LTFT, ex: C6 means 2016.03
+			data.setSymbol(symbol);
 			data.setRefSymbol(refData.getRefSymbol().replace(SEQ_PATTERN, seq));
 			lstRefData.add(data);
 		}

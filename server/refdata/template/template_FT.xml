@@ -3,7 +3,7 @@
 		<fields>
 			<entry>
 				<string>Symbol</string>
-				<string>TXFJ5</string>
+				<string>TXF${MY}</string>
 			</entry>
 			<entry>
 				<string>Desc</string>
@@ -19,15 +19,15 @@
 			</entry>
 			<entry>
 				<string>ENName</string>
-				<string>FITX1510</string>
+				<string>FITX${YYMM}</string>
 			</entry>
 			<entry>
 				<string>TWName</string>
-				<string>臺指1510</string>
+				<string>臺指${YYMM}</string>
 			</entry>
 			<entry>
 				<string>CNName</string>
-				<string>臺指1510</string>
+				<string>臺指${YYMM}</string>
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
@@ -55,11 +55,11 @@
 			</entry>
 			<entry>
 				<string>Code</string>
-				<string>ICE.TWF.FITX.201510</string>
+				<string>ICE.TWF.FITX.${YYYYMM}</string>
 			</entry>
 			<entry>
 				<string>Subscribe symbol</string>
-				<string>ICE.TWF.FITX.201510</string>
+				<string>ICE.TWF.FITX.${YYYYMM}</string>
 			</entry>
 			<entry>
 				<string>IType</string>
@@ -147,7 +147,7 @@
 		<fields>
 			<entry>
 				<string>Symbol</string>
-				<string>MXFJ5</string>
+				<string>MXF${MY}</string>
 			</entry>
 			<entry>
 				<string>Desc</string>
@@ -163,15 +163,15 @@
 			</entry>
 			<entry>
 				<string>ENName</string>
-				<string>FIMTX1510</string>
+				<string>FIMTX${YYMM}</string>
 			</entry>
 			<entry>
 				<string>TWName</string>
-				<string>小臺1510</string>
+				<string>小臺${YYMM}</string>
 			</entry>
 			<entry>
 				<string>CNName</string>
-				<string>小台1510</string>
+				<string>小台${YYMM}</string>
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
@@ -199,11 +199,11 @@
 			</entry>
 			<entry>
 				<string>Code</string>
-				<string>ICE.TWF.FIMTX.201510</string>
+				<string>ICE.TWF.FIMTX.${YYYYMM}</string>
 			</entry>
 			<entry>
 				<string>Subscribe symbol</string>
-				<string>ICE.TWF.FIMTX.201510</string>
+				<string>ICE.TWF.FIMTX.${YYYYMM}</string>
 			</entry>
 			<entry>
 				<string>IType</string>
