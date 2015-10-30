@@ -84,7 +84,8 @@ public class AllPositionManager implements IAsyncEventListener {
 			List<ClosedPosition> closedPositionList) {
 		closedPositionMap.clear();
 		for(ClosedPosition pos : closedPositionList){
-			log.info(" update close pos:{},{},{},{},{}",new Object[]{pos.getSymbol(),pos.getQty(),pos.getPnL(),pos.getBuyPrice(),pos.getSellPrice()});
+			log.info(" update close pos:{},{},{},{},{},{}"
+					,new Object[]{pos.getSymbol(),pos.getQty(),pos.getPnL(),pos.getBuyPrice(),pos.getSellPrice(),pos.isBuy()});
 			updatePosition(pos,false);
 		}		
 	}
@@ -92,7 +93,8 @@ public class AllPositionManager implements IAsyncEventListener {
 	private void updateOpenPositionList(List<OpenPosition> openPositionList) {
 		openPositionMap.clear();
 		for(OpenPosition pos : openPositionList){
-			log.info(" update open pos:{},{},{},{}",new Object[]{pos.getSymbol(),pos.getQty(),pos.getPnL(),pos.getPrice()});
+			log.info(" update open pos:{},{},{},{},{}"
+					,new Object[]{pos.getSymbol(),pos.getQty(),pos.getPnL(),pos.getPrice(),pos.isBuy()});
 			updatePosition(pos,false);
 		}
 	}
@@ -231,28 +233,24 @@ public class AllPositionManager implements IAsyncEventListener {
 	public OverallPosition toOverallPosition(Account account,String symbol,List<OpenPosition> opList, List<ClosedPosition> cpList){
 		OverallPosition oap = new OverallPosition(account.getUserId(),account.getId(),"",symbol);
 		
+		double totalBuyQty = 0;
+		double totalSellQty = 0;
+		double buySum = 0;
+		double sellSum = 0;
 		for(OpenPosition op : opList){
 			if(!op.getSymbol().equals(symbol))
 				continue;
 			
-			double qty = op.getQty();
+			double qty = Math.abs(op.getQty());
 			double price = op.getPrice();
-			if(op.isBuy()){
-				if(PriceUtils.isZero(oap.getBuyPrice()))
-					oap.setBuyPrice(price);
-				else
-					oap.setBuyPrice((oap.getBuyPrice()+price)/2);
-				
-				oap.setBuyQty(oap.getBuyQty()+Math.abs(qty));
-				
+			if(op.isBuy()){		
+				oap.setBuyQty(oap.getBuyQty()+qty);
+				totalBuyQty += qty;
+				buySum += (qty*price);
 			}else{
-				if(PriceUtils.isZero(oap.getSellPrice()))
-					oap.setSellPrice(price);
-				else
-					oap.setSellPrice((oap.getSellPrice()+price)/2);
-				
-				oap.setSellQty(oap.getSellQty()+Math.abs(qty));
-				
+				oap.setSellQty(oap.getSellQty()+qty);
+				totalSellQty += qty;
+				sellSum += (qty*price);
 			}
 			
 			oap.setPnL(op.getPnL()+oap.getPnL());
@@ -263,26 +261,29 @@ public class AllPositionManager implements IAsyncEventListener {
 			if(!cp.getSymbol().equals(symbol))
 				continue;
 			
-			double qty = cp.getQty();
+			double qty = Math.abs(cp.getQty());
+			sellSum += (qty*cp.getBuyPrice());
+			buySum += (qty*cp.getSellPrice());
+			totalBuyQty += Math.abs(qty);
+			totalSellQty += Math.abs(qty);
 			
-			if(PriceUtils.isZero(oap.getBuyPrice()))
-				oap.setBuyPrice(cp.getBuyPrice());
-			else
-				oap.setBuyPrice((oap.getBuyPrice()+cp.getBuyPrice())/2);
-			
-			if(PriceUtils.isZero(oap.getSellPrice()))
-				oap.setSellPrice(cp.getSellPrice());
-			else
-				oap.setSellPrice((oap.getSellPrice()+cp.getSellPrice())/2);
-			
-			if(cp.isBuy())
-				oap.setBuyQty(oap.getBuyQty()+Math.abs(qty));
-			else
-				oap.setSellQty(oap.getSellQty()+Math.abs(qty));
-
+			oap.setBuyQty(oap.getBuyQty()+qty);
+			oap.setSellQty(oap.getSellQty()+qty);
 			oap.setPnL(cp.getPnL()+oap.getPnL());
-
 		}
+//		log.info("buysum:{} , totalBuyQty:{} , sellsum:{}, totalSellQty:{}"
+//				,new Object[]{buySum,totalBuyQty,sellSum,totalSellQty});
+		
+		if(PriceUtils.isZero(buySum) || PriceUtils.isZero(totalBuyQty))
+			oap.setBuyPrice(0);
+		else
+			oap.setBuyPrice(buySum/totalBuyQty);
+		
+		if(PriceUtils.isZero(sellSum) || PriceUtils.isZero(totalSellQty))
+			oap.setSellPrice(0);
+		else
+			oap.setSellPrice(sellSum/totalSellQty);
+	
 		oap.setLastUpdate(new Date());
 		return oap;
 	}

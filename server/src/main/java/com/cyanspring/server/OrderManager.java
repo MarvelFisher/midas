@@ -363,7 +363,7 @@ public class OrderManager {
 			executions.remove(parent.getId());
 			removedOrders.add(parent.getId());
 		}
-		log.info("Reset account removes orders: " + map.size());
+		log.info("Reset account removes orders: " + map.size() + ", account: " + account);
 	}
 
 	public void processChildOrderSnapshotRequestEvent(

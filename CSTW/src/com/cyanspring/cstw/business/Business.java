@@ -176,8 +176,8 @@ public class Business {
 				if (evt.isOk()) {
 					tickManager.init(getFirstServer());
 
-					if(null != loginAccount);
-						traderInfoListener.init(loginAccount);
+//					if(null != loginAccount);
+//						traderInfoListener.init(loginAccount);
 						
 				}
 				if (isLoginRequired() && evt.isOk()) {
@@ -287,6 +287,8 @@ public class Business {
 	}
 
 	public void init() throws Exception {
+		Version ver = new Version();
+		log.info(ver.getVersionDetails());
 		log.info("Initializing business obj...");
 		this.systemInfo = BeanHolder.getInstance().getSystemInfo();
 		this.user = Default.getUser();
