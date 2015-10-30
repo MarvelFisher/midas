@@ -1678,7 +1678,7 @@ public class AccountPositionManager implements IPlugin {
 				}
 			}
 			TradingUtil.closeAllPositoinAndOrder(account, positionKeeper, eventManager, true,
-					OrderReason.CompanyStopLoss, riskOrderController);
+					OrderReason.CompanyDailyStopLoss, riskOrderController);
 			return true;
 		}
 
