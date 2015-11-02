@@ -48,6 +48,7 @@ public class TickTableManager {
 			tempData.setSymbol(refData.getSymbol());
 			tempData.setDecimalPoint(refData.getDeciamlPoint());
 			tempData.setCode(refData.getCode());
+			tempData.setPricePerUnit(refData.getPricePerUnit());
 			if(map.containsKey(table)){
 				tempList = map.get(table);
 				if( null != tempList){

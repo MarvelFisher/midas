@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011-2012 Cyan Spring Limited
+' * Copyright (c) 2011-2012 Cyan Spring Limited
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms specified by license file attached.
  * 
@@ -654,6 +654,10 @@ public class Business {
 		return tickManager.getRefDataList();
 	}
 
+	public Map<String,RefData> getRefDataMap() {
+		return tickManager.getRefDataMap();
+	}
+	
 	public SignalType getSignal(String symbol, double scale) {
 		return signalManager.getSignal(symbol, scale);
 	}

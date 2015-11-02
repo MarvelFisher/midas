@@ -101,6 +101,19 @@ public class TickManager implements IAsyncEventListener {
 		return tempList;	
 	}
 	
+	public Map<String,RefData> getRefDataMap(){
+		List<RefData> tempList = getRefDataList();
+		if( null == tempList || tempList.isEmpty())
+			return null;
+		
+		Map<String,RefData> tempMap = new <String,RefData>HashMap();
+		for(RefData refData : tempList){
+			tempMap.put(refData.getSymbol(), refData);
+		}
+		
+		return tempMap;
+	}
+	
 	public Ticker getTicker(String symbol){
 		Iterator<AbstractTickTable> table = tickMap.keySet().iterator();
 		while(table.hasNext()){
