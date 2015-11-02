@@ -11,6 +11,7 @@ import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
@@ -26,6 +27,7 @@ public class TickManager implements IAsyncEventListener {
 			.getLogger(TickManager.class);
 	private IRemoteEventManager eventManager;
 	private Map<AbstractTickTable, List<RefData>> tickMap = new HashMap<AbstractTickTable, List<RefData>>();
+	private Map<String,RefData> refDataMap = new HashMap<String,RefData>();
 	private String firstServer = "";
 
 	public TickManager(IRemoteEventManager eventManager) {
@@ -101,17 +103,25 @@ public class TickManager implements IAsyncEventListener {
 		return tempList;	
 	}
 	
+	public RefData getRefData(String symbol){
+		if(null !=refDataMap && StringUtils.hasText(symbol))
+			return refDataMap.get(symbol.trim());
+		else 
+			return null;
+	}
+	
 	public Map<String,RefData> getRefDataMap(){
 		List<RefData> tempList = getRefDataList();
 		if( null == tempList || tempList.isEmpty())
 			return null;
 		
-		Map<String,RefData> tempMap = new <String,RefData>HashMap();
-		for(RefData refData : tempList){
-			tempMap.put(refData.getSymbol(), refData);
+		if( null == refDataMap || refDataMap.isEmpty()){
+			for(RefData refData : tempList){
+				refDataMap.put(refData.getSymbol(), refData);
+			}
 		}
-		
-		return tempMap;
+			
+		return refDataMap;
 	}
 	
 	public Ticker getTicker(String symbol){

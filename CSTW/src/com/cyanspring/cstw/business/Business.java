@@ -654,6 +654,10 @@ public class Business {
 		return tickManager.getRefDataList();
 	}
 
+	public RefData getRefData(String symbol){
+		return tickManager.getRefDataMap().get(symbol);
+	}
+	
 	public Map<String,RefData> getRefDataMap() {
 		return tickManager.getRefDataMap();
 	}
