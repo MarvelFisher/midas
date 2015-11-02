@@ -43,7 +43,7 @@ public class RWMainOrderComposite extends BasicComposite {
 		pendingOrderTable.setLayoutData(gd_pendingOrderHistoryComposite);
 
 		Label lblActivity = new Label(this, SWT.NONE);
-		lblActivity.setText("Active Log: ");
+		lblActivity.setText("Completed Order: ");
 
 		activityOrderTable = new RWActivityOrderTableComposite(this, SWT.NONE, service);
 		GridData gd_activityOrderHistoryComposite = new GridData(SWT.FILL,
