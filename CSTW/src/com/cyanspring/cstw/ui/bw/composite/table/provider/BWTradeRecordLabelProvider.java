@@ -2,6 +2,7 @@ package com.cyanspring.cstw.ui.bw.composite.table.provider;
 
 import com.cyanspring.cstw.service.model.riskmgr.RCTradeRecordModel;
 import com.cyanspring.cstw.ui.basic.DefaultLabelProviderAdapter;
+import com.cyanspring.cstw.ui.utils.LTWStringUtils;
 
 /**
  * @author Junfeng
@@ -24,7 +25,7 @@ public class BWTradeRecordLabelProvider extends DefaultLabelProviderAdapter {
 		case 4:
 			return model.getPrice().toString();
 		case 5:
-			return model.getTotalPrice().toString();
+			return LTWStringUtils.doubleToString(model.getTotalPrice());
 		case 6:
 			return model.getTradeTime();
 		default:

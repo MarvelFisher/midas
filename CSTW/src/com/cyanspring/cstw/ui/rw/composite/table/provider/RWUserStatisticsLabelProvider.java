@@ -5,6 +5,7 @@ package com.cyanspring.cstw.ui.rw.composite.table.provider;
 
 import com.cyanspring.cstw.service.model.riskmgr.RCUserStatisticsModel;
 import com.cyanspring.cstw.ui.basic.DefaultLabelProviderAdapter;
+import com.cyanspring.cstw.ui.utils.LTWStringUtils;
 
 /**
  * @author Yu-Junfeng
@@ -21,9 +22,9 @@ public class RWUserStatisticsLabelProvider extends
 		case 0:
 			return model.getTrader();
 		case 1:
-			return model.getRealizedProfit().toString();
+			return LTWStringUtils.doubleToString(model.getRealizedProfit());
 		case 2:
-			return model.getTurnover().toString();
+			return LTWStringUtils.doubleToString(model.getTurnover());
 		default:
 			return "";			
 		}

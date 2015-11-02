@@ -5,6 +5,7 @@ package com.cyanspring.cstw.ui.rw.composite.table.provider;
 
 import com.cyanspring.cstw.service.model.riskmgr.RCInstrumentModel;
 import com.cyanspring.cstw.ui.basic.DefaultLabelProviderAdapter;
+import com.cyanspring.cstw.ui.utils.LTWStringUtils;
 
 /**
  * @author Yu-Junfeng
@@ -19,13 +20,13 @@ public class RWInstrumentSummaryLabelProvider extends DefaultLabelProviderAdapte
 		case 0:
 			return model.getSymbol();
 		case 1:
-			return model.getRealizedProfit().toString();
+			return LTWStringUtils.doubleToString(model.getRealizedProfit());
 		case 2:
 			return model.getTrades().toString();
 		case 3:
 			return model.getVolume().toString();
 		case 4:
-			return model.getTurnover().toString();
+			return LTWStringUtils.doubleToString(model.getTurnover());
 		default:
 			return "";			
 		}
