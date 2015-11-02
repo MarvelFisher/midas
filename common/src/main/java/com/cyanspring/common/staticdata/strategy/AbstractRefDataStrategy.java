@@ -33,9 +33,10 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 	private MarketSessionUtil marketSessionUtil;
 	private Calendar cal;
     private final String CONTRACT_POLICY_PACKAGE = "com.cyanspring.common.staticdata.policy";
-    private final String MONTH_PATTERN1 = "${YYYYMM}";
-    private final String MONTH_PATTERN2 = "${YYMM}";
-    private final String MONTH_PATTERN3 = "${MY}";
+    private final String MONTH_PATTERN_YYYYMM = "${YYYYMM}";
+    private final String MONTH_PATTERN_YYMM = "${YYMM}";
+    private final String MONTH_PATTERN_YMM = "${YMM}";
+    private final String MONTH_PATTERN_MY = "${MY}";
     private final String SEQ_PATTERN = "${SEQ}";
 	private final Map<String, String> mapMonthAlphabet = new HashMap<String, String>() {
 		{
@@ -103,27 +104,29 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		for (int i = 0; i < num; i++) {
 			String yyyymm = lstContractMonth.get(i);
 			String yymm = yyyymm.substring(2);
+			String ymm = yyyymm.substring(3);
 			String y = yymm.substring(1, 2);
 			String m = yymm.substring(2);
 			String a = mapMonthAlphabet.get(m);
 			String seq = formatter.format(i);
 			RefData data = (RefData)refData.clone();
-			data.setENDisplayName(refData.getENDisplayName().replace(MONTH_PATTERN2, yymm));
-			data.setCNDisplayName(refData.getCNDisplayName().replace(MONTH_PATTERN2, yymm));
-			data.setTWDisplayName(refData.getTWDisplayName().replace(MONTH_PATTERN2, yymm));
+			data.setENDisplayName(refData.getENDisplayName().replace(MONTH_PATTERN_YYMM, yymm));
+			data.setCNDisplayName(refData.getCNDisplayName().replace(MONTH_PATTERN_YYMM, yymm));
+			data.setTWDisplayName(refData.getTWDisplayName().replace(MONTH_PATTERN_YYMM, yymm));
 			String symbol = refData.getSymbol();
-			symbol = symbol.replace(MONTH_PATTERN2, yymm); // except LTFT
-			symbol = symbol.replace(MONTH_PATTERN3, a + y); // only for LTFT, ex: C6 means 2016.03
+			symbol = symbol.replace(MONTH_PATTERN_YYMM, yymm);
+			symbol = symbol.replace(MONTH_PATTERN_YMM, ymm); // for exchange CZC
+			symbol = symbol.replace(MONTH_PATTERN_MY, a + y); // for LTFT, ex: C6 means 2016.03
 			data.setSymbol(symbol);
 			data.setRefSymbol(refData.getRefSymbol().replace(SEQ_PATTERN, seq));
 			String code = refData.getCode();
 			if (code != null) {
-				code = code.replace(MONTH_PATTERN1, yyyymm);
+				code = code.replace(MONTH_PATTERN_YYYYMM, yyyymm);
 				data.setCode(code);
 			}
 			String subscribeSymbol = refData.getSubscribeSymbol();
 			if (subscribeSymbol != null) {
-				subscribeSymbol = subscribeSymbol.replace(MONTH_PATTERN1, yyyymm);
+				subscribeSymbol = subscribeSymbol.replace(MONTH_PATTERN_YYYYMM, yyyymm);
 				data.setSubscribeSymbol(subscribeSymbol);
 			}
 			lstRefData.add(data);
