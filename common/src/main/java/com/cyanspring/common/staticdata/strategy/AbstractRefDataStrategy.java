@@ -132,17 +132,13 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 				data.setSubscribeSymbol(subscribeSymbol);
 			}
 			// Update hot RefData instrument type based on the volume last day
-			long instrumentType = refData.getInstrumentType();
-			if (instrumentType > 0) {
-				data.setInstrumentType(instrumentType);
-				if (qMap != null && qMap.size() > 0) {
-					Quote q = qMap.get(symbol);
-					if (q != null) {
-						double vol = q.getTotalVolume();
-						if (vol > highestVolume) {
-							highestVolume = vol;
-							hotOne = data;
-						}
+			if (qMap != null && qMap.size() > 0) {
+				Quote q = qMap.get(symbol);
+				if (q != null) {
+					double vol = q.getTotalVolume();
+					if (vol > highestVolume) {
+						highestVolume = vol;
+						hotOne = data;
 					}
 				}
 			}

@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -102,18 +103,32 @@ public class LIVECFStrategy extends AbstractRefDataStrategy {
 
     @Override
     public List<RefData> updateRefData(RefData refData) {
-    	String refSymbol = refData.getRefSymbol();
-        if (near1List.contains(refSymbol)) {
-        	refData.setSettlementDate(n0.settlementDay);
-        } else if (near2List.contains(refSymbol)){
-        	refData.setSettlementDate(n1.settlementDay);
-        } else if (season1List.contains(refSymbol)){
-        	refData.setSettlementDate(f0.settlementDay);
-        } else if (season2List.contains(refSymbol)){
-        	refData.setSettlementDate(f1.settlementDay);
-        }
+    	List<RefData> lstRefData = super.updateRefData(refData);
+		try {
+			for (RefData data : lstRefData) {
+				String enName = data.getENDisplayName();
+				if (enName != null && enName.length() > 4) {
+					String yymm = enName.substring(enName.length() - 4);
+					Date d = new SimpleDateFormat("yyMM").parse(yymm);
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(d);
+			    	String refSymbol = data.getRefSymbol();
+			        if (near1List.contains(refSymbol)) {
+			        	data.setSettlementDate(n0.settlementDay);
+			        } else if (near2List.contains(refSymbol)){
+			        	data.setSettlementDate(n1.settlementDay);
+			        } else if (season1List.contains(refSymbol)){
+			        	data.setSettlementDate(f0.settlementDay);
+			        } else if (season2List.contains(refSymbol)){
+			        	data.setSettlementDate(f1.settlementDay);
+			        }
+				}
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
 
-        return super.updateRefData(refData);
+		return lstRefData;
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.cyanspring.common.staticdata.strategy;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -22,15 +24,24 @@ public class DCEStrategy extends AbstractRefDataStrategy {
 
     @Override
     public List<RefData> updateRefData(RefData refData) {
+    	List<RefData> lstRefData = super.updateRefData(refData);
 		try {
-			Calendar cal = Calendar.getInstance();
-			refData.setSettlementDate(RefDataUtil.calSettlementDateByTradeDate(refData, cal,10));
-			refData.setIndexSessionType(getIndexSessionType(refData));
+			for (RefData data : lstRefData) {
+				String enName = data.getENDisplayName();
+				if (enName != null && enName.length() > 4) {
+					String yymm = enName.substring(enName.length() - 4);
+					Date d = new SimpleDateFormat("yyMM").parse(yymm);
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(d);
+					data.setSettlementDate(RefDataUtil.calSettlementDateByTradeDate(data, cal,10));
+					data.setIndexSessionType(getIndexSessionType(data));
+				}
+			}
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
 		}
 
-		return super.updateRefData(refData);
+		return lstRefData;
     }
 
     @Override

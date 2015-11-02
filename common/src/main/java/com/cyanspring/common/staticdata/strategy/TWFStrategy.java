@@ -1,6 +1,8 @@
 package com.cyanspring.common.staticdata.strategy;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -48,12 +50,25 @@ public class TWFStrategy extends AbstractRefDataStrategy {
 
 	@Override
 	public List<RefData> updateRefData(RefData refData) {
-		Calendar cal = Calendar.getInstance();
-		refData.setSettlementDate(RefDataUtil.calSettlementDateByWeekDay(
-				refData, cal, weekOfMonth, dayOfWeek));
-		refData.setIndexSessionType(getIndexSessionType(refData));
+		List<RefData> lstRefData = super.updateRefData(refData);
+		try {
+			for (RefData data : lstRefData) {
+				String enName = data.getENDisplayName();
+				if (enName != null && enName.length() > 4) {
+					String yymm = enName.substring(enName.length() - 4);
+					Date d = new SimpleDateFormat("yyMM").parse(yymm);
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(d);
+					data.setSettlementDate(RefDataUtil.calSettlementDateByWeekDay(
+							data, cal, weekOfMonth, dayOfWeek));
+					data.setIndexSessionType(getIndexSessionType(data));
+				}
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
 
-		return super.updateRefData(refData);
+		return lstRefData;
 	}
 
 	@Override
