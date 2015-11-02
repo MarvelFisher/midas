@@ -243,6 +243,21 @@ public class AccountPositionManager implements IPlugin {
             return quote;
         }
     };
+    
+    private AsyncEventProcessor quoteProcessor = new AsyncEventProcessor() {
+
+		@Override
+		public void subscribeToEvents() {
+            subscribeToEvent(QuoteEvent.class, null);
+            subscribeToEvent(QuoteExtEvent.class, null);			
+		}
+
+		@Override
+		public IAsyncEventManager getEventManager() {
+			return eventManager;
+		}
+    	
+    };
 
     private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -253,8 +268,6 @@ public class AccountPositionManager implements IPlugin {
             subscribeToEvent(CreateUserEvent.class, null);
             subscribeToEvent(CreateAccountEvent.class, null);
             subscribeToEvent(AccountSnapshotRequestEvent.class, null);
-            subscribeToEvent(QuoteEvent.class, null);
-            subscribeToEvent(QuoteExtEvent.class, null);
             subscribeToEvent(MarketDataReadyEvent.class, null);
             subscribeToEvent(AccountSettingSnapshotRequestEvent.class, null);
             subscribeToEvent(ChangeAccountSettingRequestEvent.class, null);
@@ -374,7 +387,13 @@ public class AccountPositionManager implements IPlugin {
         if (eventProcessor.getThread() != null) {
 			eventProcessor.getThread().setName("AccountPositionManager");
 		}
-
+ 
+        quoteProcessor.setHandler(this);
+        quoteProcessor.init();
+        if (quoteProcessor.getThread() != null) {
+        	quoteProcessor.getThread().setName("AccountPositionManager(quote)");
+		}
+        
         eventMultiProcessor.setHandler(this);
         eventMultiProcessor.setHash(true);
         eventMultiProcessor.init();
@@ -498,6 +517,7 @@ public class AccountPositionManager implements IPlugin {
     public void uninit() {
         positionKeeper.setListener(null);
         scheduleManager.uninit();
+        quoteProcessor.uninit();
         eventProcessor.uninit();
         timerProcessor.uninit();
         eventMultiProcessor.uninit();

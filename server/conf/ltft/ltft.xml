@@ -250,10 +250,10 @@
 			<value>true</value>
 		</property>
 		<property name="cancelAllOrdersAtClose">
-			<value>true</value>
+			<value>false</value>
 		</property>
 		<property name="closeAllPositionsAtClose">
-            <value>true</value>
+            <value>false</value>
         </property>
 	</bean>
 
