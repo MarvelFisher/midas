@@ -1,5 +1,11 @@
 package com.cyanspring.cstw.ui.basic;
 
+import java.text.Collator;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
+
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -7,6 +13,7 @@ import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -95,7 +102,7 @@ public abstract class BasicTableComposite extends Composite {
 			initColumnTitle(column, i);
 			initTableColumnWidth(column, i);
 			if (tableType.isSortable()) {
-				TableUtils.addSorter(table, column);
+				TableUtils.addSorter(tableViewer, column);
 			}
 			BasicEditingSupport editingSupport = getEditingSupport(i);
 			if (editingSupport != null) {
@@ -231,7 +238,29 @@ public abstract class BasicTableComposite extends Composite {
 				});
 	}
 
-	public void setInput(Object input) {
+	public void setInput(List<?> input) {
+		// 判断当前Table是否需要排序。
+		if (input != null && tableViewer.getTable().getSortColumn() != null) {
+			String text = tableViewer.getTable().getSortColumn().getText();
+			final int columnIndex = tableType.getColumnIndex(text);
+			final int direction = tableViewer.getTable().getSortDirection();
+			final ITableLabelProvider provider = (ITableLabelProvider) tableViewer
+					.getLabelProvider();
+			Collections.sort(input, new Comparator<Object>() {
+				@Override
+				public int compare(Object o1, Object o2) {
+					String s1 = provider.getColumnText(o1, columnIndex);
+					String s2 = provider.getColumnText(o2, columnIndex);
+					Collator comparator = Collator.getInstance(Locale
+							.getDefault());
+					if (direction == SWT.UP) {
+						return comparator.compare(s1, s2);
+					} else {
+						return comparator.compare(s1, s2) * -1;
+					}
+				}
+			});
+		}
 		tableViewer.setInput(input);
 	}
 
