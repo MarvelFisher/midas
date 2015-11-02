@@ -17,6 +17,9 @@
 	<import resource="view/TraderPropertyView.xml" />
 	<import resource="view/MarketDataView.xml" />
 	<import resource="view/ExecutionView.xml" />
+	<import resource="view/RWInfoView.xml" />
+	<import resource="view/RWOrderView.xml" />
+	<import resource="view/BWInfoView.xml" />
 	
 	<bean id="viewActionList" class="java.util.ArrayList">
     	<constructor-arg>
@@ -57,6 +60,9 @@
             	<ref bean="marketDataView"/>
             	<ref bean="executionsView"/>
             	<ref bean="executionViewToolBarAction1"/>
+            	<ref bean="BWInfoView" />
+            	<ref bean="RWInfoView" />
+            	<ref bean="RWOrderView" />
         	</list>
    		</constructor-arg>
 	</bean>
