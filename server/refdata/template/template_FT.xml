@@ -131,7 +131,7 @@
 			</entry>
 			<entry>
 				<string>Instrument type</string>
-				<string>0x0402</string>
+				<long>0x0402</<long>>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -269,7 +269,7 @@
 			</entry>
 			<entry>
 				<string>Instrument type</string>
-				<string>0x0402</string>
+				<<long>>0x0402</<long>>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -353,7 +353,7 @@
 			</entry>
 			<entry>
 				<string>Instrument type</string>
-				<string>0x0010</string>
+				<<long>>0x0010</<long>>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -437,7 +437,7 @@
 			</entry>
 			<entry>
 				<string>Instrument type</string>
-				<string>0x0010</string>
+				<<long>>0x0010</<long>>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
