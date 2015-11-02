@@ -28,7 +28,7 @@ public class RefDataFactory extends RefDataService {
 	private String strategyPack = "com.cyanspring.common.staticdata.strategy";
 	private String refDataTemplatePath;
 	private List<RefData> refDataTemplateList;
-	private Map<String, RefData> refDataTemplateMap = new HashMap<String, RefData>();
+	private Map<String, List<RefData>> refDataTemplateMap = new HashMap<String, List<RefData>>();
 	private Map<String, Quote> qMap;
 
 	@SuppressWarnings("unchecked")
@@ -55,13 +55,14 @@ public class RefDataFactory extends RefDataService {
 	private void buildTemplateMap(List<RefData> refDataTemplateList) {
 		for (RefData ref : refDataTemplateList) {
 			String spotName = ref.getCategory();
-			if (refDataTemplateMap.containsKey(spotName)) {
-				log.info("duplicate refData template :{}", spotName);
-				continue;
-			} else {
-				log.info("build template category:{},strategy:{}", spotName, ref.getStrategy());
-				refDataTemplateMap.put(spotName, ref);
+			List<RefData> list = refDataTemplateMap.get(spotName);
+			if (list == null) {
+				list = new ArrayList<>();
+				refDataTemplateMap.put(spotName, list);
 			}
+			
+			log.info("build template category:{},strategy:{}", spotName, ref.getStrategy());
+			list.add(ref);
 		}
 	}
 
@@ -71,12 +72,14 @@ public class RefDataFactory extends RefDataService {
 		List<RefData> addList = new ArrayList<>();
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(getSettlementDateFormat().parse(tradeDate));
-		for (Entry<String, RefData> entry : refDataTemplateMap.entrySet()) {
-			RefData refData = entry.getValue();
-			List<RefData> list = updateRefData(cal, refData);
-			if (list.size() > 0) {
-				addList.addAll(list);
-			}
+		for (Entry<String, List<RefData>> entry : refDataTemplateMap.entrySet()) {
+			List<RefData> tmpList = entry.getValue();
+			for (RefData refData : tmpList) {
+				List<RefData> list = updateRefData(cal, refData);
+				if (list.size() > 0) {
+					addList.addAll(list);
+				}
+			}		
 		}
 
 		for (RefData refData : addList) {
@@ -182,11 +185,13 @@ public class RefDataFactory extends RefDataService {
 		List<RefData> ret = new ArrayList<>();
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(getSettlementDateFormat().parse(tradeDate));
-		for (Entry<String, RefData> entry : refDataTemplateMap.entrySet()) {
-			RefData refData = entry.getValue();
-			if (index.equals(refData.getCategory())) {
-				ret.addAll(updateRefData(cal, refData));
-			}
+		List<RefData> list = refDataTemplateMap.get(index);
+		if (list != null) {
+			for (RefData tmp : list)
+				ret.addAll(updateRefData(cal, tmp));
+		} else {
+			log.warn("Can't find template return without action, index: {}", index);
+			return ret;
 		}
 
 		for (RefData refData : ret) {
@@ -199,11 +204,11 @@ public class RefDataFactory extends RefDataService {
 		return ret;
 	}
 
-	public Map<String, RefData> getRefDataTemplateMap() {
+	public Map<String, List<RefData>> getRefDataTemplateMap() {
 		return refDataTemplateMap;
 	}
 
-	public void setRefDataTemplateMap(Map<String, RefData> refDataTemplateMap) {
+	public void setRefDataTemplateMap(Map<String, List<RefData>> refDataTemplateMap) {
 		this.refDataTemplateMap = refDataTemplateMap;
 	}
 
