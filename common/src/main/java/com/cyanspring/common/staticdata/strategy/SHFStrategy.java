@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataUtil;
@@ -22,7 +23,7 @@ public class SHFStrategy extends AbstractRefDataStrategy {
 	protected static final Logger log = LoggerFactory.getLogger(SHFStrategy.class);
 
     @Override
-    public void init(Calendar cal, Map<String, Quote> map) {
+    public void init(Calendar cal, Map<String, Quote> map) throws Exception {
     	super.init(cal, map);
     }
 

@@ -60,7 +60,7 @@ public class RefDataFactory extends RefDataService {
 				list = new ArrayList<>();
 				refDataTemplateMap.put(spotName, list);
 			}
-			
+
 			log.info("build template category:{},strategy:{}", spotName, ref.getStrategy());
 			list.add(ref);
 		}
@@ -79,7 +79,7 @@ public class RefDataFactory extends RefDataService {
 				if (list.size() > 0) {
 					addList.addAll(list);
 				}
-			}		
+			}
 		}
 
 		for (RefData refData : addList) {
@@ -93,7 +93,7 @@ public class RefDataFactory extends RefDataService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<RefData> updateRefData(Calendar cal, RefData refData) {
+	private List<RefData> updateRefData(Calendar cal, RefData refData) throws Exception {
 		log.info("update refData:{}, strategy:{}", refData.getRefSymbol(), refData.getStrategy());
 
 		AbstractRefDataStrategy strategy;
@@ -187,8 +187,9 @@ public class RefDataFactory extends RefDataService {
 		cal.setTime(getSettlementDateFormat().parse(tradeDate));
 		List<RefData> list = refDataTemplateMap.get(index);
 		if (list != null) {
-			for (RefData tmp : list)
+			for (RefData tmp : list) {
 				ret.addAll(updateRefData(cal, tmp));
+			}
 		} else {
 			log.warn("Can't find template return without action, index: {}", index);
 			return ret;

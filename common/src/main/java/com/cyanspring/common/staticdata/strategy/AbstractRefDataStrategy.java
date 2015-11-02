@@ -17,6 +17,7 @@ import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketsession.IndexSessionType;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.RefDataBitUtil;
 import com.cyanspring.common.staticdata.policy.DefaultContractPolicy;
 
 public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
@@ -54,17 +55,16 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 			put("12", "L"); // Dec
 		}
 	};
-    Map<String, Quote> mapHot;
+    Map<String, Quote> qMap;
 
 	@Override
-	public void init(Calendar cal, Map<String, Quote> map) {
-		if (cal != null) {
-			this.cal = cal;
+	public void init(Calendar cal, Map<String, Quote> qMap) throws Exception {
+		if (cal == null || qMap == null) {
+			throw new Exception("Both cal and map cannot be null");
 		}
 
-		if (map != null && map.size() > 0) {
-			mapHot = map;
-		}
+		this.cal = cal;
+		this.qMap = qMap;
 	}
 
 	@Override
@@ -100,6 +100,8 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 			return lstRefData;
 		}
 
+		RefData hotOne = null;
+		double highestVolume = 0;
 		NumberFormat formatter = new DecimalFormat("##00");
 		for (int i = 0; i < num; i++) {
 			String yyyymm = lstContractMonth.get(i);
@@ -129,7 +131,29 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 				subscribeSymbol = subscribeSymbol.replace(MONTH_PATTERN_YYYYMM, yyyymm);
 				data.setSubscribeSymbol(subscribeSymbol);
 			}
+			// Update hot RefData instrument type based on the volume last day
+			long instrumentType = refData.getInstrumentType();
+			if (instrumentType > 0) {
+				data.setInstrumentType(instrumentType);
+				if (qMap != null && qMap.size() > 0) {
+					Quote q = qMap.get(symbol);
+					if (q != null) {
+						double vol = q.getTotalVolume();
+						if (vol > highestVolume) {
+							highestVolume = vol;
+							hotOne = data;
+						}
+					}
+				}
+			}
+
 			lstRefData.add(data);
+		}
+
+		if (hotOne != null) {
+			long instrumentType = hotOne.getInstrumentType();
+			instrumentType += RefDataBitUtil.HOT;
+			hotOne.setInstrumentType(instrumentType);
 		}
 
 		return lstRefData;

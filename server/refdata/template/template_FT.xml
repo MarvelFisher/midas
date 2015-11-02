@@ -129,6 +129,10 @@
 				<string>Minimal CF</string>
 				<double>0</double>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -263,6 +267,10 @@
 				<string>Minimal CF</string>
 				<double>0</double>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -343,6 +351,10 @@
 				<string>Decimal point</string>
 				<int>2</int>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0010</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -422,6 +434,10 @@
 			<entry>
 				<string>Decimal point</string>
 				<int>2</int>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0010</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>

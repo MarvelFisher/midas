@@ -98,8 +98,6 @@ public class LIVECFStrategy extends AbstractRefDataStrategy {
 		}
         this.cal.add(Calendar.MONTH, 1);
         updateDynamicData(this.cal);
-
-
     }
 
     @Override

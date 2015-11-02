@@ -113,6 +113,10 @@
 				<string>Ref symbol</string>
 				<string>IF${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -228,6 +232,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>IH${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -345,6 +353,10 @@
 				<string>Ref symbol</string>
 				<string>IC${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -452,6 +464,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>AG${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -561,6 +577,10 @@
 				<string>Ref symbol</string>
 				<string>CU${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -668,6 +688,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>AU${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -777,6 +801,10 @@
 				<string>Ref symbol</string>
 				<string>RB${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -884,6 +912,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>RU${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -993,6 +1025,10 @@
 				<string>Ref symbol</string>
 				<string>ZN${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -1100,6 +1136,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>M${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -1209,6 +1249,10 @@
 				<string>Ref symbol</string>
 				<string>I${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -1316,6 +1360,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>L${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -1425,6 +1473,10 @@
 				<string>Ref symbol</string>
 				<string>Y${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -1532,6 +1584,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>PP${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -1641,6 +1697,10 @@
 				<string>Ref symbol</string>
 				<string>P${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -1748,6 +1808,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>J${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -1857,6 +1921,10 @@
 				<string>Ref symbol</string>
 				<string>JD${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -1965,6 +2033,10 @@
 				<string>Ref symbol</string>
 				<string>FG${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -2072,6 +2144,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>RM${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -2185,6 +2261,10 @@
 				<string>Ref symbol</string>
 				<string>TA${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -2296,6 +2376,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>SR${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -2409,6 +2493,10 @@
 				<string>Ref symbol</string>
 				<string>MA${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -2521,6 +2609,10 @@
 				<string>Ref symbol</string>
 				<string>CF${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -2628,6 +2720,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>NI${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -2737,6 +2833,10 @@
 				<string>Ref symbol</string>
 				<string>AL${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -2844,6 +2944,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>BU${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -2953,6 +3057,10 @@
 				<string>Ref symbol</string>
 				<string>PB${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -3060,6 +3168,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>HC${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -3169,6 +3281,10 @@
 				<string>Ref symbol</string>
 				<string>SN${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -3276,6 +3392,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>FU${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -3385,6 +3505,10 @@
 				<string>Ref symbol</string>
 				<string>WR${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -3492,6 +3616,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>JM${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -3601,6 +3729,10 @@
 				<string>Ref symbol</string>
 				<string>C${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -3708,6 +3840,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>CS${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -3817,6 +3953,10 @@
 				<string>Ref symbol</string>
 				<string>V${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -3924,6 +4064,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>BB${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -4033,6 +4177,10 @@
 				<string>Ref symbol</string>
 				<string>B${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -4140,6 +4288,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>FB${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -4253,6 +4405,10 @@
 				<string>Ref symbol</string>
 				<string>TC${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -4364,6 +4520,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>RS${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -4477,6 +4637,10 @@
 				<string>Ref symbol</string>
 				<string>RI${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -4588,6 +4752,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>SF${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -4701,6 +4869,10 @@
 				<string>Ref symbol</string>
 				<string>LR${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -4812,6 +4984,10 @@
 			<entry>
 				<string>Ref symbol</string>
 				<string>SM${SEQ}</string>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -4925,6 +5101,10 @@
 				<string>Ref symbol</string>
 				<string>JR${SEQ}</string>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0002</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -5004,6 +5184,10 @@
 			<entry>
 				<string>Decimal point</string>
 				<int>2</int>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0010</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -5085,6 +5269,10 @@
 				<string>Decimal point</string>
 				<int>2</int>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0010</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -5164,6 +5352,10 @@
 			<entry>
 				<string>Decimal point</string>
 				<int>2</int>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0010</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
@@ -5245,6 +5437,10 @@
 				<string>Decimal point</string>
 				<int>2</int>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0010</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -5325,6 +5521,10 @@
 				<string>Decimal point</string>
 				<int>2</int>
 			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0010</string>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -5404,6 +5604,10 @@
 			<entry>
 				<string>Decimal point</string>
 				<int>2</int>
+			</entry>
+			<entry>
+				<string>Instrument type</string>
+				<string>0x0010</string>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
