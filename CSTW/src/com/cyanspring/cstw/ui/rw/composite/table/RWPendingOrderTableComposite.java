@@ -31,11 +31,14 @@ public class RWPendingOrderTableComposite extends BasicTableComposite {
 		tableViewer.getTable().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
+				RCOrderRecordModel model = (RCOrderRecordModel) getSelectedObject();
+				if (model == null) {
+					return;
+				}
 				if (!MessageDialog.openConfirm(getShell(), "Comfirm",
 						"Are you sure to cancel the order?")) {
 					return;
-				}
-				RCOrderRecordModel model = (RCOrderRecordModel) getSelectedObject();
+				}				
 				service.cancelOrder(model.getOrderId());
 			}
 		});

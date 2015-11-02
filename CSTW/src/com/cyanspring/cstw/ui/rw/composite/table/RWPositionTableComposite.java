@@ -34,11 +34,14 @@ public class RWPositionTableComposite extends BasicTableComposite {
 		tableViewer.getTable().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
+				RCOpenPositionModel position = (RCOpenPositionModel) getSelectedObject();	
+				if(position == null) {
+					return;
+				}
 				if (!MessageDialog.openConfirm(getShell(), "Comfirm",
 						"Are you sure to close the position?")) {
 					return;
-				}
-				RCOpenPositionModel position = (RCOpenPositionModel) getSelectedObject();				
+				}				
 				log.info(
 						"Close Position: Account:{}, Symbol:{}, Qty:{}, AcPnl:{}, Price:{}",
 						new Object[] { position.getTrader(),
