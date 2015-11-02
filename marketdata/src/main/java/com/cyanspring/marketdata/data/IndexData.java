@@ -1,6 +1,6 @@
 package com.cyanspring.marketdata.data;
 
-public class IndexData {
+public class IndexData implements Cloneable{
     private String windCode;
     private String code;
     private int actionDay;
@@ -108,5 +108,15 @@ public class IndexData {
 
     public void setTurnover(long turnover) {
         this.turnover = turnover;
+    }
+
+    public IndexData clone(){
+        try {
+            IndexData indexData = (IndexData)super.clone();
+            return indexData;
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

@@ -3,7 +3,7 @@ package com.cyanspring.marketdata.data;
 /**
  * Wind Future Data
  */
-public class FutureData {
+public class FutureData implements Cloneable{
     private String windCode;
     private String code;
     private int actionDay;
@@ -210,5 +210,15 @@ public class FutureData {
 
     public void setPreSettlePrice(long preSettlePrice) {
         this.preSettlePrice = preSettlePrice;
+    }
+
+    public FutureData clone(){
+        try {
+            FutureData futureData = (FutureData)super.clone();
+            return futureData;
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

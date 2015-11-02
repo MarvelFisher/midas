@@ -41,7 +41,7 @@ public class FDTFrameEncoder extends MessageToByteEncoder<Object> {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void encode(ChannelHandlerContext ctx, Object obj,ByteBuf buf) throws Exception { // (3)
+	public void encode(ChannelHandlerContext ctx, Object obj,ByteBuf buf) throws Exception { // (3)
 
 		try
 		{
