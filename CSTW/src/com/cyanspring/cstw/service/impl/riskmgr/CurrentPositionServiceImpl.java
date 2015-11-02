@@ -99,8 +99,14 @@ public class CurrentPositionServiceImpl extends BasicServiceImpl implements
 	@Override
 	public String getAllMarketCapitalization() {	
 		marketCapital = 0.0;
-		for ( RCOpenPositionModel model : currentPositionModelList ) {
-			marketCapital += model.getInstrumentQuality() * model.getAveragePrice();
+		for (RCOpenPositionModel model : currentPositionModelList) {
+			double pricePerUnit = Business.getInstance()
+					.getRefData(model.getInstrumentCode()).getPricePerUnit();
+			if (pricePerUnit == 0) {
+				pricePerUnit = 1.0;
+			}
+			marketCapital += model.getInstrumentQuality()
+					* model.getAveragePrice() * pricePerUnit;
 		}
 		return LTWStringUtils.cashDoubleToString(marketCapital);
 	}
