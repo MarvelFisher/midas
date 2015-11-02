@@ -23,6 +23,7 @@ public class OverallPosition implements Serializable, Cloneable {
 	private double PnL;
 	private double commission;
 	private double execCount;
+	private double avgPrice;
 	private Date lastUpdate;
 	private ConcurrentHashMap<String, String> parentOrderMap = new ConcurrentHashMap<String, String>();
 
@@ -203,13 +204,14 @@ public class OverallPosition implements Serializable, Cloneable {
 		return this.buyQty - this.sellQty;
 	}
 
+	public void setAvgPrice(double avgPrice) {
+		this.avgPrice = avgPrice;
+	}
+	
 	public double getAvgPrice() {
-		return ((buyPrice+sellPrice)/2);
+		return avgPrice;
 	}
 
-	
-	
-	
 	@Override
 	public synchronized OverallPosition clone()
 			throws CloneNotSupportedException {

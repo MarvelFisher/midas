@@ -351,9 +351,10 @@ public class AllPositionManager implements IAsyncEventListener {
 				sellSum += (qty*price);
 			}
 			
-			oap.setPnL(op.getPnL()+oap.getPnL());
-			oap.setUrPnL(op.getPnL()+oap.getUrPnL());
+			oap.setPnL(op.getAcPnL()+oap.getPnL());
+			oap.setUrPnL(op.getAcPnL()+oap.getUrPnL());
 		}
+		oap.setAvgPrice((buySum+sellSum)/(totalBuyQty+totalSellQty));
 		
 		for(ClosedPosition cp : cpList){
 			if(!cp.getSymbol().equals(symbol))
@@ -367,7 +368,7 @@ public class AllPositionManager implements IAsyncEventListener {
 			
 			oap.setBuyQty(oap.getBuyQty()+qty);
 			oap.setSellQty(oap.getSellQty()+qty);
-			oap.setPnL(cp.getPnL()+oap.getPnL());
+			oap.setPnL(cp.getAcPnL()+oap.getPnL());
 		}
 //		log.info("buysum:{} , totalBuyQty:{} , sellsum:{}, totalSellQty:{}"
 //				,new Object[]{buySum,totalBuyQty,sellSum,totalSellQty});
@@ -569,6 +570,18 @@ public class AllPositionManager implements IAsyncEventListener {
 
 	private void unSubEvent(Class<? extends AsyncEvent> clazz) {
 		eventManager.unsubscribe(clazz, this);
+	}
+	
+	public List<ClosedPosition> getAllClosedPositionList(){
+		if( null == closedPositionMap)
+			return null;
+		
+		List <ClosedPosition> list = new ArrayList<ClosedPosition>();
+		Iterator <List<ClosedPosition>> positionIte = closedPositionMap.values().iterator();
+		while(positionIte.hasNext()){
+			list.addAll(positionIte.next());
+		}
+		return list;
 	}
 	
 	public List<OverallPosition> getOverAllPositionList(){
