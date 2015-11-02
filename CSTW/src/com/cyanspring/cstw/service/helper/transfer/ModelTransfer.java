@@ -139,6 +139,8 @@ public final class ModelTransfer {
 			builder.pending(!parentOrder.getOrdStatus().isCompleted());
 			builder.complete(parentOrder.getOrdStatus() == OrdStatus.FILLED);
 			builder.symbol(parentOrder.getSymbol());
+			builder.side(parentOrder.getSide().name());
+			builder.orderStatus(parentOrder.getOrdStatus().name());
 			builder.cumQty(parentOrder.getCumQty());
 			builder.price(parentOrder.getPrice());
 			builder.volume(parentOrder.getQuantity());
