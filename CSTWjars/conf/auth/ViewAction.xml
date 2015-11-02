@@ -20,6 +20,7 @@
 	<import resource="view/RWInfoView.xml" />
 	<import resource="view/RWOrderView.xml" />
 	<import resource="view/BWInfoView.xml" />
+	<import resource="view/SpeedDepthView.xml" />
 	
 	<bean id="viewActionList" class="java.util.ArrayList">
     	<constructor-arg>
@@ -63,6 +64,7 @@
             	<ref bean="BWInfoView" />
             	<ref bean="RWInfoView" />
             	<ref bean="RWOrderView" />
+            	<ref bean="speedDepthView" />
         	</list>
    		</constructor-arg>
 	</bean>

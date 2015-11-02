@@ -13,7 +13,6 @@
 		<constructor-arg >					   
 		<array>
 			<value>Trader</value>
-			<value>RiskManager</value>
 		</array>
 		</constructor-arg>
 	</bean>
@@ -21,9 +20,7 @@
 		<constructor-arg value="Executions"/><!-- view name -->
 		<constructor-arg value="TOOLBAR_PIN"/> <!-- action id -->
 		<constructor-arg >					   <!-- permission:UserRole -->
-		<array>
-			<value>RiskManager</value>
-		</array>
+		<null></null>
 		</constructor-arg>
 	</bean>	
 		

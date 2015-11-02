@@ -13,7 +13,6 @@
 		<constructor-arg >					   
 		<array>
 			<value>Trader</value>
-			<value>RiskManager</value>
 		</array>
 		</constructor-arg>
 	</bean>
@@ -80,7 +79,6 @@
 		<constructor-arg>					   <!-- permission:UserRole -->
 		<array>
 			<value>Trader</value>
-			<value>RiskManager</value>
 		</array>
 		</constructor-arg>
 	</bean>	
@@ -107,7 +105,6 @@
 		<constructor-arg>					   <!-- permission:UserRole -->
 		<array>
 			<value>Trader</value>
-			<value>RiskManager</value>
 		</array>
 		</constructor-arg>
 	</bean>		
@@ -158,7 +155,6 @@
 		<constructor-arg>					   <!-- permission:UserRole -->
 		<array>
 			<value>Trader</value>
-			<value>RiskManager</value>
 		</array>
 		</constructor-arg>
 	</bean>		
@@ -169,7 +165,6 @@
 		<constructor-arg>					   <!-- permission:UserRole -->
 		<array>
 			<value>Trader</value>
-			<value>RiskManager</value>
 		</array>
 		</constructor-arg>
 	</bean>
@@ -180,7 +175,6 @@
 		<constructor-arg>					   <!-- permission:UserRole -->
 		<array>
 			<value>Trader</value>
-			<value>RiskManager</value>
 		</array>
 		</constructor-arg>
 	</bean>		
@@ -191,7 +185,6 @@
 		<constructor-arg>					   <!-- permission:UserRole -->
 		<array>
 			<value>Trader</value>
-			<value>RiskManager</value>
 		</array>
 		</constructor-arg>
 	</bean>

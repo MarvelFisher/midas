@@ -7,12 +7,13 @@
 	http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans.xsd"
 >	
-	<bean id="marketDataView" class="com.cyanspring.common.cstw.auth.ViewActionBean">
-		<constructor-arg value="Market Data"/>
+	<bean id="speedDepthView" class="com.cyanspring.common.cstw.auth.ViewActionBean">
+		<constructor-arg value="SpeedDepthView"/>
 		<constructor-arg value=""/>
 		<constructor-arg >					   
 		<array>
 			<value>Trader</value>
+			<value>RiskManager</value>
 		</array>
 		</constructor-arg>
 	</bean>	
