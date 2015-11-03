@@ -1,5 +1,6 @@
 package com.cyanspring.common.staticdata.strategy;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -34,10 +35,15 @@ public class CZCStrategy extends AbstractRefDataStrategy {
 				String enName = data.getENDisplayName();
 				if (enName != null && enName.length() > 4) {
 					String yymm = enName.substring(enName.length() - 4);
-					Date d = new SimpleDateFormat("yyMM").parse(yymm);
-					cal.setTime(d);
-					setSettlementDate(data, cal);
-					data.setIndexSessionType(getIndexSessionType(data));
+					try {
+						Date d = new SimpleDateFormat("yyMM").parse(yymm);
+						cal.setTime(d);
+						setSettlementDate(data, cal);
+						data.setIndexSessionType(getIndexSessionType(data));
+					} catch (ParseException e) {
+						log.warn("Fail to parse yymm for RefData ENName/Symbol: " +
+								data.getENDisplayName() + "/" + data.getSymbol());
+					}
 				}
 			}
 		} catch (Exception e) {
