@@ -117,6 +117,10 @@
 				<string>Instrument type</string>
 				<long>0x0402</long>
 			</entry>
+			<entry>
+				<string>Tradable days</string>
+				<int>0</int>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -237,6 +241,10 @@
 				<string>Instrument type</string>
 				<long>0x0402</long>
 			</entry>
+			<entry>
+				<string>Tradable days</string>
+				<int>0</int>
+			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
@@ -356,6 +364,10 @@
 			<entry>
 				<string>Instrument type</string>
 				<long>0x0402</long>
+			</entry>
+			<entry>
+				<string>Tradable days</string>
+				<int>0</int>
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
