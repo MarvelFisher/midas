@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.Execution;
+import com.cyanspring.common.business.OrderException;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamConnection;
@@ -133,14 +134,19 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 		order.setModified(Clock.getInstance().now());
 		order.setOrdStatus(OrdStatus.FILLED);
 		
-		Execution execution = new Execution(order.getSymbol(), 
-				order.getSide(), order.getQuantity(), 
-				tradePrice, order.getId(), order.getParentOrderId(), 
-				order.getStrategyId(),
-				IdGenerator.getInstance().getNextID() + "T",
-				order.getUser(), order.getAccount(), order.getRoute());
+		try {
+			Execution execution = new Execution(order.getSymbol(), 
+					order.getSide(), order.getQuantity(), 
+					tradePrice, order.getId(), order.getParentOrderId(), 
+					order.getStrategyId(),
+					IdGenerator.getInstance().getNextID() + "T",
+					order.getUser(), order.getAccount(), order.getRoute());
+			listener.onOrder(ExecType.FILLED, order, execution, null);
+		} catch (OrderException e) {
+			log.error(e.getMessage(), e);
+		}
 
-		listener.onOrder(ExecType.FILLED, order, execution, null);
+		
 	}
 	
 	private void deleteOrder(ChildOrder order) {

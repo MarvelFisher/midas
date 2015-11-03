@@ -12,6 +12,7 @@ package com.cyanspring.common.business;
 
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.util.IdGenerator;
+import com.cyanspring.common.util.PriceUtils;
 
 public class Execution extends BaseOrder {
 	private static final long serialVersionUID = 1L;
@@ -19,8 +20,11 @@ public class Execution extends BaseOrder {
 	public Execution(String symbol, OrderSide side, double quantity,
 			double price, String orderId, String parentOrderId, 
 			String strategyId, String execId,
-			String user, String account, String route) {
+			String user, String account, String route) throws OrderException {
 		super(symbol, side, quantity, price);
+		if (PriceUtils.EqualLessThan(quantity, 0)) {
+			throw new OrderException("Execution quantity must great than zero");
+		}
 		put(OrderField.ORDER_ID.value(), orderId);
 		put(OrderField.PARENT_ORDER_ID.value(), parentOrderId);
 		put(OrderField.STRATEGY_ID.value(), strategyId);
