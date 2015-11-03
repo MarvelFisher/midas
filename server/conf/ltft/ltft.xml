@@ -299,6 +299,9 @@
 		<property name="refDataTemplatePath">
 			<value>refdata/template/template_FT.xml</value>
 		</property>
+		<property name="refDataFile">
+            <value>ticks/last.xml</value>
+        </property>
 	</bean>
 
 	<bean id="refDataUtil" class="com.cyanspring.common.staticdata.RefDataUtil">
