@@ -32,7 +32,7 @@
 		<property name="killTimeoutSecond" value="60000" />
 		<property name="parseApplicationId" value="NSJUuK6ePPmFPaatYUuRCoySVcgVNMQbyZMrrN8D" />
 		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx" />
-		<property name="ParseAction" value="com.hkfdt.activity.UPDATE_STATUS.FX"/>
+		<property name="ParseAction" value="com.hkfdt.activity.UPDATE_STATUS.IFX"/>
 	</bean>	
 	
 	<bean id="newsManager" class="com.cyanspring.info.alert.NewsManager">
