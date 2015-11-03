@@ -250,69 +250,6 @@ public class WindDataParser {
         return transationData;
     }
 
-    public CodeTableData convertToCodeTableData(HashMap<Integer, Object> inputHashMap, ConcurrentHashMap<String, CodeTableData> codeTableDataBySymbolMap) throws UnsupportedEncodingException {
-        CodeTableData codeTableData = null;
-        if (inputHashMap != null && inputHashMap.size() > 0) {
-            String symbol = new String((byte[]) inputHashMap.get(FDTFields.WindSymbolCode), "UTF-8");
-            if (codeTableDataBySymbolMap.containsKey(symbol)) {
-                codeTableData = codeTableDataBySymbolMap.get(symbol);
-            } else {
-                codeTableData = new CodeTableData();
-                codeTableData.setWindCode(symbol);
-            }
-            if (null != inputHashMap.get(FDTFields.CNName)) {
-                codeTableData.setCnName(new String((byte[]) inputHashMap.get(FDTFields.CNName), "UTF-8"));
-                codeTableData.setSpellName(SpellUtil.getSpellName(codeTableData.getCnName(), true));
-            }
-            if (null != inputHashMap.get(FDTFields.ShortName))
-                codeTableData.setShortName(new String((byte[]) inputHashMap.get(FDTFields.ShortName), "UTF-8"));
-            if (null != inputHashMap.get(FDTFields.EnglishName))
-                codeTableData.setEnglishName(new String((byte[]) inputHashMap.get(FDTFields.EnglishName), "UTF-8"));
-            if (null != inputHashMap.get(FDTFields.SecurityExchange))
-                codeTableData.setSecurityExchange(new String((byte[]) inputHashMap.get(FDTFields.SecurityExchange), "UTF-8"));
-            if (null != inputHashMap.get(FDTFields.SecurityType))
-                codeTableData.setSecurityType(((Number) inputHashMap.get(FDTFields.SecurityType)).intValue());
-            if (null != inputHashMap.get(FDTFields.Product))
-                codeTableData.setProduct(new String((byte[]) inputHashMap.get(FDTFields.Product), "UTF-8"));
-            if (null != inputHashMap.get(FDTFields.ProductName))
-                codeTableData.setProductName(new String((byte[]) inputHashMap.get(FDTFields.ProductName), "UTF-8"));
-            if (null != inputHashMap.get(FDTFields.SymbolName))
-                codeTableData.setSymbolName(new String((byte[]) inputHashMap.get(FDTFields.SymbolName), "UTF-8"));
-            if (null != inputHashMap.get(FDTFields.Group))
-                codeTableData.setGroup(new String((byte[]) inputHashMap.get(FDTFields.Group), "UTF-8"));
-            if (null != inputHashMap.get(FDTFields.Currency))
-                codeTableData.setCurrency(new String((byte[]) inputHashMap.get(FDTFields.Currency), "UTF-8"));
-            if (null != inputHashMap.get(FDTFields.ShowID)) {
-                String showID = new String((byte[]) inputHashMap.get(FDTFields.ShowID), "UTF-8");
-                if(!"".equals(showID))codeTableData.setShowID(showID);
-            }
-        }
-        return codeTableData;
-    }
-
-    public CodeTableResult convertToCodeTableResult(HashMap<Integer, Object> inputHashMap, ConcurrentHashMap<String, CodeTableResult> codeTableResultByExchangeMap) throws UnsupportedEncodingException {
-        CodeTableResult codeTableResult = null;
-        if (inputHashMap != null && inputHashMap.size() > 0) {
-            String exchange = new String((byte[]) inputHashMap.get(FDTFields.SecurityExchange), "UTF-8");
-            if (codeTableResultByExchangeMap.containsKey(exchange)) {
-                codeTableResult = codeTableResultByExchangeMap.get(exchange);
-            } else {
-                codeTableResult = new CodeTableResult();
-                codeTableResult.setSecurityExchange(exchange);
-            }
-            if (null != inputHashMap.get(FDTFields.ActionDay))
-                codeTableResult.setActionDay(((Number) inputHashMap.get(FDTFields.ActionDay)).intValue());
-            if (null != inputHashMap.get(FDTFields.HashCode)) {
-                long hashCode = ((Number) inputHashMap.get(FDTFields.HashCode)).longValue();
-                if(codeTableResult.getHashCode() == hashCode){
-                    return null;
-                }else {
-                    codeTableResult.setHashCode(((Number) inputHashMap.get(FDTFields.HashCode)).longValue());
-                }
-            }
-        }
-        return codeTableResult;
-    }
 
     /**
      * Convert String Array To long Array
