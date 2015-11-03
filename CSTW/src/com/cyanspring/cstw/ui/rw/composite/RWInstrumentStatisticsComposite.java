@@ -87,6 +87,9 @@ public class RWInstrumentStatisticsComposite extends BasicComposite {
 	protected void processByType(RefreshEventType type) {
 		if (type == RefreshEventType.RWInstrumentStatistics) {
 			tableComposite.setInput(service.getInstrumentModelList());
+			lblRealizedPnl.setText(service.getAllRealizedProfit());
+			lblConsideration.setText(service.getAllConsideraion());
+			lblProductivity.setText(service.getProductivity());
 		}
 	}
 

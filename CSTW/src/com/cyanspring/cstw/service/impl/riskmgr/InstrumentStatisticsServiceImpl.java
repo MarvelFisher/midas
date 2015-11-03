@@ -91,7 +91,7 @@ public class InstrumentStatisticsServiceImpl extends BasicServiceImpl implements
 		for ( RCInstrumentModel model : modelList ) {
 			consideration += model.getTurnover();
 		}			
-		return LTWStringUtils.cashDoubleToStringWith10000(consideration);
+		return LTWStringUtils.cashDoubleToString(consideration);
 	}
 
 	@Override
