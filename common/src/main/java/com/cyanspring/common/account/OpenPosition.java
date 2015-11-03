@@ -93,9 +93,9 @@ public class OpenPosition extends Position implements Cloneable {
 	}
 	
 	// this one is used by detail position
-	public OpenPosition(Execution execution, double margin) {
+	public OpenPosition(double qty, Execution execution, double margin) {
 		super(execution.getId(), execution.getUser(), execution.getAccount(), execution.getSymbol(),
-				execution.getSide().isBuy()?execution.getQuantity():-execution.getQuantity());
+				execution.getSide().isBuy()?qty:-qty);
 		this.price = execution.getPrice();
 		this.margin = margin;
 	}

@@ -41,6 +41,7 @@ import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.business.AuditType;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.GroupManagement;
+import com.cyanspring.common.business.OrderException;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.event.AsyncEventMultiProcessor;
@@ -660,13 +661,15 @@ public class AccountPositionManager implements IPlugin {
     		Quote quote = marketData.get(position.getSymbol());
     		price = QuoteUtils.getMarketablePrice(quote, position.getQty());
     	}
-    	Execution exec = new Execution(position.getSymbol(), position.getQty() > 0 ? OrderSide.Sell : OrderSide.Buy,
+    	try {
+    		Execution exec = new Execution(position.getSymbol(), position.getQty() > 0 ? OrderSide.Sell : OrderSide.Buy,
     			Math.abs(position.getQty()), price, "", "", "", IdGenerator.getInstance().getNextID(),
     			position.getUser(), position.getAccount(), "");
 
-    	try {
 			positionKeeper.processExecution(exec, accountKeeper.getAccount(position.getAccount()));
 		} catch (PositionException e) {
+			log.error(e.getMessage(), e);
+		} catch (OrderException e) {
 			log.error(e.getMessage(), e);
 		}
     }
@@ -2010,20 +2013,22 @@ public class AccountPositionManager implements IPlugin {
             if (!PriceUtils.isZero(position.getQty())) {
 
                 double price = quote != null ? QuoteUtils.getMarketablePrice(quote, position.getQty()) : settlePrice;
-
-                Execution exec = new Execution(symbol, position.getQty() > 0 ? OrderSide.Sell : OrderSide.Buy,
+                try {
+                	Execution exec = new Execution(symbol, position.getQty() > 0 ? OrderSide.Sell : OrderSide.Buy,
                         Math.abs(position.getQty()),
                         price,
                         "", "",
                         "", "Settlement",
                         position.getUser(), position.getAccount(), "Settlement");
                 exec.put(OrderField.ID.value(), IdGenerator.getInstance().getNextID() + "STLM");
-                try {
+                
 					log.debug("Settling position: " + position + "  with " + price);
                     positionKeeper.processExecution(exec, account);
                 } catch (PositionException e) {
                     log.error(e.getMessage(), e);
-                }
+                } catch (OrderException e) {
+                	log.error(e.getMessage(), e);
+				}
             }
         }
     }

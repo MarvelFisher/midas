@@ -23,6 +23,7 @@ import webcurve.exchange.Exchange;
 
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.Execution;
+import com.cyanspring.common.business.OrderException;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamConnection;
@@ -109,12 +110,17 @@ public class SimDownStreamConnection implements IDownStreamConnection {
 			log.error("Trade without proper status type: " + execType);
 			return;
 		}
-		Execution execution = new Execution(uOrder.getSymbol(), uOrder.getSide(), trade.getQuantity(), 
-				trade.getPrice(), uOrder.getId(), uOrder.getParentOrderId(), 
-				uOrder.getStrategyId(), ""+trade.getTradeID(),
-				uOrder.getUser(), uOrder.getAccount(), uOrder.getRoute());
-		uOrder.setOrdStatus(OrdStatus.getStatus(execType.value()));
-		listener.onOrder(execType, uOrder, execution, null);
+		try {
+			Execution execution = new Execution(uOrder.getSymbol(), uOrder.getSide(), trade.getQuantity(), 
+					trade.getPrice(), uOrder.getId(), uOrder.getParentOrderId(), 
+					uOrder.getStrategyId(), ""+trade.getTradeID(),
+					uOrder.getUser(), uOrder.getAccount(), uOrder.getRoute());
+			uOrder.setOrdStatus(OrdStatus.getStatus(execType.value()));
+			listener.onOrder(execType, uOrder, execution, null);
+		} catch (OrderException e) {
+			log.error(e.getMessage(), e);
+		}
+		
 	}
 	
 	ExchangeListener<webcurve.common.Trade> tradeListener = new ExchangeListener<webcurve.common.Trade>() {
