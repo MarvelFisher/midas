@@ -31,20 +31,19 @@ public class SHFStrategy extends AbstractRefDataStrategy {
 
 	@Override
     public List<RefData> updateRefData(RefData refData) {
+		// Get settlement date in current month for contract policy use
+    	Calendar cal = Calendar.getInstance();
+    	setSettlementDate(refData, cal);
 		List<RefData> lstRefData = super.updateRefData(refData);
+
 		try {
 			for (RefData data : lstRefData) {
 				String enName = data.getENDisplayName();
 				if (enName != null && enName.length() > 4) {
 					String yymm = enName.substring(enName.length() - 4);
 					Date d = new SimpleDateFormat("yyMM").parse(yymm);
-					Calendar cal = Calendar.getInstance();
 					cal.setTime(d);
-					if(data.getCategory().equals("FU")){
-						data.setSettlementDate(RefDataUtil.calSettlementDateByTradeDate(data, cal,-1));
-					}else{
-						data.setSettlementDate(RefDataUtil.calSettlementDateByDay(data, cal, 15));
-					}
+					setSettlementDate(data, cal);
 					data.setIndexSessionType(getIndexSessionType(data));
 				}
 			}
@@ -59,4 +58,13 @@ public class SHFStrategy extends AbstractRefDataStrategy {
 	public void setRequireData(Object... objects) {
 		super.setRequireData(objects);
 	}
+
+	private void setSettlementDate(RefData refData, Calendar cal) {
+		if(refData.getCategory().equals("FU")){
+			refData.setSettlementDate(RefDataUtil.calSettlementDateByTradeDate(refData, cal,-1));
+		}else{
+			refData.setSettlementDate(RefDataUtil.calSettlementDateByDay(refData, cal, 15));
+		}
+	}
+
 }

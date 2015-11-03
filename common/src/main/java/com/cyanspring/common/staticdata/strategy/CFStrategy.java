@@ -24,16 +24,19 @@ public class CFStrategy extends AbstractRefDataStrategy  {
 
     @Override
     public List<RefData> updateRefData(RefData refData) {
+    	// Get settlement date in current month for contract policy use
+    	Calendar cal = Calendar.getInstance();
+    	setSettlementDate(refData, cal);
     	List<RefData> lstRefData = super.updateRefData(refData);
+
 		try {
 			for (RefData data : lstRefData) {
 				String enName = data.getENDisplayName();
 				if (enName != null && enName.length() > 4) {
 					String yymm = enName.substring(enName.length() - 4);
 					Date d = new SimpleDateFormat("yyMM").parse(yymm);
-					Calendar cal = Calendar.getInstance();
 					cal.setTime(d);
-					data.setSettlementDate(RefDataUtil.calSettlementDateByWeekDay(data, cal, 3, Calendar.FRIDAY));
+					setSettlementDate(data, cal);
 					data.setIndexSessionType(getIndexSessionType(data));
 				}
 			}
@@ -47,6 +50,10 @@ public class CFStrategy extends AbstractRefDataStrategy  {
     @Override
     public void setRequireData(Object... objects) {
 		super.setRequireData(objects);
+    }
+
+    private void setSettlementDate(RefData refData, Calendar cal) {
+    	refData.setSettlementDate(RefDataUtil.calSettlementDateByWeekDay(refData, cal, 3, Calendar.FRIDAY));
     }
 
 }
