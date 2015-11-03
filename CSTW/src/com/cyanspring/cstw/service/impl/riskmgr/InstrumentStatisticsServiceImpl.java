@@ -97,7 +97,7 @@ public class InstrumentStatisticsServiceImpl extends BasicServiceImpl implements
 	@Override
 	public String getProductivity() {
 		if ( consideration == 0.0 ) {
-			return "" + Double.NaN;
+			return "";
 		}
 		productivity = realizedProfit / consideration;
 		return LTWStringUtils.productivityDoubleToString(productivity);
