@@ -2,15 +2,9 @@ package com.cyanspring.marketdata.adaptor;
 
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.marketdata.*;
-import com.cyanspring.marketdata.data.*;
-import com.cyanspring.marketdata.item.FutureItem;
-import com.cyanspring.marketdata.item.IndexItem;
-import com.cyanspring.marketdata.item.StockItem;
-import com.cyanspring.marketdata.item.TransationItem;
 import com.cyanspring.marketdata.type.FDTFields;
 import com.cyanspring.marketdata.type.WindDef;
 import com.cyanspring.marketdata.util.FDTFrameDecoder;
-
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -18,7 +12,6 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-
 import org.apache.log4j.xml.DOMConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +22,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class WindAdaptor implements IMarketDataAdaptor, IWindGateWayListener {
 	private static final Logger log = LoggerFactory.getLogger(WindAdaptor.class);

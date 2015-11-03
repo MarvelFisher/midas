@@ -1,17 +1,11 @@
 package com.cyanspring.marketdata.adaptor;
 
-import com.cyanspring.marketdata.data.FutureData;
-import com.cyanspring.marketdata.data.IndexData;
-import com.cyanspring.marketdata.data.StockData;
-import com.cyanspring.marketdata.data.TransationData;
-import com.cyanspring.marketdata.data.WindDataParser;
+import com.cyanspring.marketdata.data.*;
 import com.cyanspring.marketdata.item.FutureItem;
 import com.cyanspring.marketdata.item.IndexItem;
 import com.cyanspring.marketdata.item.StockItem;
 import com.cyanspring.marketdata.item.TransationItem;
 import com.cyanspring.marketdata.type.FDTFields;
-import com.cyanspring.marketdata.type.WindDef;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,6 +89,7 @@ public class QuoteMgr {
 	}
 
 	public void processGateWayMessage(HashMap<Integer, Object> inputMessageHashMap) {
+		if (inputMessageHashMap == null || inputMessageHashMap.size() == 0) return;
 		int datatype = (int) inputMessageHashMap.get(FDTFields.PacketType);
 		try {
 			switch (datatype) {
