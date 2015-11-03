@@ -1,16 +1,12 @@
-package com.cyanspring.server.fx;
+package com.cyanspring.common.fx;
 
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import webcurve.util.PriceUtils;
-
-import com.cyanspring.common.fx.FxException;
-import com.cyanspring.common.fx.FxUtils;
-import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.util.PriceUtils;
 public class FxConverter implements IFxConverter {
 	private Map<String, Double> fxRates = new ConcurrentHashMap<String, Double>();
 
@@ -61,6 +57,7 @@ public class FxConverter implements IFxConverter {
 	
 	@Override
 	public String toString() {
+		
 		StringBuilder result = new StringBuilder();
 		result.append("[");
 		boolean first = true;

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import com.cyanspring.common.fx.FxConverter;
 import com.cyanspring.common.fx.FxException;
 import com.cyanspring.common.marketdata.Quote;
 

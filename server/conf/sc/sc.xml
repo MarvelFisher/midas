@@ -254,7 +254,7 @@
 	<bean id="commissionManager" class="com.cyanspring.server.account.StockCommissionManager">
          <property name="brokerage" value="0.0000487"/>
 	</bean>
-	<bean id="fxConverter" class="com.cyanspring.server.fx.FxConverter">
+	<bean id="fxConverter" class="com.cyanspring.common.fx.FxConverter">
 	</bean>
 
 	<bean id="leverageManager" class="com.cyanspring.server.account.LeverageManager">

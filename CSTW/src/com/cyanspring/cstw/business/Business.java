@@ -51,6 +51,8 @@ import com.cyanspring.common.event.account.AccountSettingSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AccountSettingSnapshotRequestEvent;
 import com.cyanspring.common.event.account.CSTWUserLoginReplyEvent;
 import com.cyanspring.common.event.account.UserLoginReplyEvent;
+import com.cyanspring.common.event.info.RateConverterReplyEvent;
+import com.cyanspring.common.event.info.RateConverterRequestEvent;
 import com.cyanspring.common.event.order.InitClientEvent;
 import com.cyanspring.common.event.order.InitClientRequestEvent;
 import com.cyanspring.common.event.strategy.MultiInstrumentStrategyFieldDefUpdateEvent;
@@ -58,6 +60,8 @@ import com.cyanspring.common.event.strategy.SingleInstrumentStrategyFieldDefUpda
 import com.cyanspring.common.event.strategy.SingleOrderStrategyFieldDefUpdateEvent;
 import com.cyanspring.common.event.system.NodeInfoEvent;
 import com.cyanspring.common.event.system.ServerHeartBeatEvent;
+import com.cyanspring.common.fx.FxConverter;
+import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.DataReceiver;
 import com.cyanspring.common.marketsession.DefaultStartEndTime;
 import com.cyanspring.common.server.event.ServerReadyEvent;
@@ -120,7 +124,7 @@ public class Business {
 	private TraderInfoListener traderInfoListener = null;
 	private DataReceiver quoteDataReceiver = null;
 	private AllPositionManager allPositionManager = null;
-	
+	private IFxConverter rateConverter = null;
 	// singleton implementation
 	private Business() {
 	}
@@ -169,13 +173,14 @@ public class Business {
 				if (!isLoginRequired()) {
 					requestStrategyInfo(initClientEvent.getSender());
 				}
+				
 			} else if (event instanceof CSTWUserLoginReplyEvent) {
 
 				CSTWUserLoginReplyEvent evt = (CSTWUserLoginReplyEvent) event;
 				processCSTWUserLoginReplyEvent(evt);
 				if (evt.isOk()) {
 					tickManager.init(getFirstServer());
-
+					requestRateConverter();
 //					if(null != loginAccount);
 //						traderInfoListener.init(loginAccount);
 						
@@ -218,12 +223,25 @@ public class Business {
 				processAsyncTimerEvent((AsyncTimerEvent) event);
 			} else if (event instanceof SelectUserAccountEvent) {
 				processSelectUserAccountEvent((SelectUserAccountEvent) event);
-			} else {
+			} else if (event instanceof RateConverterReplyEvent) {
+				RateConverterReplyEvent e =  (RateConverterReplyEvent) event;
+				rateConverter = e.getConverter();
+			}else {
 				log.error("I dont expect this event: " + event);
 			}
 		}
+
 	}
 
+	private void requestRateConverter() {
+		RateConverterRequestEvent request = new RateConverterRequestEvent(IdGenerator.getInstance().getNextID(),getFirstServer());
+		try {
+			getEventManager().sendRemoteEvent(request);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+	}
+	
 	private void processSelectUserAccountEvent(SelectUserAccountEvent event) {
 		log.info("Setting current user/account to: " + this.user + "/"
 				+ this.account);
@@ -353,6 +371,7 @@ public class Business {
 		eventManager.subscribe(MultiInstrumentStrategyFieldDefUpdateEvent.class, listener);		
 		eventManager.subscribe(CSTWUserLoginReplyEvent.class, listener);		
 		eventManager.subscribe(AccountSettingSnapshotReplyEvent.class, listener);
+		eventManager.subscribe(RateConverterReplyEvent.class, listener);
 		//schedule timer
 		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval , listener, timerEvent);	
 		log.info("TraderInfoListener not init version");
@@ -685,6 +704,10 @@ public class Business {
 
 	public AllPositionManager getAllPositionManager() {
 		return allPositionManager;
+	}
+	
+	public IFxConverter getRateConverter(){
+		return rateConverter;
 	}
 
 	public List<OverallPosition> getOverallPositionList() {

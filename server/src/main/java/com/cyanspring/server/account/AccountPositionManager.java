@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.cyanspring.common.staticdata.AccountSaver;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,6 +107,8 @@ import com.cyanspring.common.event.account.ResetAccountRequestEvent;
 import com.cyanspring.common.event.account.UserCreateAndLoginEvent;
 import com.cyanspring.common.event.account.UserCreateAndLoginReplyEvent;
 import com.cyanspring.common.event.account.UserLoginEvent;
+import com.cyanspring.common.event.info.RateConverterReplyEvent;
+import com.cyanspring.common.event.info.RateConverterRequestEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteExtEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
@@ -122,6 +122,7 @@ import com.cyanspring.common.event.order.ManualClosePositionRequestEvent;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateOpenPositionPriceEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
+import com.cyanspring.common.fx.FxConverter;
 import com.cyanspring.common.fx.FxUtils;
 import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.IQuoteChecker;
@@ -135,6 +136,7 @@ import com.cyanspring.common.message.ExtraEventMessage;
 import com.cyanspring.common.message.ExtraEventMessageBuilder;
 import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
+import com.cyanspring.common.staticdata.AccountSaver;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.type.OrderSide;
@@ -290,6 +292,7 @@ public class AccountPositionManager implements IPlugin {
             subscribeToEvent(ManualClosePositionRequestEvent.class, null);
             subscribeToEvent(UpdateOpenPositionPriceEvent.class, null);
             subscribeToEvent(OverAllPositionRequestEvent.class, null);
+            subscribeToEvent(RateConverterRequestEvent.class, null);
         }
 
         @Override
@@ -523,6 +526,15 @@ public class AccountPositionManager implements IPlugin {
         eventMultiProcessor.uninit();
     }
 
+    public void processRateConverterRequestEvent(RateConverterRequestEvent event){
+        try {        	
+        	RateConverterReplyEvent reply = new RateConverterReplyEvent(event.getKey(),event.getSender(),fxConverter);
+			eventManager.sendRemoteEvent(reply);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+    }
+    
     public void processOverAllPositionRequestEvent(OverAllPositionRequestEvent event){
     	
     	log.info("start processOverAllPositionRequestEvent");
