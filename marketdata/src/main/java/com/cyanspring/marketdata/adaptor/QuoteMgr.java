@@ -23,9 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class QuoteMgr {
-
 	private static final Logger log = LoggerFactory.getLogger(QuoteMgr.class);
-
 	private WindAdaptor windAdaptor;
 	private BlockingQueue<Object> queue = new LinkedBlockingQueue<>();
 	private Thread controlReqThread = null;

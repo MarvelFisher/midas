@@ -32,9 +32,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class WindAdaptor implements IMarketDataAdaptor, IWindGateWayListener {
-
 	private static final Logger log = LoggerFactory.getLogger(WindAdaptor.class);
-
 	private String gatewayIp = "";
 	private int gatewayPort = 0;
 	private boolean marketDataLog = false; // log control
@@ -95,7 +93,7 @@ public class WindAdaptor implements IMarketDataAdaptor, IWindGateWayListener {
 			return;
 		if (inputMessageHashMap == null || inputMessageHashMap.size() == 0)
 			return;
-		quoteMgr.addRequest(inputMessageHashMap);
+		quoteMgr.addRequest(inputMessageHashMap.clone());
 	}
 
 	public void updateState(boolean connected) {
