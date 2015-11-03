@@ -668,7 +668,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		}
 	}
 	
-	private void sendSubscriptionRequest(String account) {
+	synchronized private void sendSubscriptionRequest(String account) {
 		log.info("sendSubscriptionRequest");
 		currentAccount = account;
 
@@ -771,6 +771,11 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 			this.closedPositions = evt.getClosedPositions();
 			this.executions = evt.getExecutions();
 
+			if(!evt.getAccount().getId().equals(currentAccount)){
+				log.info("AccountSnapShot not equal currentAccount:{}.{}",evt.getAccount().getId(),currentAccount);
+				return;
+			}
+			
 			showAccount();
 			showOpenPositions(true);
 			showClosedPositions(true);
@@ -814,6 +819,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		} else if (event instanceof AccountSelectionEvent) {
 
 			AccountSelectionEvent evt = (AccountSelectionEvent) event;
+			log.info("Account Selection:{}",evt.getAccount());
 			sendSubscriptionRequest(evt.getAccount());
 		}
 	}
