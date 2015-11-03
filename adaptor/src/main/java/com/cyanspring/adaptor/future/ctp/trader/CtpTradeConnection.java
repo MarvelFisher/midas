@@ -18,6 +18,7 @@ import com.cyanspring.adaptor.future.ctp.trader.generated.TraderLibrary;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.ISymbolConverter;
+import com.cyanspring.common.business.OrderException;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamConnection;
@@ -335,12 +336,18 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 			order.setOrdStatus(OrdStatus.PARTIALLY_FILLED);
 		}
 
-		Execution execution = new com.cyanspring.common.business.Execution(
-                order.getSymbol(), order.getSide(), trade.Volume(),
-                trade.Price(), order.getId(), order.getParentOrderId(),
-                order.getStrategyId(), IdGenerator.getInstance()
-                .getNextID() + "E", order.getUser(),
-                order.getAccount(), order.getRoute());
+		Execution execution;
+		try {
+			execution = new com.cyanspring.common.business.Execution(
+			        order.getSymbol(), order.getSide(), trade.Volume(),
+			        trade.Price(), order.getId(), order.getParentOrderId(),
+			        order.getStrategyId(), IdGenerator.getInstance()
+			        .getNextID() + "E", order.getUser(),
+			        order.getAccount(), order.getRoute());
+		} catch (OrderException e) {
+			log.error(e.getMessage(), e);
+			return;
+		}
 		
 		// update position holding
 		positionRecord.onTradeUpdate(trade.InstrumentID().getCString(), 

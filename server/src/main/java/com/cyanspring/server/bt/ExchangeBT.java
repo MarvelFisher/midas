@@ -16,6 +16,7 @@ import java.util.TreeSet;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.Execution;
+import com.cyanspring.common.business.OrderException;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamConnection;
@@ -213,26 +214,30 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 	}
 
 	private void fillOrder(ChildOrder order, double price, double qty) {
-		Execution execution = new Execution(order.getSymbol(), order.getSide(), qty,
-				price, order.getId(), order.getParentOrderId(), order.getStrategyId(),
-				IdGenerator.getInstance().getNextID() + "E", order.getUser(), order.getAccount(), order.getRoute());
-		
-		double remainingQty = order.getRemainingQty();
-		double cumQty = order.getCumQty();
-		double avgPx = order.getAvgPx();
-		avgPx = (avgPx * cumQty + execution.getPrice() * execution.getQuantity()) / (cumQty + execution.getQuantity());
-		cumQty += execution.getQuantity();
-		order.setCumQty(cumQty);
-		order.setAvgPx(avgPx);
-		log.debug("cumtQty, avgPx: " + cumQty + ", " + avgPx);
-		order.touch();
+		try {
+			Execution execution = new Execution(order.getSymbol(), order.getSide(), qty,
+					price, order.getId(), order.getParentOrderId(), order.getStrategyId(),
+					IdGenerator.getInstance().getNextID() + "E", order.getUser(), order.getAccount(), order.getRoute());
+			
+			double remainingQty = order.getRemainingQty();
+			double cumQty = order.getCumQty();
+			double avgPx = order.getAvgPx();
+			avgPx = (avgPx * cumQty + execution.getPrice() * execution.getQuantity()) / (cumQty + execution.getQuantity());
+			cumQty += execution.getQuantity();
+			order.setCumQty(cumQty);
+			order.setAvgPx(avgPx);
+			log.debug("cumtQty, avgPx: " + cumQty + ", " + avgPx);
+			order.touch();
 
-		if(PriceUtils.Equal(qty, remainingQty)) {
-			order.setOrdStatus(OrdStatus.FILLED);
-			ackOrder(ExecType.FILLED, order, execution, "");
-		} else {
-			order.setOrdStatus(OrdStatus.PARTIALLY_FILLED);
-			ackOrder(ExecType.PARTIALLY_FILLED, order, execution, "");
+			if(PriceUtils.Equal(qty, remainingQty)) {
+				order.setOrdStatus(OrdStatus.FILLED);
+				ackOrder(ExecType.FILLED, order, execution, "");
+			} else {
+				order.setOrdStatus(OrdStatus.PARTIALLY_FILLED);
+				ackOrder(ExecType.PARTIALLY_FILLED, order, execution, "");
+			}
+		} catch (OrderException e) {
+			log.error(e.getMessage(), e);
 		}
 	}
 	

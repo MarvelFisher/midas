@@ -1,5 +1,9 @@
 package com.cyanspring.info.alert;
+import java.io.DataOutputStream;
+import java.net.URL;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -14,6 +18,7 @@ public class IMThread extends Thread{
 	private String serverAccount = "";
 	private NetEaseClient NEClient;
 	ThreadStatus threadStatus ;
+	private int timeoutSecond;
 	private int retryTimes;
 	private ConcurrentLinkedQueue<ParseData> ParseDataQueue ;
 	
@@ -34,8 +39,9 @@ public class IMThread extends Thread{
     //********************************************************************************************	
 	
 	public IMThread(String strThreadId, ConcurrentLinkedQueue<ParseData> parseDataQueue, 
-			int retryTimes, String serverAccount, String uri, String appKey, 
-			String appSecret, String tokenSalt, String iv, String action)	
+			int timeoutSecond, int retryTimes, String serverAccount, 
+			String uri, String appKey, String appSecret, String tokenSalt, String iv, 
+			String action)	
 	{
 		try
 		{
@@ -48,6 +54,7 @@ public class IMThread extends Thread{
 	        this.action = action;
 			this.startThread = true ;
 	        this.ParseDataQueue = parseDataQueue ;
+	        this.timeoutSecond = timeoutSecond;
 	        this.strThreadId = strThreadId;
 	        this.retryTimes = retryTimes ;
 	        this.threadStatus = new ThreadStatus();
@@ -117,7 +124,7 @@ public class IMThread extends Thread{
 	protected void sendPost(ParseData PD) throws Exception 
 	{ 
 		String strPoststring = 
-				"{\"alert\": \"" + PD.getStrpushMessage() + 
+				"{\"type\": \"3\" \"data\": {\"alert\": \"" + PD.getStrpushMessage() + 
 				"\",\"msgid\":\"" + PD.getStrMsgId() + 
 				"\",\"msgType\":\"" + PD.getStrMsgType() +
                 "\",\"action\":\"" + action + 
@@ -150,5 +157,15 @@ public class IMThread extends Thread{
 	public ThreadStatus getThreadStatus()
 	{
 		return threadStatus ;
+	}
+
+	public String getServerAccount()
+	{
+		return serverAccount;
+	}
+
+	public void setServerAccount(String serverAccount)
+	{
+		this.serverAccount = serverAccount;
 	}
 }

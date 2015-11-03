@@ -2,8 +2,11 @@ package com.cyanspring.cstw.ui.trader.composite.speeddepth.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -212,6 +215,17 @@ public final class SpeedDepthService {
 		}
 	}
 
+	private void logOrder(Map<String, Object> fields) {
+		StringBuffer sb = new StringBuffer();
+		Set<Entry<String, Object>> entrys = fields.entrySet();
+		Iterator<Entry<String, Object>> ite = entrys.iterator();
+		while (ite.hasNext()) {
+			Entry<String, Object> entry = ite.next();
+			sb.append(entry.getValue() + " - " + entry.getValue() + "\n");
+		}
+		log.info("SpeedDepthOrder : " + sb.toString());
+	}
+	
 	public void quickEnterOrder(SpeedDepthModel model, String side,
 			String quantity, String receiverId) {
 		HashMap<String, Object> fields = new HashMap<String, Object>();
@@ -226,6 +240,7 @@ public final class SpeedDepthService {
 		fields.put(OrderField.ACCOUNT.value(), Business.getInstance()
 				.getAccount());
 
+		logOrder(fields);
 		EnterParentOrderEvent event = new EnterParentOrderEvent(Business
 				.getInstance().getInbox(), Business.getInstance()
 				.getFirstServer(), fields, receiverId, false);
@@ -246,6 +261,7 @@ public final class SpeedDepthService {
 		for (Map<String, Object> map : orders) {
 			String symbol = (String) map.get(OrderField.SYMBOL.value());
 			String id = (String) map.get(OrderField.ID.value());
+			
 			OrdStatus status = (OrdStatus) map
 					.get(OrderField.ORDSTATUS.value());
 			boolean isPriceEqual;
@@ -260,6 +276,9 @@ public final class SpeedDepthService {
 			}
 			if (!status.isCompleted() && symbol.equals(currentSymbol)
 					&& isPriceEqual) {
+				if(null != symbol && id != null)
+					log.info("SpeedDepth cancelOrder:{},{}",symbol,id);
+				
 				CancelParentOrderEvent event = new CancelParentOrderEvent(id,
 						Business.getInstance().getFirstServer(), id, false,
 						null, true);

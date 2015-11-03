@@ -4,6 +4,7 @@ import com.cyanspring.common.Clock;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.account.*;
 import com.cyanspring.common.business.Execution;
+import com.cyanspring.common.business.OrderException;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.event.*;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
@@ -14,10 +15,10 @@ import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
-
 import com.cyanspring.server.BusinessManager;
 import com.cyanspring.server.livetrading.TradingUtil;
 import com.cyanspring.server.order.RiskOrderController;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +107,7 @@ public class LumpSumManager implements IPlugin {
         eventProcessor.uninit();
     }
 
-    private void processClosePositionExecution(String symbol, OpenPosition oPosition, double qty) throws PositionException {
+    private void processClosePositionExecution(String symbol, OpenPosition oPosition, double qty) throws PositionException, OrderException {
     	Execution exec = createClosePositionExec(symbol,
         		qty, oPosition.getUser(), oPosition.getAccount(), "");
         if (exec == null) {
@@ -212,7 +213,7 @@ public class LumpSumManager implements IPlugin {
     }
 
     private Execution createClosePositionExec(String symbol, double qty,
-                                              String user, String account, String route) {
+                                              String user, String account, String route) throws OrderException {
         Quote quote = marketData.get(symbol);
         double price = QuoteUtils.getMarketablePrice(quote, qty);
         if (PriceUtils.isZero(price))
