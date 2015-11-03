@@ -24,7 +24,8 @@ Bundle-ClassPath: apache-log4j-extras-1.1.jar,
  cyanspring-event-2.56.jar,
  cyanspring-transport-2.56.jar,
  fst-2.16.jar,
- cyanspring-common-2.56.jar
+ cyanspring-common-2.56.jar,
+ commons-csv-1.2.jar
 Export-Package: com.cyanspring.common;uses:="com.cyanspring.common.business.util,com.cyanspring.common.transport,com.cyanspring.common.event",
  com.cyanspring.common.account,
  com.cyanspring.common.business;uses:="com.cyanspring.common.data,com.cyanspring.common.type,com.cyanspring.common.strategy",
@@ -38,6 +39,7 @@ Export-Package: com.cyanspring.common;uses:="com.cyanspring.common.business.util
  com.cyanspring.common.event,
  com.cyanspring.common.event.account,
  com.cyanspring.common.event.alert;uses:="com.cyanspring.common.event",
+ com.cyanspring.common.event.info,
  com.cyanspring.common.event.kdb,
  com.cyanspring.common.event.marketdata;uses:="com.cyanspring.common.marketdata,com.cyanspring.common.event",
  com.cyanspring.common.event.order;
@@ -48,7 +50,6 @@ Export-Package: com.cyanspring.common;uses:="com.cyanspring.common.business.util
  com.cyanspring.common.event.refdata,
  com.cyanspring.common.event.signal;uses:="com.cyanspring.common.data,com.cyanspring.common.event",
  com.cyanspring.common.event.statistic,
- com.cyanspring.common.event.info,
  com.cyanspring.common.event.strategy;
   uses:="com.cyanspring.common.type,
    com.cyanspring.common.event,
@@ -192,6 +193,7 @@ Export-Package: com.cyanspring.common;uses:="com.cyanspring.common.business.util
    org.apache.activemq.usage,
    org.apache.activemq.util,
    javax.net.ssl",
+ org.apache.commons.csv,
  org.apache.log4j;uses:="org.apache.log4j.helpers,org.apache.log4j.or,org.apache.log4j.spi",
  org.apache.log4j.chainsaw;
   uses:="org.apache.log4j,
