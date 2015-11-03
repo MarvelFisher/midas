@@ -48,7 +48,7 @@ public class OrderSaver extends AbstractReportSaver {
     	            		pOrder.getOrdStatus() + "," + pOrder.getCreated());
     	        }
         	} else if (orderList.get(0) instanceof ChildOrder) {
-        		fileManager.appendToFile("ID,Account,Symbol,OrdSide,Price,Qty,CumQty,AvgPx,Status,Created,ParentOID,ExchangeOID");
+        		fileManager.appendToFile("ID,Account,Symbol,OrdSide,Type,Price,Qty,CumQty,AvgPx,Status,Created,ParentOID,ExchangeOID");
         		for (Order o : orderList) {
         			ChildOrder cOrder = (ChildOrder)o;
     	            if (!TimeUtil.sameDate(date, cOrder.getCreated())) {
@@ -56,9 +56,9 @@ public class OrderSaver extends AbstractReportSaver {
     				}
 
     	            fileManager.appendToFile(cOrder.getId() + "," +cOrder.getAccount() + "," + cOrder.getSymbol() + "," +
-    	            		cOrder.getSide() + "," + df.format(cOrder.getPrice()) + "," + df.format(cOrder.getQuantity()) + "," +
-    	            		df.format(cOrder.getCumQty()) + "," + df.format(cOrder.getAvgPx()) + "," +
-    	            		cOrder.getOrdStatus() + "," + cOrder.getCreated() + "," +
+    	            		cOrder.getSide() + "," + cOrder.getType() + "," + df.format(cOrder.getPrice()) + "," +
+    	            		df.format(cOrder.getQuantity()) + "," + df.format(cOrder.getCumQty()) + "," +
+    	            		df.format(cOrder.getAvgPx()) + "," + cOrder.getOrdStatus() + "," + cOrder.getCreated() + "," +
     	            		cOrder.getParentOrderId() + "," + cOrder.getExchangeOrderId());
     	        }
         	}
