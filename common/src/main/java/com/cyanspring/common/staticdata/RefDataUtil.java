@@ -28,9 +28,8 @@ import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.business.RefDataField;
 import com.cyanspring.common.marketsession.ITradeDate;
+import com.cyanspring.common.marketsession.IndexSessionType;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
-import com.cyanspring.common.staticdata.fu.IType;
-import com.cyanspring.common.staticdata.fu.IndexSessionType;
 import com.cyanspring.common.util.TimeUtil;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -74,7 +73,7 @@ public class RefDataUtil {
 	public static String calSettlementDateByDay(RefData refData, Calendar cal,
 			int dayInMonth) {
 
-		String category = RefDataUtil.getCategory(refData);
+		String category = refData.getCategory();
 		if (!StringUtils.hasText(category)) {
 			return null;
 		}
@@ -108,7 +107,7 @@ public class RefDataUtil {
 	public static String calSettlementDateByTradeDate(RefData refData,
 			Calendar cal, int tradeDateInMonth) {
 
-		String category = RefDataUtil.getCategory(refData);
+		String category = refData.getCategory();
 
 		if (!StringUtils.hasText(category)) {
 			return null;
@@ -151,7 +150,7 @@ public class RefDataUtil {
 	public static String calSettlementDateByWeekDay(RefData refData,
 			Calendar cal, int weeks, int daysInWeek) {
 
-		String category = RefDataUtil.getCategory(refData);
+		String category = refData.getCategory();
 
 		if (!StringUtils.hasText(category)) {
 			return null;
@@ -190,15 +189,6 @@ public class RefDataUtil {
 		return settlementDate;
 	}
 
-	public static String getOnlyChars(String symbol) {
-		Pattern pattern = Pattern.compile("^[a-zA-Z]*");
-		Matcher matcher = pattern.matcher(symbol);
-		if (matcher.find()) {
-			return matcher.group(0);
-		}
-		return null;
-	}
-
 	public static String getSearchIndex(RefData refData) {
 		String index = null;
 		String indexType = refData.getIndexSessionType();
@@ -212,66 +202,6 @@ public class RefDataUtil {
 			}
 		}
 		return index;
-	}
-
-	public static String getCategory(RefData refData) {
-
-		if (null == refData) {
-			return null;
-		}
-
-		String refSymbol = refData.getRefSymbol();
-		if (!StringUtils.hasText(refSymbol)) {
-			return null;
-		}
-
-		String commodity = refData.getCommodity();
-		if (StringUtils.hasText(commodity)) {
-
-			if (RefDataCommodity.INDEX.getValue().equals(commodity)) {
-				return RefDataCommodity.INDEX.name();
-			} else if (RefDataCommodity.STOCK.getValue().equals(commodity)) {
-				return refData.getExchange();
-			} else {
-				return getFutureCategory(refData);
-			}
-		} else {
-
-			String iType = refData.getIType();
-			if (StringUtils.hasText(iType)) {
-
-				if (IType.isFuture(iType)) {
-					return getFutureCategory(refData);
-				} else if (IType.isStock(iType)) {
-					return refData.getExchange();
-				} else if (IType.isIndex(iType)) {
-					return RefDataCommodity.INDEX.name();
-				}
-			}
-		}
-
-		log.warn("can't get category:{}", refData.getRefSymbol());
-		return null;
-	}
-
-	private static String getFutureCategory(RefData refData) {
-		String category = refData.getCategory();
-		if (category != null && category.trim().length() > 0) {
-			return category;
-		}
-
-		category = refData.getRefSymbol().replaceAll(".[A-Z]+$", "")
-				.replaceAll("\\d", "");
-		if (!StringUtils.hasText(category)
-				&& StringUtils.hasText(refData.getCategory())) {
-			return refData.getCategory();
-		}
-
-		if (category.length() > 2) {
-			return category.substring(0, 2).toUpperCase();
-		} else {
-			return category.toUpperCase();
-		}
 	}
 
 	// private static ArrayList<Double> getVolProfile() {

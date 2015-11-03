@@ -27,6 +27,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
 import webcurve.util.PriceUtils;
 
 import com.cyanspring.common.Clock;
@@ -75,12 +76,12 @@ import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyReplyEvent
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyEvent;
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyReplyEvent;
 import com.cyanspring.common.marketsession.DefaultStartEndTime;
+import com.cyanspring.common.marketsession.IndexSessionType;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.WeekDay;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
-import com.cyanspring.common.staticdata.fu.IndexSessionType;
 import com.cyanspring.common.strategy.GlobalStrategySettings;
 import com.cyanspring.common.strategy.IStrategy;
 import com.cyanspring.common.strategy.IStrategyContainer;

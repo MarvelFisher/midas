@@ -1,9 +1,6 @@
 package com.cyanspring.server.validation;
 
-import java.util.EnumSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +13,7 @@ import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
-import com.cyanspring.common.staticdata.fu.IType;
+import com.cyanspring.common.staticdata.RefDataBitUtil;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
@@ -34,8 +31,6 @@ public class AvailablePositionValidator implements IOrderValidator {
     @Autowired
     IRefDataManager refDataManager;
     
-    private Set <IType> futureITypeSet;
-
     @Override
     public void validate(Map<String, Object> map, ParentOrder order) throws OrderValidationException {
 
@@ -64,8 +59,7 @@ public class AvailablePositionValidator implements IOrderValidator {
             if (refData == null) {
             	log.warn("Can't find refData");
             } else {
-            	String type = refData.getIType();         
-            	if (type != null && isFutureIType(type))
+            	if (RefDataBitUtil.isForex(refData.getInstrumentType()))
             		return;
             }
 
@@ -85,19 +79,6 @@ public class AvailablePositionValidator implements IOrderValidator {
         }
     }
 
-    private boolean isFutureIType(String type) {
-    	if( null == getFutureITypeSet() || getFutureITypeSet().isEmpty())
-    		return false;
-    	
-    	Iterator <IType>itypeIte = getFutureITypeSet().iterator();
-    	while(itypeIte.hasNext()){
-    		IType iType = itypeIte.next();
-    		if(iType.getValue().equals(type))
-    			return true;  		
-    	}	
-    	return false;
-	}
-
 	private boolean checkQty(double qty, double availableQty, ParentOrder order) {
 
         double oldQty = 0;
@@ -107,12 +88,4 @@ public class AvailablePositionValidator implements IOrderValidator {
 
         return availableQty + oldQty - qty >= 0;
     }
-
-	public Set<IType> getFutureITypeSet() {
-		return futureITypeSet;
-	}
-
-	public void setFutureITypeSet(Set<IType> futureITypeSet) {
-		this.futureITypeSet = futureITypeSet;
-	}
 }

@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 public enum RefDataField {
 	SYMBOL("Symbol"),
-	DESC("Desc"),
 	EXCHANGE("Exchange"),
 	MARKET("Market"),
 	CURRENCY("Currency"),
@@ -15,15 +14,10 @@ public enum RefDataField {
 	HIGH("High"),
 	LOW("Low"),
 	CONTRACT("Contract"),
-	SINGLE_MA("single MA"),
-	SHORT_MA("short MA"),
-	MID_MA("mid MA"),
-	LONG_MA("long MA"),
 	EN_DISPLAYNAME("ENName"),
 	TW_DISPLAYNAME("TWName"),
 	CN_DISPLAYNAME("CNName"),
 	REF_SYMBOL("Ref symbol"),  // 相關商品. ex : 股票選擇權裡面的股票
-	TYPE("Type"),    // 股票/期貨/選擇權 ...
 	CATEGORY("Category"),      // 商品分類 . ex IF
 	TICK_TABLE("Tick table"),  // tick table ref
 	SETTLEMENT_DATE("Settlement date"),  // 到期日
@@ -43,10 +37,8 @@ public enum RefDataField {
 	DECIMALPOINT("Decimal point"),  // 小數位數
 	DENOMINATOR("Denominator"),     // 分母
 	NUMERATOR_DP("Numerator DP"),   // 分子小數位數
-	TRADABLE("Tradable"),			// 是否可交易
 	STRATEGY("Strategy"),
 	SPELL_NAME("Spell name"),
-	COMMODITY("Commodity"),			// LTS 商品類型
 	DETAIL_EN("Detail EN"),
 	DETAIL_TW("Detail TW"),
 	DETAIL_CN("Detail CN"),
@@ -54,10 +46,12 @@ public enum RefDataField {
 	SPOT_CNNAME("Spot CNName"),
 	SPOT_TWNAME("Spot TWName"),
 	CODE("Code"),							// WindCode
-	ITYPE("IType"),							// Wind商品類型
 	INDEX_SESSION_TYPE("Index Session Type"),  // marketSessionType settlement/spot/exchange
 	SUBSCRIBE_SYMBOL("Subscribe symbol"),
-	DAY_TRADABLE("Day tradable") //是否可當沖
+	INSTRUMENT_TYPE("Instrument type"),
+	COMMISSION_TABLE("Commission table"),
+	TRADABLE_DAYS("Tradable days"),
+	CONTRACT_POLICY("Contract policy")
 	;
 
 	static HashMap<String, RefDataField> map = new HashMap<String, RefDataField>();

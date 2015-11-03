@@ -164,6 +164,10 @@ public class WindDataParser extends AbstractWindDataParser {
                             futureData = new FutureData();
                             futureData.setWindCode(value);
                             futureData.setCode(value.split("\\.")[0]);
+                            futureData.setAskPrice(new long[]{0});
+                            futureData.setAskVol(new long[]{0});
+                            futureData.setBidPrice(new long[]{0});
+                            futureData.setBidVol(new long[]{0});
                             futureDataBySymbolMap.put(value, futureData);
                         }
                     }
@@ -269,6 +273,10 @@ public class WindDataParser extends AbstractWindDataParser {
                 futureData = new FutureData();
                 futureData.setWindCode(symbol);
                 futureData.setCode(symbol.split("\\.")[0]);
+                futureData.setAskPrice(new long[]{0});
+                futureData.setAskVol(new long[]{0});
+                futureData.setBidPrice(new long[]{0});
+                futureData.setBidVol(new long[]{0});
                 futureDataBySymbolMap.put(symbol, futureData);
             }
             if (null != inputHashMap.get(FDTFields.ActionDay))
@@ -343,6 +351,10 @@ public class WindDataParser extends AbstractWindDataParser {
                             stockData = new StockData();
                             stockData.setWindCode(value);
                             stockData.setCode(value.split("\\.")[0]);
+                            stockData.setAskPrice(new long[]{0});
+                            stockData.setAskVol(new long[]{0});
+                            stockData.setBidPrice(new long[]{0});
+                            stockData.setBidVol(new long[]{0});
                             stockDataBySymbolMap.put(value, stockData);
                         }
                     }
@@ -480,6 +492,10 @@ public class WindDataParser extends AbstractWindDataParser {
                 stockData = new StockData();
                 stockData.setWindCode(symbol);
                 stockData.setCode(symbol.split("\\.")[0]);
+                stockData.setAskPrice(new long[]{0});
+                stockData.setAskVol(new long[]{0});
+                stockData.setBidPrice(new long[]{0});
+                stockData.setBidVol(new long[]{0});
                 stockDataBySymbolMap.put(symbol, stockData);
             }
             if (null != inputHashMap.get(FDTFields.ActionDay))

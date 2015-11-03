@@ -229,21 +229,15 @@
      <bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler">
 		<property name="eventManager" ref="eventManager"/>
 	</bean>
-    <!--<bean id="refDataHandler" class="com.cyanspring.common.refdata.DealerRefDataHandler">
-		<constructor-arg>
-			<list>
-				<ref bean="refDataAdapterFCI"/>
-			</list>
-		</constructor-arg>    
-		<property name="eventManager" ref="eventManager"/>
-	</bean> -->
     
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
 		<property name="refDataTemplatePath">
-			<!--<value>refdata/template/template_FC.xml</value>-->
-			 <value>refdata/refData_livefc.xml</value> 
+			<value>refdata/template/template_LiveFC.xml</value>
+			<!-- <value>refdata/refData_livefc.xml</value> -->
 		</property>
-		<property name="templateListAsRefDataList" value="true"></property>
+		<property name="refDataFile">
+            <value>ticks/last.xml</value>
+        </property>
     </bean>
     
 	<bean id="refDataUtil" class="com.cyanspring.common.staticdata.RefDataUtil">

@@ -297,20 +297,18 @@
 	<bean id="commissionManager" class="com.cyanspring.server.account.FTCommissionManager">
 		<property name="trxTaxRate" value="0.00002" />
 	</bean>
-
-	<bean id="refDataHandler" class="com.cyanspring.common.refdata.DealerRefDataHandler">
-		<constructor-arg>
-			<list>
-				<ref bean="refDataAdapterFT" />
-			</list>
-		</constructor-arg>
-		<property name="eventManager" ref="eventManager" />
-	</bean>
+	
+	<bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler">
+        <property name="eventManager" ref="eventManager"/>
+    </bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
 		<property name="refDataTemplatePath">
 			<value>refdata/template/template_FT.xml</value>
 		</property>
+		<property name="refDataFile">
+            <value>ticks/last.xml</value>
+        </property>
 	</bean>
 
 	<bean id="refDataUtil" class="com.cyanspring.common.staticdata.RefDataUtil">
@@ -385,28 +383,6 @@
 		</property>
 	</bean>
 
-	<bean id="categoryFilter" class="com.cyanspring.common.filter.CategoryFilter">
-		<property name="refDataTplLoader" ref="refDataTplLoader"></property>
-	</bean>
-
-	<bean id="itypeFilter" class="com.cyanspring.common.filter.ITypeFilter">
-		<property name="types">
-			<list>
-				<value>FUTURES_FT</value>
-				<value>EXCHANGE_INDEX</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="refDataFilter" class="com.cyanspring.common.filter.RefDataFilter">
-		<constructor-arg>
-			<list>
-				<ref bean="categoryFilter" />
-				<ref bean="itypeFilter" />
-			</list>
-		</constructor-arg>
-	</bean>
-
 	<bean id="indexMarketSessionManager"
 		class="com.cyanspring.common.marketsession.IndexMarketSessionManager">
 		<property name="settlementDelay">
@@ -425,7 +401,7 @@
 		</constructor-arg>
 	</bean>
 
-	<bean id="twfStrategy" class="com.cyanspring.common.staticdata.fu.TWFStrategy">
+	<bean id="twfStrategy" class="com.cyanspring.common.staticdata.strategy.TWFStrategy">
 		<property name="weekOfMonth">
 			<value>3</value>
 		</property>

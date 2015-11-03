@@ -1,0 +1,19 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/context
+	    http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+	<bean id="windAdaptor"
+		  class="com.cyanspring.marketdata.adaptor.WindAdaptor">
+		<property name="id" value="W01"/>
+		<property name="gatewayIp" value="10.0.0.32"/>
+		<property name="gatewayPort" value="10048"/>
+		<property name="marketDataLog" value="true"/>
+		<property name="isSubTrans" value="false"/>
+	</bean>
+
+</beans>

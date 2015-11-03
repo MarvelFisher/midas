@@ -28,7 +28,7 @@ import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.order.ChildOrderUpdateEvent;
 import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
-import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
+//import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.event.AsyncEventProcessor;
@@ -81,7 +81,7 @@ public class InfoGateway implements IPlugin {
 				}
 			}
 			subscribeToEvent(RefDataEvent.class, null);
-			subscribeToEvent(RefDataUpdateEvent.class, null);
+//			subscribeToEvent(RefDataUpdateEvent.class, null);
 		}
 
 		@Override
@@ -265,17 +265,17 @@ public class InfoGateway implements IPlugin {
 		}
 	}
 	
-	public void processRefDataUpdateEvent(RefDataUpdateEvent event) {
-		RefDataUpdateEvent.Action act = event.getAction();
-		for (RefData refdata : event.getRefDataList()) {
-			if (act == RefDataUpdateEvent.Action.DEL) {
-				refDataMap.remove(refdata.getSymbol());
-			}
-			else {
-				refDataMap.put(refdata.getSymbol(), refdata);
-			}
-		}
-	}
+//	public void processRefDataUpdateEvent(RefDataUpdateEvent event) {
+//		RefDataUpdateEvent.Action act = event.getAction();
+//		for (RefData refdata : event.getRefDataList()) {
+//			if (act == RefDataUpdateEvent.Action.DEL) {
+//				refDataMap.remove(refdata.getSymbol());
+//			}
+//			else {
+//				refDataMap.put(refdata.getSymbol(), refdata);
+//			}
+//		}
+//	}
 	
 	public RefData getRefData(String symbol) {
 		if (refDataMap == null)

@@ -1,8 +1,23 @@
 package com.cyanspring.adaptor.future.wind;
 
+import com.cyanspring.common.marketsession.IndexSessionType;
 import com.cyanspring.network.transport.FDTFields;
 import com.cyanspring.network.transport.FDTFrameDecoder;
 import com.cyanspring.adaptor.future.wind.data.*;
+import com.cyanspring.common.Clock;
+import com.cyanspring.common.data.DataObject;
+import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.common.event.IAsyncEventListener;
+import com.cyanspring.common.event.marketsession.IndexSessionEvent;
+import com.cyanspring.common.event.refdata.RefDataEvent;
+import com.cyanspring.common.marketdata.*;
+import com.cyanspring.common.marketsession.MarketSessionData;
+import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.util.DualMap;
+import com.cyanspring.common.util.TimeUtil;
+import com.cyanspring.id.Library.Util.FixStringBuilder;
+import com.cyanspring.id.Library.Util.LogUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,53 +25,15 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-
-import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.adaptor.future.wind.data.DataTimeStat;
-import com.cyanspring.adaptor.future.wind.data.FutureData;
-import com.cyanspring.adaptor.future.wind.data.IndexData;
-import com.cyanspring.adaptor.future.wind.data.StockData;
-import com.cyanspring.adaptor.future.wind.data.TransationData;
-import com.cyanspring.adaptor.future.wind.data.WindDataParser;
-import com.cyanspring.adaptor.future.wind.data.WindIndexSessionCheckData;
-import com.cyanspring.common.Clock;
-import com.cyanspring.common.data.DataObject;
-import com.cyanspring.common.event.AsyncEvent;
-import com.cyanspring.common.event.IAsyncEventListener;
-import com.cyanspring.common.event.marketsession.IndexSessionEvent;
-import com.cyanspring.common.event.refdata.RefDataEvent;
-import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
-import com.cyanspring.common.marketdata.IMarketDataAdaptor;
-import com.cyanspring.common.marketdata.IMarketDataListener;
-import com.cyanspring.common.marketdata.IMarketDataStateListener;
-import com.cyanspring.common.marketdata.InnerQuote;
-import com.cyanspring.common.marketdata.MarketDataException;
-import com.cyanspring.common.marketdata.Quote;
-import com.cyanspring.common.marketdata.QuoteExtDataField;
-import com.cyanspring.common.marketdata.SymbolField;
-import com.cyanspring.common.marketdata.SymbolInfo;
-import com.cyanspring.common.marketdata.Trade;
-import com.cyanspring.common.marketsession.MarketSessionData;
-import com.cyanspring.common.marketsession.MarketSessionType;
-import com.cyanspring.common.staticdata.RefData;
-import com.cyanspring.common.staticdata.fu.IndexSessionType;
-import com.cyanspring.common.util.DualMap;
-import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.id.Library.Util.FixStringBuilder;
-import com.cyanspring.id.Library.Util.LogUtil;
+import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 
 public class WindGateWayAdapter implements IMarketDataAdaptor
         , IWindGWListener, IAsyncEventListener {
@@ -162,9 +139,13 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
 
     public void processGateWayMessage(int datatype, String[] in_arr, HashMap<Integer, Object> inputMessageHashMap) {
         if (msgPack) {
-            if (inputMessageHashMap == null || inputMessageHashMap.size() == 0) return;
+            if (inputMessageHashMap == null || inputMessageHashMap.size() == 0) {
+				return;
+			}
         } else {
-            if (in_arr == null) return;
+            if (in_arr == null) {
+				return;
+			}
         }
         switch (datatype) {
             case WindDef.MSG_SYS_HEART_BEAT:
@@ -188,10 +169,12 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
                 }
                 String index = marketRuleBySymbolMap.get(stockData.getWindCode());
                 if (stockData.getActionDay() > stockData.getTradingDay()
-                        && stockData.getActionDay() == indexSessionCheckDataByIndexMap.get(index).getTradeDateForWindFormat())
-                    stockData.setTradingDay(stockData.getActionDay());
-                if (!dataCheck("S", stockData.getWindCode(), stockData.getTime(), stockData.getTradingDay(), stockData.getStatus()))
-                    return;
+                        && stockData.getActionDay() == indexSessionCheckDataByIndexMap.get(index).getTradeDateForWindFormat()) {
+					stockData.setTradingDay(stockData.getActionDay());
+				}
+                if (!dataCheck("S", stockData.getWindCode(), stockData.getTime(), stockData.getTradingDay(), stockData.getStatus())) {
+					return;
+				}
                 quoteMgr.AddRequest(new Object[]{
                         WindDef.MSG_DATA_MARKET, stockData.clone()});
             }
@@ -208,10 +191,12 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
                 }
                 String index = marketRuleBySymbolMap.get(indexData.getWindCode());
                 if (indexData.getActionDay() > indexData.getTradingDay()
-                        && indexData.getActionDay() == indexSessionCheckDataByIndexMap.get(index).getTradeDateForWindFormat())
-                    indexData.setTradingDay(indexData.getActionDay());
-                if (!dataCheck("I", indexData.getWindCode(), indexData.getTime(), indexData.getTradingDay(), -1))
-                    return;
+                        && indexData.getActionDay() == indexSessionCheckDataByIndexMap.get(index).getTradeDateForWindFormat()) {
+					indexData.setTradingDay(indexData.getActionDay());
+				}
+                if (!dataCheck("I", indexData.getWindCode(), indexData.getTime(), indexData.getTradingDay(), -1)) {
+					return;
+				}
                 quoteMgr.AddRequest(new Object[]{
                         WindDef.MSG_DATA_INDEX, indexData.clone()});
             }
@@ -226,9 +211,12 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
                     LogUtil.logException(log, e);
                     return;
                 }
-                if (useRefDataCodeSubscribe) futureData.setPreSettlePrice(futureData.getPreClose());
-                if (!dataCheck("F", futureData.getWindCode(), futureData.getTime(), futureData.getTradingDay(), -1))
-                    return;
+                if (useRefDataCodeSubscribe) {
+					futureData.setPreSettlePrice(futureData.getPreClose());
+				}
+                if (!dataCheck("F", futureData.getWindCode(), futureData.getTime(), futureData.getTradingDay(), -1)) {
+					return;
+				}
                 quoteMgr.AddRequest(new Object[]{
                         WindDef.MSG_DATA_FUTURE, futureData.clone()});
             }
@@ -243,8 +231,9 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
                     LogUtil.logException(log, e);
                     return;
                 }
-                if (!dataCheck("T", transationData.getWindCode(), transationData.getTime(), transationData.getActionDay(), -1))
-                    return;
+                if (!dataCheck("T", transationData.getWindCode(), transationData.getTime(), transationData.getActionDay(), -1)) {
+					return;
+				}
                 quoteMgr.AddRequest(new Object[]{
                         WindDef.MSG_DATA_TRANSACTION, transationData.clone()});
             }
@@ -261,10 +250,18 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
         boolean isCorrect = true;
         try {
             String title = "";
-            if ("F".equals(type)) title = WindDef.TITLE_FUTURE;
-            if ("S".equals(type)) title = WindDef.TITLE_STOCK;
-            if ("I".equals(type)) title = WindDef.TITLE_INDEX;
-            if ("T".equals(type)) title = WindDef.TITLE_TRANSATION;
+            if ("F".equals(type)) {
+				title = WindDef.TITLE_FUTURE;
+			}
+            if ("S".equals(type)) {
+				title = WindDef.TITLE_STOCK;
+			}
+            if ("I".equals(type)) {
+				title = WindDef.TITLE_INDEX;
+			}
+            if ("T".equals(type)) {
+				title = WindDef.TITLE_TRANSATION;
+			}
             if ("S".equals(type)) {
                 switch (status) {
                     case WindDef.STOCK_STATUS_STOP_SYMBOL:
@@ -333,7 +330,9 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
                     } else {
                         f.channel().closeFuture().sync();
                     }
-                    if (!isAlive) return;
+                    if (!isAlive) {
+						return;
+					}
                 } catch (Exception e) {
                     log.warn(e.getMessage(), e);
                 }
@@ -345,12 +344,16 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         } finally {
-            if (eventLoopGroup != null) eventLoopGroup.shutdownGracefully();
+            if (eventLoopGroup != null) {
+				eventLoopGroup.shutdownGracefully();
+			}
         }
     }
 
     public void updateState(boolean connected) {
-        if (isAlive) sendState(connected);
+        if (isAlive) {
+			sendState(connected);
+		}
     }
 
     /**
@@ -393,7 +396,9 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
         if(controlReqThread != null){
             queue.offer(new Integer(0));
         }
-        if(marketsList != null) Collections.sort(marketsList);
+        if(marketsList != null) {
+			Collections.sort(marketsList);
+		}
     }
 
     @Override
@@ -433,8 +438,9 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
     @Override
     public void subscribeMarketData(String symbol,
                                     IMarketDataListener listener) throws MarketDataException {
-        if (symbol.isEmpty())
-            return;
+        if (symbol.isEmpty()) {
+			return;
+		}
         checkUserClient(symbol, listener, true);
         if(useRefDataCodeSubscribe){
             if(codeBySymbols != null){
@@ -450,7 +456,9 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
         if(marketsList!= null){
             if(exchangeBySymbols.get(symbol) != null) {
                 int index = Collections.binarySearch(marketsList, exchangeBySymbols.get(symbol));
-                if (index < 0) return;
+                if (index < 0) {
+					return;
+				}
             }else {
                 log.debug(id + " Symbol No exchange in RefData," + symbol);
                 return;
@@ -471,8 +479,8 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
     public void checkUserClient(String symbol, IMarketDataListener listener, boolean controlFlag){
         boolean bFound = false;
         List<UserClient> clients = new ArrayList<UserClient>(clientsList);
-        for (UserClient client : clients)
-            if (client.listener == listener) {
+        for (UserClient client : clients) {
+			if (client.listener == listener) {
                 if(controlFlag){
                     client.addSymbol(symbol);
                 }else{
@@ -481,6 +489,7 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
                 bFound = true;
                 break;
             }
+		}
 
         if (!bFound) {
             UserClient client = new UserClient(listener);
@@ -501,7 +510,9 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
 
     @Override
     public void subscribeMultiMarketData(List<String> subscribeList, IMarketDataListener listener) throws MarketDataException {
-        if (subscribeList == null || subscribeList.size() == 0) return;
+        if (subscribeList == null || subscribeList.size() == 0) {
+			return;
+		}
         StringBuffer sb = new StringBuffer();
         for(String symbol : subscribeList){
             checkUserClient(symbol, listener, true);
@@ -518,7 +529,9 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
             //Check Exchange
             if(marketsList!= null && exchangeBySymbols.get(symbol) != null){
                 int index = Collections.binarySearch(marketsList, exchangeBySymbols.get(symbol));
-                if(index < 0) continue;
+                if(index < 0) {
+					continue;
+				}
             }
             if(sb.length()+symbol.length() >= WindDef.SUBSCRIBE_MAX_LENGTH){
                 subscribe(sb.toString());
@@ -606,8 +619,9 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
 
     public void inputRefDataList(List<RefData> refDataList){
         for (RefData refData : refDataList) {
-            if(refData.getIndexSessionType() == null || "".equals(refData.getIndexSessionType()))
-                continue;
+            if(refData.getIndexSessionType() == null || "".equals(refData.getIndexSessionType())) {
+				continue;
+			}
 
             String symbol = refData.getSymbol();
             if(useRefDataCodeSubscribe){
@@ -621,7 +635,9 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
                 }
             }
             String exchange = refData.getExchange();
-            if(exchange != null ) exchangeBySymbols.put(symbol, exchange);
+            if(exchange != null ) {
+				exchangeBySymbols.put(symbol, exchange);
+			}
             String indexSessionType = refData.getIndexSessionType();
             if(IndexSessionType.EXCHANGE.name().equals(indexSessionType)){
                 marketRuleBySymbolMap.put(symbol, refData.getExchange());
@@ -680,14 +696,17 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
         if (msgPack) {
             if (msg instanceof HashMap) {
                 processMsgPackRead((HashMap) msg);
-                if (calculateMessageFlow(FDTFrameDecoder.getPacketLen(), FDTFrameDecoder.getReceivedBytes()))
-                    FDTFrameDecoder.ResetCounter();
+                if (calculateMessageFlow(FDTFrameDecoder.getPacketLen(), FDTFrameDecoder.getReceivedBytes())) {
+					FDTFrameDecoder.ResetCounter();
+				}
             }
         } else {
             if (msg instanceof String) {
                 String msgStr = (String) msg;
                 processNoMsgPackRead(msgStr);
-                if (calculateMessageFlow(msgStr.length(), dataReceived)) dataReceived = 0;
+                if (calculateMessageFlow(msgStr.length(), dataReceived)) {
+					dataReceived = 0;
+				}
             }
         }
     }
@@ -701,27 +720,6 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
         if (event instanceof RefDataEvent) {
             RefDataEvent refDataEvent = (RefDataEvent) event;
             inputRefDataList(refDataEvent.getRefDataList());
-        }
-
-        if(event instanceof RefDataUpdateEvent){
-            RefDataUpdateEvent refDataUpdateEvent = (RefDataUpdateEvent) event;
-            switch (refDataUpdateEvent.getAction()){
-                case ADD:
-                    inputRefDataList(refDataUpdateEvent.getRefDataList());
-                    break;
-                case MOD:
-                    inputRefDataList(refDataUpdateEvent.getRefDataList());
-                    break;
-                case DEL:
-                    for(RefData refData: refDataUpdateEvent.getRefDataList()){
-                        if(marketRuleBySymbolMap.containsKey(refData.getSymbol())){
-                            marketRuleBySymbolMap.remove(refData.getSymbol());
-                        }
-                    }
-                    break;
-                default:
-                    break;
-            }
         }
 
         if (event instanceof IndexSessionEvent) {
@@ -758,7 +756,9 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
     /* netty process method*/
 
     public void sendData(String data) {
-        if (!msgPack) data = data + "\r\n";
+        if (!msgPack) {
+			data = data + "\r\n";
+		}
         this.channelHandlerContext.channel().writeAndFlush(data);
     }
 
@@ -858,6 +858,20 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
     }
 
     public void processMsgPackRead(HashMap hashMap) {
+        int packType = (int) hashMap.get(FDTFields.PacketType);
+        if (packType == FDTFields.PacketArray) {
+            ArrayList<HashMap> arrayList = (ArrayList<HashMap>) hashMap.get(FDTFields.ArrayOfPacket);
+            for (HashMap innerHashMap : arrayList) {
+                printMsgPackLog(innerHashMap);
+                processGateWayMessage(parsePackTypeToDataType((int) innerHashMap.get(FDTFields.PacketType), innerHashMap), null, innerHashMap);
+            }
+        } else {
+            printMsgPackLog(hashMap);
+            processGateWayMessage(parsePackTypeToDataType(packType, hashMap), null, hashMap);
+        }
+    }
+
+    public void printMsgPackLog(HashMap hashMap){
         if (marketDataLog){
             StringBuffer sb = new StringBuffer();
             for (Object key : hashMap.keySet()) {
@@ -875,24 +889,25 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
             }
             log.debug(sb.toString());
         }
-        int packType = (int) hashMap.get(FDTFields.PacketType);
-        if (packType == FDTFields.PacketArray) {
-            ArrayList<HashMap> arrayList = (ArrayList<HashMap>) hashMap.get(FDTFields.ArrayOfPacket);
-            for (HashMap innerHashMap : arrayList) {
-                processGateWayMessage(parsePackTypeToDataType((int) innerHashMap.get(FDTFields.PacketType), innerHashMap), null, innerHashMap);
-            }
-        } else {
-            processGateWayMessage(parsePackTypeToDataType(packType, hashMap), null, hashMap);
-        }
     }
 
     public int parsePackTypeToDataType(int packType, HashMap hashMap) {
         int dataType = -1;
-        if (packType == FDTFields.WindFutureData) dataType = WindDef.MSG_DATA_FUTURE;
-        if (packType == FDTFields.WindMarketData) dataType = WindDef.MSG_DATA_MARKET;
-        if (packType == FDTFields.WindIndexData) dataType = WindDef.MSG_DATA_INDEX;
-        if (packType == FDTFields.WindTransaction) dataType = WindDef.MSG_DATA_TRANSACTION;
-        if (hashMap.get(FDTFields.WindSymbolCode) == null) dataType = -1;
+        if (packType == FDTFields.WindFutureData) {
+			dataType = WindDef.MSG_DATA_FUTURE;
+		}
+        if (packType == FDTFields.WindMarketData) {
+			dataType = WindDef.MSG_DATA_MARKET;
+		}
+        if (packType == FDTFields.WindIndexData) {
+			dataType = WindDef.MSG_DATA_INDEX;
+		}
+        if (packType == FDTFields.WindTransaction) {
+			dataType = WindDef.MSG_DATA_TRANSACTION;
+		}
+        if (hashMap.get(FDTFields.WindSymbolCode) == null) {
+			dataType = -1;
+		}
         return dataType;
     }
 

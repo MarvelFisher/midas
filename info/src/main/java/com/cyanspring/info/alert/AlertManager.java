@@ -40,6 +40,7 @@ import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.RefDataBitUtil;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.info.alert.Compute;
 
@@ -234,7 +235,15 @@ public class AlertManager extends Compute {
                         null, parentOrder.getQuantity(), parentOrder.getPrice(),
                         Datetime, tradeMessage);
             }
-			TA.setCommodity(refdata.getCommodity());
+            if (RefDataBitUtil.isForex(refdata.getInstrumentType())) {
+            	TA.setCommodity("F");
+            }
+            else if (RefDataBitUtil.isIndex(refdata.getInstrumentType())) {
+            	TA.setCommodity("I");
+            }
+            else if (RefDataBitUtil.isStock(refdata.getInstrumentType())) {
+            	TA.setCommodity("S");
+            }
             String keyValue = parentOrder.getSymbol() + "," + strAvgPx + ","
                     + strQty + ","
                     + (parentOrder.getSide().isBuy() ? "BOUGHT" : "SOLD");
@@ -348,7 +357,15 @@ public class AlertManager extends Compute {
 						null, execution.getQuantity(), execution.getPrice(),
 						Datetime, tradeMessage);
 			}
-			TA.setCommodity(refdata.getCommodity());
+            if (RefDataBitUtil.isForex(refdata.getInstrumentType())) {
+            	TA.setCommodity("F");
+            }
+            else if (RefDataBitUtil.isIndex(refdata.getInstrumentType())) {
+            	TA.setCommodity("I");
+            }
+            else if (RefDataBitUtil.isStock(refdata.getInstrumentType())) {
+            	TA.setCommodity("S");
+            }
 			String keyValue = execution.getSymbol() + "," + strPrice + ","
 					+ strQty + ","
 					+ (execution.getSide().isBuy() ? "BOUGHT" : "SOLD");
@@ -593,7 +610,15 @@ public class AlertManager extends Compute {
 							alert.getPrice(), alert.getDateTime(),
 							alert.getContent());
 					pastPriceAlert.setId(alert.getId());
-					pastPriceAlert.setCommodity(refdata.getCommodity());
+		            if (RefDataBitUtil.isForex(refdata.getInstrumentType())) {
+		            	pastPriceAlert.setCommodity("F");
+		            }
+		            else if (RefDataBitUtil.isIndex(refdata.getInstrumentType())) {
+		            	pastPriceAlert.setCommodity("I");
+		            }
+		            else if (RefDataBitUtil.isStock(refdata.getInstrumentType())) {
+		            	pastPriceAlert.setCommodity("S");
+		            }
 					SQLSave(pastPriceAlert);
 					// Add Alert to pastUserPriceAlertList
 					UserPriceList = userPastPriceAlerts.get(alert.getUserId());
@@ -620,7 +645,15 @@ public class AlertManager extends Compute {
 							alert.getUserId(), alert.getSymbol(),
 							alert.getPrice(), setDateTime, alert.getContent());
 					curPriceAlert.setId(alert.getId());
-					curPriceAlert.setCommodity(refdata.getCommodity());
+		            if (RefDataBitUtil.isForex(refdata.getInstrumentType())) {
+		            	curPriceAlert.setCommodity("F");
+		            }
+		            else if (RefDataBitUtil.isIndex(refdata.getInstrumentType())) {
+		            	curPriceAlert.setCommodity("I");
+		            }
+		            else if (RefDataBitUtil.isStock(refdata.getInstrumentType())) {
+		            	curPriceAlert.setCommodity("S");
+		            }
 					SQLDelete(curPriceAlert);
 					// Delete Alert from CurUserPriceAlertList
 					UserPriceList = userPriceAlerts.get(alert.getUserId());
@@ -785,7 +818,15 @@ public class AlertManager extends Compute {
 					priceAlert.getPrice(), priceAlert.getDateTime(),
 					priceAlert.getContent());
 			curPriceAlert.setId(priceAlert.getId());
-			curPriceAlert.setCommodity(refdata.getCommodity());
+            if (RefDataBitUtil.isForex(refdata.getInstrumentType())) {
+            	curPriceAlert.setCommodity("F");
+            }
+            else if (RefDataBitUtil.isIndex(refdata.getInstrumentType())) {
+            	curPriceAlert.setCommodity("I");
+            }
+            else if (RefDataBitUtil.isStock(refdata.getInstrumentType())) {
+            	curPriceAlert.setCommodity("S");
+            }
 			SQLSave(curPriceAlert);
 			// SendPriceAlertreplyEvent
 			pricealertreplyevent = new PriceAlertReplyEvent(null,
@@ -917,7 +958,15 @@ public class AlertManager extends Compute {
 								priceAlert.getDateTime(),
 								priceAlert.getContent());
 						curPriceAlert.setId(priceAlert.getId());
-						curPriceAlert.setCommodity(refdata.getCommodity());
+			            if (RefDataBitUtil.isForex(refdata.getInstrumentType())) {
+			            	curPriceAlert.setCommodity("F");
+			            }
+			            else if (RefDataBitUtil.isIndex(refdata.getInstrumentType())) {
+			            	curPriceAlert.setCommodity("I");
+			            }
+			            else if (RefDataBitUtil.isStock(refdata.getInstrumentType())) {
+			            	curPriceAlert.setCommodity("S");
+			            }
 						SQLUpdate(curPriceAlert);
 						// SendPriceAlertreplyEvent
 						pricealertreplyevent = new PriceAlertReplyEvent(null,
@@ -1001,7 +1050,15 @@ public class AlertManager extends Compute {
 						priceAlert.getPrice(), priceAlert.getDateTime(),
 						priceAlert.getContent());
 				curPriceAlert.setId(priceAlert.getId());
-				curPriceAlert.setCommodity(refdata.getCommodity());
+	            if (RefDataBitUtil.isForex(refdata.getInstrumentType())) {
+	            	curPriceAlert.setCommodity("F");
+	            }
+	            else if (RefDataBitUtil.isIndex(refdata.getInstrumentType())) {
+	            	curPriceAlert.setCommodity("I");
+	            }
+	            else if (RefDataBitUtil.isStock(refdata.getInstrumentType())) {
+	            	curPriceAlert.setCommodity("S");
+	            }
 				SQLDelete(curPriceAlert);
 				// SendPriceAlertreplyEvent
 				pricealertreplyevent = new PriceAlertReplyEvent(null,

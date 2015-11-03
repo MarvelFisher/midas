@@ -3,6 +3,7 @@ package com.cyanspring.server.account;
 import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -302,8 +303,8 @@ public class TestPositionKeeper {
 		}
 
         @Override
-        public boolean updateAll(String tradeDate) throws Exception {
-            return false;
+        public List<RefData> updateAll(String tradeDate) throws Exception {
+            return new ArrayList<>();
         }
 
         @Override
@@ -333,19 +334,8 @@ public class TestPositionKeeper {
 		}
 
 		@Override
-		public void injectRefDataList(List<RefData> refDataList) {
-
-		}
-
-		@Override
 		public void clearRefData() {
 
-		}
-
-		@Override
-		public RefData add(RefData refData, String tradeDate) throws Exception {
-			// TODO Auto-generated method stub
-			return null;
 		}
 
 		@Override

@@ -2,15 +2,12 @@ package com.cyanspring.common.refdata;
 
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.event.*;
-import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.marketsession.InternalSessionEvent;
 import com.cyanspring.common.event.marketsession.InternalSessionRequestEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionRequestEvent;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
-import com.cyanspring.common.event.refdata.RefDataUpdateEvent;
-import com.cyanspring.common.event.refdata.RefDataUpdateEvent.Action;
 import com.cyanspring.common.marketsession.MarketSessionData;
 import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.staticdata.IRefDataManager;
@@ -87,7 +84,7 @@ public class FileRefDataHandler implements IPlugin {
 				return;
 			currentType = event.getSession();
 
-			if (refDataManager.updateAll(event.getTradeDate())) {
+			if (refDataManager.updateAll(event.getTradeDate()).size() > 0) {
 				eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
 				log.info("Update refData size: {}", refDataManager.getRefDataList().size());
 			}
@@ -114,16 +111,11 @@ public class FileRefDataHandler implements IPlugin {
 					if (!data.getSessionType().equals(MarketSessionType.PREMARKET))
 						continue;
 					log.info("Update refData index: {}", e.getKey());
-					refDataManager.update(e.getKey(), data.getTradeDateByString());
-					for (RefData refData : refDataManager.getRefDataList()) {
-						if (e.getKey().equals(refData.getCategory()))
-							send.add(refData);
-					}
-
+					send.addAll(refDataManager.update(e.getKey(), data.getTradeDateByString()));
 				}
 
 				if (send.size() > 0)
-					eventManager.sendGlobalEvent(new RefDataUpdateEvent(null, null, send, Action.MOD));
+					eventManager.sendGlobalEvent(new RefDataEvent(null, null, send, true));
 			}
 		} catch (Exception err) {
 			log.error(err.getMessage(), err);

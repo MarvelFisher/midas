@@ -21,7 +21,6 @@
 				<!-- <ref bean="marketSessionManager" /> -->
 				<ref bean="marketSessionUtil" />
 				<ref bean="indexMarketSessionManager" />
-				<ref bean="refDataHandler" />
 				<ref bean="mdManager" />
 				<ref bean="downStreamManager" />
 				<ref bean="upStreamManager" />
@@ -294,15 +293,6 @@
 
 	<bean id="commissionManager" class="com.cyanspring.server.account.FTCommissionManager">
 		<property name="trxTaxRate" value="0.00002" />
-	</bean>
-
-	<bean id="refDataHandler" class="com.cyanspring.common.refdata.DealerRefDataHandler">
-		<constructor-arg>
-			<list>
-				<ref bean="refDataAdaptor" />
-			</list>
-		</constructor-arg>
-		<property name="eventManager" ref="eventManager" />
 	</bean>
 
 	<bean id="refDataAdaptor" class="com.cyanspring.server.sim.SimTWFRefDataAdapter">

@@ -3,7 +3,7 @@ package com.cyanspring.marketdata.data;
 /**
  * Wind Stock Data
  */
-public class StockData {
+public class StockData implements Cloneable{
     private String windCode;
     private String code;
     private int actionDay;
@@ -336,5 +336,15 @@ public class StockData {
 
     public void setUnclassifiedTurnover(long unclassifiedTurnover) {
         this.unclassifiedTurnover = unclassifiedTurnover;
+    }
+
+    public StockData clone(){
+        try {
+            StockData stockData = (StockData)super.clone();
+            return stockData;
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

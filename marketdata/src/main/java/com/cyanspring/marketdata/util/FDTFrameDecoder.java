@@ -45,7 +45,7 @@ public class FDTFrameDecoder extends ByteToMessageDecoder {
 	}
 	
 	@Override
-	protected void decode(ChannelHandlerContext ctx, ByteBuf in,List<Object> out) throws Exception {
+	public void decode(ChannelHandlerContext ctx, ByteBuf in,List<Object> out) throws Exception {
 		while(in.readableBytes() > (FDTPacket.PKT_HEAD_SIZE + FDTPacket.PKT_TAIL_SIZE)) {
 			//packet_head(5) + packet_tail(1)
 		
