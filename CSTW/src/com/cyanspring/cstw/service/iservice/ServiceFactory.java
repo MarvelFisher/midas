@@ -1,6 +1,7 @@
 package com.cyanspring.cstw.service.iservice;
 
 import com.cyanspring.common.account.UserRole;
+import com.cyanspring.cstw.service.common.ExportCsvServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.CurrentPositionServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.InstrumentStatisticsServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.InstrumentSummaryServiceImpl;
@@ -58,6 +59,11 @@ public final class ServiceFactory {
 	
 	public static IOrderRecordService createOrderRecordService() {
 		OrderRecordServiceImpl instance = new OrderRecordServiceImpl();
+		return instance;
+	}
+	
+	public static IExportCsvService createExportCsvService() {
+		ExportCsvServiceImpl instance = new ExportCsvServiceImpl();
 		return instance;
 	}
 

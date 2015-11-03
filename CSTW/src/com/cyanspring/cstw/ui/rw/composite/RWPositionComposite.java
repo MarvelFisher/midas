@@ -87,8 +87,11 @@ public class RWPositionComposite extends BasicComposite {
 		tableCompsoite = new RWPositionTableComposite(this, SWT.NONE, service);
 		GridData gd_table = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		tableCompsoite.setLayoutData(gd_table);
+		
 	}
 	
+	
+
 	private void initQuery() {
 		service.queryOpenPosition();
 	}

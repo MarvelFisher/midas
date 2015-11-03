@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -26,6 +28,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -33,6 +36,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import com.cyanspring.cstw.preference.PreferenceStoreManager;
+import com.cyanspring.cstw.service.iservice.IExportCsvService;
+import com.cyanspring.cstw.service.iservice.ServiceFactory;
 import com.cyanspring.cstw.ui.common.TableType;
 import com.cyanspring.cstw.ui.utils.TableUtils;
 
@@ -57,6 +62,10 @@ public abstract class BasicTableComposite extends Composite {
 	private Menu bodyMenu;
 
 	private Object selectedObject;
+	
+	private Action exportAction;
+	
+	private IExportCsvService exportCsvService;
 
 	/**
 	 * Create the composite.
@@ -69,9 +78,11 @@ public abstract class BasicTableComposite extends Composite {
 		this.tableType = tableType;
 		initCompoments();
 		initTableColumn();
+		initAction();
 		initMenu();
 		initProvider();
 		initListener();
+		initService();
 	}
 
 	private void initCompoments() {
@@ -237,7 +248,26 @@ public abstract class BasicTableComposite extends Composite {
 					}
 				});
 	}
-
+	
+	private void initAction() {
+		exportAction = new Action() {
+			@Override
+			public void run() {
+				FileDialog fileDialog = new FileDialog(getShell());
+				fileDialog.setFilterExtensions(new String[] { "*.csv", "*.*" });
+				String file = fileDialog.open();
+				if (file != null) {
+					exportCsvService.exportCsv(tableViewer.getTable(), file);
+				}				
+			}
+		};
+		
+	}
+	
+	private void initService() {
+		exportCsvService = ServiceFactory.createExportCsvService();
+	}
+	
 	public void setInput(List<?> input) {
 		// 判断当前Table是否需要排序。
 		if (input != null && tableViewer.getTable().getSortColumn() != null) {
@@ -262,6 +292,10 @@ public abstract class BasicTableComposite extends Composite {
 			});
 		}
 		tableViewer.setInput(input);
+	}
+	
+	public TableViewer getTableViewer() {
+		return tableViewer;
 	}
 
 	/**
@@ -311,7 +345,15 @@ public abstract class BasicTableComposite extends Composite {
 	}
 
 	protected void initBodyMenu(Menu menu) {
-		// nothing;
+		final MenuItem item = new MenuItem(menu, SWT.PUSH);
+		item.setText("Export as CSV...");
+		item.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				exportAction.run();
+			}
+		});
+		
 	}
 
 	@Override
