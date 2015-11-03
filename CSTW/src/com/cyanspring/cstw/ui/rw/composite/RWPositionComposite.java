@@ -63,7 +63,7 @@ public class RWPositionComposite extends BasicComposite {
 		Label lbl2 = new Label(composite, SWT.NONE);
 		lbl2.setAlignment(SWT.RIGHT);
 		lbl2.setLayoutData(gd1);
-		lbl2.setText("Unrealized PNL: ");
+		lbl2.setText("Unrealized PnL: ");
 		
 		lblUnrealizedPL = new Label(composite, SWT.NONE);
 		lblUnrealizedPL.setLayoutData(gd2);
@@ -71,7 +71,7 @@ public class RWPositionComposite extends BasicComposite {
 		Label lbl3 = new Label(composite, SWT.NONE);
 		lbl3.setAlignment(SWT.RIGHT);
 		lbl3.setLayoutData(gd1);
-		lbl3.setText("Realized PNL: ");
+		lbl3.setText("Realized PnL: ");
 		
 		lblPNL = new Label(composite, SWT.NONE);
 		lblPNL.setLayoutData(gd2);
@@ -79,7 +79,7 @@ public class RWPositionComposite extends BasicComposite {
 		Label lbl4= new Label(composite, SWT.NONE);
 		lbl4.setAlignment(SWT.RIGHT);
 		lbl4.setLayoutData(gd1);
-		lbl4.setText("Total PNL: ");
+		lbl4.setText("Total PnL: ");
 		
 		lblAllPNL = new Label(composite, SWT.NONE);
 		lblAllPNL.setLayoutData(gd2);

@@ -51,7 +51,7 @@ public class RWInstrumentStatisticsComposite extends BasicComposite {
 		lbl1.setAlignment(SWT.RIGHT);
 		GridData gd1 = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1 );
 		lbl1.setLayoutData(gd1);
-		lbl1.setText("Realized PNL: ");
+		lbl1.setText("Realized PnL: ");
 		
 		lblRealizedPnl = new Label(composite, SWT.NONE);
 		GridData gd2 = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);

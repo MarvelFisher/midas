@@ -21,7 +21,7 @@ public enum TableType {
 			false),
 
 	// RW
-	RWPosition(new String[] { "Instrument ID", "Direction", "Quantity", "PNL",
+	RWPosition(new String[] { "Instrument ID", "Direction", "Quantity", "UR PnL",
 			"Avg Price", "Trader", },
 			new int[] { 100, 100, 100, 100, 100, 100 }, SWT.CENTER, true, false),
 
@@ -30,20 +30,20 @@ public enum TableType {
 			new int[] { 100, 100, 100, 100, 100, 100, 100, 100, }, SWT.CENTER,
 			true, false),
 
-	RWInstrumentStatistics(new String[] { "Instrument ID", "Realized PNL",
+	RWInstrumentStatistics(new String[] { "Instrument ID", "PnL",
 			"Trades", "Total Quantity", "Consideration", "Trader" }, new int[] {
 			100, 100, 100, 100, 100, 100, }, SWT.CENTER, true, false),
 
 	RWUserStatistics(
-			new String[] { "Trader", "Realized PNL", "Consideration" },
+			new String[] { "Trader", "PnL", "Consideration" },
 			new int[] { 100, 100, 100 }, SWT.CENTER, true, false),
 
-	RWInstrumentSummary(new String[] { "Instrument ID", "Realized PNL",
+	RWInstrumentSummary(new String[] { "Instrument ID", "PnL",
 			"Trades", "Total Quantity", "Consideration" }, new int[] { 100,
 			100, 100, 100, 100, }, SWT.CENTER, true, false),
 
 	// BW
-	BWPosition(new String[] { "Instrument ID", "Direction", "Quantity", "PNL",
+	BWPosition(new String[] { "Instrument ID", "Direction", "Quantity", "UR PnL",
 			"Avg Price", }, new int[] { 100, 100, 100, 100, 100, }, SWT.CENTER,
 			true, false),
 
@@ -51,11 +51,11 @@ public enum TableType {
 			"Quantity", "Avg Price", "Consideration", "Time", }, new int[] {
 			100, 100, 100, 100, 100, 100, 100, }, SWT.CENTER, true, false),
 
-	BWInstrumentStatistics(new String[] { "Instrument ID", "Realized PNL",
+	BWInstrumentStatistics(new String[] { "Instrument ID", "PnL",
 			"Trades", "Total Quantity", "Consideration", }, new int[] { 100,
 			100, 100, 100, 100, }, SWT.CENTER, true, false),
 
-	BWInstrumentSummary(new String[] { "Instrument ID", "Realized PNL",
+	BWInstrumentSummary(new String[] { "Instrument ID", "PnL",
 			"Trades", "Total Quantity", "Consideration" }, new int[] { 100,
 			100, 100, 100, 100, }, SWT.CENTER, true, false), ;
 
