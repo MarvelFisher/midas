@@ -253,6 +253,7 @@ public abstract class BasicTableComposite extends Composite {
 			@Override
 			public void run() {
 				FileDialog fileDialog = new FileDialog(getShell());
+				fileDialog.setText("Export CSV");
 				fileDialog.setFilterExtensions(new String[] { "*.csv", "*.*" });
 				fileDialog.setFileName("NewCSVFile.csv");
 				String file = fileDialog.open();
