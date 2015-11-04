@@ -115,7 +115,7 @@
 			</entry>
 			<entry>
 				<string>Instrument type</string>
-				<long>0x0402</long>
+				<long>0x0612</long>
 			</entry>
 			<entry>
 				<string>Tradable days</string>
@@ -239,7 +239,7 @@
 			</entry>
 			<entry>
 				<string>Instrument type</string>
-				<long>0x0402</long>
+				<long>0x0612</long>
 			</entry>
 			<entry>
 				<string>Tradable days</string>
@@ -363,7 +363,7 @@
 			</entry>
 			<entry>
 				<string>Instrument type</string>
-				<long>0x0402</long>
+				<long>0x0612</long>
 			</entry>
 			<entry>
 				<string>Tradable days</string>
