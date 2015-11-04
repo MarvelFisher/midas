@@ -119,15 +119,33 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         if (event.isOk() && event.getRefDataList().size() > 0) {
             if(isInit) {
                 log.debug("process RefData Event, Size=" + event.getRefDataList().size() + ",Key=" + event.getKey());
-                preSubscriptionList.clear();
+//                preSubscriptionList.clear();
                 List<RefData> refDataList = event.getRefDataList();
+                List<String> newSubscribeList = new ArrayList<String>();
                 for (int i = 0; i < refDataList.size(); i++) {
                     RefData refData = (RefData) refDataList.get(i);
-                    preSubscriptionList.add(refData.getSymbol());
+                    if(preSubscriptionList.size()!=0) {
+                        preSubscriptionList.add(refData.getSymbol());
+                    }else{
+                        //not initial refData event coming, check refdata symbol have new symbol must subscribe.
+                        if(!preSubscriptionList.contains(refData.getSymbol())){
+                            preSubscriptionList.add(refData.getSymbol());
+                            newSubscribeList.add(refData.getSymbol());
+                        }
+                    }
                     instrumentTypes.put(refData.getSymbol(), refData.getInstrumentType());
                     if(!checkIndexSessionType(refData)) continue;
                 }
                 checkEventAndSend(event);
+                if(newSubscribeList.size() > 0){
+                    for(IMarketDataAdaptor adaptor : adaptors){
+                        if(adaptor.getState()) try {
+                            adaptor.subscribeMultiMarketData(newSubscribeList, this);
+                        } catch (MarketDataException e) {
+                            log.error("newSubscribe:" + e.getMessage(), e);
+                        }
+                    }
+                }
                 if (!isInitReqDataEnd) isInitRefDateReceived = true;
             }else{
                 refDataEvent = event;
