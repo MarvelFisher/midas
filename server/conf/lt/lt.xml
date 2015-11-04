@@ -354,6 +354,7 @@
 	</bean>
 
 	<bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
+	   <property name="liveTrading" value="true" />
 	</bean>
 
 	<bean id="orderRouter" class="com.cyanspring.server.downstream.AccountOrderRouter">
