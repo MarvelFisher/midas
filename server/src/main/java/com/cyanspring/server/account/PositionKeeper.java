@@ -115,7 +115,7 @@ public class PositionKeeper {
 		notifyOpenPositionUpdate(update);
 	}
 	
-	private OpenPosition createOpenPosition(Execution execution, Account account) {
+	private OpenPosition createOpenPosition(double qty, Execution execution, Account account) {
 		AccountSetting accountSetting = null;
 		try {
 			accountSetting = accountKeeper.getAccountSetting(account.getId());
@@ -126,14 +126,14 @@ public class PositionKeeper {
 		double margin = 0.0;
 		if(null != refDataManager) {
 			margin = FxUtils.convertPositionToCurrency(refDataManager, fxConverter, account.getCurrency(), 
-					execution.getSymbol(), execution.getQuantity(), execution.getPrice());
+					execution.getSymbol(), qty, execution.getPrice());
 			RefData refData = refDataManager.getRefData(execution.getSymbol());
 			double leverage = leverageManager.getLeverage(refData, accountSetting);
 			margin /= leverage;
-			log.debug("Open position margin: " + margin + ", " + leverage);
+			log.debug("Open position margin: " + qty + ", " + margin + ", " + leverage);
 			account.setMarginHeld(account.getMarginHeld() + margin);
 		}
-		return new OpenPosition(execution, margin);
+		return new OpenPosition(qty, execution, margin);
 	}
 	
 	public void processExecution(Execution execution, Account account) throws PositionException {
@@ -181,7 +181,7 @@ public class PositionKeeper {
 			}
 			
 			if(list.size() <= 0) { // no existing position, just add it
-				OpenPosition position = createOpenPosition(execution, account);
+				OpenPosition position = createOpenPosition(execution.getQuantity(), execution, account);
 				list.add(position);
 				this.notifyUpdateDetailOpenPosition(position);
 			} else {
@@ -209,14 +209,13 @@ public class PositionKeeper {
 					
 					//if there is still execution quantity left
 					if(PriceUtils.GreaterThan(Math.abs(execPos), 0)) {
-						OpenPosition position = createOpenPosition(execution, account);
-						position.setQty(execPos);
+						OpenPosition position = createOpenPosition(Math.abs(execPos), execution, account);
 						list.add(position);
 						this.notifyUpdateDetailOpenPosition(position);
 					}
 					
 				} else { // same side just add it
-					OpenPosition position = createOpenPosition(execution, account);
+					OpenPosition position = createOpenPosition(execution.getQuantity(), execution, account);
 					list.add(position);
 					this.notifyUpdateDetailOpenPosition(position);
 				}

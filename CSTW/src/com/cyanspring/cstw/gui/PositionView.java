@@ -551,7 +551,10 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 					if (PositionView.this.account == null
 							|| openPositionViewer.isViewClosing())
 						return;
-
+					
+					if(!PositionView.this.account.getId().equals(PositionView.this.currentAccount))
+						return;
+					
 					PositionView.this.lbValue.setText(decimalFormat
 							.format(PositionView.this.account.getValue()));
 					PositionView.this.lbCashDeduct.setText(decimalFormat
@@ -747,10 +750,13 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 					break;
 				}
 			}
-			if (!found && !PriceUtils.isZero(position.getQty()) && position.getAccount().equals(currentAccount))
+			if (!found && !PriceUtils.isZero(position.getQty()) 
+					&& position.getAccount().equals(currentAccount))
 				openPositions.add(position);
+			
+			showOpenPositions(false);
 		}
-		showOpenPositions(false);
+		
 	}
 
 	@Override

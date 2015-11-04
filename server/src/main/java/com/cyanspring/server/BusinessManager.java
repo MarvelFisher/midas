@@ -1164,7 +1164,7 @@ public class BusinessManager implements ApplicationContextAware {
 	private void closePosition(OpenPosition position) {
 		log.info("Day end position close: "
 				+ position.getAccount() + ", "
-				+ position.getQty() + ", "
+				+ position.getAvailableQty() + ", "
 				+ position.getSymbol() + ", "
 				+ position.getAcPnL());
 		ClosePositionRequestEvent closeEvent = new ClosePositionRequestEvent(

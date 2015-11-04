@@ -1,6 +1,7 @@
 package com.cyanspring.adaptor.ib;
 
 import com.cyanspring.common.business.ChildOrder;
+import com.cyanspring.common.business.OrderException;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.RefDataField;
 import com.cyanspring.common.downstream.DownStreamException;
@@ -21,6 +22,7 @@ import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
 import com.ib.client.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,6 +156,13 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                     @Override
                     public void run() {
                         log.info(id + " Requesting open orders");
+                        
+                        while(!clientSocket.isConnected()) {
+                        	try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+							}
+                        }
                         clientSocket.reqOpenOrders();
                     }
 
@@ -963,12 +972,17 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
             if(PriceUtils.isZero(lastFillPrice))
             	lastFillPrice = avgFillPrice;
             
-            execution = new com.cyanspring.common.business.Execution(
-                    order.getSymbol(), order.getSide(), filled - oldFilled,
-                    lastFillPrice, order.getId(), order.getParentOrderId(),
-                    order.getStrategyId(), IdGenerator.getInstance()
-                    .getNextID() + "E", order.getUser(),
-                    order.getAccount(), order.getRoute());
+            try {
+				execution = new com.cyanspring.common.business.Execution(
+				        order.getSymbol(), order.getSide(), filled - oldFilled,
+				        lastFillPrice, order.getId(), order.getParentOrderId(),
+				        order.getStrategyId(), IdGenerator.getInstance()
+				        .getNextID() + "E", order.getUser(),
+				        order.getAccount(), order.getRoute());
+			} catch (OrderException e) {
+				log.error(e.getMessage(), e);
+				return;
+			}
             downStreamListener.onOrder(execType, order, execution, "");
         } 
         

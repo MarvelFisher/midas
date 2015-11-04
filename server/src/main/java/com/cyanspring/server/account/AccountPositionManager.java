@@ -13,6 +13,7 @@ import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.cyanspring.common.staticdata.AccountSaver;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ import com.cyanspring.common.account.UserType;
 import com.cyanspring.common.business.AuditType;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.GroupManagement;
+import com.cyanspring.common.business.OrderException;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.event.AsyncEventMultiProcessor;
@@ -239,6 +241,21 @@ public class AccountPositionManager implements IPlugin {
             return quote;
         }
     };
+    
+    private AsyncEventProcessor quoteProcessor = new AsyncEventProcessor() {
+
+		@Override
+		public void subscribeToEvents() {
+            subscribeToEvent(QuoteEvent.class, null);
+            subscribeToEvent(QuoteExtEvent.class, null);			
+		}
+
+		@Override
+		public IAsyncEventManager getEventManager() {
+			return eventManager;
+		}
+    	
+    };
 
     private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
@@ -249,8 +266,6 @@ public class AccountPositionManager implements IPlugin {
             subscribeToEvent(CreateUserEvent.class, null);
             subscribeToEvent(CreateAccountEvent.class, null);
             subscribeToEvent(AccountSnapshotRequestEvent.class, null);
-            subscribeToEvent(QuoteEvent.class, null);
-            subscribeToEvent(QuoteExtEvent.class, null);
             subscribeToEvent(MarketDataReadyEvent.class, null);
             subscribeToEvent(AccountSettingSnapshotRequestEvent.class, null);
             subscribeToEvent(ChangeAccountSettingRequestEvent.class, null);
@@ -369,7 +384,13 @@ public class AccountPositionManager implements IPlugin {
         if (eventProcessor.getThread() != null) {
 			eventProcessor.getThread().setName("AccountPositionManager");
 		}
-
+ 
+        quoteProcessor.setHandler(this);
+        quoteProcessor.init();
+        if (quoteProcessor.getThread() != null) {
+        	quoteProcessor.getThread().setName("AccountPositionManager(quote)");
+		}
+        
         eventMultiProcessor.setHandler(this);
         eventMultiProcessor.setHash(true);
         eventMultiProcessor.init();
@@ -493,6 +514,7 @@ public class AccountPositionManager implements IPlugin {
     public void uninit() {
         positionKeeper.setListener(null);
         scheduleManager.uninit();
+        quoteProcessor.uninit();
         eventProcessor.uninit();
         timerProcessor.uninit();
         eventMultiProcessor.uninit();
@@ -531,13 +553,15 @@ public class AccountPositionManager implements IPlugin {
     		Quote quote = marketData.get(position.getSymbol());
     		price = QuoteUtils.getMarketablePrice(quote, position.getQty());
     	}
-    	Execution exec = new Execution(position.getSymbol(), position.getQty() > 0 ? OrderSide.Sell : OrderSide.Buy,
+    	try {
+    		Execution exec = new Execution(position.getSymbol(), position.getQty() > 0 ? OrderSide.Sell : OrderSide.Buy,
     			Math.abs(position.getQty()), price, "", "", "", IdGenerator.getInstance().getNextID(),
     			position.getUser(), position.getAccount(), "");
 
-    	try {
 			positionKeeper.processExecution(exec, accountKeeper.getAccount(position.getAccount()));
 		} catch (PositionException e) {
+			log.error(e.getMessage(), e);
+		} catch (OrderException e) {
 			log.error(e.getMessage(), e);
 		}
     }
@@ -1715,6 +1739,8 @@ public class AccountPositionManager implements IPlugin {
 
                 for (int i = 0; i < positions.size(); i++) {
                     OpenPosition position = positions.get(i);
+                    if (PriceUtils.Equal(position.getAvailableQty(), 0))
+                    	continue;
                     Quote quote = marketData.get(position.getSymbol());
                     if (!quoteIsValid(quote)) {
 						continue;
@@ -1746,7 +1772,7 @@ public class AccountPositionManager implements IPlugin {
         				long n = ((long)lossQty)/lot;
                     	qty = Default.getMarginCut() * (n+1);
                     }
-                    qty = Math.min(Math.abs(position.getQty()), qty);
+                    qty = Math.min(Math.abs(position.getAvailableQty()), qty);
 
             		if (!TradingUtil.checkRiskOrderCount(riskOrderController, account.getId())) {
 						return true;
@@ -1879,20 +1905,22 @@ public class AccountPositionManager implements IPlugin {
             if (!PriceUtils.isZero(position.getQty())) {
 
                 double price = quote != null ? QuoteUtils.getMarketablePrice(quote, position.getQty()) : settlePrice;
-
-                Execution exec = new Execution(symbol, position.getQty() > 0 ? OrderSide.Sell : OrderSide.Buy,
+                try {
+                	Execution exec = new Execution(symbol, position.getQty() > 0 ? OrderSide.Sell : OrderSide.Buy,
                         Math.abs(position.getQty()),
                         price,
                         "", "",
                         "", "Settlement",
                         position.getUser(), position.getAccount(), "Settlement");
                 exec.put(OrderField.ID.value(), IdGenerator.getInstance().getNextID() + "STLM");
-                try {
+                
 					log.debug("Settling position: " + position + "  with " + price);
                     positionKeeper.processExecution(exec, account);
                 } catch (PositionException e) {
                     log.error(e.getMessage(), e);
-                }
+                } catch (OrderException e) {
+                	log.error(e.getMessage(), e);
+				}
             }
         }
     }

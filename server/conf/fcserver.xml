@@ -44,7 +44,7 @@
 	</bean>
 	
 	<bean id="globalTransportService" class="com.cyanspring.transport.ActiveMQObjectService">
-		<property name="url" value="nio://10.0.0.51:60006"></property>
+		<property name="url" value="failover:(nio://10.0.0.51:60006)?initialReconnectDelay=2000&amp;maxReconnectDelay=5000&amp;maxReconnectAttempts=100"></property>
 	</bean>
 
 	<bean id="dataBaseUrl" class="java.lang.String">
@@ -142,4 +142,68 @@
 		<constructor-arg value="1528" />
 	</bean>
 
+    <!-- Live Trading -->
+    <bean id="stopLiveTradingStartTime" class="java.lang.String">
+        <constructor-arg value="14:55:00" />
+    </bean>
+    
+    <bean id="stopLiveTradingEndTime" class="java.lang.String">
+        <constructor-arg value="32:30:00" />
+    </bean>
+    
+    <bean id="positionStopLossPercent" class="java.lang.String">
+        <constructor-arg value="0.0" />
+    </bean>
+    
+    <bean id="frozenStopLossPercent" class="java.lang.String">
+        <constructor-arg value="0.0" />
+    </bean>
+    
+    <bean id="terminateStopLossPercent" class="java.lang.String">
+        <constructor-arg value="0.3" />
+    </bean>
+    
+    <bean id="companyStopLossValue" class="java.lang.String">
+        <constructor-arg value="0" />
+    </bean>
+    
+    <bean id="frozenStopLossValue" class="java.lang.String">
+        <constructor-arg value="0" />
+    </bean>
+    
+    <bean id="terminateStopLossValue" class="java.lang.String">
+        <constructor-arg value="0" />
+    </bean>
+    
+        <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="com.cyanspring.common.Default.setValues"/>
+        <property name="arguments">
+		    <list>
+	           	<value>default</value>
+	           	<value>default</value>
+	           	<value>FC</value>
+	           	<value>CNY</value>
+	           	<value>A</value>
+	           	<value>1000000.0</value>
+	           	<value>8.333333</value>
+	           	<value>1.0</value>
+	           	<value>0.00004</value>
+	           	<value>2</value>
+	           	<null/>
+	           	<value>1.0</value>
+	           	<value>0.0</value>
+	           	<value>0.98</value>
+				<value>0</value>
+    			<ref bean="positionStopLossPercent"/> <!-- live trading : position stop loss -->
+   				<ref bean="frozenStopLossPercent"/>   <!-- live trading : freeze stop loss -->
+   				<ref bean="terminateStopLossPercent"/><!-- live trading : terminate stop loss -->
+				<value>false</value>
+				<value>false</value>
+   				<ref bean="companyStopLossValue"/>    <!-- companyStopLossValue -->
+   				<ref bean="frozenStopLossValue"/>     <!-- freezeValue -->
+   				<ref bean="terminateStopLossValue"/>  <!-- terminateValue -->
+				<value>DAY_TRADING</value>
+            </list>
+       </property>
+    </bean>
 </beans>
