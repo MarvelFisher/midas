@@ -160,13 +160,6 @@
 		<property name="preSubscriptionList">
 				<ref bean="preSubscriptionList" />
 		</property>
-		<property name="sessionMonitor">
-			<map>
-				<entry key="OPEN" value="10000" />   <!-- Unit: msec -->
-				<entry key="PREMARKET" value="0" />
-				<entry key="CLOSE" value="0" />
-			</map>
-		</property>
 		<property name="quoteChecker" ref="quoteChecker"/>
 	</bean>
 

@@ -69,7 +69,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     protected List<String> preSubscriptionList = new ArrayList<String>();
     protected List<IMarketDataAdaptor> adaptors = new ArrayList<IMarketDataAdaptor>();
     protected List<IAsyncEventListener> eventListeners = new ArrayList<>();
-    private Map<MarketSessionType, Long> sessionMonitor;
     private Date chkDate;
     private long chkTime;
     private boolean quoteExtendEventIsSend = true;
@@ -690,10 +689,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
 
     public void setPreSubscriptionList(List<String> preSubscriptionList) {
         this.preSubscriptionList = preSubscriptionList;
-    }
-
-    public void setSessionMonitor(Map<MarketSessionType, Long> sessionMonitor) {
-        this.sessionMonitor = sessionMonitor;
     }
 
     public long getTimerInterval() {
