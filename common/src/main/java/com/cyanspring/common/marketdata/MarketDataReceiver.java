@@ -123,7 +123,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                 List<String> newSubscribeList = new ArrayList<String>();
                 for (int i = 0; i < refDataList.size(); i++) {
                     RefData refData = (RefData) refDataList.get(i);
-                    if(preSubscriptionList.size()!=0) {
+                    if(preSubscriptionList.size()==0) {
                         preSubscriptionList.add(refData.getSymbol());
                     }else{
                         //not initial refData event coming, check refdata symbol have new symbol must subscribe.
