@@ -121,7 +121,7 @@
 		  class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
 		<property name="id" value="W02"/>
 		<property name="showGui" value="true"/>
-		<property name="gatewayIp" value="10.0.0.20"/>
+		<property name="gatewayIp" value="10.0.0.33"/>
 		<property name="gatewayPort" value="10046"/>
 		<property name="marketDataLog" value="false"/>
 		<property name="tradeDateCheckIsOpen" value="true"/>
@@ -164,11 +164,11 @@
     </bean>
     
     <bean id="companyStopLossValue" class="java.lang.String">
-        <constructor-arg value="20000" />
+        <constructor-arg value="0" />
     </bean>
     
     <bean id="frozenStopLossValue" class="java.lang.String">
-        <constructor-arg value="20000" />
+        <constructor-arg value="0" />
     </bean>
     
     <bean id="terminateStopLossValue" class="java.lang.String">
