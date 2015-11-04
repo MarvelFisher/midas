@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -101,6 +102,7 @@ import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
 import com.cyanspring.cstw.gui.filter.ParentOrderFilter;
 import com.cyanspring.cstw.gui.session.GuiSession;
+import com.cyanspring.cstw.service.iservice.ServiceFactory;
 
 public class SingleOrderStrategyView extends ViewPart implements
 		IAsyncEventListener {
@@ -181,6 +183,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private Action popCreate;
 	private Action popCancel;
 	private Action popSave;
+	private Action popExportAction;
 
 	private final String MENU_ID_FORCECANCEL = "POPUP_FORCE_CANCEL";
 	private final String MENU_ID_PAUSE = "POPUP_PAUSE";
@@ -191,6 +194,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private final String MENU_ID_CREATE = "POPUP_CREATE";
 	private final String MENU_ID_CANCEL = "POPUP_CANCEL";
 	private final String MENU_ID_SAVE = "POPUP_SAVE";
+	private final String MENU_ID_EXPORT = "POPUP_EXPORT";
 	private Quote nowQuote = null;
 
 	private final double basicPrice = 1;
@@ -880,9 +884,33 @@ public class SingleOrderStrategyView extends ViewPart implements
 		menuMgr.add(createPopStartAction());
 		menuMgr.add(createPopStopAction());
 		menuMgr.add(createPopSaveAction());
+		menuMgr.add(createPopExportAction());
 
 		menu = menuMgr.createContextMenu(viewer.getTable());
 		viewer.setBodyMenu(menu);
+	}
+
+	private IAction createPopExportAction() {
+		popExportAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+			public void run() {
+				FileDialog fileDialog = new FileDialog(SingleOrderStrategyView.this.getSite().getShell());
+				fileDialog.setText("Export CSV");
+				fileDialog.setFilterExtensions(new String[] { "*.csv", "*.*" });
+				fileDialog.setFileName("NewCSVFile.csv");
+				String file = fileDialog.open();
+				if (file != null) {
+					if(!file.endsWith(".csv")) {
+						file += ".csv";
+					}
+					ServiceFactory.createExportCsvService().exportCsv(viewer.getTable(), file);
+				}	
+				
+			}
+		};
+		popExportAction.setId(MENU_ID_EXPORT);
+		popExportAction.setText("Export CSV...");
+		popExportAction.setToolTipText("Export CSV...");
+		return popExportAction;
 	}
 
 	private Action createPopSaveAction() {
