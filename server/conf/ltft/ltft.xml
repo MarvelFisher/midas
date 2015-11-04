@@ -184,7 +184,8 @@
     </bean>
 
     <bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
-        <property name="todayOnly" value="true"></property>
+        <property name="todayOnly" value="true" />
+        <property name="liveTrading" value="true" />
     </bean>
 
 	<bean id="quoteSaver" class="com.cyanspring.common.marketdata.QuoteSaver" />
