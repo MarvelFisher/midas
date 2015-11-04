@@ -166,11 +166,11 @@
     </bean>
     
     <bean id="companyStopLossValue" class="java.lang.String">
-        <constructor-arg value="20000" />
+        <constructor-arg value="0" />
     </bean>
     
     <bean id="frozenStopLossValue" class="java.lang.String">
-        <constructor-arg value="20000" />
+        <constructor-arg value="0" />
     </bean>
     
     <bean id="terminateStopLossValue" class="java.lang.String">
