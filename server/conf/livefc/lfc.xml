@@ -262,6 +262,7 @@
     </bean>
 
     <bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
+        <property name="liveTrading" value="true" />
     </bean>
 
 

@@ -61,6 +61,7 @@ import com.cyanspring.common.event.account.AllAccountSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AllPositionSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllPositionSnapshotRequestEvent;
+import com.cyanspring.common.event.account.AllPositionSnapshotRequestEvent.PositionType;
 import com.cyanspring.common.event.account.AllUserSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllUserSnapshotRequestEvent;
 import com.cyanspring.common.event.account.CSTWUserLoginEvent;
@@ -1406,60 +1407,105 @@ public class AccountPositionManager implements IPlugin {
         asyncSendAccountSnapshot(event, allAccounts);
     }
 
-    private void asyncSendPositionSnapshot(final AllPositionSnapshotRequestEvent event, final List<Account> allAccounts) {
-        Thread thread = new Thread(new Runnable() {
-
+	private void asyncSendPositionSnapshot(final AllPositionSnapshotRequestEvent event, final List<Account> allAccounts) {
+	       
+    	Thread thread = new Thread(new Runnable() { 	
             @Override
             public void run() {
             	int positionCount = 0;
                 List<OpenPosition> openPositionList = new ArrayList<>();
-
+                List<ClosedPosition> closedPositionList = new ArrayList<>();
+                PositionType type = event.getType();
+                
                 for (int i = 0; i < allAccounts.size(); i++) {
 
                 	Account account = allAccounts.get(i);
-                    List<OpenPosition> tempOpList = positionKeeper.getOverallPosition(account);
-                	if ( null == tempOpList || tempOpList.isEmpty()) {
-						continue;
-					}
-
-                	for (OpenPosition op: tempOpList) {
-                		openPositionList.add(op);
-                		positionCount++;
-                		if (positionCount % asyncSendBatch == 0 ) {
-                            try {
-                            	AllPositionSnapshotReplyEvent reply = new AllPositionSnapshotReplyEvent(
-                                        event.getKey(), event.getSender(), openPositionList);
-                                eventManager.sendRemoteEvent(reply);
-                                log.info("AllPositionSnapshotReplyEvent sent: " + openPositionList.size());
-                                Thread.sleep(asyncSendInterval);
-                            } catch (Exception e) {
-                                log.error(e.getMessage(), e);
-                            }
-                			positionCount = 0 ;
-                			openPositionList.clear();
-                		}
+                	
+                	openPosition:{
+                		
+                    	if(PositionType.OpenPosition.equals(type) || PositionType.All.equals(type)){
+                            List<OpenPosition> tempOpList = positionKeeper.getOverallPosition(account);
+                        	if ( null == tempOpList || tempOpList.isEmpty()) {
+        						break openPosition;
+        					}
+                        	
+                        	for (OpenPosition op: tempOpList) {
+                        		openPositionList.add(op);
+                        		positionCount++;
+                        		if (positionCount % asyncSendBatch == 0 ) {
+                                    try {
+                                    	sendAllPositionReplyEvent(openPositionList,null);
+                                    } catch (Exception e) {
+                                        log.error(e.getMessage(), e);
+                                    }
+                        			positionCount = 0 ;
+                        			openPositionList.clear();
+                        		}
+                        	}
+                    	}
+                    	
+                	}
+                	
+                	closedPosition:{
+                		
+                    	if(PositionType.ClosedPosition.equals(type) || PositionType.All.equals(type)){
+                            List<ClosedPosition> tempCpList = positionKeeper.getClosedPositions(account.getId());
+                        	if ( null == tempCpList || tempCpList.isEmpty()) {
+        						break closedPosition;
+        					}
+                        	
+                        	for (ClosedPosition cp: tempCpList) {
+                        		closedPositionList.add(cp);
+                        		positionCount++;
+                        		if (positionCount % asyncSendBatch == 0 ) {
+                                    try {
+                                    	sendAllPositionReplyEvent(null,closedPositionList);
+                                    } catch (Exception e) {
+                                        log.error(e.getMessage(), e);
+                                    }
+                        			positionCount = 0 ;
+                        			closedPositionList.clear();
+                        		}
+                        	}
+                        	
+                    	}
+                    	
+                    	
+                    	
                 	}
                 }//for account
             	if (positionCount != 0) {
-
-                    try {
-                    	AllPositionSnapshotReplyEvent reply = new AllPositionSnapshotReplyEvent(
-                                event.getKey(), event.getSender(), openPositionList);
-                        eventManager.sendRemoteEvent(reply);
-                        log.info("AllPositionSnapshotReplyEvent sent: " + openPositionList.size());
-                        Thread.sleep(asyncSendInterval);
-                    } catch (Exception e) {
-                        log.error(e.getMessage(), e);
-                    }
-
+            		sendAllPositionReplyEvent(openPositionList,closedPositionList);
            			positionCount = 0 ;
            			openPositionList.clear();
+           			closedPositionList.clear();
             	}
             }
+
+			private void sendAllPositionReplyEvent(
+				List<OpenPosition> openPositionList, List<ClosedPosition> closedPositionList) {
+
+				if(null == openPositionList)
+					openPositionList = new ArrayList<OpenPosition>();
+				
+				if(null == closedPositionList)
+					closedPositionList = new ArrayList<ClosedPosition>();
+					
+                try {
+                	AllPositionSnapshotReplyEvent reply = new AllPositionSnapshotReplyEvent(
+                            event.getKey(), event.getSender(), openPositionList,closedPositionList);
+					eventManager.sendRemoteEvent(reply);
+					Thread.sleep(asyncSendInterval);	
+				} catch (Exception e) {
+					log.error(e.getMessage(),e);
+				}       
+                log.info("AllPositionSnapshotReplyEvent sent: open:{}, close:{}" ,openPositionList.size(),closedPositionList.size());			
+			}
 
         });
         thread.start();
     }
+	
     private void asyncSendAccountSnapshot(final AllAccountSnapshotRequestEvent event, final List<Account> allAccounts) {
         Thread thread = new Thread(new Runnable() {
 
