@@ -116,6 +116,16 @@
             name="Open Position"
             restorable="true">
       </view>
+      
+      <view
+            allowMultiple="false"
+            class="com.cyanspring.cstw.gui.ClosedPositionView"
+            icon="icons/Leaves16.png"
+            id="com.cyanspring.cstw.gui.ClosedPositionViewer"
+            name="Closed Position"
+            restorable="true">
+      </view>
+      
       <view
             allowMultiple="false"
             class="com.cyanspring.cstw.gui.AccountStatisticView"
@@ -416,6 +426,18 @@
             	  </visibleWhen>
             </command>
             <command
+                  commandId="CSTW.ClosedPositionView"
+                  label="Closed Position"
+                  style="push">
+                  <visibleWhen checkEnabled="false">
+                  	<or>
+                  	   <with variable="Admin">
+		                  <equals value="ENABLED"></equals>        
+		               </with>
+                  	</or>
+            	  </visibleWhen>
+            </command>
+            <command
                   commandId="CSTW.AccountStatisticView"
                   label="Account Statistic"
                   style="push">
@@ -658,6 +680,12 @@
             description="Position Statistic"
             id="CSTW.PositionStatisticView"
             name="Open Position">
+      </command>
+      <command
+            defaultHandler="com.cyanspring.cstw.gui.command.ClosedPositionViewCommand"
+            description="Closed Position"
+            id="CSTW.ClosedPositionView"
+            name="Closed Position">
       </command>
       <command
             defaultHandler="com.cyanspring.cstw.gui.command.AccountStatisticViewCommand"
