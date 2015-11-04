@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -255,8 +254,12 @@ public abstract class BasicTableComposite extends Composite {
 			public void run() {
 				FileDialog fileDialog = new FileDialog(getShell());
 				fileDialog.setFilterExtensions(new String[] { "*.csv", "*.*" });
+				fileDialog.setFileName("NewCSVFile.csv");
 				String file = fileDialog.open();
 				if (file != null) {
+					if(!file.endsWith(".csv")) {
+						file += ".csv";
+					}
 					exportCsvService.exportCsv(tableViewer.getTable(), file);
 				}				
 			}
