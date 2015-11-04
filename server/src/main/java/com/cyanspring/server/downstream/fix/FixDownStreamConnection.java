@@ -42,6 +42,7 @@ import quickfix.field.TransactTime;
 
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.Execution;
+import com.cyanspring.common.business.OrderException;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamListener;
@@ -312,17 +313,20 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
 	        double execQty = message.getField(new quickfix.field.LastShares()).getValue(); //LastShares
 	        double execPrice = message.getField(new LastPx()).getValue();
 
-        	Execution exec = new Execution(order.getSymbol(), order.getSide(), execQty, execPrice, 
-        			order.getId(), order.getParentOrderId(), order.getStrategyId(), execId, 
-        			order.getUser(), order.getAccount(), order.getRoute());
-
-        	if (message.isSetField(quickfix.field.OrdStatus.FIELD)) {
-        		char status = message.getField(new quickfix.field.OrdStatus()).getValue();
-        		order.setOrdStatus(OrdStatus.getStatus(status));
-        	}
-        	
-        	order.touch();
-        	listener.onOrder(com.cyanspring.common.type.ExecType.getType(execType.getValue()), order, exec, null);
+			try {
+				Execution exec = new Execution(order.getSymbol(), order.getSide(), execQty, execPrice, 
+						order.getId(), order.getParentOrderId(), order.getStrategyId(), execId, 
+						order.getUser(), order.getAccount(), order.getRoute());
+				if (message.isSetField(quickfix.field.OrdStatus.FIELD)) {
+	        		char status = message.getField(new quickfix.field.OrdStatus()).getValue();
+	        		order.setOrdStatus(OrdStatus.getStatus(status));
+	        	}
+	        	
+	        	order.touch();
+	        	listener.onOrder(com.cyanspring.common.type.ExecType.getType(execType.getValue()), order, exec, null);
+			} catch (OrderException e) {
+				log.error(e.getMessage(), e);
+			}
         } else {
         	if (message.isSetField(quickfix.field.OrdStatus.FIELD)) {
         		char status = message.getField(new quickfix.field.OrdStatus()).getValue();

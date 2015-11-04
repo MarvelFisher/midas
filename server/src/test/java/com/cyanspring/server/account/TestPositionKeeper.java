@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.util.TimeUtil;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.PositionException;
 import com.cyanspring.common.business.Execution;
+import com.cyanspring.common.business.OrderException;
 import com.cyanspring.common.business.RefDataField;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
@@ -35,10 +37,17 @@ public class TestPositionKeeper {
 	Account account = new Account(Default.getAccount(), Default.getUser());
 	
 	private Execution createExecution(OrderSide side, double qty, double price) {
-		return new Execution("AUDUSD", side, qty,
-				price, "orderId", "parentOrderId", 
-				"strategyId", "EXEC-"+count++,
-				Default.getUser(), Default.getAccount(), null);
+		Execution exe = null;
+		try {
+			exe = new Execution("AUDUSD", side, qty,
+					price, "orderId", "parentOrderId", 
+					"strategyId", "EXEC-"+count++,
+					Default.getUser(), Default.getAccount(), null);
+		} catch (OrderException e) {
+			log.error(e.getMessage(), e);;
+		}
+		
+		return exe;
 	}
 	
 	@Before
