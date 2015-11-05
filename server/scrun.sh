@@ -27,7 +27,11 @@ echo $! > LTS_PID
 sleep 60
 ./scruninfo.sh start
 
+if [ "$1" == '-a' ]; then
+
 sleep 60
 echo "Starting AppServer "`date` | tee -a ./log/console.log
 cd ../appServer.sc
 ./run.sh start
+
+fi
