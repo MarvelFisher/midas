@@ -38,13 +38,6 @@
         <property name="timerInterval" value="1000"/>
         <property name="quoteLogIsOpen" value="true"/>
         <property name="quoteExtendEventIsSend" value="false"/>
-        <property name="sessionMonitor">
-            <map>
-                <entry key="OPEN" value="10000" />   <!-- Unit: msec -->
-                <entry key="PREMARKET" value="0" />
-                <entry key="CLOSE" value="0" />
-            </map>
-        </property>
         <property name="quoteChecker" ref="quoteChecker"/> <!-- dont set this or cant test in weekend  -->
         <property name="quoteSaver" ref="quoteSaver"/>
         <property name="broadcastQuote" value="true"/>
