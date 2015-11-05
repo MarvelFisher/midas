@@ -71,7 +71,7 @@ public class TerminateStopLossCheck implements ILiveTradingChecker {
 				sendUpdateAccountEvent(account);
 			}
 			TradingUtil.closeAllPositoinAndOrder(account, positionKeeper, eventManager, true, 
-					OrderReason.AccountStopLoss, riskOrderController, 10);
+					OrderReason.AccountStopLoss, riskOrderController);
 			return false;
 		}
 			

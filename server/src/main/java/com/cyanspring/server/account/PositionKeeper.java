@@ -471,21 +471,23 @@ public class PositionKeeper {
 		}
 		double price = amount / qty;
 
-        if (availableQty > 0) {
-            availableQty -= getPendingSellQty(account, symbol);
-
-			if (availableQty < 0) {
-				availableQty = 0;
-			}
-
-        } else {
-            availableQty += getPendingBuyQty(account, symbol);
-
-			if (availableQty > 0) {
-				availableQty = 0;
-			}
-        }
-
+		if (refData != null && refData.getDayTradable() == 0 && Default.getSettlementDays() == 1){		
+	        if (availableQty > 0) {
+	            availableQty -= getPendingSellQty(account, symbol);
+	
+				if (availableQty < 0) {
+					availableQty = 0;
+				}
+	
+	        } else {
+	            availableQty += getPendingBuyQty(account, symbol);
+	
+				if (availableQty > 0) {
+					availableQty = 0;
+				}
+	        }
+		}
+		
 		OpenPosition result = new OpenPosition(list.get(0).getUser(), list.get(0).getAccount(),
 				list.get(0).getSymbol(), qty, price, margin);
 		result.setPnL(PnL);

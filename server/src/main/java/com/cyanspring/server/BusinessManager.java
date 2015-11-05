@@ -935,7 +935,7 @@ public class BusinessManager implements ApplicationContextAware {
 							+ account.getId());
 					TradingUtil.closeAllPositoinAndOrder(account,
 							positionKeeper, eventManager, false,
-							OrderReason.DayTradingMode, riskOrderController, 10);
+							OrderReason.DayTradingMode, riskOrderController);
 				}
 			}
 
