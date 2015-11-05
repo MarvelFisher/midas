@@ -83,7 +83,7 @@ public class Business {
 	private CSTWBeanPool beanPool;
 
 	private XStream xstream = new XStream(new DomDriver());
-	private String configPath;
+
 	private SystemInfo systemInfo;
 	private IRemoteEventManager eventManager;
 	private OrderCachingManager orderManager;
@@ -401,18 +401,6 @@ public class Business {
 			log.error(e.getMessage(), e);
 			e.printStackTrace();
 		}
-	}
-
-	public String getConfigPath() {
-		return configPath;
-	}
-
-	public void setConfigPath(String configPath) {
-		this.configPath = configPath;
-	}
-
-	public SystemInfo getSystemInfo() {
-		return systemInfo;
 	}
 
 	public IRemoteEventManager getEventManager() {

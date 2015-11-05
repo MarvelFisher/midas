@@ -40,6 +40,7 @@ import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
+import com.cyanspring.cstw.session.CSTWSession;
 
 public class KDBInfoView extends ViewPart implements IAsyncEventListener {
 	enum Column {
@@ -193,7 +194,7 @@ public class KDBInfoView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void createRealTimeViewer(Composite parent) {
-		String strFile = Business.getInstance().getConfigPath()
+		String strFile = CSTWSession.getInstance().getConfigPath()
 				+ "VolatilityTable.xml";
 		realTimeViewer = new DynamicTableViewer(parent, SWT.SINGLE
 				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business
@@ -222,7 +223,7 @@ public class KDBInfoView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void createPastTimeViewer(Composite parent) {
-		String strFile = Business.getInstance().getConfigPath()
+		String strFile = CSTWSession.getInstance().getConfigPath()
 				+ "VolatilityTable.xml";
 		pastTimeViewer = new DynamicTableViewer(parent, SWT.SINGLE
 				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business

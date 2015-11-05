@@ -69,6 +69,7 @@ import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.command.LoadStrategyCommand;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
+import com.cyanspring.cstw.session.CSTWSession;
 
 public class MultiInstrumentStrategyView extends ViewPart  implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -125,7 +126,7 @@ public class MultiInstrumentStrategyView extends ViewPart  implements IAsyncEven
 		Composite leftComposite = new Composite(mainComposite,SWT.BORDER);
 		leftComposite.setLayout(new FillLayout());
 		// create table
-	    String strFile = Business.getInstance().getConfigPath() + "MultiInstrumentStrategyTable.xml";
+		String strFile = CSTWSession.getInstance().getConfigPath() + "MultiInstrumentStrategyTable.xml";
 		strategyViewer = new DynamicTableViewer(leftComposite, SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL
 				| SWT.V_SCROLL, Business.getInstance().getXstream(), strFile, BeanHolder.getInstance().getDataConverter());
 		strategyViewer.init();
@@ -134,7 +135,7 @@ public class MultiInstrumentStrategyView extends ViewPart  implements IAsyncEven
          //create right composite
 		Composite rightComposite = new Composite(mainComposite,SWT.BORDER);
 		rightComposite.setLayout(new FillLayout());
-	    strFile = Business.getInstance().getConfigPath() + "MultiInstrumentTable.xml";
+	    strFile = CSTWSession.getInstance().getConfigPath() + "MultiInstrumentTable.xml";
 		instrumentViewer = new DynamicTableViewer(rightComposite, SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL
 				| SWT.V_SCROLL, Business.getInstance().getXstream(), strFile, BeanHolder.getInstance().getDataConverter());
 		instrumentViewer.init();

@@ -29,11 +29,11 @@ import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.account.AllPositionSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllPositionSnapshotRequestEvent;
+import com.cyanspring.common.event.account.AllPositionSnapshotRequestEvent.PositionType;
 import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
 import com.cyanspring.common.event.account.ExecutionUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
-import com.cyanspring.common.event.account.AllPositionSnapshotRequestEvent.PositionType;
 import com.cyanspring.common.event.order.ClosePositionReplyEvent;
 import com.cyanspring.common.event.statistic.AccountNumberReplyEvent;
 import com.cyanspring.common.event.statistic.AccountNumberRequestEvent;
@@ -45,6 +45,7 @@ import com.cyanspring.cstw.gui.bean.PositionStatisticBean;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
+import com.cyanspring.cstw.session.CSTWSession;
 
 public class PositionStatisticView extends ViewPart implements IAsyncEventListener{
 
@@ -402,7 +403,7 @@ public class PositionStatisticView extends ViewPart implements IAsyncEventListen
 	}
 	
 	private void createOpenPositionViewer(Composite parent) {
-	    String strFile = Business.getInstance().getConfigPath() + "OpenPositionTable.xml";
+		String strFile = CSTWSession.getInstance().getConfigPath() + "OpenPositionTable.xml";
 		openPositionViewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL
 				| SWT.V_SCROLL, Business.getInstance().getXstream(), strFile, BeanHolder.getInstance().getDataConverter());
 		openPositionViewer.init();

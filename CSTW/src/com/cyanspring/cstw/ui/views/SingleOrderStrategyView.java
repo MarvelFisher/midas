@@ -104,6 +104,7 @@ import com.cyanspring.cstw.gui.common.StyledAction;
 import com.cyanspring.cstw.gui.filter.ParentOrderFilter;
 import com.cyanspring.cstw.gui.session.GuiSession;
 import com.cyanspring.cstw.service.iservice.ServiceFactory;
+import com.cyanspring.cstw.session.CSTWSession;
 
 public class SingleOrderStrategyView extends ViewPart implements
 		IAsyncEventListener {
@@ -258,7 +259,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 		createSaveOrderAction(parent);
 
 		// create table
-		String strFile = Business.getInstance().getConfigPath()
+		String strFile = CSTWSession.getInstance().getConfigPath()
 				+ "ParentOrderTable.xml";
 		viewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION
 				| SWT.H_SCROLL | SWT.V_SCROLL, Business.getInstance()
@@ -308,7 +309,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 		initSessionListener();
 
 	}
-	
+
 	@Override
 	public void dispose() {
 		Business.getInstance().getEventManager()
@@ -488,14 +489,14 @@ public class SingleOrderStrategyView extends ViewPart implements
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.character == SWT.CR) {
-					if(keyThrottler.check()){
+					if (keyThrottler.check()) {
 						quickEnterOrder();
-					}else{
+					} else {
 						log.warn("keyThrottler stop enter order too fast");
 					}
-					if(panelComposite.isVisible())
+					if (panelComposite.isVisible())
 						panelComposite.setVisible(false);
-					
+
 				} else if (e.keyCode == SWT.ARROW_UP
 						|| e.keyCode == SWT.ARROW_DOWN
 						|| e.keyCode == SWT.ARROW_LEFT
@@ -519,7 +520,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 					case SWT.ARROW_LEFT:
 						value = tickMinusTenTimes(price);
 						break;
-					case SWT.ARROW_RIGHT:	
+					case SWT.ARROW_RIGHT:
 						value = tickTenTimes(price);
 						break;
 					default:
@@ -673,25 +674,25 @@ public class SingleOrderStrategyView extends ViewPart implements
 		btCancel.setText("Cancel");
 		btCancel.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
 		btEnter.addMouseListener(new MouseListener() {
-			
+
 			@Override
 			public void mouseUp(MouseEvent e) {
 				quickEnterOrder();
 				panelComposite.setFocus();
 			}
-			
+
 			@Override
 			public void mouseDown(MouseEvent e) {
-				
+
 			}
-			
+
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
-	
+
 		btAmend.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
@@ -750,10 +751,10 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 	private void showQuickOrderStatus(boolean show) {
 		gdStatus.exclude = !show;
-		lbStatus.setVisible(show);	
-		if(!panelComposite.isVisible() && show)
+		lbStatus.setVisible(show);
+		if (!panelComposite.isVisible() && show)
 			panelComposite.setVisible(true);
-		
+
 		panelComposite.getParent().layout();
 	}
 
@@ -770,18 +771,18 @@ public class SingleOrderStrategyView extends ViewPart implements
 		cbOrderSide.setText(((OrderSide) map.get(OrderField.SIDE.value()))
 				.toString());
 		cbServer.setText((String) map.get(OrderField.SERVER_ID.value()));
-		
+
 		Double price = null;
 		if (Strategy.STOP.toString().equals(strategy)) {
 			cbOrderType.select(2);
-		    price = (Double) map.get(OrderField.STOP_LOSS_PRICE.value());			
-		}else{
-		    price = (Double) map.get(OrderField.PRICE.value());
+			price = (Double) map.get(OrderField.STOP_LOSS_PRICE.value());
+		} else {
+			price = (Double) map.get(OrderField.PRICE.value());
 		}
-		
+
 		if (null != price)
 			txtPrice.setText(price.toString());
-		
+
 		cbOrderType.notifyListeners(SWT.Selection, new Event());
 	}
 
@@ -911,20 +912,23 @@ public class SingleOrderStrategyView extends ViewPart implements
 	}
 
 	private IAction createPopExportAction() {
-		popExportAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+		popExportAction = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
-				FileDialog fileDialog = new FileDialog(SingleOrderStrategyView.this.getSite().getShell());
+				FileDialog fileDialog = new FileDialog(
+						SingleOrderStrategyView.this.getSite().getShell());
 				fileDialog.setText("Export CSV");
 				fileDialog.setFilterExtensions(new String[] { "*.csv", "*.*" });
 				fileDialog.setFileName("NewCSVFile.csv");
 				String file = fileDialog.open();
 				if (file != null) {
-					if(!file.endsWith(".csv")) {
+					if (!file.endsWith(".csv")) {
 						file += ".csv";
 					}
-					ServiceFactory.createExportCsvService().exportCsv(viewer.getTable(), file);
-				}	
-				
+					ServiceFactory.createExportCsvService().exportCsv(
+							viewer.getTable(), file);
+				}
+
 			}
 		};
 		popExportAction.setId(MENU_ID_EXPORT);
@@ -1594,7 +1598,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private void showOrders() {
 		lastRefreshTime = Clock.getInstance().now();
 		if (!setColumns) {
-			
+
 			List<Map<String, Object>> orders = null;
 			orders = Business.getInstance().getOrderManager().getParentOrders();
 			if (orders.size() == 0)
@@ -1618,11 +1622,13 @@ public class SingleOrderStrategyView extends ViewPart implements
 			viewer.setInput(orders);
 			setColumns = true;
 		}
-		
-		if(pinned){
-			viewer.setInput(Business.getInstance().getOrderManager().getParentOrders());
-		}else{
-			viewer.setInput(Business.getInstance().getOrderManager().getAllParentOrders());
+
+		if (pinned) {
+			viewer.setInput(Business.getInstance().getOrderManager()
+					.getParentOrders());
+		} else {
+			viewer.setInput(Business.getInstance().getOrderManager()
+					.getAllParentOrders());
 		}
 
 		viewer.refresh();

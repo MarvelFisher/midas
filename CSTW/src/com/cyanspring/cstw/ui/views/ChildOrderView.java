@@ -66,6 +66,7 @@ import com.cyanspring.cstw.event.SingleOrderStrategySelectionEvent;
 import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
+import com.cyanspring.cstw.session.CSTWSession;
 
 public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -106,11 +107,14 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 		parent.setLayout(layout);
 
 		// create table
-	    String strFile = Business.getInstance().getConfigPath() + "ChildOrderTable.xml";
-		viewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL
-				| SWT.V_SCROLL, Business.getInstance().getXstream(), strFile, BeanHolder.getInstance().getDataConverter());
+		String strFile = CSTWSession.getInstance().getConfigPath()
+				+ "ChildOrderTable.xml";
+		viewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION
+				| SWT.H_SCROLL | SWT.V_SCROLL, Business.getInstance()
+				.getXstream(), strFile, BeanHolder.getInstance()
+				.getDataConverter());
 		viewer.init();
-		
+
 		GridData gridData = new GridData();
 		gridData.verticalAlignment = GridData.FILL;
 		gridData.horizontalSpan = 1;
@@ -123,29 +127,35 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 		createEnterOrderAction(parent);
 		createAmendOrderAction(parent);
 		createCancelOrderAction(parent);
-		
+
 		final Table table = viewer.getTable();
 		table.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
-				if(panelComposite.isVisible() && !enterOrderMode)
+				if (panelComposite.isVisible() && !enterOrderMode)
 					showAmendOrderPanel(parent);
 			}
 		});
 
-		
 		// subscribe to business event
-		Business.getInstance().getEventManager().subscribe(SingleOrderStrategySelectionEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(SingleInstrumentStrategySelectionEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(ChildOrderSnapshotEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(ChildOrderUpdateEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(ManualActionReplyEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(MultiInstrumentStrategySelectionEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(InstrumentSelectionEvent.class, this);
+		Business.getInstance().getEventManager()
+				.subscribe(SingleOrderStrategySelectionEvent.class, this);
+		Business.getInstance().getEventManager()
+				.subscribe(SingleInstrumentStrategySelectionEvent.class, this);
+		Business.getInstance().getEventManager()
+				.subscribe(ChildOrderSnapshotEvent.class, this);
+		Business.getInstance().getEventManager()
+				.subscribe(ChildOrderUpdateEvent.class, this);
+		Business.getInstance().getEventManager()
+				.subscribe(ManualActionReplyEvent.class, this);
+		Business.getInstance().getEventManager()
+				.subscribe(MultiInstrumentStrategySelectionEvent.class, this);
+		Business.getInstance().getEventManager()
+				.subscribe(InstrumentSelectionEvent.class, this);
 	}
-	
+
 	private void createOrderPanel(final Composite parent) {
 		GridData gridData;
-		
+
 		panelComposite = new Composite(parent, SWT.NONE);
 		GridData panelGridData = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
 		panelComposite.setLayoutData(panelGridData);
@@ -157,7 +167,7 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 		Label lb1 = new Label(panelComposite, SWT.NONE);
 		lb1.setText("Order Id: ");
 		lb1.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true));
-		
+
 		lbOrderId = new Label(panelComposite, SWT.BORDER);
 		lbOrderId.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
 
@@ -183,31 +193,33 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 		txtQuantity.setLayoutData(gridData);
 
 		cbOrderSide = new Combo(panelComposite, SWT.BORDER | SWT.SEARCH);
-		cbOrderSide.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
-		
+		cbOrderSide
+				.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
+
 		cbOrderType = new Combo(panelComposite, SWT.BORDER | SWT.SEARCH);
-		cbOrderType.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
-		
+		cbOrderType
+				.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
+
 		btAction = new Button(panelComposite, SWT.FLAT);
 		btAction.setText("Amend");
 		btAction.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true));
-		
+
 		btAction.addListener(SWT.Selection, new Listener() {
 
 			@Override
 			public void handleEvent(Event event) {
-				if(enterOrderMode) {
+				if (enterOrderMode) {
 					enterOrder(parent);
 				} else {
 					amendOrder(parent);
 				}
 			}
-			
+
 		});
-		
+
 		showPanel(parent, false);
 	}
-	
+
 	private void showPanel(Composite parent, boolean show) {
 		panelComposite.setVisible(show);
 		GridData data = (GridData) panelComposite.getLayoutData();
@@ -216,30 +228,35 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private Map<String, Object> retrieveParent(Composite com) {
-		if(objectId == null)
+		if (objectId == null)
 			return null;
-		
-		Map<String, Object> parent = Business.getInstance().getOrderManager().getStrategyData(objectId);
-		StrategyState state = (StrategyState)parent.get(OrderField.STATE.value());
-		if(!state.equals(StrategyState.Paused) && !state.equals(StrategyState.Stopped)) {
-//			Business.getInstance().getEventManager().sendEvent(
-//					new StrategyLogEvent(objectId, null, LogType.Warn, 
-//							"Strategy must be paused or stopped to manually operate on child order"));
-			MessageDialog.openError(com.getShell(), "Strategy state disallows this action", 
-			"Please stop/pause the order before manually operate on child orders");
+
+		Map<String, Object> parent = Business.getInstance().getOrderManager()
+				.getStrategyData(objectId);
+		StrategyState state = (StrategyState) parent.get(OrderField.STATE
+				.value());
+		if (!state.equals(StrategyState.Paused)
+				&& !state.equals(StrategyState.Stopped)) {
+			// Business.getInstance().getEventManager().sendEvent(
+			// new StrategyLogEvent(objectId, null, LogType.Warn,
+			// "Strategy must be paused or stopped to manually operate on child order"));
+			MessageDialog
+					.openError(com.getShell(),
+							"Strategy state disallows this action",
+							"Please stop/pause the order before manually operate on child orders");
 			return null;
 		}
-		
+
 		return parent;
 	}
-	
+
 	private void enterOrder(final Composite parent) {
 		Map<String, Object> parentMap = retrieveParent(parent);
-		if(null == parentMap)
+		if (null == parentMap)
 			return;
-		
-		String server = (String)parentMap.get(OrderField.SERVER_ID.value());
-		String strategyId = (String)parentMap.get(OrderField.ID.value());
+
+		String server = (String) parentMap.get(OrderField.SERVER_ID.value());
+		String strategyId = (String) parentMap.get(OrderField.ID.value());
 
 		int qty = 0;
 		double price = 0;
@@ -248,51 +265,60 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 			price = Double.parseDouble(txtPrice.getText());
 		} catch (NumberFormatException e) {
 			try {
-				Business.getInstance().getEventManager().sendEvent(
-						new StrategyLogEvent(objectId, null, LogType.Error, 
-								"Error: " + e.getMessage(), Business.getInstance().getAccount()));
+				Business.getInstance()
+						.getEventManager()
+						.sendEvent(
+								new StrategyLogEvent(objectId, null,
+										LogType.Error, "Error: "
+												+ e.getMessage(), Business
+												.getInstance().getAccount()));
 			} catch (Exception ex) {
 				log.error(e.getMessage(), ex);
 				ex.printStackTrace();
 			}
 			return;
 		}
-		
+
 		OrderSide side;
-		if(isSingleOrderStrategy) {
-			side = (OrderSide)parentMap.get(OrderField.SIDE.value());
+		if (isSingleOrderStrategy) {
+			side = (OrderSide) parentMap.get(OrderField.SIDE.value());
 		} else {
 			side = OrderSide.valueOf(cbOrderSide.getText());
 		}
-		String parentId = currentParentId == null? strategyId : currentParentId;
+		String parentId = currentParentId == null ? strategyId
+				: currentParentId;
 		try {
-			Business.getInstance().getEventManager().sendRemoteEvent(
-					new ManualNewChildOrderEvent(strategyId, server, parentId, side, price, qty, 
-							ExchangeOrderType.valueOf(cbOrderType.getText())));
+			Business.getInstance()
+					.getEventManager()
+					.sendRemoteEvent(
+							new ManualNewChildOrderEvent(strategyId, server,
+									parentId, side, price, qty,
+									ExchangeOrderType.valueOf(cbOrderType
+											.getText())));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			e.printStackTrace();
 		}
 		showPanel(parent, false);
 	}
-	
+
 	private void amendOrder(final Composite parent) {
 		Map<String, Object> parentMap = retrieveParent(parent);
-		if(null == parentMap)
+		if (null == parentMap)
 			return;
-		
-		if(lbOrderId.getText().equals(""))
+
+		if (lbOrderId.getText().equals(""))
 			return;
-		
+
 		final Table table = viewer.getTable();
 		TableItem item = table.getItem(table.getSelectionIndex());
 		Object obj = item.getData();
-		if(obj == null)
+		if (obj == null)
 			return;
 
 		@SuppressWarnings("unchecked")
-		HashMap<String, Object> order = (HashMap<String, Object>)obj;
-		String server = (String)order.get(OrderField.SERVER_ID.value());
+		HashMap<String, Object> order = (HashMap<String, Object>) obj;
+		String server = (String) order.get(OrderField.SERVER_ID.value());
 		int qty = 0;
 		double price = 0;
 		try {
@@ -300,90 +326,103 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 			price = Double.parseDouble(txtPrice.getText());
 		} catch (NumberFormatException e) {
 			try {
-				Business.getInstance().getEventManager().sendEvent(
-						new StrategyLogEvent(objectId, null, LogType.Error, 
-								"Error: " + e.getMessage(), Business.getInstance().getAccount()));
+				Business.getInstance()
+						.getEventManager()
+						.sendEvent(
+								new StrategyLogEvent(objectId, null,
+										LogType.Error, "Error: "
+												+ e.getMessage(), Business
+												.getInstance().getAccount()));
 			} catch (Exception ex) {
 				log.error(e.getMessage(), ex);
 				ex.printStackTrace();
 			}
 			return;
 		}
-		
+
 		try {
-			Business.getInstance().getEventManager().sendRemoteEvent(
-					new ManualAmendChildOrderEvent(objectId, server, lbOrderId.getText(), price, qty));
+			Business.getInstance()
+					.getEventManager()
+					.sendRemoteEvent(
+							new ManualAmendChildOrderEvent(objectId, server,
+									lbOrderId.getText(), price, qty));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			e.printStackTrace();
 		}
 		showPanel(parent, false);
-		
+
 	}
 
 	private void cancelOrder(Composite parent) {
-		if(null == retrieveParent(parent))
+		if (null == retrieveParent(parent))
 			return;
-		
+
 		final Table table = viewer.getTable();
 		TableItem items[] = table.getSelection();
 		List<String> childOrderIds = new ArrayList<String>();
 		String server = null;
-		for(TableItem item: items) {
+		for (TableItem item : items) {
 			@SuppressWarnings("unchecked")
-			HashMap<String, Object> order = (HashMap<String, Object>)item.getData();
-			server = (String)order.get(OrderField.SERVER_ID.value());
-			String childId = (String)order.get(OrderField.ID.value());
+			HashMap<String, Object> order = (HashMap<String, Object>) item
+					.getData();
+			server = (String) order.get(OrderField.SERVER_ID.value());
+			String childId = (String) order.get(OrderField.ID.value());
 			childOrderIds.add(childId);
 		}
-		
-		if(childOrderIds.size()>0) {
+
+		if (childOrderIds.size() > 0) {
 			try {
-				Business.getInstance().getEventManager().sendRemoteEvent(
-						new ManualCancelChildOrderEvent(objectId, server, childOrderIds));
+				Business.getInstance()
+						.getEventManager()
+						.sendRemoteEvent(
+								new ManualCancelChildOrderEvent(objectId,
+										server, childOrderIds));
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 				e.printStackTrace();
 			}
 		}
-		
+
 	}
-	
+
 	@Override
 	public void setFocus() {
 	}
 
 	synchronized void showOrders(ChildOrderSnapshotEvent event) {
 		List<ChildOrder> orders = event.getOrders();
-		
+
 		ArrayList<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
-		if(null != orders)
-			for(ChildOrder child: orders) {
-				if(currentParentId != null && !currentParentId.equals(child.getParentOrderId()))
+		if (null != orders)
+			for (ChildOrder child : orders) {
+				if (currentParentId != null
+						&& !currentParentId.equals(child.getParentOrderId()))
 					continue;
-//				child.put(OrderField.SERVER.value(), event.getSender());
+				// child.put(OrderField.SERVER.value(), event.getSender());
 				data.add(child.getFields());
 			}
 
 		show(data);
 	}
-	
+
 	synchronized private void show(ArrayList<Map<String, Object>> data) {
 		if (data == null)
 			return;
-		
-		if (!columnSet && data.size()>0) {
+
+		if (!columnSet && data.size() > 0) {
 			Map<String, Object> map = data.get(0);
 			ArrayList<ColumnProperty> columnProperties = new ArrayList<ColumnProperty>();
 			Set<String> titles = map.keySet();
-			for(String title: titles)
+			for (String title : titles)
 				columnProperties.add(new ColumnProperty(title, 100));
-			
-			viewer.setSmartColumnProperties(viewer.getTableLayoutFile(), columnProperties);
+
+			viewer.setSmartColumnProperties(viewer.getTableLayoutFile(),
+					columnProperties);
 			columnSet = true;
 			viewer.setInput(data);
 		}
-		if(viewer.getInput() == null || viewer.getInput() != data)
+		if (viewer.getInput() == null || viewer.getInput() != data)
 			viewer.setInput(data);
 		viewer.refresh();
 	}
@@ -398,7 +437,8 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 		cancelOrderAction.setText("Cancel child order");
 		cancelOrderAction.setToolTipText("Cancel child order");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.FALSE_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.FALSE_ICON.toString());
 		cancelOrderAction.setImageDescriptor(imageDesc);
 
 		IActionBars bars = getViewSite().getActionBars();
@@ -406,79 +446,86 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void showEnterOrderPanel(final Composite parent) {
-		if(null == retrieveParent(parent))
+		if (null == retrieveParent(parent))
 			return;
-		
-		if(currentSymbol == null) {
-//			Business.getInstance().getEventManager().sendEvent(
-//					new StrategyLogEvent(objectId, null, LogType.Warn, 
-//							"Please select an instrument before create a child order"));
-			MessageDialog.openError(parent.getShell(), "Please select an instrument", 
-					"Please click on an instrument under a strategy that you want to create the child order on");
+
+		if (currentSymbol == null) {
+			// Business.getInstance().getEventManager().sendEvent(
+			// new StrategyLogEvent(objectId, null, LogType.Warn,
+			// "Please select an instrument before create a child order"));
+			MessageDialog
+					.openError(
+							parent.getShell(),
+							"Please select an instrument",
+							"Please click on an instrument under a strategy that you want to create the child order on");
 			return;
 		}
-		
+
 		showPanel(parent, true);
-		lbOrderId.setText("          "); 
-		if(currentSymbol != null)
+		lbOrderId.setText("          ");
+		if (currentSymbol != null)
 			lbSymbol.setText(currentSymbol);
 		btAction.setText("  Enter  ");
-		txtPrice.setText("");		
+		txtPrice.setText("");
 		txtQuantity.setText("");
-		
-		for(ExchangeOrderType type: ExchangeOrderType.values())
+
+		for (ExchangeOrderType type : ExchangeOrderType.values())
 			cbOrderType.add(type.toString());
 		cbOrderType.setText(ExchangeOrderType.LIMIT.toString());
 		cbOrderType.setEnabled(true);
-		
-		for(OrderSide side: OrderSide.values()) {
+
+		for (OrderSide side : OrderSide.values()) {
 			cbOrderSide.add(side.toString());
 		}
-		if(isSingleOrderStrategy)
+		if (isSingleOrderStrategy)
 			cbOrderSide.setEnabled(false);
-		else 
+		else
 			cbOrderSide.setEnabled(true);
 		enterOrderMode = true;
 		panelComposite.layout();
 	}
-	
+
 	private void showAmendOrderPanel(final Composite parent) {
-		if(null == retrieveParent(parent))
+		if (null == retrieveParent(parent))
 			return;
-		
+
 		final Table table = viewer.getTable();
 		TableItem item = table.getItem(table.getSelectionIndex());
 		Object obj = item.getData();
-		if(obj == null)
+		if (obj == null)
 			return;
 
 		showPanel(parent, true);
 		@SuppressWarnings("unchecked")
-		HashMap<String, Object> order = (HashMap<String, Object>)obj;
-		String childId = (String)order.get(OrderField.ID.value());
-		String symbol = (String)order.get(OrderField.SYMBOL.value());
+		HashMap<String, Object> order = (HashMap<String, Object>) obj;
+		String childId = (String) order.get(OrderField.ID.value());
+		String symbol = (String) order.get(OrderField.SYMBOL.value());
 
-		lbOrderId.setText(childId); 
+		lbOrderId.setText(childId);
 		lbSymbol.setText(symbol);
-		
+
 		btAction.setText("  Amend  ");
 		String qty = "error";
 		try {
-			qty = BeanHolder.getInstance().getDataConverter().toString(OrderField.QUANTITY.value(), order.get(OrderField.QUANTITY.value()));
+			qty = BeanHolder
+					.getInstance()
+					.getDataConverter()
+					.toString(OrderField.QUANTITY.value(),
+							order.get(OrderField.QUANTITY.value()));
 		} catch (DataConvertException e) {
 			log.error(e.getMessage(), e);
 			e.printStackTrace();
 		}
-		txtPrice.setText(((Double)order.get(OrderField.PRICE.value())).toString());		
-		txtQuantity.setText(qty);		
-		cbOrderType.setText(order.get(OrderField.TYPE.value()).toString());		
+		txtPrice.setText(((Double) order.get(OrderField.PRICE.value()))
+				.toString());
+		txtQuantity.setText(qty);
+		cbOrderType.setText(order.get(OrderField.TYPE.value()).toString());
 		cbOrderType.setEnabled(false);
 		cbOrderSide.setText(order.get(OrderField.SIDE.value()).toString());
 		cbOrderSide.setEnabled(false);
 		enterOrderMode = false;
 		panelComposite.layout();
 	}
-
 
 	private void createEnterOrderAction(final Composite parent) {
 		// create local toolbars
@@ -490,12 +537,13 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 		enterOrderAction.setText("Create child order");
 		enterOrderAction.setToolTipText("Create a new child order");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.PLUS_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.PLUS_ICON.toString());
 		enterOrderAction.setImageDescriptor(imageDesc);
 
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(enterOrderAction);
-		
+
 	}
 
 	private void createAmendOrderAction(final Composite parent) {
@@ -509,43 +557,46 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 		amendOrderAction.setText("Amend child order");
 		amendOrderAction.setToolTipText("Amend a child order");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.AMEND_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.AMEND_ICON.toString());
 		amendOrderAction.setImageDescriptor(imageDesc);
 
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(amendOrderAction);
-		
+
 	}
 
 	@Override
 	public void onEvent(final AsyncEvent e) {
 		if (e instanceof ObjectSelectionEvent) {
-			ObjectSelectionEvent event = (ObjectSelectionEvent)e;
+			ObjectSelectionEvent event = (ObjectSelectionEvent) e;
 			Map<String, Object> map = event.getData();
-			objectId = (String)map.get(OrderField.ID.value());
-			String server = (String)map.get(OrderField.SERVER_ID.value());
-			if(e instanceof InstrumentSelectionEvent) {
-				objectId = (String)map.get(OrderField.STRATEGY_ID.value());
-				currentParentId = (String)map.get(OrderField.ID.value());
-				currentSymbol = (String)map.get(OrderField.SYMBOL.value());
+			objectId = (String) map.get(OrderField.ID.value());
+			String server = (String) map.get(OrderField.SERVER_ID.value());
+			if (e instanceof InstrumentSelectionEvent) {
+				objectId = (String) map.get(OrderField.STRATEGY_ID.value());
+				currentParentId = (String) map.get(OrderField.ID.value());
+				currentSymbol = (String) map.get(OrderField.SYMBOL.value());
 				isSingleOrderStrategy = false;
 			} else if (e instanceof MultiInstrumentStrategySelectionEvent) {
 				currentParentId = null;
 				currentSymbol = null;
 				isSingleOrderStrategy = false;
-			} else if(e instanceof SingleOrderStrategySelectionEvent) {
-				currentSymbol = (String)map.get(OrderField.SYMBOL.value());
+			} else if (e instanceof SingleOrderStrategySelectionEvent) {
+				currentSymbol = (String) map.get(OrderField.SYMBOL.value());
 				currentParentId = null;
 				isSingleOrderStrategy = true;
-			} else if(e instanceof SingleInstrumentStrategySelectionEvent) {
-				currentSymbol = (String)map.get(OrderField.SYMBOL.value());
+			} else if (e instanceof SingleInstrumentStrategySelectionEvent) {
+				currentSymbol = (String) map.get(OrderField.SYMBOL.value());
 				currentParentId = null;
 				isSingleOrderStrategy = false;
 			}
-			
-			ChildOrderSnapshotRequestEvent request = new ChildOrderSnapshotRequestEvent(objectId, server);
+
+			ChildOrderSnapshotRequestEvent request = new ChildOrderSnapshotRequestEvent(
+					objectId, server);
 			try {
-				Business.getInstance().getEventManager().sendRemoteEvent(request);
+				Business.getInstance().getEventManager()
+						.sendRemoteEvent(request);
 			} catch (Exception ex) {
 				log.error(ex.getMessage(), ex);
 				ex.printStackTrace();
@@ -561,47 +612,51 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 			viewer.getControl().getDisplay().asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					showOrders((ChildOrderSnapshotEvent)e);
+					showOrders((ChildOrderSnapshotEvent) e);
 					final Table table = viewer.getTable();
-					if(table.getItemCount()>0)
+					if (table.getItemCount() > 0)
 						table.setSelection(0);
 
 				}
 			});
-			
+
 		} else if (e instanceof ChildOrderUpdateEvent) {
-			final ChildOrderUpdateEvent event = (ChildOrderUpdateEvent)e;
-			if(objectId == null || !objectId.equals(event.getOrder().getStrategyId()) || 
-			   ((currentParentId != null) && !currentParentId.equals(event.getOrder().getParentOrderId())))
+			final ChildOrderUpdateEvent event = (ChildOrderUpdateEvent) e;
+			if (objectId == null
+					|| !objectId.equals(event.getOrder().getStrategyId())
+					|| ((currentParentId != null) && !currentParentId
+							.equals(event.getOrder().getParentOrderId())))
 				return;
-			
+
 			ChildOrder order = event.getOrder();
-//			order.put(OrderField.SERVER.value(), event.getSender());
+			// order.put(OrderField.SERVER.value(), event.getSender());
 			@SuppressWarnings("unchecked")
-			final ArrayList<Map<String, Object>> data = null == viewer.getInput()?
-					new ArrayList<Map<String, Object>>() : (ArrayList<Map<String, Object>>)viewer.getInput();
+			final ArrayList<Map<String, Object>> data = null == viewer
+					.getInput() ? new ArrayList<Map<String, Object>>()
+					: (ArrayList<Map<String, Object>>) viewer.getInput();
 			boolean found = false;
-			for(int i=0; i<data.size(); i++) {
+			for (int i = 0; i < data.size(); i++) {
 				Map<String, Object> map = data.get(i);
-				String id = (String)map.get(OrderField.ID.value());
-				if(id.equals(order.getId())) {
+				String id = (String) map.get(OrderField.ID.value());
+				if (id.equals(order.getId())) {
 					data.set(i, order.getFields());
 					found = true;
 					break;
 				}
 			}
-			if(!found)
+			if (!found)
 				data.add(event.getOrder().getFields());
-			
+
 			// will loop through to remove completed child orders from the view
 			ArrayList<Map<String, Object>> toBeRemoved = new ArrayList<Map<String, Object>>();
-			for(Map<String, Object> map: data) {
-				if(((OrdStatus)map.get(OrderField.ORDSTATUS.value())).isCompleted()) {
+			for (Map<String, Object> map : data) {
+				if (((OrdStatus) map.get(OrderField.ORDSTATUS.value()))
+						.isCompleted()) {
 					toBeRemoved.add(map);
 				}
 			}
-			
-			for(Map<String, Object> map: toBeRemoved) {
+
+			for (Map<String, Object> map : toBeRemoved) {
 				data.remove(map);
 			}
 
@@ -611,17 +666,20 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 					show(data);
 				}
 			});
-			
+
 		} else if (e instanceof ManualActionReplyEvent) {
-			ManualActionReplyEvent event = (ManualActionReplyEvent)e;
-			if(!event.isSuccess()) {
-				Business.getInstance().getEventManager().sendEvent(
-						new StrategyLogEvent(objectId, null, LogType.Warn, 
-								event.getMessage(), Business.getInstance().getAccount()));
+			ManualActionReplyEvent event = (ManualActionReplyEvent) e;
+			if (!event.isSuccess()) {
+				Business.getInstance()
+						.getEventManager()
+						.sendEvent(
+								new StrategyLogEvent(objectId, null,
+										LogType.Warn, event.getMessage(),
+										Business.getInstance().getAccount()));
 			}
-			
+
 		}
-		
+
 	}
 
 }

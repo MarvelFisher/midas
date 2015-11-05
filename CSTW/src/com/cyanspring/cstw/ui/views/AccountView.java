@@ -63,6 +63,7 @@ import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
+import com.cyanspring.cstw.session.CSTWSession;
 
 public class AccountView extends ViewPart implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -81,8 +82,8 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	private Action createManualRefreshAction;
 	private Action createSearchIdAction;
 	private Action createChangeAccountStateAction;
-	
-	private final String ID_CREATE_USER_ACTION = "CREATE_USER"; 
+
+	private final String ID_CREATE_USER_ACTION = "CREATE_USER";
 	private final String ID_ADD_CASH_ACTION = "ADD_CASH";
 	private final String ID_COUNT_ACCOUNT_ACTION = "COUNT_ACCOUNT";
 	private final String ID_MANUAL_REFRESH_ACTION = "MANUAL_REFRESH";
@@ -98,31 +99,31 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	private long maxRefreshInterval = 300;
 	private final int autoRefreshLimitUser = 1000;
 	private boolean show;
-	
-	private final RGB PURPLE = new RGB(171,130,255);
-	private final RGB WHITE = new RGB(255,255,255);
-	private final RGB GRAY = new RGB(181,181,181);
+
+	private final RGB PURPLE = new RGB(171, 130, 255);
+	private final RGB WHITE = new RGB(255, 255, 255);
+	private final RGB GRAY = new RGB(181, 181, 181);
 	private final Color FROZEN_COLOR = new Color(Display.getCurrent(), PURPLE);
 	private final Color TERMINATE_COLOR = new Color(Display.getCurrent(), GRAY);
 	private final Color NORMAL_COLOR = new Color(Display.getCurrent(), WHITE);
-	private final String COLUMN_STATE="State";
+	private final String COLUMN_STATE = "State";
 	private Composite parentComposite = null;
 	private int currentFindNum = 0;
-	
+
 	@Override
 	public void createPartControl(Composite parent) {
 		log.info("Creating account view");
-		
+
 		// create ImageRegistery
 		imageRegistry = Activator.getDefault().getImageRegistry();
 		parentComposite = parent;
 		// create parent layout
 		GridLayout layout = new GridLayout(1, false);
 		parent.setLayout(layout);
-		
+
 		initSearchBar(parent);
 
-		String strFile = Business.getInstance().getConfigPath()
+		String strFile = CSTWSession.getInstance().getConfigPath()
 				+ "AccountTable.xml";
 		viewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION
 				| SWT.H_SCROLL | SWT.V_SCROLL, Business.getInstance()
@@ -185,33 +186,35 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 					.subscribe(ServerStatusEvent.class, this);
 
 		log.info("no auto refresh account version");
-//		 Business.getInstance().getScheduleManager().scheduleRepeatTimerEvent(maxRefreshInterval,
-//		 this, timerEvent);
+		// Business.getInstance().getScheduleManager().scheduleRepeatTimerEvent(maxRefreshInterval,
+		// this, timerEvent);
 
 	}
-	
+
 	private void createChangeAccountStateAction(final Composite parent) {
-		createChangeAccountStateAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+		createChangeAccountStateAction = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
-				if( null == currentAccount ){
-					showMessageBox("You need select a account",parent);
-				}else{
-					if(!StringUtils.hasText(currentAccount.getId())){
-						showMessageBox("account id is empty",parent);
+				if (null == currentAccount) {
+					showMessageBox("You need select a account", parent);
+				} else {
+					if (!StringUtils.hasText(currentAccount.getId())) {
+						showMessageBox("account id is empty", parent);
 						return;
 					}
-					log.info("currentAccount:{}",currentAccount.getId());
+					log.info("currentAccount:{}", currentAccount.getId());
 					currentAccount = accounts.get(currentAccount.getId());
-					ChangeAccountStateDialog dialog = new ChangeAccountStateDialog(parent.getShell(), currentAccount);
+					ChangeAccountStateDialog dialog = new ChangeAccountStateDialog(
+							parent.getShell(), currentAccount);
 					dialog.open();
-					
+
 					Account tempAccount = dialog.getAccount();
 					Account account = accounts.get(tempAccount.getId());
 					account.setState(tempAccount.getState());
-					accounts.put(tempAccount.getId(),account);
+					accounts.put(tempAccount.getId(), account);
 					show = true;
 					showAccounts();
-					
+
 				}
 			}
 		};
@@ -223,7 +226,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 				.getDescriptor(ImageID.AMEND_OPTIONS_ICON.toString());
 		createChangeAccountStateAction.setImageDescriptor(imageDesc);
 		IActionBars bars = getViewSite().getActionBars();
-		bars.getToolBarManager().add(createChangeAccountStateAction);		
+		bars.getToolBarManager().add(createChangeAccountStateAction);
 	}
 
 	private void initSearchBar(Composite parent) {
@@ -259,40 +262,45 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		gd_searchBar.heightHint = 0;
 		parent.layout();
 	}
-	
+
 	private void searchText() {
 		String textValue = searchText.getText();
 		boolean found = false;
-		
+
 		for (int i = currentFindNum; i < viewer.getTable().getItemCount(); i++) {
 			Account account = (Account) viewer.getTable().getItem(i).getData();
-			if (account.getUserId().toUpperCase().startsWith(textValue.toUpperCase())) {
+			if (account.getUserId().toUpperCase()
+					.startsWith(textValue.toUpperCase())) {
 				viewer.getTable().setSelection(i);
 				found = true;
-				currentFindNum = ++i ;
+				currentFindNum = ++i;
 				break;
 			}
 		}
 
-		if(false == found)
+		if (false == found)
 			currentFindNum = 0;
 	}
-	
+
 	private void createManualRefreshToggleAction(final Composite parent) {
 
-		createManualRefreshAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
+		createManualRefreshAction = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
 			public void run() {
-				if(!createManualRefreshAction.isChecked()) {
-					Business.getInstance().getScheduleManager().cancelTimerEvent(timerEvent);
-				} else { 
-					Business.getInstance().getScheduleManager().scheduleRepeatTimerEvent(maxRefreshInterval,
-							AccountView.this, timerEvent);
+				if (!createManualRefreshAction.isChecked()) {
+					Business.getInstance().getScheduleManager()
+							.cancelTimerEvent(timerEvent);
+				} else {
+					Business.getInstance()
+							.getScheduleManager()
+							.scheduleRepeatTimerEvent(maxRefreshInterval,
+									AccountView.this, timerEvent);
 				}
 
 			}
 		};
 		createManualRefreshAction.setId(ID_MANUAL_REFRESH_ACTION);
-		createManualRefreshAction.setChecked(false);		
+		createManualRefreshAction.setChecked(false);
 		createManualRefreshAction.setText("AutoRefresh");
 		createManualRefreshAction.setToolTipText("AutoRefresh");
 
@@ -302,25 +310,27 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(createManualRefreshAction);
 	}
-	
-	private void createAddCashAction(final Composite parent) {		
+
+	private void createAddCashAction(final Composite parent) {
 		addCashAction = new Action() {
-			public void run(){
-				addCashDialog = new AddCashDialog(parent.getShell(), currentAccount);
+			public void run() {
+				addCashDialog = new AddCashDialog(parent.getShell(),
+						currentAccount);
 				addCashDialog.open();
 			}
 		};
 		addCashAction.setId(ID_ADD_CASH_ACTION);
 		addCashAction.setText("Add Cash");
 		addCashAction.setToolTipText("Add cash");
-		
-		ImageDescriptor img = imageRegistry.getDescriptor(ImageID.MONEY_ICON.toString());
-		
+
+		ImageDescriptor img = imageRegistry.getDescriptor(ImageID.MONEY_ICON
+				.toString());
+
 		addCashAction.setImageDescriptor(img);
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(addCashAction);
 	}
-	
+
 	private void createUserAccountAction(final Composite parent) {
 		createUserDialog = new CreateUserDialog(parent.getShell());
 		// create local toolbars
@@ -340,24 +350,24 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(createUserAction);
-		
+
 	}
-	
-	private void showMessageBox(final String msg, Composite parent){
-		parent.getDisplay().asyncExec(new Runnable(){
+
+	private void showMessageBox(final String msg, Composite parent) {
+		parent.getDisplay().asyncExec(new Runnable() {
 
 			@Override
 			public void run() {
-				MessageBox messageBox = new MessageBox(parentComposite.getShell(),
-						SWT.ICON_INFORMATION);
+				MessageBox messageBox = new MessageBox(parentComposite
+						.getShell(), SWT.ICON_INFORMATION);
 				messageBox.setText("Info");
 				messageBox.setMessage(msg);
-				messageBox.open();				
+				messageBox.open();
 			}
-			
+
 		});
 	}
-	
+
 	private void createCountAccountAction(final Composite parent) {
 		// create local toolbars
 		createCountAccountAction = new Action() {
@@ -434,13 +444,13 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		bars.getToolBarManager().add(createCountAccountAction);
 
 	}
-	
+
 	private void createSearchIdAction(final Composite parent) {
 		createSearchIdAction = new Action() {
 			public void run() {
 				searchBarComposite.setVisible(!searchBarComposite.isVisible());
 				if (searchBarComposite.isVisible()) {
-					currentFindNum = 0 ; 
+					currentFindNum = 0;
 					gd_searchBar.heightHint = 40;
 				} else {
 					gd_searchBar.heightHint = 0;
@@ -488,7 +498,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void sendSubscriptionRequest(String server) {
-		
+
 		Business.getInstance().getEventManager()
 				.subscribe(AccountUpdateEvent.class, this);
 		Business.getInstance().getEventManager()
@@ -518,36 +528,36 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		}
 	}
 
-	private void setBackgroundColorFromState(){
-		if(viewer.getControl().getDisplay().isDisposed()){
-			return ;
+	private void setBackgroundColorFromState() {
+		if (viewer.getControl().getDisplay().isDisposed()) {
+			return;
 		}
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
 
 			@Override
 			public void run() {
-				if(viewer.getTable().isDisposed())
-					return ;
+				if (viewer.getTable().isDisposed())
+					return;
 				TableColumn columns[] = viewer.getTable().getColumns();
 				int stateColumn = -1;
-				for(int i=0 ; i < columns.length ; i++){
-					if(COLUMN_STATE.equals(columns[i].getText())){
+				for (int i = 0; i < columns.length; i++) {
+					if (COLUMN_STATE.equals(columns[i].getText())) {
 						stateColumn = i;
 						break;
 					}
 				}
-				if(stateColumn == -1){
+				if (stateColumn == -1) {
 					log.error("can't find state column");
 					return;
 				}
-				
-				for(TableItem item : viewer.getTable().getItems()){	
+
+				for (TableItem item : viewer.getTable().getItems()) {
 					String state = item.getText(stateColumn);
-					if( AccountState.FROZEN.name() == state ){
+					if (AccountState.FROZEN.name() == state) {
 						item.setBackground(FROZEN_COLOR);
-					}else if( AccountState.TERMINATED.name() == state){
+					} else if (AccountState.TERMINATED.name() == state) {
 						item.setBackground(TERMINATE_COLOR);
-					}else{
+					} else {
 						item.setBackground(NORMAL_COLOR);
 					}
 				}
@@ -555,7 +565,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 			}
 		});
 	}
-	
+
 	private void showAccounts() {
 		if (!show)
 			return;
@@ -567,7 +577,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 						return;
 					if (accounts.toArray().size() > 0)
 						createOpenPositionColumns(accounts.toArray());
-					
+
 					viewer.refresh();
 				}
 			}
@@ -578,60 +588,61 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 
 	@Override
 	public void dispose() {
-		Business.getInstance().getScheduleManager().cancelTimerEvent(timerEvent);		
+		Business.getInstance().getScheduleManager()
+				.cancelTimerEvent(timerEvent);
 		unSubEvent(AccountUpdateEvent.class);
 		unSubEvent(AccountDynamicUpdateEvent.class);
 		unSubEvent(AllAccountSnapshotReplyEvent.class);
 
 		super.dispose();
 	}
-	
-	private void unSubEvent(Class<? extends AsyncEvent> clazz){
-		Business.getInstance().getEventManager().unsubscribe(clazz,ID, this);		
+
+	private void unSubEvent(Class<? extends AsyncEvent> clazz) {
+		Business.getInstance().getEventManager().unsubscribe(clazz, ID, this);
 	}
-	
+
 	@Override
 	public void setFocus() {
 
 	}
 
 	private void processAccountUpdate(Account account) {
-		
-		if(inAuthList(account)){
+
+		if (inAuthList(account)) {
 			accounts.put(account.getId(), account);
 		}
 		show = true;
 	}
 
-	private boolean inAuthList(Account account){
-		
-		if(Business.getInstance().getUser().equals(account.getUserId())
-				||Business.getInstance().isManagee(account.getUserId())){
+	private boolean inAuthList(Account account) {
+
+		if (Business.getInstance().getUser().equals(account.getUserId())
+				|| Business.getInstance().isManagee(account.getUserId())) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	@Override
 	public void onEvent(AsyncEvent event) {
 		if (event instanceof ServerStatusEvent) {
 			sendSubscriptionRequest(((ServerStatusEvent) event).getServer());
 		} else if (event instanceof AllAccountSnapshotReplyEvent) {
 			AllAccountSnapshotReplyEvent evt = (AllAccountSnapshotReplyEvent) event;
-			for (Account account : evt.getAccounts()) {				
-				if(inAuthList(account)){
+			for (Account account : evt.getAccounts()) {
+				if (inAuthList(account)) {
 					accounts.put(account.getId(), account);
 				}
 			}
 			log.info("Loaded accounts: " + evt.getAccounts().size());
 			show = true;
-				
-			if(accounts.size()<=autoRefreshLimitUser){
-				if(!createManualRefreshAction.isChecked())
+
+			if (accounts.size() <= autoRefreshLimitUser) {
+				if (!createManualRefreshAction.isChecked())
 					createManualRefreshAction.setChecked(true);
 				createManualRefreshAction.run();
-			}			
-			
+			}
+
 			showAccounts();
 		} else if (event instanceof AccountUpdateEvent) {
 			processAccountUpdate(((AccountUpdateEvent) event).getAccount());

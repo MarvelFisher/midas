@@ -28,6 +28,7 @@ import com.cyanspring.common.BeanHolder;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.common.SysSettings;
+import com.cyanspring.cstw.session.CSTWSession;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -62,7 +63,7 @@ public class Activator extends AbstractUIPlugin {
 
 	    confURL = getBundle().getEntry(SysSettings.CONF_PATH);
 	    String confPath = FileLocator.toFileURL(confURL).getFile();
-	    Business.getInstance().setConfigPath(confPath);
+	    CSTWSession.getInstance().setConfigPath(confPath);
 	    log.info("Setting configuration path: " + confPath); 
 	    
 	    String springFile = System.getProperty(CSTW_SPRING_FILE_PROP);

@@ -2,7 +2,6 @@ package com.cyanspring.cstw.ui.views;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -30,7 +29,6 @@ import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.account.AllUserSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllUserSnapshotRequestEvent;
-import com.cyanspring.common.event.account.CreateUserReplyEvent;
 import com.cyanspring.common.event.account.UserUpdateEvent;
 import com.cyanspring.common.util.ArrayMap;
 import com.cyanspring.cstw.business.Business;
@@ -40,24 +38,24 @@ import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
+import com.cyanspring.cstw.session.CSTWSession;
 
-public class UserView extends ViewPart implements IAsyncEventListener{
+public class UserView extends ViewPart implements IAsyncEventListener {
 
-	private static final Logger log = LoggerFactory
-			.getLogger(UserView.class);
+	private static final Logger log = LoggerFactory.getLogger(UserView.class);
 	public static final String ID = "com.cyanspring.cstw.gui.UserViewer";
 	private DynamicTableViewer viewer;
 	private ImageRegistry imageRegistry;
 	private Composite parentComposite = null;
-	
+
 	private AsyncTimerEvent refreshEvent = new AsyncTimerEvent();
 	private long maxRefreshInterval = 10000;
 	private final int autoRefreshLimitUser = 1000;
 
 	private List<User> users = new ArrayList<User>();
-	private ArrayMap <String,User> userMap = new ArrayMap<String,User>();
+	private ArrayMap<String, User> userMap = new ArrayMap<String, User>();
 	private boolean columnCreated = false;
-	
+
 	private Action createGroupManagementAction;
 	private Action createChangeRoleAction;
 	private Action createManualRefreshAction;
@@ -73,21 +71,21 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 
 	@Override
 	public void onEvent(AsyncEvent event) {
-		if( event instanceof AllUserSnapshotReplyEvent){
+		if (event instanceof AllUserSnapshotReplyEvent) {
 			AllUserSnapshotReplyEvent reply = (AllUserSnapshotReplyEvent) event;
 			users = reply.getUsers();
 			setUserMap(reply.getUsers());
-			
-			if(users.size()<=autoRefreshLimitUser){
-				if(!createManualRefreshAction.isChecked())
+
+			if (users.size() <= autoRefreshLimitUser) {
+				if (!createManualRefreshAction.isChecked())
 					createManualRefreshAction.setChecked(true);
 				createManualRefreshAction.run();
 			}
-			
+
 			showUsers();
-		}else if(event instanceof UserUpdateEvent){
+		} else if (event instanceof UserUpdateEvent) {
 			UserUpdateEvent reply = (UserUpdateEvent) event;
-			log.info("userupdate reply:{}",reply.getUser().getId());
+			log.info("userupdate reply:{}", reply.getUser().getId());
 			updateUser(reply.getUser());
 		} else if (event instanceof AsyncTimerEvent) {
 			showUsers();
@@ -95,7 +93,7 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 	}
 
 	private void setUserMap(List<User> users) {
-		for(User user:users){
+		for (User user : users) {
 			userMap.put(user.getId(), user);
 		}
 	}
@@ -106,32 +104,32 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 
 	protected User findUser(TableItem item) {
 		String id = item.getText(0);
-		for(User user:users){
-			if(id.equals(user.getId())){
+		for (User user : users) {
+			if (id.equals(user.getId())) {
 				return user;
 			}
 		}
 		return null;
 	}
-	
+
 	private void showUsers() {
-		if(viewer.getControl().isDisposed())
-			return ;
-		
+		if (viewer.getControl().isDisposed())
+			return;
+
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
 				synchronized (viewer) {
 					if (viewer.isViewClosing())
 						return;
-					
+
 					if (!columnCreated) {
-						ArrayList <User> tempList = userMap.toArray();
+						ArrayList<User> tempList = userMap.toArray();
 						Object obj = tempList.get(0);
 						List<ColumnProperty> properties = viewer
 								.setObjectColumnProperties(obj);
-						viewer.setSmartColumnProperties(obj.getClass().getName(),
-								properties);
+						viewer.setSmartColumnProperties(obj.getClass()
+								.getName(), properties);
 						viewer.setInput(tempList);
 						columnCreated = true;
 					}
@@ -141,7 +139,7 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 			}
 		});
 	}
-	
+
 	private void createUserAccountAction(final Composite parent) {
 		createUserDialog = new CreateUserDialog(parent.getShell());
 		// create local toolbars
@@ -159,7 +157,7 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 		createUserAction.setImageDescriptor(imageDesc);
 
 		IActionBars bars = getViewSite().getActionBars();
-		bars.getToolBarManager().add(createUserAction);		
+		bars.getToolBarManager().add(createUserAction);
 	}
 
 	@Override
@@ -168,8 +166,8 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 		imageRegistry = Activator.getDefault().getImageRegistry();
 		GridLayout layout = new GridLayout(1, false);
 		parent.setLayout(layout);
-		
-		String strFile = Business.getInstance().getConfigPath()
+
+		String strFile = CSTWSession.getInstance().getConfigPath()
 				+ "UserTable.xml";
 		viewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION
 				| SWT.H_SCROLL | SWT.V_SCROLL, Business.getInstance()
@@ -184,21 +182,20 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 		gridData.grabExcessVerticalSpace = true;
 		gridData.horizontalAlignment = GridData.FILL;
 		viewer.getControl().setLayoutData(gridData);
-		
+
 		final Table table = viewer.getTable();
 		table.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 
-				
 			}
 		});
-		
+
 		createManualRefreshToggleAction(parent);
 		createGroupManagementAction(parent);
-		createChangeRoleAction(parent);		
+		createChangeRoleAction(parent);
 		createUserAccountAction(parent);
 
-		sendAllUserRequest();	
+		sendAllUserRequest();
 		subEvent(AllUserSnapshotReplyEvent.class);
 		subEvent(UserUpdateEvent.class);
 	}
@@ -210,109 +207,116 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 		unSubEvent(UserUpdateEvent.class);
 		cancelScheduleJob(refreshEvent);
 	}
-	
+
 	private void sendAllUserRequest() {
-		AllUserSnapshotRequestEvent request = new AllUserSnapshotRequestEvent(ID, Business.getInstance().getFirstServer());
+		AllUserSnapshotRequestEvent request = new AllUserSnapshotRequestEvent(
+				ID, Business.getInstance().getFirstServer());
 		sendRemoteEvent(request);
 	}
-	
-	private TableItem getSelection(final Composite parent){
-		
-		TableItem items [] = viewer.getTable().getSelection();
-		
-		if( null == items ||  items.length == 0 ){
+
+	private TableItem getSelection(final Composite parent) {
+
+		TableItem items[] = viewer.getTable().getSelection();
+
+		if (null == items || items.length == 0) {
 			showMessageBox("You have to select one user!", parent);
 			return null;
 		}
-		
-		if(items.length > 1){
+
+		if (items.length > 1) {
 			showMessageBox("Select just one user!", parent);
 			return null;
 		}
-		
+
 		return items[0];
 	}
-	
+
 	private void createChangeRoleAction(final Composite parent) {
-		
+
 		createChangeRoleAction = new Action() {
 			public void run() {
-				
-				TableItem item = getSelection(parent);			
-				if( null == item)
-					return ; 
-				
-				User user = (User)item.getData();		
-				if( null == user){
+
+				TableItem item = getSelection(parent);
+				if (null == item)
+					return;
+
+				User user = (User) item.getData();
+				if (null == user) {
 					showMessageBox("can't find user", parent);
 					return;
 				}
-				
-				ChangeRoleDialog dialog = new ChangeRoleDialog(parent.getShell(),user);
+
+				ChangeRoleDialog dialog = new ChangeRoleDialog(
+						parent.getShell(), user);
 				dialog.open();
 			}
 		};
 		createChangeRoleAction.setId(ID_CHANGE_ROLE);
 		createChangeRoleAction.setText("Change Role");
 		createChangeRoleAction.setToolTipText("Change Role");
-		
+
 		ImageDescriptor imageDesc = imageRegistry
 				.getDescriptor(ImageID.ROLE_ICON.toString());
 		createChangeRoleAction.setImageDescriptor(imageDesc);
 		IActionBars bars = getViewSite().getActionBars();
-		bars.getToolBarManager().add(createChangeRoleAction);		
+		bars.getToolBarManager().add(createChangeRoleAction);
 	}
 
 	private void createGroupManagementAction(final Composite parent) {
 
 		createGroupManagementAction = new Action() {
 			public void run() {
-				
+
 				TableItem item = getSelection(parent);
-				if( null == item)
-					return ;
-				
-				User user = (User)item.getData();
-				if(null == user.getRole()){
-					GUIUtils.showMessageBox(""+user.getId()+" role is empty.", parent);
-					return ;
+				if (null == item)
+					return;
+
+				User user = (User) item.getData();
+				if (null == user.getRole()) {
+					GUIUtils.showMessageBox("" + user.getId()
+							+ " role is empty.", parent);
+					return;
 				}
-				
-				if( UserRole.Trader.equals(user.getRole())){
-					GUIUtils.showMessageBox(""+user.getId()+" is a Trader that can't manage someone else.", parent);
-					return ;
+
+				if (UserRole.Trader.equals(user.getRole())) {
+					GUIUtils.showMessageBox("" + user.getId()
+							+ " is a Trader that can't manage someone else.",
+							parent);
+					return;
 				}
-				
-				createGroupDialog = new GroupManagementDialog(parent.getShell(),item.getText(0),userMap.toArray());
+
+				createGroupDialog = new GroupManagementDialog(
+						parent.getShell(), item.getText(0), userMap.toArray());
 				createGroupDialog.open();
 			}
 		};
 		createGroupManagementAction.setId(ID_GROUP_MANAGEMENT_ACTION);
 		createGroupManagementAction.setText("Group Management");
 		createGroupManagementAction.setToolTipText("Group Management");
-		
+
 		ImageDescriptor imageDesc = imageRegistry
 				.getDescriptor(ImageID.PEOPLE_ICON.toString());
 		createGroupManagementAction.setImageDescriptor(imageDesc);
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(createGroupManagementAction);
-		
+
 	}
-	
+
 	private void createManualRefreshToggleAction(final Composite parent) {
 
-		createManualRefreshAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
+		createManualRefreshAction = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
 			public void run() {
-				if(!createManualRefreshAction.isChecked()) {
+				if (!createManualRefreshAction.isChecked()) {
 					cancelScheduleJob(refreshEvent);
-				} else { 
+				} else {
 					scheduleJob(refreshEvent, maxRefreshInterval);
 				}
 
 			}
 		};
 		createManualRefreshAction.setId(ID_MANUAL_REFRESH_ACTION);
-		createManualRefreshAction.setChecked(false);		
+		createManualRefreshAction.setChecked(false);
 		createManualRefreshAction.setText("AutoRefresh");
 		createManualRefreshAction.setToolTipText("AutoRefresh");
 
@@ -322,20 +326,20 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(createManualRefreshAction);
 	}
-	
+
 	@Override
 	public void setFocus() {
-		
+
 	}
-	
-	private void subEvent(Class<? extends AsyncEvent> clazz){
-		Business.getInstance().getEventManager().subscribe(clazz, this);		
+
+	private void subEvent(Class<? extends AsyncEvent> clazz) {
+		Business.getInstance().getEventManager().subscribe(clazz, this);
 	}
-	
-	private void unSubEvent(Class<? extends AsyncEvent> clazz){
-		Business.getInstance().getEventManager().unsubscribe(clazz,ID, this);		
+
+	private void unSubEvent(Class<? extends AsyncEvent> clazz) {
+		Business.getInstance().getEventManager().unsubscribe(clazz, ID, this);
 	}
-	
+
 	private void sendRemoteEvent(RemoteAsyncEvent event) {
 		try {
 			Business.getInstance().getEventManager().sendRemoteEvent(event);
@@ -343,29 +347,31 @@ public class UserView extends ViewPart implements IAsyncEventListener{
 			log.error(e.getMessage(), e);
 		}
 	}
-	
-	private void scheduleJob(AsyncTimerEvent timerEvent,
-			long maxRefreshInterval) {
-		Business.getInstance().getScheduleManager().scheduleRepeatTimerEvent(maxRefreshInterval,
-				UserView.this, timerEvent);
+
+	private void scheduleJob(AsyncTimerEvent timerEvent, long maxRefreshInterval) {
+		Business.getInstance()
+				.getScheduleManager()
+				.scheduleRepeatTimerEvent(maxRefreshInterval, UserView.this,
+						timerEvent);
 	}
 
 	private void cancelScheduleJob(AsyncTimerEvent timerEvent) {
-		Business.getInstance().getScheduleManager().cancelTimerEvent(timerEvent);		
+		Business.getInstance().getScheduleManager()
+				.cancelTimerEvent(timerEvent);
 	}
-	
-	private void showMessageBox(final String msg, Composite parent){
-		parent.getDisplay().asyncExec(new Runnable(){
+
+	private void showMessageBox(final String msg, Composite parent) {
+		parent.getDisplay().asyncExec(new Runnable() {
 
 			@Override
 			public void run() {
-				MessageBox messageBox = new MessageBox(parentComposite.getShell(),
-						SWT.ICON_INFORMATION);
+				MessageBox messageBox = new MessageBox(parentComposite
+						.getShell(), SWT.ICON_INFORMATION);
 				messageBox.setText("Info");
 				messageBox.setMessage(msg);
-				messageBox.open();				
+				messageBox.open();
 			}
-			
+
 		});
 	}
 }

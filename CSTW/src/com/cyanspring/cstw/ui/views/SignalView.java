@@ -34,6 +34,10 @@ import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
+import com.cyanspring.common.event.signal.AmendSignalEvent;
+import com.cyanspring.common.event.signal.CancelSignalEvent;
+import com.cyanspring.common.event.signal.SignalEvent;
+import com.cyanspring.common.event.signal.SignalSubEvent;
 import com.cyanspring.common.util.ArrayMap;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.business.Business;
@@ -43,16 +47,12 @@ import com.cyanspring.cstw.event.SignalSelectionEvent;
 import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
-import com.cyanspring.common.event.signal.AmendSignalEvent;
-import com.cyanspring.common.event.signal.CancelSignalEvent;
-import com.cyanspring.common.event.signal.SignalEvent;
-import com.cyanspring.common.event.signal.SignalSubEvent;
+import com.cyanspring.cstw.session.CSTWSession;
 
-public class SignalView extends ViewPart implements IAsyncEventListener{
-	private static final Logger log = LoggerFactory
-			.getLogger(SignalView.class);
+public class SignalView extends ViewPart implements IAsyncEventListener {
+	private static final Logger log = LoggerFactory.getLogger(SignalView.class);
 	public static final String ID = "com.cyanspring.cstw.gui.SignalView";
-	
+
 	private DynamicTableViewer viewer;
 	private boolean setColumns;
 	private AsyncTimerEvent timerEvent;
@@ -70,22 +70,23 @@ public class SignalView extends ViewPart implements IAsyncEventListener{
 	private Action deleteSymbolAction;
 	private Action multiAmendAction;
 	private AmendDialog amendDialog;
-	
+
 	private void addSymbol(String symbol) {
 		try {
 			Map<String, Object> signal = signals.get(symbol);
-			if(null != signal)
+			if (null != signal)
 				return;
 			signal = new HashMap<String, Object>();
 			signal.put(OrderField.ID.value(), symbol);
 			signals.put(symbol, signal);
 			String server = Business.getInstance().getFirstServer();
-			Business.getInstance().getEventManager().sendRemoteEvent(new SignalSubEvent(ID, server, symbol));
+			Business.getInstance().getEventManager()
+					.sendRemoteEvent(new SignalSubEvent(ID, server, symbol));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
 	}
-	
+
 	private void createAddSymbolAction(final Composite parent) {
 		addSymbolAction = new Action() {
 			public void run() {
@@ -101,7 +102,8 @@ public class SignalView extends ViewPart implements IAsyncEventListener{
 		addSymbolAction.setText("Add Symbol");
 		addSymbolAction.setToolTipText("Add a symbol");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.PLUS_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.PLUS_ICON.toString());
 		addSymbolAction.setImageDescriptor(imageDesc);
 
 		IActionBars bars = getViewSite().getActionBars();
@@ -112,16 +114,20 @@ public class SignalView extends ViewPart implements IAsyncEventListener{
 		deleteSymbolAction = new Action() {
 			public void run() {
 				TableItem items[] = viewer.getTable().getSelection();
-				for(TableItem item: items) {
+				for (TableItem item : items) {
 					Object obj = item.getData();
 					if (obj instanceof HashMap) {
 						@SuppressWarnings("unchecked")
-						HashMap<String, Object> map = (HashMap<String, Object>)obj;
-						String symbol = (String)map.get(OrderField.ID.value());
-						String server = (String)map.get(OrderField.SERVER_ID.value());
+						HashMap<String, Object> map = (HashMap<String, Object>) obj;
+						String symbol = (String) map.get(OrderField.ID.value());
+						String server = (String) map.get(OrderField.SERVER_ID
+								.value());
 						try {
-							Business.getInstance().getEventManager().
-								sendRemoteEvent(new CancelSignalEvent(symbol, server));
+							Business.getInstance()
+									.getEventManager()
+									.sendRemoteEvent(
+											new CancelSignalEvent(symbol,
+													server));
 						} catch (Exception e) {
 							log.error(e.getMessage(), e);
 						}
@@ -134,7 +140,8 @@ public class SignalView extends ViewPart implements IAsyncEventListener{
 		deleteSymbolAction.setText("Delete Symbol");
 		deleteSymbolAction.setToolTipText("Delete a symbol");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.FALSE_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.FALSE_ICON.toString());
 		deleteSymbolAction.setImageDescriptor(imageDesc);
 
 		IActionBars bars = getViewSite().getActionBars();
@@ -159,14 +166,14 @@ public class SignalView extends ViewPart implements IAsyncEventListener{
 		lbSymbol = new Label(entryPanel, SWT.NONE);
 		lbSymbol.setText("Symbol: ");
 		lbSymbol.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true));
-		
+
 		edSymbol = new Text(entryPanel, SWT.BORDER | SWT.SEARCH);
 		edSymbol.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		edSymbol.addKeyListener(new KeyListener() {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if(e.keyCode == SWT.CR) {
+				if (e.keyCode == SWT.CR) {
 					addSymbol(edSymbol.getText());
 				}
 			}
@@ -174,7 +181,7 @@ public class SignalView extends ViewPart implements IAsyncEventListener{
 			@Override
 			public void keyReleased(KeyEvent e) {
 			}
-			
+
 		});
 
 		btOk = new Button(entryPanel, SWT.FLAT);
@@ -186,7 +193,7 @@ public class SignalView extends ViewPart implements IAsyncEventListener{
 			public void handleEvent(Event event) {
 				addSymbol(edSymbol.getText());
 			}
-			
+
 		});
 
 		btCancel = new Button(entryPanel, SWT.FLAT);
@@ -198,7 +205,7 @@ public class SignalView extends ViewPart implements IAsyncEventListener{
 			public void handleEvent(Event event) {
 				showEntryPanel(false);
 			}
-			
+
 		});
 
 		entryPanel.setLayoutData(filterGridData);
@@ -207,7 +214,7 @@ public class SignalView extends ViewPart implements IAsyncEventListener{
 		filterGridData.exclude = true;
 		entryPanel.setVisible(false);
 	}
-	
+
 	@Override
 	public void createPartControl(Composite parent) {
 		log.info("Creating signal view");
@@ -221,13 +228,16 @@ public class SignalView extends ViewPart implements IAsyncEventListener{
 		createAddSymbolAction(parent);
 		createDeleteSymbolAction(parent);
 		createMultiAmendAction(parent);
-		
+
 		// create table
-	    String strFile = Business.getInstance().getConfigPath() + "SignalView.xml";
-		viewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL
-				| SWT.V_SCROLL, Business.getInstance().getXstream(), strFile, BeanHolder.getInstance().getDataConverter());
+		String strFile = CSTWSession.getInstance().getConfigPath()
+				+ "SignalView.xml";
+		viewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION
+				| SWT.H_SCROLL | SWT.V_SCROLL, Business.getInstance()
+				.getXstream(), strFile, BeanHolder.getInstance()
+				.getDataConverter());
 		viewer.init();
-		
+
 		GridData gridData = new GridData();
 		gridData.verticalAlignment = GridData.FILL;
 		gridData.horizontalSpan = 1;
@@ -244,16 +254,22 @@ public class SignalView extends ViewPart implements IAsyncEventListener{
 				Object obj = item.getData();
 				if (obj instanceof HashMap) {
 					@SuppressWarnings("unchecked")
-					HashMap<String, Object> map = (HashMap<String, Object>)obj;
-					List<String> editableFields = new ArrayList<String>(map.keySet());
-					Business.getInstance().getEventManager().
-						sendEvent(new SignalSelectionEvent(map, editableFields));
+					HashMap<String, Object> map = (HashMap<String, Object>) obj;
+					List<String> editableFields = new ArrayList<String>(map
+							.keySet());
+					Business.getInstance()
+							.getEventManager()
+							.sendEvent(
+									new SignalSelectionEvent(map,
+											editableFields));
 				}
 			}
 		});
-		
-		Business.getInstance().getEventManager().subscribe(OrderCacheReadyEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(SignalEvent.class, this);
+
+		Business.getInstance().getEventManager()
+				.subscribe(OrderCacheReadyEvent.class, this);
+		Business.getInstance().getEventManager()
+				.subscribe(SignalEvent.class, this);
 	}
 
 	private void createMultiAmendAction(final Composite parent) {
@@ -262,35 +278,39 @@ public class SignalView extends ViewPart implements IAsyncEventListener{
 			public void run() {
 				amendDialog = new AmendDialog(parent.getShell());
 				amendDialog.open();
-				if(amendDialog.getReturnCode() == org.eclipse.jface.window.Window.OK ) {
+				if (amendDialog.getReturnCode() == org.eclipse.jface.window.Window.OK) {
 					String maTag = amendDialog.getField();
 					String maValue = amendDialog.getValue();
-					if(null == maTag || maTag.equals(""))
+					if (null == maTag || maTag.equals(""))
 						return;
 					Table table = SignalView.this.viewer.getTable();
 
 					TableItem items[] = table.getSelection();
-					for(TableItem item: items) {
+					for (TableItem item : items) {
 						Object obj = item.getData();
 						if (obj instanceof HashMap) {
-							HashMap<String, Object> map = (HashMap<String, Object>)obj;
-							String id = (String)map.get(OrderField.ID.value());
-							String server = (String)map.get(OrderField.SERVER_ID.value());
+							HashMap<String, Object> map = (HashMap<String, Object>) obj;
+							String id = (String) map.get(OrderField.ID.value());
+							String server = (String) map
+									.get(OrderField.SERVER_ID.value());
 							Map<String, Object> changes = new HashMap<String, Object>();
 							changes.put(OrderField.ID.value(), id);
 							changes.put(maTag, maValue);
 							Map<String, Class> types = new HashMap<String, Class>();
-							for(Entry<String, Object> entry: changes.entrySet()) {
+							for (Entry<String, Object> entry : changes
+									.entrySet()) {
 								Object object = map.get(entry.getKey());
-								if(null == object)
+								if (null == object)
 									types.put(entry.getKey(), String.class);
 								else
-									types.put(entry.getKey(), (Class<Object>)object.getClass());
+									types.put(entry.getKey(),
+											(Class<Object>) object.getClass());
 							}
-							AmendSignalEvent event = new AmendSignalEvent(id, server, changes, types);
+							AmendSignalEvent event = new AmendSignalEvent(id,
+									server, changes, types);
 							try {
-								Business.getInstance().getEventManager().
-									sendRemoteEvent(event);
+								Business.getInstance().getEventManager()
+										.sendRemoteEvent(event);
 							} catch (Exception e) {
 								log.error(e.getMessage(), e);
 							}
@@ -302,7 +322,8 @@ public class SignalView extends ViewPart implements IAsyncEventListener{
 		multiAmendAction.setText("Multi amend a field");
 		multiAmendAction.setToolTipText("Multi amend a field");
 
-		ImageDescriptor imageDesc = imageRegistry.getDescriptor(ImageID.EDIT_ICON.toString());
+		ImageDescriptor imageDesc = imageRegistry
+				.getDescriptor(ImageID.EDIT_ICON.toString());
 		multiAmendAction.setImageDescriptor(imageDesc);
 
 		IActionBars bars = getViewSite().getActionBars();
@@ -318,16 +339,16 @@ public class SignalView extends ViewPart implements IAsyncEventListener{
 
 	private void show() {
 		lastRefreshTime = Clock.getInstance().now();
-		if(!setColumns) {
+		if (!setColumns) {
 			List<Map<String, Object>> inputs = signals.toArray();
-			
+
 			if (inputs.size() == 0)
 				return;
-			
+
 			log.debug("Setting signal columns");
 			Map<String, Object> record = signals.get(0);
 			ArrayList<ColumnProperty> columnProperties = new ArrayList<ColumnProperty>();
-			for(String tag: record.keySet()) {
+			for (String tag : record.keySet()) {
 				columnProperties.add(new ColumnProperty(tag, 100));
 			}
 			viewer.setSmartColumnProperties("Signal", columnProperties);
@@ -336,7 +357,7 @@ public class SignalView extends ViewPart implements IAsyncEventListener{
 		}
 		viewer.refresh();
 	}
-	
+
 	private void asyncShow() {
 		viewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
@@ -347,16 +368,18 @@ public class SignalView extends ViewPart implements IAsyncEventListener{
 	}
 
 	private void smartShow() {
-		if(TimeUtil.getTimePass(lastRefreshTime) > maxRefreshInterval) {
+		if (TimeUtil.getTimePass(lastRefreshTime) > maxRefreshInterval) {
 			asyncShow();
-		} else if(timerEvent == null) {
+		} else if (timerEvent == null) {
 			timerEvent = new AsyncTimerEvent();
-			Business.getInstance().getScheduleManager().scheduleTimerEvent(maxRefreshInterval, this, timerEvent);
+			Business.getInstance().getScheduleManager()
+					.scheduleTimerEvent(maxRefreshInterval, this, timerEvent);
 		}
 	}
-	
+
 	public void processSignalEvent(SignalEvent event) {
-		String symbol = event.getSignal().get(String.class, OrderField.ID.value());
+		String symbol = event.getSignal().get(String.class,
+				OrderField.ID.value());
 		signals.put(symbol, event.getSignal().getFields());
 	}
 
@@ -364,15 +387,16 @@ public class SignalView extends ViewPart implements IAsyncEventListener{
 	public void onEvent(AsyncEvent event) {
 		if (event instanceof OrderCacheReadyEvent) {
 			String server = Business.getInstance().getFirstServer();
-			if(null == server)
+			if (null == server)
 				return;
 			try {
-				Business.getInstance().getEventManager().sendRemoteEvent(new SignalSubEvent(ID, server, null));
+				Business.getInstance().getEventManager()
+						.sendRemoteEvent(new SignalSubEvent(ID, server, null));
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
 		} else if (event instanceof SignalEvent) {
-			processSignalEvent((SignalEvent)event);
+			processSignalEvent((SignalEvent) event);
 			smartShow();
 		} else if (event instanceof AsyncTimerEvent) {
 			timerEvent = null;
@@ -380,7 +404,7 @@ public class SignalView extends ViewPart implements IAsyncEventListener{
 		} else {
 			log.warn("Unhandled event: " + event);
 		}
-				
+
 	}
 
 }

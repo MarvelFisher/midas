@@ -53,6 +53,7 @@ import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
 import com.cyanspring.cstw.gui.session.GuiSession;
 import com.cyanspring.cstw.preference.PreferenceStoreManager;
+import com.cyanspring.cstw.session.CSTWSession;
 import com.cyanspring.cstw.ui.trader.helper.QuoteHelper;
 
 public class QuoteView extends ViewPart implements IAsyncEventListener {
@@ -195,7 +196,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void createQuoteViewer(Composite parent) {
-		String strFile = Business.getInstance().getConfigPath()
+		String strFile = CSTWSession.getInstance().getConfigPath()
 				+ "QuoteTable.xml";
 		quoteViewer = new DynamicTableViewer(parent, SWT.SINGLE
 				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business

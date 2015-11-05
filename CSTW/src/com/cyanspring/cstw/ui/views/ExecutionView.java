@@ -44,6 +44,7 @@ import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
 import com.cyanspring.cstw.gui.filter.ParentOrderFilter;
+import com.cyanspring.cstw.session.CSTWSession;
 
 public class ExecutionView extends ViewPart implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -72,7 +73,7 @@ public class ExecutionView extends ViewPart implements IAsyncEventListener {
 		parent.setLayout(layout);
 
 		// create table
-	    String strFile = Business.getInstance().getConfigPath() + "ExecutionTable.xml";
+		String strFile = CSTWSession.getInstance().getConfigPath() + "ExecutionTable.xml";
 		viewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL
 				| SWT.V_SCROLL, Business.getInstance().getXstream(), strFile, BeanHolder.getInstance().getDataConverter());
 		viewer.init();
