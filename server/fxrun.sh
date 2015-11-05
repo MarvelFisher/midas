@@ -26,7 +26,11 @@ echo $! > LTS_PID
 sleep 60
 ./fxruninfo.sh start
 
+if [ "$1" == '-a' ]; then
+
 sleep 60
 echo "Starting AppServer "`date` | tee -a ./log/console.log
 cd ../appServer
 ./run.sh start
+
+fi
