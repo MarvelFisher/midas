@@ -51,7 +51,8 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	private double Denominator = 0.0;
 	private boolean Tradable = false;
 	private String SpellName = null;
-	private String Commodity = null;
+//	private String Commodity = null;
+	private long instrumentType = 0;
 	private String indexSessionType = null;
 	
 	public SymbolInfo(String market, String code) 
@@ -113,15 +114,16 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 		setDenominator(refdata.getDenominator());
 		setTradable(refdata.getTradable());
 		setSpellName(refdata.getSpellName());
-        if (RefDataBitUtil.isForex(refdata.getInstrumentType())) {
-        	setCommodity("F");
-        }
-        else if (RefDataBitUtil.isIndex(refdata.getInstrumentType())) {
-        	setCommodity("I");
-        }
-        else if (RefDataBitUtil.isStock(refdata.getInstrumentType())) {
-        	setCommodity("S");
-        }
+//        if (RefDataBitUtil.isForex(refdata.getInstrumentType())) {
+//        	setCommodity("F");
+//        }
+//        else if (RefDataBitUtil.isIndex(refdata.getInstrumentType())) {
+//        	setCommodity("I");
+//        }
+//        else if (RefDataBitUtil.isStock(refdata.getInstrumentType())) {
+//        	setCommodity("S");
+//        }
+		setInstrumentType(refdata.getInstrumentType());
 		setDetailCN(refdata.getDetailCN());
 		setDetailEN(refdata.getDetailEN());
 		setDetailTW(refdata.getDetailTW());
@@ -480,12 +482,12 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	public void setSpellName(String spellName) {
 		SpellName = spellName;
 	}
-	public String getCommodity() {
-		return Commodity;
-	}
-	public void setCommodity(String commodity) {
-		Commodity = commodity;
-	}
+//	public String getCommodity() {
+//		return Commodity;
+//	}
+//	public void setCommodity(String commodity) {
+//		Commodity = commodity;
+//	}
 	public String getDetailEN() {
 		return detailEN;
 	}
@@ -511,6 +513,14 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	public void setIndexSessionType(String indexSessionType)
 	{
 		this.indexSessionType = indexSessionType;
+	}
+	public long getInstrumentType()
+	{
+		return instrumentType;
+	}
+	public void setInstrumentType(long instrumentType)
+	{
+		this.instrumentType = instrumentType;
 	}
 	
 }

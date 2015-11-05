@@ -11,7 +11,7 @@ import com.cyanspring.info.cdp.SymbolData;
 public class FXPriceSetter implements IPriceSetter
 {
 	@Override
-	public boolean setPrice(HistoricalPrice price, Quote quote, double LastVolume, String commodity) 
+	public boolean setPrice(HistoricalPrice price, Quote quote, double LastVolume, long instrumentType) 
 	{
 		if (PriceUtils.EqualLessThan(quote.getBid(), 0) || PriceUtils.EqualLessThan(quote.getAsk(), 0))
 		{
@@ -24,7 +24,7 @@ public class FXPriceSetter implements IPriceSetter
 	}
 
 	@Override
-	public boolean setDataPrice(SymbolData symboldata, Quote quote, String commodity) 
+	public boolean setDataPrice(SymbolData symboldata, Quote quote, long instrumentType) 
 	{
 		if (PriceUtils.EqualLessThan(quote.getBid(), 0) || PriceUtils.EqualLessThan(quote.getAsk(), 0))
 		{

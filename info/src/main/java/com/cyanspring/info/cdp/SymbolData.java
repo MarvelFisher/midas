@@ -31,6 +31,7 @@ import com.cyanspring.common.marketdata.PriceHighLow;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.SymbolInfo;
 import com.cyanspring.common.marketsession.MarketSessionType;
+import com.cyanspring.common.staticdata.RefDataBitUtil;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.info.util.IPriceSetter;
 import com.cyanspring.info.util.InfoUtils;
@@ -134,27 +135,29 @@ public class SymbolData implements Comparable<SymbolData>
 		else
 		{
 			Quote q;
-			String commodity = centralDB.getRefSymbolInfo().getbySymbol(strSymbol).getCommodity();
+//			String commodity = centralDB.getRefSymbolInfo().getbySymbol(strSymbol).getCommodity();
+			long instrumentType = centralDB.getRefSymbolInfo().getbySymbol(strSymbol).getInstrumentType();
 			while ((q = quoteTmp.poll()) != null)
 			{
-				if (commodity == null)
+				if (instrumentType == 0)
 					continue;
-				if ((commodity.equals("FC") || commodity.equals("FI")) &&
-						PriceUtils.isZero(q.getTotalVolume()))
+//				if ((commodity.equals("FC") || commodity.equals("FI")) &&
+				if ((RefDataBitUtil.isFutures(instrumentType) || RefDataBitUtil.isIndex(instrumentType))
+						&& PriceUtils.isZero(q.getTotalVolume()))
 				{
 					continue;
 				}
-				else if (commodity.equals("S") &&
+				else if (RefDataBitUtil.isStock(instrumentType) &&
 						(PriceUtils.isZero(q.getTotalVolume()) || PriceUtils.isZero(q.getTurnover())))
 				{
 					continue;
 				}
-				setPrice(q, commodity) ;
+				setPrice(q, instrumentType) ;
 				dCurVolume = q.getTotalVolume() ;
 			}
 		}
 	}
-	public boolean setPrice(Quote quote, String commodity)
+	public boolean setPrice(Quote quote, long instrumentType)
 	{
 		boolean changed;
 		synchronized(priceData)
@@ -166,13 +169,13 @@ public class SymbolData implements Comparable<SymbolData>
 			if (price == null)
 			{
 				price = new HistoricalPrice(strSymbol, getTradedate(), cal.getTime());
-				changed = setter.setPrice(price, quote, dCurVolume, commodity);
+				changed = setter.setPrice(price, quote, dCurVolume, instrumentType);
 				if (changed)
 					priceData.put(cal.getTime(), price);
 			}
 			else
 			{
-				changed = setter.setPrice(price, quote, dCurVolume, commodity);
+				changed = setter.setPrice(price, quote, dCurVolume, instrumentType);
 			}
 		}
 		if (changed && writeMin) //writeToMin() ; 
@@ -180,7 +183,7 @@ public class SymbolData implements Comparable<SymbolData>
 			centralDB.getChartCacheProcessor().put(this);
 			writeMin = false;
 		}
-		setter.setDataPrice(this, quote, commodity);
+		setter.setDataPrice(this, quote, instrumentType);
 		return changed;
 	}
 	

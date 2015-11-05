@@ -5,16 +5,17 @@ import java.util.TimeZone;
 
 import com.cyanspring.common.marketdata.HistoricalPrice;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.staticdata.RefDataBitUtil;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.info.cdp.SymbolData;
 
 public class DefPriceSetter implements IPriceSetter
 {
 	@Override
-	public boolean setPrice(HistoricalPrice price, Quote quote, double LastVolume, String commodity) 
+	public boolean setPrice(HistoricalPrice price, Quote quote, double LastVolume, long instrumentType) 
 	{
 		if (PriceUtils.EqualLessThan(quote.getLast(), 0)
-				|| (commodity.equals("I") == false && PriceUtils.EqualLessThan(quote.getLastVol(), 0)))
+				|| (RefDataBitUtil.isIndex(instrumentType) == false && PriceUtils.EqualLessThan(quote.getLastVol(), 0)))
 		{
 			return false;
 		}
@@ -33,10 +34,10 @@ public class DefPriceSetter implements IPriceSetter
 	}
 
 	@Override
-	public boolean setDataPrice(SymbolData symboldata, Quote quote, String commodity) 
+	public boolean setDataPrice(SymbolData symboldata, Quote quote, long instrumentType) 
 	{
 		if (PriceUtils.EqualLessThan(quote.getLast(), 0)
-				|| (commodity.equals("I") == false && PriceUtils.EqualLessThan(quote.getLastVol(), 0)))
+				|| (RefDataBitUtil.isIndex(instrumentType) == false && PriceUtils.EqualLessThan(quote.getLastVol(), 0)))
 		{
 			return false;
 		}
