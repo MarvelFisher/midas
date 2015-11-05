@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.gui;
+package com.cyanspring.cstw.ui.views;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -24,6 +24,7 @@ import com.cyanspring.common.event.statistic.AccountStatisticReplyEvent;
 import com.cyanspring.common.event.statistic.AccountStatisticRequestEvent;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
+import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.PropertyTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
 

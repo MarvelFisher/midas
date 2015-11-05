@@ -25,68 +25,68 @@
          point="org.eclipse.ui.views">
       <view
             allowMultiple="true"
-            class="com.cyanspring.cstw.gui.SingleOrderStrategyView"
+            class="com.cyanspring.cstw.ui.views.SingleOrderStrategyView"
             icon="icons/order.png"
             id="com.cyanspring.cstw.gui.ParentOrderView"
             name="Single Order Strategy"
             restorable="true">
       </view>
       <view
-            class="com.cyanspring.cstw.gui.ChildOrderView"
+            class="com.cyanspring.cstw.ui.views.ChildOrderView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.gui.ChildOrderView"
             name="Child Orders"
             restorable="true">
       </view>
       <view
-            class="com.cyanspring.cstw.gui.PropertyView"
+            class="com.cyanspring.cstw.ui.views.PropertyView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.gui.PropertyView"
             name="Strategy Properties"
             restorable="true">
       </view>
       <view
-            class="com.cyanspring.cstw.gui.MarketDataView"
+            class="com.cyanspring.cstw.ui.views.MarketDataView"
             icon="icons/marketData.png"
             id="com.cyanspring.cstw.gui.MarketDataView"
             name="Market Data">
       </view>
       <view
-            class="com.cyanspring.cstw.gui.StrategyLogView"
+            class="com.cyanspring.cstw.ui.views.StrategyLogView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.gui.StrategyLogView"
             name="Strategy Log">
       </view>
       <view
-            class="com.cyanspring.cstw.gui.ExecutionView"
+            class="com.cyanspring.cstw.ui.views.ExecutionView"
             icon="icons/executions.png"
             id="com.cyanspring.cstw.gui.ExecutionView"
             name="Executions"
             restorable="true">
       </view>
       <view
-            class="com.cyanspring.cstw.gui.MultiInstrumentStrategyView"
+            class="com.cyanspring.cstw.ui.views.MultiInstrumentStrategyView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.gui.MultiInstrumentStrategyView"
             name="Multi Instrument Strategy"
             restorable="true">
       </view>
       <view
-            class="com.cyanspring.cstw.gui.SingleInstrumentStrategyView"
+            class="com.cyanspring.cstw.ui.views.SingleInstrumentStrategyView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.gui.SingleInstrumentStrategyView"
             name="Single Instrument Strategy"
             restorable="true">
       </view>
       <view
-            class="com.cyanspring.cstw.gui.SignalView"
+            class="com.cyanspring.cstw.ui.views.SignalView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.gui.SignalView"
             name="Watch list"
             restorable="true">
       </view>
       <view
-            class="com.cyanspring.cstw.gui.PositionView"
+            class="com.cyanspring.cstw.ui.views.PositionView"
             icon="icons/account.png"
             id="com.cyanspring.cstw.gui.PositionViewer"
             name="Account"
@@ -94,7 +94,7 @@
       </view>
       <view
             allowMultiple="false"
-            class="com.cyanspring.cstw.gui.AccountView"
+            class="com.cyanspring.cstw.ui.views.AccountView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.gui.AccountViewer"
             name="Account View"
@@ -102,7 +102,7 @@
       </view>
       <view
             allowMultiple="false"
-            class="com.cyanspring.cstw.gui.AccountSettingView"
+            class="com.cyanspring.cstw.ui.views.AccountSettingView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.gui.AccountSettingViewer"
             name="Account Setting View"
@@ -110,7 +110,7 @@
       </view>
       <view
             allowMultiple="false"
-            class="com.cyanspring.cstw.gui.PositionStatisticView"
+            class="com.cyanspring.cstw.ui.views.PositionStatisticView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.gui.PositionStatisticView"
             name="Open Position"
@@ -119,7 +119,7 @@
       
       <view
             allowMultiple="false"
-            class="com.cyanspring.cstw.gui.ClosedPositionView"
+            class="com.cyanspring.cstw.ui.views.ClosedPositionView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.gui.ClosedPositionViewer"
             name="Closed Position"
@@ -128,7 +128,7 @@
       
       <view
             allowMultiple="false"
-            class="com.cyanspring.cstw.gui.AccountStatisticView"
+            class="com.cyanspring.cstw.ui.views.AccountStatisticView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.gui.AccountStatisticViewer"
             name="Account Statistic"
@@ -136,7 +136,7 @@
       </view>
       <view
             allowMultiple="false"
-            class="com.cyanspring.cstw.gui.UserView"
+            class="com.cyanspring.cstw.ui.views.UserView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.gui.UserViewer"
             name="User View"
@@ -144,7 +144,7 @@
       </view>
       <view
             allowMultiple="false"
-            class="com.cyanspring.cstw.gui.QuoteView"
+            class="com.cyanspring.cstw.ui.views.QuoteView"
             icon="icons/quote.png"
             id="com.cyanspring.cstw.gui.QuoteViewer"
             name="Quote"

@@ -21,7 +21,7 @@ import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.cstw.gui.ChildOrderView;
+import com.cyanspring.cstw.ui.views.ChildOrderView;
 
 public class ChildOrderViewCommand extends AbstractHandler implements IHandler {
 	private static final Logger log = LoggerFactory

@@ -8,7 +8,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
-package com.cyanspring.cstw.gui;
+package com.cyanspring.cstw.ui.views;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -65,6 +65,7 @@ import com.cyanspring.cstw.event.GuiMultiInstrumentStrategyUpdateEvent;
 import com.cyanspring.cstw.event.InstrumentSelectionEvent;
 import com.cyanspring.cstw.event.MultiInstrumentStrategySelectionEvent;
 import com.cyanspring.cstw.event.OrderCacheReadyEvent;
+import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.command.LoadStrategyCommand;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;

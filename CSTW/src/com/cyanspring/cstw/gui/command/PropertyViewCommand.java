@@ -20,7 +20,7 @@ import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.cstw.gui.PropertyView;
+import com.cyanspring.cstw.ui.views.PropertyView;
 
 public class PropertyViewCommand extends AbstractHandler {
 	private static final Logger log = LoggerFactory

@@ -10,26 +10,17 @@
  ******************************************************************************/
 package com.cyanspring.cstw.gui;
 
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IStatusLineManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.common.event.system.SuspendServerEvent;
-import com.cyanspring.cstw.business.Business;
-import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.gui.command.auth.WorkbenchActionProvider;
-import com.cyanspring.cstw.gui.common.StyledAction;
+import com.cyanspring.cstw.ui.views.ServerStatusDisplay;
 
 /**
  * An action bar advisor is responsible for creating, adding, and disposing of

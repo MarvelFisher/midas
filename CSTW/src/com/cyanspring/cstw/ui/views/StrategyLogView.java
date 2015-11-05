@@ -8,7 +8,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
-package com.cyanspring.cstw.gui;
+package com.cyanspring.cstw.ui.views;
 
 import java.util.List;
 import java.util.Map;
@@ -42,6 +42,7 @@ import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.MultiInstrumentStrategySelectionEvent;
 import com.cyanspring.cstw.event.SingleOrderStrategySelectionEvent;
 import com.cyanspring.cstw.event.ServerStatusEvent;
+import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.StyledAction;
 
 public class StrategyLogView extends ViewPart implements IAsyncEventListener {

@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.gui;
+package com.cyanspring.cstw.ui.views;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -63,6 +63,7 @@ import com.cyanspring.cstw.event.ObjectSelectionEvent;
 import com.cyanspring.cstw.event.QuoteSymbolSelectEvent;
 import com.cyanspring.cstw.event.SingleInstrumentStrategySelectionEvent;
 import com.cyanspring.cstw.event.SingleOrderStrategySelectionEvent;
+import com.cyanspring.cstw.gui.Activator;
 
 public class MarketDataView extends ViewPart implements IAsyncEventListener {
 

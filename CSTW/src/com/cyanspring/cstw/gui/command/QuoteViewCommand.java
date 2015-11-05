@@ -9,7 +9,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.cyanspring.cstw.gui.QuoteView;
+
+import com.cyanspring.cstw.ui.views.QuoteView;
 
 public class QuoteViewCommand extends AbstractHandler{
 

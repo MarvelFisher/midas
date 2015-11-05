@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.util.ReflectionUtil;
-import com.cyanspring.cstw.gui.PositionView;
+import com.cyanspring.cstw.ui.views.PositionView;
 
 public class DynamicTableComparator extends ViewerComparator {
 	private static final Logger log = LoggerFactory

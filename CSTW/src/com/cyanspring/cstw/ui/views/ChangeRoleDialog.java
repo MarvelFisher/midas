@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.gui;
+package com.cyanspring.cstw.ui.views;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.ImageRegistry;

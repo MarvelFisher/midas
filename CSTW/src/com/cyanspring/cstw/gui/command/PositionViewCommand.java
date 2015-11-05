@@ -10,7 +10,7 @@ import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.cstw.gui.PositionView;
+import com.cyanspring.cstw.ui.views.PositionView;
 
 public class PositionViewCommand extends AbstractHandler{
 	private static final Logger log = LoggerFactory

@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.gui;
+package com.cyanspring.cstw.ui.views;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +31,7 @@ import com.cyanspring.common.type.KeyValue;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.AccountSelectionEvent;
+import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.PropertyTableViewer;
 
 public class AccountSettingView extends ViewPart implements IAsyncEventListener {

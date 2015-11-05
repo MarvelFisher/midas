@@ -8,7 +8,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
-package com.cyanspring.cstw.gui;
+package com.cyanspring.cstw.ui.views;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,6 +53,7 @@ import com.cyanspring.cstw.event.ObjectSelectionEvent;
 import com.cyanspring.cstw.event.SignalSelectionEvent;
 import com.cyanspring.cstw.event.SingleInstrumentStrategySelectionEvent;
 import com.cyanspring.cstw.event.SingleOrderStrategySelectionEvent;
+import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.PropertyTableViewer;
 
 public class PropertyView extends ViewPart implements IAsyncEventListener {

@@ -10,7 +10,7 @@ import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.cstw.gui.AccountSettingView;
+import com.cyanspring.cstw.ui.views.AccountSettingView;
 
 public class AccountSettingViewCommand extends AbstractHandler {
 	private static final Logger log = LoggerFactory

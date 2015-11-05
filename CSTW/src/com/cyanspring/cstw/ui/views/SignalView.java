@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.gui;
+package com.cyanspring.cstw.ui.views;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,6 +40,7 @@ import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.OrderCacheReadyEvent;
 import com.cyanspring.cstw.event.SignalSelectionEvent;
+import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.common.event.signal.AmendSignalEvent;

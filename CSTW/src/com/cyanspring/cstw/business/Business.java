@@ -80,8 +80,8 @@ import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCInstrume
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCOrderEventController;
 import com.cyanspring.cstw.event.SelectUserAccountEvent;
 import com.cyanspring.cstw.event.ServerStatusEvent;
-import com.cyanspring.cstw.gui.ServerStatusDisplay;
 import com.cyanspring.cstw.gui.session.GuiSession;
+import com.cyanspring.cstw.ui.views.ServerStatusDisplay;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 

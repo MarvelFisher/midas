@@ -13,6 +13,14 @@ package com.cyanspring.cstw.gui;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 
+import com.cyanspring.cstw.ui.views.ChildOrderView;
+import com.cyanspring.cstw.ui.views.ExecutionView;
+import com.cyanspring.cstw.ui.views.MultiInstrumentStrategyView;
+import com.cyanspring.cstw.ui.views.PropertyView;
+import com.cyanspring.cstw.ui.views.SingleInstrumentStrategyView;
+import com.cyanspring.cstw.ui.views.SingleOrderStrategyView;
+import com.cyanspring.cstw.ui.views.StrategyLogView;
+
 public class Perspective implements IPerspectiveFactory {
 
 	public void createInitialLayout(IPageLayout layout) {

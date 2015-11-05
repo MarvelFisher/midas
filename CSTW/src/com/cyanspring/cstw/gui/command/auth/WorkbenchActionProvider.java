@@ -20,8 +20,8 @@ import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.GUIUtils;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.gui.Activator;
-import com.cyanspring.cstw.gui.ConfirmPasswordDialog;
 import com.cyanspring.cstw.gui.common.StyledAction;
+import com.cyanspring.cstw.ui.views.ConfirmPasswordDialog;
 
 public class WorkbenchActionProvider {
 	

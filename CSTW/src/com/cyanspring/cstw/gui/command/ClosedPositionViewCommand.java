@@ -10,7 +10,7 @@ import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.cstw.gui.ClosedPositionView;
+import com.cyanspring.cstw.ui.views.ClosedPositionView;
 
 public class ClosedPositionViewCommand extends AbstractHandler{
 

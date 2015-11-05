@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.gui;
+package com.cyanspring.cstw.ui.views;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -53,6 +53,7 @@ import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.GuiSingleInstrumentStrategyUpdateEvent;
 import com.cyanspring.cstw.event.OrderCacheReadyEvent;
 import com.cyanspring.cstw.event.SingleInstrumentStrategySelectionEvent;
+import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.filter.ParentOrderFilter;

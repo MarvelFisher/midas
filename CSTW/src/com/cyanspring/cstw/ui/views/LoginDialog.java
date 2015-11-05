@@ -1,5 +1,5 @@
 
-package com.cyanspring.cstw.gui;
+package com.cyanspring.cstw.ui.views;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -32,6 +32,7 @@ import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
+import com.cyanspring.cstw.gui.Activator;
 
 public class LoginDialog extends Dialog implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory

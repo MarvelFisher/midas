@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.gui;
+package com.cyanspring.cstw.ui.views;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -61,11 +61,12 @@ import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.AccountSelectionEvent;
 import com.cyanspring.cstw.event.OrderCacheReadyEvent;
-import com.cyanspring.cstw.gui.SetPriceDialog.Mode;
+import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.command.auth.AuthMenuManager;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
+import com.cyanspring.cstw.ui.views.SetPriceDialog.Mode;
 
 public class PositionView extends ViewPart implements IAsyncEventListener {
 	public PositionView() {

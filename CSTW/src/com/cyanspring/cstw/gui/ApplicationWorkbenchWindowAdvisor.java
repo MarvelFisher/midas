@@ -10,14 +10,9 @@
  ******************************************************************************/
 package com.cyanspring.cstw.gui;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IContributionItem;
-import org.eclipse.jface.action.ICoolBarManager;
-import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
@@ -36,12 +31,11 @@ import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.cstw.business.Business;
-import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.SelectUserAccountEvent;
 import com.cyanspring.cstw.gui.command.auth.AuthProvider;
 import com.cyanspring.cstw.gui.command.auth.ViewAuthListener;
 import com.cyanspring.cstw.gui.command.auth.WorkbenchActionProvider;
-import com.cyanspring.cstw.gui.common.StyledAction;
+import com.cyanspring.cstw.ui.views.LoginDialog;
 
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory

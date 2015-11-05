@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.gui;
+package com.cyanspring.cstw.ui.views;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -53,6 +53,7 @@ import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
+import com.cyanspring.cstw.gui.Activator;
 
 public class GroupManagementDialog extends Dialog implements IAsyncEventListener{
 	

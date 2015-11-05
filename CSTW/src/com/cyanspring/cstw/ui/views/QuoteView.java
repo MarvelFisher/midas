@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.gui;
+package com.cyanspring.cstw.ui.views;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -46,6 +46,7 @@ import com.cyanspring.cstw.cachingmanager.quote.IQuoteChangeListener;
 import com.cyanspring.cstw.cachingmanager.quote.QuoteCachingManager;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.QuoteSymbolSelectEvent;
+import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.command.auth.AuthMenuManager;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
