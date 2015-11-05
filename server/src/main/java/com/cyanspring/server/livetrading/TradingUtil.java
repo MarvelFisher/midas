@@ -1,6 +1,8 @@
 package com.cyanspring.server.livetrading;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,11 +115,39 @@ public class TradingUtil {
 	
 	public static void closeAllPositoinAndOrder(Account account, PositionKeeper positionKeeper, 
 			IRemoteEventManager eventManager, boolean checkValidQuote,OrderReason orderReason, 
-			RiskOrderController riskOrderController){
+			RiskOrderController riskOrderController, long interval){
 						
-		TradingUtil.cancelAllOrders(account, positionKeeper, eventManager, orderReason,riskOrderController);
-		TradingUtil.closeOpenPositions(account, positionKeeper, eventManager, checkValidQuote, orderReason,riskOrderController);
+		TradingUtil.cancelAllOrders(account, positionKeeper, eventManager, orderReason, riskOrderController);
 		
+		class ClosPositionTask extends TimerTask {
+			private Account account;
+			private PositionKeeper positionKeeper;
+			private IRemoteEventManager eventManager;
+			private boolean checkValidQuote;
+			private OrderReason orderReason;
+			private RiskOrderController riskOrderController;
+			
+			public ClosPositionTask(Account account, PositionKeeper positionKeeper, IRemoteEventManager eventManager, boolean checkValidQuote,
+					OrderReason orderReason, RiskOrderController riskOrderController) {
+				super();
+				this.account = account;
+				this.positionKeeper = positionKeeper;
+				this.eventManager = eventManager;
+				this.checkValidQuote = checkValidQuote;
+				this.orderReason = orderReason;
+				this.riskOrderController = riskOrderController;
+			}
+
+			@Override
+			public void run() {
+				TradingUtil.closeOpenPositions(account, positionKeeper, eventManager, checkValidQuote, orderReason, riskOrderController);				
+			}
+			
+		}
+		
+		TimerTask task = new ClosPositionTask(account, positionKeeper, eventManager, checkValidQuote, orderReason, riskOrderController);
+		Timer timer = new Timer();
+		timer.schedule(task, interval*1000);
 	}
 
 }

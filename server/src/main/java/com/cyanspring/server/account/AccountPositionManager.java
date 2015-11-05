@@ -766,7 +766,7 @@ public class AccountPositionManager implements IPlugin {
         	if (AccountState.ACTIVE.equals(newState)) {
         		activeAccount(account,event);
         	} else if (AccountState.FROZEN.equals(newState) || AccountState.TERMINATED.equals(newState)) {
-            	TradingUtil.closeAllPositoinAndOrder(account, positionKeeper, eventManager, true, OrderReason.CompanyManualClose, riskOrderController);
+            	TradingUtil.closeAllPositoinAndOrder(account, positionKeeper, eventManager, true, OrderReason.CompanyManualClose, riskOrderController, 10);
             	setAccountState(account,newState,event);
         	}
     	} else {
@@ -1593,7 +1593,7 @@ public class AccountPositionManager implements IPlugin {
 				}
 			}
 			TradingUtil.closeAllPositoinAndOrder(account, positionKeeper, eventManager, true,
-					OrderReason.CompanyStopLoss, riskOrderController);
+					OrderReason.CompanyStopLoss, riskOrderController, 10);
 			return true;
 		}
 

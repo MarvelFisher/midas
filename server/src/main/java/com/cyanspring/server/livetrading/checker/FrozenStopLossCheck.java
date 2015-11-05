@@ -68,7 +68,7 @@ public class FrozenStopLossCheck implements ILiveTradingChecker {
 				account.setState(AccountState.FROZEN);
 				sendUpdateAccountEvent(account);
 			}
-			TradingUtil.closeAllPositoinAndOrder(account, positionKeeper, eventManager, true, orderReason, riskOrderController);
+			TradingUtil.closeAllPositoinAndOrder(account, positionKeeper, eventManager, true, orderReason, riskOrderController, 10);
 			return false;
 			
 		}
