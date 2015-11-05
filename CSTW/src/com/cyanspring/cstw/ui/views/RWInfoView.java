@@ -1,26 +1,30 @@
-package com.cyanspring.cstw.ui.rw.views;
+/**
+ * 
+ */
+package com.cyanspring.cstw.ui.views;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
-import com.cyanspring.cstw.ui.rw.composite.RWMainOrderComposite;
+import com.cyanspring.cstw.ui.rw.composite.RWMainDataComposite;
 
 /**
  * @author Junfeng
- * @create 26 Oct 2015
+ *
  */
-public class RWOrderView extends ViewPart {
-	public static String ID = "com.cyanspring.cstw.ui.rw.views.RWOrderView";
+public class RWInfoView extends ViewPart {
 	
-	private RWMainOrderComposite composite;
+	public static String ID = "com.cyanspring.cstw.ui.rw.views.RWInfoView";
+	
+	private RWMainDataComposite composite;
 	
 	@Override
 	public void createPartControl(Composite parent) {
 		Composite container = new Composite(parent, SWT.NONE);
 		container.setLayout(new FillLayout());
-		composite = new RWMainOrderComposite(container, SWT.NONE);
+		composite = new RWMainDataComposite(container, SWT.NONE);
 	}
 
 	@Override

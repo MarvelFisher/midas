@@ -10,7 +10,7 @@
  ******************************************************************************/
 package com.cyanspring.cstw.ui.trader.command;
 
-import com.cyanspring.cstw.ui.trader.views.SpeedDepthViewPart;
+import com.cyanspring.cstw.ui.views.SpeedDepthViewPart;
 
 /**
  * 

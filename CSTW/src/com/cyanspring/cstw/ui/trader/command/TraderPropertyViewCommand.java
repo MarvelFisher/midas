@@ -20,7 +20,7 @@ import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.cstw.ui.trader.views.TraderPropertyView;
+import com.cyanspring.cstw.ui.views.TraderPropertyView;
 
 public class TraderPropertyViewCommand extends AbstractHandler {
 	private static final Logger log = LoggerFactory

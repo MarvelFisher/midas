@@ -10,7 +10,7 @@ import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.cstw.ui.rw.views.RWOrderView;
+import com.cyanspring.cstw.ui.views.RWOrderView;
 
 /**
  * @author Junfeng

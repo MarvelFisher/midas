@@ -1,10 +1,9 @@
-package com.cyanspring.cstw.ui.bw.views;
+package com.cyanspring.cstw.ui.views;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
-import org.omg.PortableServer.ID_ASSIGNMENT_POLICY_ID;
 
 import com.cyanspring.cstw.ui.bw.composite.BWMainDataComposite;
 

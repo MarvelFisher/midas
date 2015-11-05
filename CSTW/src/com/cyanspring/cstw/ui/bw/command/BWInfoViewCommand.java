@@ -11,7 +11,7 @@ import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.cstw.ui.bw.views.BWInfoView;
+import com.cyanspring.cstw.ui.views.BWInfoView;
 
 /**
  * @author Junfeng

@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.ui.kdb.views;
+package com.cyanspring.cstw.ui.views;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

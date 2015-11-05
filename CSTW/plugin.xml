@@ -152,7 +152,7 @@
       </view>
       <view
             allowMultiple="false"
-            class="com.cyanspring.cstw.ui.trader.views.TraderPropertyView"
+            class="com.cyanspring.cstw.ui.views.TraderPropertyView"
             icon="icons/property.png"
             id="com.cyanspring.cstw.trader.gui.TraderPropertyViewer"
             name="Properties"
@@ -160,7 +160,7 @@
       </view>    
       <view
             allowMultiple="false"
-            class="com.cyanspring.cstw.ui.kdb.views.KDBInfoView"
+            class="com.cyanspring.cstw.ui.views.KDBInfoView"
             icon="icons/active.png"
             id="com.cyanspring.cstw.kdb.gui.KDBInfoViewer"
             name="Signal"
@@ -168,7 +168,7 @@
       </view>
       <view
             allowMultiple="true"
-            class="com.cyanspring.cstw.ui.trader.views.SpeedDepthViewPart"
+            class="com.cyanspring.cstw.ui.views.SpeedDepthViewPart"
             icon="icons/order.png"
             id="com.cyanspring.cstw.trader.gui.SpeedDepthViewPart"
             name="SpeedDepthView"
@@ -176,7 +176,7 @@
       </view>
       <view
             allowMultiple="false"
-            class="com.cyanspring.cstw.ui.rw.views.RWInfoView"
+            class="com.cyanspring.cstw.ui.views.RWInfoView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.ui.rw.views.RWInfoView"
             name="RW Info"
@@ -184,7 +184,7 @@
       </view>
       <view
             allowMultiple="false"
-            class="com.cyanspring.cstw.ui.rw.views.RWOrderView"
+            class="com.cyanspring.cstw.ui.views.RWOrderView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.ui.rw.views.RWOrderView"
             name="RW Order"
@@ -192,7 +192,7 @@
       </view>
       <view
             allowMultiple="false"
-            class="com.cyanspring.cstw.ui.bw.views.BWInfoView"
+            class="com.cyanspring.cstw.ui.views.BWInfoView"
             icon="icons/Leaves16.png"
             id="com.cyanspring.cstw.ui.bw.views.BWInfoView"
             name="BW Info"

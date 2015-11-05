@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.ui.trader.views;
+package com.cyanspring.cstw.ui.views;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
