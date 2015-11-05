@@ -226,6 +226,15 @@ public class MultiInstrumentStrategyView extends ViewPart  implements IAsyncEven
 		showOrders();
 	}
 	
+	@Override
+	public void dispose() {
+		Business.getInstance().getEventManager()
+				.unsubscribe(OrderCacheReadyEvent.class, this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(GuiMultiInstrumentStrategyUpdateEvent.class, this);
+		super.dispose();
+	}
+	
 	private void createBodyMenu() {
 		final Table table = strategyViewer.getTable();
 		menu = new Menu(table.getShell(), SWT.POP_UP);
