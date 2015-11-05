@@ -131,12 +131,9 @@ public class SingleInstrumentStrategyView extends ViewPart implements
 		createSaveOrderAction(parent);
 
 		// create table
-		String strFile = CSTWSession.getInstance().getConfigPath()
-				+ "SingleInstrumentTable.xml";
+		String strFile = "SingleInstrumentTable.xml";
 		viewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION
-				| SWT.H_SCROLL | SWT.V_SCROLL, Business.getInstance()
-				.getXstream(), strFile, BeanHolder.getInstance()
-				.getDataConverter());
+				| SWT.H_SCROLL | SWT.V_SCROLL, strFile);
 		viewer.init();
 
 		GridData gridData = new GridData();
@@ -328,14 +325,14 @@ public class SingleInstrumentStrategyView extends ViewPart implements
 			if (list.size() == 1) {
 				NewSingleInstrumentStrategyEvent event = new NewSingleInstrumentStrategyEvent(
 						null, null, "", list.get(0));
-				Business.getInstance().getXstream().toXML(event, os);
+				CSTWSession.getInstance().getXstream().toXML(event, os);
 			} else { // more than one
 				List<NewSingleInstrumentStrategyEvent> events = new ArrayList<NewSingleInstrumentStrategyEvent>();
 				for (Map<String, Object> map : list) {
 					events.add(new NewSingleInstrumentStrategyEvent(null, null,
 							"", map));
 				}
-				Business.getInstance().getXstream().toXML(events, os);
+				CSTWSession.getInstance().getXstream().toXML(events, os);
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);

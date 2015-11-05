@@ -33,7 +33,6 @@ import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.AccountState;
@@ -324,12 +323,9 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void createOpenPositionViewer(Composite parent) {
-		String strFile = CSTWSession.getInstance().getConfigPath()
-				+ "OpenPositionTable.xml";
+		String strFile = "OpenPositionTable.xml";
 		openPositionViewer = new DynamicTableViewer(parent, SWT.MULTI
-				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business
-				.getInstance().getXstream(), strFile, BeanHolder.getInstance()
-				.getDataConverter());
+				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, strFile);
 		openPositionViewer.init();
 		initOpenPositionViewerListener();
 	}
@@ -348,12 +344,9 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void createClosedPositionViewer(Composite parent) {
-		String strFile = CSTWSession.getInstance().getConfigPath()
-				+ "ClosedPositionTable.xml";
+		String strFile = "ClosedPositionTable.xml";
 		closedPositionViewer = new DynamicTableViewer(parent, SWT.MULTI
-				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business
-				.getInstance().getXstream(), strFile, BeanHolder.getInstance()
-				.getDataConverter());
+				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, strFile);
 		closedPositionViewer.init();
 	}
 
@@ -361,9 +354,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		String strFile = CSTWSession.getInstance().getConfigPath()
 				+ "ExecutionPositionTable.xml";
 		executionViewer = new DynamicTableViewer(parent, SWT.MULTI
-				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business
-				.getInstance().getXstream(), strFile, BeanHolder.getInstance()
-				.getDataConverter());
+				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, strFile);
 		executionViewer.init();
 
 	}

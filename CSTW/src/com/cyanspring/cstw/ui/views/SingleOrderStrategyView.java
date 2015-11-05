@@ -62,7 +62,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.business.OrderField;
@@ -259,12 +258,9 @@ public class SingleOrderStrategyView extends ViewPart implements
 		createSaveOrderAction(parent);
 
 		// create table
-		String strFile = CSTWSession.getInstance().getConfigPath()
-				+ "ParentOrderTable.xml";
+		String strFile = "ParentOrderTable.xml";
 		viewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION
-				| SWT.H_SCROLL | SWT.V_SCROLL, Business.getInstance()
-				.getXstream(), strFile, BeanHolder.getInstance()
-				.getDataConverter());
+				| SWT.H_SCROLL | SWT.V_SCROLL, strFile);
 		viewer.init();
 
 		GridData gridData = new GridData();
@@ -1197,14 +1193,14 @@ public class SingleOrderStrategyView extends ViewPart implements
 			if (list.size() == 1) {
 				EnterParentOrderEvent event = new EnterParentOrderEvent(null,
 						null, list.get(0), "", false);
-				Business.getInstance().getXstream().toXML(event, os);
+				CSTWSession.getInstance().getXstream().toXML(event, os);
 			} else { // more than one
 				List<EnterParentOrderEvent> events = new ArrayList<EnterParentOrderEvent>();
 				for (Map<String, Object> map : list) {
 					events.add(new EnterParentOrderEvent(null, null, map, "",
 							false));
 				}
-				Business.getInstance().getXstream().toXML(events, os);
+				CSTWSession.getInstance().getXstream().toXML(events, os);
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);

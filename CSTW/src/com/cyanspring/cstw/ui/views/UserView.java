@@ -20,7 +20,6 @@ import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.event.AsyncEvent;
@@ -38,7 +37,6 @@ import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
-import com.cyanspring.cstw.session.CSTWSession;
 
 public class UserView extends ViewPart implements IAsyncEventListener {
 
@@ -167,12 +165,9 @@ public class UserView extends ViewPart implements IAsyncEventListener {
 		GridLayout layout = new GridLayout(1, false);
 		parent.setLayout(layout);
 
-		String strFile = CSTWSession.getInstance().getConfigPath()
-				+ "UserTable.xml";
+		String strFile = "UserTable.xml";
 		viewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION
-				| SWT.H_SCROLL | SWT.V_SCROLL, Business.getInstance()
-				.getXstream(), strFile, BeanHolder.getInstance()
-				.getDataConverter());
+				| SWT.H_SCROLL | SWT.V_SCROLL, strFile);
 		viewer.init();
 
 		GridData gridData = new GridData();

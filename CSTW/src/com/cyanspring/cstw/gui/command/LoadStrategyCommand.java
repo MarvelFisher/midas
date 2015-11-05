@@ -32,75 +32,81 @@ import com.cyanspring.common.event.order.EnterParentOrderEvent;
 import com.cyanspring.common.event.strategy.NewMultiInstrumentStrategyEvent;
 import com.cyanspring.common.event.strategy.NewSingleInstrumentStrategyEvent;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.session.CSTWSession;
 
 public class LoadStrategyCommand extends AbstractHandler {
 	private static final Logger log = LoggerFactory
 			.getLogger(LoadStrategyCommand.class);
-	
+
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		loadStrategy();
 		return null;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static void loadStrategy() {
 		Shell shell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
-		
-		ArrayList<String> servers = Business.getInstance().getOrderManager().getServers();
-		if(servers.size() == 0){
-			MessageDialog.openError(shell, "Can't find server", 
-			"Is CSTW connected to any server?");
+
+		ArrayList<String> servers = Business.getInstance().getOrderManager()
+				.getServers();
+		if (servers.size() == 0) {
+			MessageDialog.openError(shell, "Can't find server",
+					"Is CSTW connected to any server?");
 			return;
 		}
 
 		FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-		dialog.setFilterExtensions(new String[] {"*.xml"});
+		dialog.setFilterExtensions(new String[] { "*.xml" });
 		String selectedFileName = dialog.open();
-		if (selectedFileName == null){
+		if (selectedFileName == null) {
 			return;
 		}
-		
-		File selectedFile = new File(selectedFileName); 
+
+		File selectedFile = new File(selectedFileName);
 		RemoteAsyncEvent event = null;
 		List<RemoteAsyncEvent> events = null;
 		try {
-			Object obj = Business.getInstance().getXstream().fromXML(selectedFile);
-			if(obj instanceof RemoteAsyncEvent) {
-				event = (RemoteAsyncEvent)obj;
-			} else if(obj instanceof List){
-				events = (List<RemoteAsyncEvent>)obj;
-				for(RemoteAsyncEvent e: events) {
-					if(!(e instanceof RemoteAsyncEvent))
-						throw new Exception("List contains object not a subclass of RemoteAsyncEvent");
+			Object obj = CSTWSession.getInstance().getXstream()
+					.fromXML(selectedFile);
+			if (obj instanceof RemoteAsyncEvent) {
+				event = (RemoteAsyncEvent) obj;
+			} else if (obj instanceof List) {
+				events = (List<RemoteAsyncEvent>) obj;
+				for (RemoteAsyncEvent e : events) {
+					if (!(e instanceof RemoteAsyncEvent))
+						throw new Exception(
+								"List contains object not a subclass of RemoteAsyncEvent");
 				}
 			} else
-				throw new Exception("Object is not subclass of or a list of RemoteAsyncEvent");
+				throw new Exception(
+						"Object is not subclass of or a list of RemoteAsyncEvent");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			MessageDialog.openError(shell, "Error loading RemoteAsyncEvent", 
-			e.getMessage());
+			MessageDialog.openError(shell, "Error loading RemoteAsyncEvent",
+					e.getMessage());
 			return;
 		}
-		
-		if(null == events)
+
+		if (null == events)
 			events = new ArrayList<RemoteAsyncEvent>();
-		if(null != event)
+		if (null != event)
 			events.add(event);
-		
-		for(RemoteAsyncEvent remoteEvent: events) {
+
+		for (RemoteAsyncEvent remoteEvent : events) {
 			String server = remoteEvent.getReceiver();
-			if(remoteEvent.getReceiver() != null) {
+			if (remoteEvent.getReceiver() != null) {
 				boolean found = false;
-				for(String str: servers) {
-					if(str.equals(server)) {
+				for (String str : servers) {
+					if (str.equals(server)) {
 						found = true;
 						break;
 					}
 				}
-				if(!found) {
-					MessageDialog.openError(shell, "Can't find server: " + server, 
-					"Please check which server(s) CSTW is connected to?");
+				if (!found) {
+					MessageDialog
+							.openError(shell, "Can't find server: " + server,
+									"Please check which server(s) CSTW is connected to?");
 					return;
 				}
 			} else { // pick first server
@@ -109,28 +115,30 @@ public class LoadStrategyCommand extends AbstractHandler {
 			}
 			stickInUserAndAccount(remoteEvent);
 			try {
-				Business.getInstance().getEventManager().sendRemoteEvent(remoteEvent);
+				Business.getInstance().getEventManager()
+						.sendRemoteEvent(remoteEvent);
 			} catch (Exception e) {
-				MessageDialog.openError(shell, "Error in sending event", 
-				e.getMessage());
+				MessageDialog.openError(shell, "Error in sending event",
+						e.getMessage());
 				return;
 			}
 		}
 	}
-	
+
 	private static void stickInUserAndAccount(RemoteAsyncEvent event) {
 		Map<String, Object> map = null;
-		if(event instanceof NewMultiInstrumentStrategyEvent) {
-			map = ((NewMultiInstrumentStrategyEvent)event).getStrategy();
-		} else if(event instanceof EnterParentOrderEvent) {
-			map = ((EnterParentOrderEvent)event).getFields();
-		} else if(event instanceof NewSingleInstrumentStrategyEvent) {
-			map = ((NewSingleInstrumentStrategyEvent)event).getInstrument();
+		if (event instanceof NewMultiInstrumentStrategyEvent) {
+			map = ((NewMultiInstrumentStrategyEvent) event).getStrategy();
+		} else if (event instanceof EnterParentOrderEvent) {
+			map = ((EnterParentOrderEvent) event).getFields();
+		} else if (event instanceof NewSingleInstrumentStrategyEvent) {
+			map = ((NewSingleInstrumentStrategyEvent) event).getInstrument();
 		}
-		
-		if(null != map) {
+
+		if (null != map) {
 			map.put(OrderField.USER.value(), Business.getInstance().getUser());
-			map.put(OrderField.ACCOUNT.value(), Business.getInstance().getAccount());
+			map.put(OrderField.ACCOUNT.value(), Business.getInstance()
+					.getAccount());
 		}
 	}
 }

@@ -1,5 +1,8 @@
 package com.cyanspring.cstw.session;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+
 /**
  * 
  * @author NingXiaofeng
@@ -10,6 +13,8 @@ package com.cyanspring.cstw.session;
 public class CSTWSession {
 
 	private String configPath;
+
+	private XStream xstream = new XStream(new DomDriver());
 
 	private static CSTWSession instance;
 
@@ -26,6 +31,10 @@ public class CSTWSession {
 
 	public void setConfigPath(String configPath) {
 		this.configPath = configPath;
+	}
+
+	public XStream getXstream() {
+		return xstream;
 	}
 
 }

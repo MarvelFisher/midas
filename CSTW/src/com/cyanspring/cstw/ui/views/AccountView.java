@@ -2,10 +2,7 @@ package com.cyanspring.cstw.ui.views;
 
 import java.util.List;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.dialogs.IDialogBlockedHandler;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -26,7 +23,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -37,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountState;
@@ -50,8 +45,6 @@ import com.cyanspring.common.event.account.AllAccountSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllAccountSnapshotRequestEvent;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
 import com.cyanspring.common.event.order.StrategySnapshotRequestEvent;
-import com.cyanspring.common.message.MessageBean;
-import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.util.ArrayMap;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
@@ -63,7 +56,6 @@ import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
-import com.cyanspring.cstw.session.CSTWSession;
 
 public class AccountView extends ViewPart implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -123,12 +115,9 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 
 		initSearchBar(parent);
 
-		String strFile = CSTWSession.getInstance().getConfigPath()
-				+ "AccountTable.xml";
+		String strFile = "AccountTable.xml";
 		viewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION
-				| SWT.H_SCROLL | SWT.V_SCROLL, Business.getInstance()
-				.getXstream(), strFile, BeanHolder.getInstance()
-				.getDataConverter());
+				| SWT.H_SCROLL | SWT.V_SCROLL, strFile);
 		viewer.init();
 
 		GridData gridData = new GridData();

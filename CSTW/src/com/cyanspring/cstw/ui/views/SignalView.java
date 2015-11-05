@@ -28,7 +28,6 @@ import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.event.AsyncEvent;
@@ -47,7 +46,6 @@ import com.cyanspring.cstw.event.SignalSelectionEvent;
 import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
-import com.cyanspring.cstw.session.CSTWSession;
 
 public class SignalView extends ViewPart implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory.getLogger(SignalView.class);
@@ -230,12 +228,9 @@ public class SignalView extends ViewPart implements IAsyncEventListener {
 		createMultiAmendAction(parent);
 
 		// create table
-		String strFile = CSTWSession.getInstance().getConfigPath()
-				+ "SignalView.xml";
+		String strFile = "SignalView.xml";
 		viewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION
-				| SWT.H_SCROLL | SWT.V_SCROLL, Business.getInstance()
-				.getXstream(), strFile, BeanHolder.getInstance()
-				.getDataConverter());
+				| SWT.H_SCROLL | SWT.V_SCROLL, strFile);
 		viewer.init();
 
 		GridData gridData = new GridData();

@@ -19,11 +19,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.account.ClosedPosition;
-import com.cyanspring.common.account.OpenPosition;
-import com.cyanspring.common.account.OverallPosition;
-import com.cyanspring.common.cstw.position.IPositionChangeListener;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
@@ -32,10 +28,6 @@ import com.cyanspring.common.event.account.AllPositionSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AllPositionSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AllPositionSnapshotRequestEvent.PositionType;
 import com.cyanspring.common.event.account.ClosedPositionUpdateEvent;
-import com.cyanspring.common.event.account.ExecutionUpdateEvent;
-import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
-import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
-import com.cyanspring.common.event.order.ClosePositionReplyEvent;
 import com.cyanspring.common.event.statistic.AccountNumberReplyEvent;
 import com.cyanspring.common.event.statistic.AccountNumberRequestEvent;
 import com.cyanspring.common.util.PriceUtils;
@@ -46,7 +38,6 @@ import com.cyanspring.cstw.gui.bean.PositionStatisticBean;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
-import com.cyanspring.cstw.session.CSTWSession;
 
 public class ClosedPositionView extends ViewPart implements IAsyncEventListener {
 
@@ -405,12 +396,9 @@ public class ClosedPositionView extends ViewPart implements IAsyncEventListener 
 	}
 
 	private void createClosedPositionViewer(Composite parent) {
-		String strFile = CSTWSession.getInstance().getConfigPath()
-				+ "ClosedPositionViewTable.xml";
+		String strFile = "ClosedPositionViewTable.xml";
 		closedPositionViewer = new DynamicTableViewer(parent, SWT.MULTI
-				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business
-				.getInstance().getXstream(), strFile, BeanHolder.getInstance()
-				.getDataConverter());
+				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, strFile);
 		closedPositionViewer.init();
 	}
 

@@ -82,8 +82,6 @@ public class Business {
 	private static Business instance; // Singleton
 	private CSTWBeanPool beanPool;
 
-	private XStream xstream = new XStream(new DomDriver());
-
 	private SystemInfo systemInfo;
 	private IRemoteEventManager eventManager;
 	private OrderCachingManager orderManager;
@@ -409,10 +407,6 @@ public class Business {
 
 	public OrderCachingManager getOrderManager() {
 		return orderManager;
-	}
-
-	public XStream getXstream() {
-		return xstream;
 	}
 
 	public ScheduleManager getScheduleManager() {

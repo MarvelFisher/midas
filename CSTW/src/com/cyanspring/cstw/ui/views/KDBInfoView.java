@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.cstw.kdb.SignalType;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
@@ -40,7 +39,6 @@ import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
-import com.cyanspring.cstw.session.CSTWSession;
 
 public class KDBInfoView extends ViewPart implements IAsyncEventListener {
 	enum Column {
@@ -194,12 +192,9 @@ public class KDBInfoView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void createRealTimeViewer(Composite parent) {
-		String strFile = CSTWSession.getInstance().getConfigPath()
-				+ "VolatilityTable.xml";
+		String strFile = "VolatilityTable.xml";
 		realTimeViewer = new DynamicTableViewer(parent, SWT.SINGLE
-				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business
-				.getInstance().getXstream(), strFile, BeanHolder.getInstance()
-				.getDataConverter());
+				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, strFile);
 
 		realTimeViewer.init();
 		realTimeViewer.getTable().addSelectionListener(new SelectionListener() {
@@ -223,12 +218,9 @@ public class KDBInfoView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void createPastTimeViewer(Composite parent) {
-		String strFile = CSTWSession.getInstance().getConfigPath()
-				+ "VolatilityTable.xml";
+		String strFile = "VolatilityTable.xml";
 		pastTimeViewer = new DynamicTableViewer(parent, SWT.SINGLE
-				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business
-				.getInstance().getXstream(), strFile, BeanHolder.getInstance()
-				.getDataConverter());
+				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, strFile);
 		pastTimeViewer.init();
 		pastTimeViewer.getTable().addSelectionListener(new SelectionListener() {
 

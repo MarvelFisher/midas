@@ -196,12 +196,9 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void createQuoteViewer(Composite parent) {
-		String strFile = CSTWSession.getInstance().getConfigPath()
-				+ "QuoteTable.xml";
+		String strFile = "QuoteTable.xml";
 		quoteViewer = new DynamicTableViewer(parent, SWT.SINGLE
-				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business
-				.getInstance().getXstream(), strFile, BeanHolder.getInstance()
-				.getDataConverter());
+				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, strFile);
 		quoteViewer.init();
 		quoteViewer.getTable().addSelectionListener(new SelectionAdapter() {
 			@Override

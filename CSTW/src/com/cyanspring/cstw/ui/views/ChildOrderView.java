@@ -107,12 +107,9 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 		parent.setLayout(layout);
 
 		// create table
-		String strFile = CSTWSession.getInstance().getConfigPath()
-				+ "ChildOrderTable.xml";
+		String strFile = "ChildOrderTable.xml";
 		viewer = new DynamicTableViewer(parent, SWT.MULTI | SWT.FULL_SELECTION
-				| SWT.H_SCROLL | SWT.V_SCROLL, Business.getInstance()
-				.getXstream(), strFile, BeanHolder.getInstance()
-				.getDataConverter());
+				| SWT.H_SCROLL | SWT.V_SCROLL, strFile);
 		viewer.init();
 
 		GridData gridData = new GridData();
@@ -152,12 +149,13 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 		Business.getInstance().getEventManager()
 				.subscribe(InstrumentSelectionEvent.class, this);
 	}
-	
+
 	@Override
 	public void dispose() {
 		Business.getInstance().getEventManager()
 				.unsubscribe(SingleOrderStrategySelectionEvent.class, this);
-		Business.getInstance().getEventManager()
+		Business.getInstance()
+				.getEventManager()
 				.unsubscribe(SingleInstrumentStrategySelectionEvent.class, this);
 		Business.getInstance().getEventManager()
 				.unsubscribe(ChildOrderSnapshotEvent.class, this);

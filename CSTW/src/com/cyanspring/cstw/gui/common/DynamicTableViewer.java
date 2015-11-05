@@ -54,6 +54,7 @@ import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.util.DataConvertException;
 import com.cyanspring.common.business.util.GenericDataConverter;
@@ -62,11 +63,12 @@ import com.cyanspring.common.util.DualMap;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.gui.Activator;
+import com.cyanspring.cstw.session.CSTWSession;
 import com.thoughtworks.xstream.XStream;
 
-
 public class DynamicTableViewer extends TableViewer {
-	private static final Logger log = LoggerFactory.getLogger(DynamicTableViewer.class);
+	private static final Logger log = LoggerFactory
+			.getLogger(DynamicTableViewer.class);
 	private String columnLayoutKey;
 	private Map<String, List<ColumnProperty>> columnProperties = new HashMap<String, List<ColumnProperty>>();
 	private Menu headerMenu;
@@ -83,6 +85,15 @@ public class DynamicTableViewer extends TableViewer {
 	private DualMap<String, String> titleMap = new DualMap<String, String>();
 	protected boolean viewClosing = false;
 
+	public DynamicTableViewer(Composite parent, int i, String tableLayoutFile) {
+		super(parent, i);
+		this.parent = parent;
+		this.xstream = CSTWSession.getInstance().getXstream();
+		this.tableLayoutFile = CSTWSession.getInstance().getConfigPath()
+				+ tableLayoutFile;
+		this.dataConverter = BeanHolder.getInstance().getDataConverter();
+	}
+
 	class ViewContentProvider implements IStructuredContentProvider {
 		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
 		}
@@ -92,9 +103,9 @@ public class DynamicTableViewer extends TableViewer {
 
 		public Object[] getElements(Object parent) {
 			if (parent instanceof ArrayList<?>) {
-				return ((ArrayList<?>)parent).toArray();
+				return ((ArrayList<?>) parent).toArray();
 			}
-	        return null;
+			return null;
 		}
 	}
 
@@ -102,16 +113,16 @@ public class DynamicTableViewer extends TableViewer {
 			ITableLabelProvider, IColorProvider {
 		public String getColumnText(Object obj, int index) {
 			Table table = DynamicTableViewer.this.getTable();
-			if (index>=table.getColumnCount())
+			if (index >= table.getColumnCount())
 				return null;
-			
+
 			TableColumn col = table.getColumn(index);
 			String title = getTitleMappedTo(col.getText());
-			
+
 			Object display = obj;
 			if (obj instanceof HashMap) {
 				@SuppressWarnings("unchecked")
-				HashMap<String, Object> map = (HashMap<String, Object>)obj;
+				HashMap<String, Object> map = (HashMap<String, Object>) obj;
 				display = map.get(title);
 			} else {
 				Method method = methodMap.get(title);
@@ -119,7 +130,7 @@ public class DynamicTableViewer extends TableViewer {
 					display = method.invoke(obj);
 				} catch (Exception e) {
 					log.error(e.getMessage(), e);
-				} 
+				}
 			}
 			if (dataConverter != null) {
 				try {
@@ -127,22 +138,22 @@ public class DynamicTableViewer extends TableViewer {
 				} catch (DataConvertException e) {
 					log.error(e.getMessage(), e);
 				}
-			}		
+			}
 
 			return getText(display);
 		}
 
 		public Image getColumnImage(Object obj, int index) {
 			Table table = DynamicTableViewer.this.getTable();
-			if (index>=table.getColumnCount())
+			if (index >= table.getColumnCount())
 				return null;
-			
+
 			TableColumn col = table.getColumn(index);
 			String title = getTitleMappedTo(col.getText());
 			Object display = obj;
 			if (obj instanceof HashMap) {
 				@SuppressWarnings("unchecked")
-				HashMap<String, Object> map = (HashMap<String, Object>)obj;
+				HashMap<String, Object> map = (HashMap<String, Object>) obj;
 				display = map.get(title);
 			} else {
 				Method method = methodMap.get(title);
@@ -150,18 +161,18 @@ public class DynamicTableViewer extends TableViewer {
 					display = method.invoke(obj);
 				} catch (Exception e) {
 					log.error(e.getMessage(), e);
-				} 
+				}
 			}
-			
-//			if(null != display && display instanceof Boolean)
-//					return ((Boolean)display)?trueImage : falseImage;
-					
+
+			// if(null != display && display instanceof Boolean)
+			// return ((Boolean)display)?trueImage : falseImage;
+
 			return null;
 		}
 
 		public Image getImage(Object obj) {
-			return PlatformUI.getWorkbench().getSharedImages().getImage(
-					ISharedImages.IMG_OBJ_ELEMENT);
+			return PlatformUI.getWorkbench().getSharedImages()
+					.getImage(ISharedImages.IMG_OBJ_ELEMENT);
 		}
 
 		@Override
@@ -174,11 +185,13 @@ public class DynamicTableViewer extends TableViewer {
 		public Color getBackground(Object element) {
 			if (element instanceof HashMap) {
 				@SuppressWarnings("unchecked")
-				HashMap<String, Object> map = (HashMap<String, Object>)element;
-				AlertType alertType = (AlertType) map.get(OrderField.ALERT_TYPE.value());
-				if(null != alertType) {
+				HashMap<String, Object> map = (HashMap<String, Object>) element;
+				AlertType alertType = (AlertType) map.get(OrderField.ALERT_TYPE
+						.value());
+				if (null != alertType) {
 					Display display = Display.getCurrent();
-					int color = Business.getInstance().getAlertColorConfig().get(alertType);
+					int color = Business.getInstance().getAlertColorConfig()
+							.get(alertType);
 					return display.getSystemColor(color);
 				}
 			}
@@ -186,22 +199,16 @@ public class DynamicTableViewer extends TableViewer {
 		}
 	}
 
-	public DynamicTableViewer(Composite parent, int i, XStream xstream, String tableLayoutFile, GenericDataConverter dataConverter) {
-		super(parent, i);
-		this.parent = parent;
-		this.xstream = xstream;
-		this.tableLayoutFile = tableLayoutFile;
-		this.dataConverter = dataConverter;
-	}
-
-//	private Point lastPopupMenuLocation;
+	// private Point lastPopupMenuLocation;
 	public void init() {
 		// setting up table part
 		imageRegistry = Activator.getDefault().getImageRegistry();
-		trueImage = imageRegistry.getDescriptor(ImageID.TRUE_ICON.toString()).createImage();
-		falseImage = imageRegistry.getDescriptor(ImageID.FALSE_ICON.toString()).createImage();
-		
-		ColumnViewerToolTipSupport.enableFor(this, ToolTip.NO_RECREATE); 
+		trueImage = imageRegistry.getDescriptor(ImageID.TRUE_ICON.toString())
+				.createImage();
+		falseImage = imageRegistry.getDescriptor(ImageID.FALSE_ICON.toString())
+				.createImage();
+
+		ColumnViewerToolTipSupport.enableFor(this, ToolTip.NO_RECREATE);
 		setContentProvider(new ViewContentProvider());
 		setLabelProvider(new ViewLabelProvider());
 		final Table table = this.getTable();
@@ -213,32 +220,34 @@ public class DynamicTableViewer extends TableViewer {
 		// Provide the input to the ContentProvider
 		table.addListener(SWT.MenuDetect, new Listener() {
 			public void handleEvent(Event event) {
-				Display display = DynamicTableViewer.this.getControl().getDisplay();
-//				lastPopupMenuLocation = new Point(event.x, event.y);
-				Point pt = display.map(null, table, new Point(event.x, event.y));
+				Display display = DynamicTableViewer.this.getControl()
+						.getDisplay();
+				// lastPopupMenuLocation = new Point(event.x, event.y);
+				Point pt = display
+						.map(null, table, new Point(event.x, event.y));
 				Rectangle clientArea = table.getClientArea();
-				boolean header = clientArea.y <= pt.y && pt.y < (clientArea.y + table.getHeaderHeight());
+				boolean header = clientArea.y <= pt.y
+						&& pt.y < (clientArea.y + table.getHeaderHeight());
 				table.setMenu(header ? headerMenu : bodyMenu);
 			}
 		});
-		
+
 		// add tooltip listener
 		TooltipListener tooltipListener = new TooltipListener(table);
-		table.addListener (SWT.Dispose, tooltipListener);
-		table.addListener (SWT.KeyDown, tooltipListener);
-		table.addListener (SWT.MouseMove, tooltipListener);
-		table.addListener (SWT.MouseHover, tooltipListener);
-		
+		table.addListener(SWT.Dispose, tooltipListener);
+		table.addListener(SWT.KeyDown, tooltipListener);
+		table.addListener(SWT.MouseMove, tooltipListener);
+		table.addListener(SWT.MouseHover, tooltipListener);
+
 		comparator = new DynamicTableComparator();
 		setComparator(comparator);
-		
+
 		setContentProvider(new ViewContentProvider());
 		setLabelProvider(new ViewLabelProvider());
 
 		loadColumnLayout();
 	}
-	
-	
+
 	public Menu getBodyMenu() {
 		return bodyMenu;
 	}
@@ -261,32 +270,30 @@ public class DynamicTableViewer extends TableViewer {
 		return selectionAdapter;
 	}
 
-	
 	@Override
 	protected void handleDispose(DisposeEvent event) {
 		this.saveColumnLayout();
-		synchronized(this) {
+		synchronized (this) {
 			viewClosing = true;
 		}
 		super.handleDispose(event);
 	}
 
-
-	
 	private void updateColumnLayout() {
 		List<ColumnProperty> columnProperty = new ArrayList<ColumnProperty>();
 		Table table = getTable();
 		int[] seq = table.getColumnOrder();
-		for(int i: seq) {
-			columnProperty.add(new ColumnProperty(table.getColumn(i).getText(), table.getColumn(i).getWidth()));
+		for (int i : seq) {
+			columnProperty.add(new ColumnProperty(table.getColumn(i).getText(),
+					table.getColumn(i).getWidth()));
 		}
 		columnProperties.put(columnLayoutKey, columnProperty);
 	}
-	
+
 	private void saveColumnLayout() {
-		if(tableLayoutFile == null)
+		if (tableLayoutFile == null)
 			return;
-		
+
 		File file = new File(tableLayoutFile);
 		try {
 			log.info("Saving table layout: " + tableLayoutFile);
@@ -304,10 +311,10 @@ public class DynamicTableViewer extends TableViewer {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void loadColumnLayout() {
-		if(tableLayoutFile == null)
+		if (tableLayoutFile == null)
 			return;
 		File file = new File(tableLayoutFile);
 		if (file.exists()) {
@@ -316,17 +323,18 @@ public class DynamicTableViewer extends TableViewer {
 			if (cl != null)
 				xstream.setClassLoader(cl);
 
-			columnProperties = (Map<String, List<ColumnProperty>>)xstream.fromXML(file);
+			columnProperties = (Map<String, List<ColumnProperty>>) xstream
+					.fromXML(file);
 			xstream.setClassLoader(save);
 			log.info("Table layout file loaded: " + tableLayoutFile);
 		}
-		
+
 	}
-	
+
 	private void createMenuItem(final Menu parent, final TableColumn column) {
 		final MenuItem itemName = new MenuItem(parent, SWT.CHECK);
 		itemName.setText(column.getText());
-		itemName.setSelection(column.getWidth() == 0?false:true);
+		itemName.setSelection(column.getWidth() == 0 ? false : true);
 		itemName.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				if (itemName.getSelection()) {
@@ -340,41 +348,40 @@ public class DynamicTableViewer extends TableViewer {
 		});
 
 	}
-	
+
 	public List<ColumnProperty> getDynamicColumnProperties() {
 		return this.columnProperties.get(columnLayoutKey);
 	}
-	
-	
-	
+
 	public String getTitleMappedTo(String title) {
 		String result = titleMap.getKeyByValue(title);
-		return result == null?title:result;
+		return result == null ? title : result;
 	}
-	
+
 	public String getMappedTitle(String title) {
 		String result = titleMap.get(title);
-		return result == null?title:result;
+		return result == null ? title : result;
 	}
-	
+
 	public void setTitleMap(String[] from, String[] to) {
-		if(from.length != to.length) {
+		if (from.length != to.length) {
 			log.error("From/to length are not matched");
 			return;
 		}
-		
-		for(int i=0; i<from.length; i++) {
+
+		for (int i = 0; i < from.length; i++) {
 			titleMap.put(from[i], to[i]);
 		}
 	}
-	
+
 	public List<ColumnProperty> setObjectColumnProperties(Object object) {
 		methodMap = new HashMap<String, Method>();
 		List<ColumnProperty> list = new ArrayList<ColumnProperty>();
-		for(Method method: object.getClass().getMethods()) {
-			if(!method.getReturnType().equals(Void.TYPE) && method.getParameterTypes().length == 0) {
+		for (Method method : object.getClass().getMethods()) {
+			if (!method.getReturnType().equals(Void.TYPE)
+					&& method.getParameterTypes().length == 0) {
 				String title = "";
-				if(method.getName().startsWith("get")) {
+				if (method.getName().startsWith("get")) {
 					title = method.getName().substring("get".length());
 				} else if (method.getName().startsWith("is")) {
 					title = method.getName().substring("is".length());
@@ -387,14 +394,14 @@ public class DynamicTableViewer extends TableViewer {
 		}
 		return list;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public Object getColumnValue(Object obj, TableColumn col) throws Exception {
 		String title = this.getTitleMappedTo(col.getText());
-		
+
 		Object result = null;
-		if(obj instanceof HashMap) {
-			HashMap<String, Object> map = (HashMap<String, Object>)obj;
+		if (obj instanceof HashMap) {
+			HashMap<String, Object> map = (HashMap<String, Object>) obj;
 			result = map.get(title);
 		} else {
 			Method method = methodMap.get(title);
@@ -402,28 +409,31 @@ public class DynamicTableViewer extends TableViewer {
 		}
 		return result;
 	}
-	
-	public void setSmartColumnProperties(String columnLayoutKey, List<ColumnProperty> columnProperty) {
-		List<ColumnProperty> existingProperties = columnProperties.get(columnLayoutKey);
+
+	public void setSmartColumnProperties(String columnLayoutKey,
+			List<ColumnProperty> columnProperty) {
+		List<ColumnProperty> existingProperties = columnProperties
+				.get(columnLayoutKey);
 		List<ColumnProperty> newColumnProperty;
 		if (null == existingProperties) {
 			newColumnProperty = columnProperty;
-		} else { //reconcile what we received from server
+		} else { // reconcile what we received from server
 			newColumnProperty = new ArrayList<ColumnProperty>();
 			// firstly add the ones both appear in the two lists
-			for(ColumnProperty prop1: existingProperties) { 
-				for (ColumnProperty prop2: columnProperty) {
+			for (ColumnProperty prop1 : existingProperties) {
+				for (ColumnProperty prop2 : columnProperty) {
 					if (prop1.getTitle().equals(prop2.getTitle())) {
 						newColumnProperty.add(prop1);
 						break;
 					}
 				}
 			}
-			
-			// then add the ones appear in the order but not in the existing list
-			for(ColumnProperty prop1: columnProperty) { 
+
+			// then add the ones appear in the order but not in the existing
+			// list
+			for (ColumnProperty prop1 : columnProperty) {
 				boolean found = false;
-				for (ColumnProperty prop2: existingProperties) {
+				for (ColumnProperty prop2 : existingProperties) {
 					if (prop1.getTitle().equals(prop2.getTitle())) {
 						found = true;
 						break;
@@ -435,7 +445,7 @@ public class DynamicTableViewer extends TableViewer {
 		}
 		setColumnProperties(columnLayoutKey, newColumnProperty);
 	}
-	
+
 	private ControlListener columnChangeListener = new ControlListener() {
 
 		@Override
@@ -447,36 +457,37 @@ public class DynamicTableViewer extends TableViewer {
 		public void controlResized(ControlEvent e) {
 			updateColumnLayout();
 		}
-		
+
 	};
-	
-	protected void setColumnProperties(String columnLayoutKey, List<ColumnProperty> columnProperty) {
+
+	protected void setColumnProperties(String columnLayoutKey,
+			List<ColumnProperty> columnProperty) {
 		this.columnLayoutKey = columnLayoutKey;
 		this.columnProperties.put(columnLayoutKey, columnProperty);
 		Table table = DynamicTableViewer.this.getTable();
-		
-		for(TableColumn column: table.getColumns()) {
+
+		for (TableColumn column : table.getColumns()) {
 			column.removeControlListener(columnChangeListener);
 		}
-		
+
 		setInput(null);
 		table.setHeaderVisible(true);
-		table.setRedraw(false); 
+		table.setRedraw(false);
 		while (table.getColumnCount() > 0) {
 			table.getColumns()[0].dispose();
 		}
-		
-		if(headerMenu != null)
+
+		if (headerMenu != null)
 			headerMenu.dispose();
 		headerMenu = new Menu(this.parent.getShell(), SWT.POP_UP);
 
-		for (int i=0; i<columnProperty.size(); i++) {
+		for (int i = 0; i < columnProperty.size(); i++) {
 			ColumnProperty prop = columnProperty.get(i);
 			TableColumn column = new TableColumn(table, SWT.NONE);
 			String title = getMappedTitle(prop.getTitle());
 			column.setText(title);
 			column.setWidth(prop.getWidth());
-			//fix problem
+			// fix problem
 			if (prop.getWidth() == 0) {
 				column.setResizable(false);
 			}
@@ -485,11 +496,10 @@ public class DynamicTableViewer extends TableViewer {
 			column.addSelectionListener(getSelectionAdapter(column, i));
 		}
 
-		table.setRedraw(true); 
+		table.setRedraw(true);
 		refresh();
-		
-		
-		for(TableColumn column: table.getColumns()) {
+
+		for (TableColumn column : table.getColumns()) {
 			column.addControlListener(columnChangeListener);
 		}
 	}
@@ -501,15 +511,15 @@ public class DynamicTableViewer extends TableViewer {
 	public boolean isViewClosing() {
 		return viewClosing;
 	}
-	
+
 	@Override
 	public void refresh() {
 		int[] indices = this.getTable().getSelectionIndices();
 		super.refresh();
 		this.getTable().select(indices);
 	}
-	
-	public DynamicTableComparator getComparator(){
+
+	public DynamicTableComparator getComparator() {
 		return comparator;
 	}
 }
