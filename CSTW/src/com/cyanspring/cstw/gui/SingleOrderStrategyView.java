@@ -307,6 +307,25 @@ public class SingleOrderStrategyView extends ViewPart implements
 		initSessionListener();
 
 	}
+	
+	@Override
+	public void dispose() {
+		Business.getInstance().getEventManager()
+				.unsubscribe(OrderCacheReadyEvent.class, this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(GuiSingleOrderStrategyUpdateEvent.class, this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(EnterParentOrderReplyEvent.class, this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(AmendParentOrderReplyEvent.class, this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(CancelParentOrderReplyEvent.class, this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(AccountSelectionEvent.class, this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(MarketDataReplyEvent.class, this);
+		super.dispose();
+	}
 
 	private void getDefaultQuickData() {
 		sendMarketDataRequestEvent(null);
