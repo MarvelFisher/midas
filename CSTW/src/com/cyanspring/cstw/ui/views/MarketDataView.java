@@ -496,9 +496,9 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 	}
 
 	public void dispose() {
-		super.dispose();
 		QuoteCachingManager.getInstance().removeIQuoteChangeListener(
 				quoteChangeListener);
+		super.dispose();		
 	}
 
 	/**

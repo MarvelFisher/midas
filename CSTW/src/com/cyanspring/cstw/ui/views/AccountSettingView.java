@@ -84,7 +84,13 @@ public class AccountSettingView extends ViewPart implements IAsyncEventListener 
 		
 	}
 	
-	
+	@Override
+	public void dispose() {
+		Business.getInstance().getEventManager().unsubscribe(AccountSettingSnapshotReplyEvent.class, this);
+		Business.getInstance().getEventManager().unsubscribe(AccountSelectionEvent.class, this);
+		Business.getInstance().getEventManager().unsubscribe(ChangeAccountSettingReplyEvent.class, this);
+		super.dispose();
+	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void confirmChange() {
