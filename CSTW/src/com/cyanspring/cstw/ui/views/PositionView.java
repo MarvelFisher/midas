@@ -213,14 +213,42 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 				.subscribe(AccountSelectionEvent.class, this);
 		Business.getInstance().getEventManager()
 				.subscribe(AccountSnapshotReplyEvent.class, ID, this);
-		if (Business.getInstance().getOrderManager().isReady())
+		if (Business.getInstance().getOrderManager().isReady()) {
 			sendSubscriptionRequest(Business.getInstance().getAccount());
-		else
+		} else {
 			Business.getInstance().getEventManager()
 					.subscribe(OrderCacheReadyEvent.class, this);
+		}
+			
 
 		sendTraderRequestEvent();
 
+	}
+	
+	@Override
+	public void dispose() {
+		Business.getInstance().getEventManager()
+				.unsubscribe(AccountSelectionEvent.class, this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(AccountSnapshotReplyEvent.class, this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(OpenPositionUpdateEvent.class, this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(OpenPositionDynamicUpdateEvent.class, this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(ClosedPositionUpdateEvent.class, this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(ExecutionUpdateEvent.class, this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(AccountUpdateEvent.class, this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(AccountDynamicUpdateEvent.class, this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(ClosePositionReplyEvent.class, this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(OrderCacheReadyEvent.class, this);
+
+		super.dispose();
 	}
 
 	// account fields

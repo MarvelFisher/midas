@@ -266,6 +266,15 @@ public class SignalView extends ViewPart implements IAsyncEventListener {
 		Business.getInstance().getEventManager()
 				.subscribe(SignalEvent.class, this);
 	}
+	
+	@Override
+	public void dispose() {
+		Business.getInstance().getEventManager()
+				.unsubscribe(OrderCacheReadyEvent.class, this);
+		Business.getInstance().getEventManager()
+				.unsubscribe(SignalEvent.class, this);
+		super.dispose();
+	}
 
 	private void createMultiAmendAction(final Composite parent) {
 		multiAmendAction = new Action() {

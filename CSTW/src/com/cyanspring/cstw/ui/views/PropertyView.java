@@ -110,6 +110,20 @@ public class PropertyView extends ViewPart implements IAsyncEventListener {
 		Business.getInstance().getEventManager().subscribe(SignalEvent.class, this);
 	}
 	
+	@Override
+	public void dispose() {
+		Business.getInstance().getEventManager().unsubscribe(SingleOrderStrategySelectionEvent.class, this);
+		Business.getInstance().getEventManager().unsubscribe(SingleInstrumentStrategySelectionEvent.class, this);
+		Business.getInstance().getEventManager().unsubscribe(AmendParentOrderReplyEvent.class, this);
+		Business.getInstance().getEventManager().unsubscribe(ParentOrderUpdateEvent.class, this);
+		Business.getInstance().getEventManager().unsubscribe(MultiInstrumentStrategyUpdateEvent.class, this);
+		Business.getInstance().getEventManager().unsubscribe(MultiInstrumentStrategySelectionEvent.class, this);
+		Business.getInstance().getEventManager().unsubscribe(InstrumentSelectionEvent.class, this);
+		Business.getInstance().getEventManager().unsubscribe(SignalSelectionEvent.class, this);
+		Business.getInstance().getEventManager().unsubscribe(SignalEvent.class, this);
+		super.dispose();
+	}
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void confirmChange() {
 		List<KeyValue> changedFields = viewer.workoutChangedFields();
