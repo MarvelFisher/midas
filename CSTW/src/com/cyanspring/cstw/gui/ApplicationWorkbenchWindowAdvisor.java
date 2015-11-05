@@ -37,13 +37,16 @@ import com.cyanspring.cstw.gui.command.auth.ViewAuthListener;
 import com.cyanspring.cstw.gui.command.auth.WorkbenchActionProvider;
 import com.cyanspring.cstw.ui.views.LoginDialog;
 
-public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor implements IAsyncEventListener {
+public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
+		implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
 			.getLogger(ApplicationWorkbenchWindowAdvisor.class);
 	private static final String title = "LTS Trader Workstation";
-	public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
+
+	public ApplicationWorkbenchWindowAdvisor(
+			IWorkbenchWindowConfigurer configurer) {
 		super(configurer);
-	}	
+	}
 
 	public ActionBarAdvisor createActionBarAdvisor(
 			IActionBarConfigurer configurer) {
@@ -52,92 +55,117 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 
 	@Override
 	public void preWindowOpen() {
-		if(Business.getInstance().isLoginRequired()) {
+		if (Business.getInstance().isLoginRequired()) {
 			LoginDialog loginDialog = new LoginDialog(null);
 			loginDialog.open();
 		}
 		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
 		configurer.setInitialSize(new Point(1024, 768));
-		if(Business.getInstance().getUserGroup().getRole().equals(UserRole.Admin))
+		if (Business.getInstance().getUserGroup().getRole()
+				.equals(UserRole.Admin))
 			configurer.setShowCoolBar(true);
 		else
 			configurer.setShowCoolBar(false);
 		configurer.setShowStatusLine(true);
 		configurer.setTitle(title);
-		Business.getInstance().getEventManager().subscribe(SelectUserAccountEvent.class, this);
+		Business.getInstance().getEventManager()
+				.subscribe(SelectUserAccountEvent.class, this);
 	}
 
 	@Override
 	public void postWindowOpen() {
-		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		IWorkbenchWindow window = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
 		IWorkbenchPage page = window.getActivePage();
 
 		try {
 
-			//add listener
-			ViewAuthListener authListener =new  ViewAuthListener();
+			// add listener
+			ViewAuthListener authListener = new ViewAuthListener();
 			page.addPartListener(authListener);
-			setUserAccount(Business.getInstance().getUser(), Business.getInstance().getAccount());
+			setUserAccount(Business.getInstance().getUser(), Business
+					.getInstance().getAccount());
 
 			// check login role
-			log.info("fire account login menu change :{}",Business.getInstance().getUserGroup().getRole().name());
-			ISourceProviderService sourceProviderService = (ISourceProviderService) window.getService(ISourceProviderService.class);
+			log.info("fire account login menu change :{}", Business
+					.getInstance().getUserGroup().getRole().name());
+			ISourceProviderService sourceProviderService = (ISourceProviderService) window
+					.getService(ISourceProviderService.class);
 			AuthProvider commandStateService = (AuthProvider) sourceProviderService
-			        .getSourceProvider(Business.getInstance().getUserGroup().getRole().name());
+					.getSourceProvider(Business.getInstance().getUserGroup()
+							.getRole().name());
 			commandStateService.fireAccountChanged();
-			
-			log.info("Business.getInstance().getUserGroup().getRole().equals(UserRole.Admin):"+Business.getInstance().getUserGroup().getRole().equals(UserRole.Admin));
-			if(Business.getInstance().getUserGroup().getRole().equals(UserRole.Admin))
+
+			log.info("Business.getInstance().getUserGroup().getRole().equals(UserRole.Admin):"
+					+ Business.getInstance().getUserGroup().getRole()
+							.equals(UserRole.Admin));
+			if (Business.getInstance().getUserGroup().getRole()
+					.equals(UserRole.Admin))
 				getWindowConfigurer().setShowCoolBar(true);
 
 			// filter already open view
-			IWorkbenchPage pages[] =  getWindowConfigurer().getWindow().getPages();
-			for(IWorkbenchPage activePage: pages){
+			IWorkbenchPage pages[] = getWindowConfigurer().getWindow()
+					.getPages();
+			for (IWorkbenchPage activePage : pages) {
 
 				IViewReference vrs[] = activePage.getViewReferences();
-				for(IViewReference vr : vrs){
-					if(!Business.getInstance().hasViewAuth(vr.getPartName())){
+				for (IViewReference vr : vrs) {
+					if (!Business.getBusinessService().hasViewAuth(
+							vr.getPartName())) {
 						IViewPart part = activePage.findView(vr.getId());
-						log.info("hide view - PartName():{},{}",vr.getPartName(),vr.getId());
-						if(null == part){
+						log.info("hide view - PartName():{},{}",
+								vr.getPartName(), vr.getId());
+						if (null == part) {
 							log.info("part is null");
-						}else{
+						} else {
 							part.getViewSite().getShell().setVisible(false);
 							activePage.hideView(vr);
 						}
-					}else{
-						authListener.filterViewAllAction(vr.getPartName(), vr.getPart(true));
+					} else {
+						authListener.filterViewAllAction(vr.getPartName(),
+								vr.getPart(true));
 					}
 
 				}
 			}
-			
-			ToolBarManager newToolBarManager = WorkbenchActionProvider.getInstance().getWorkbenchCoolBarActions();
-			ToolBarManager coolBarItemManager = WorkbenchActionProvider.getInstance().getToolBarManager(WorkbenchActionProvider.ID_TOOLBARMANAGER_COOLBAR);
+
+			ToolBarManager newToolBarManager = WorkbenchActionProvider
+					.getInstance().getWorkbenchCoolBarActions();
+			ToolBarManager coolBarItemManager = WorkbenchActionProvider
+					.getInstance().getToolBarManager(
+							WorkbenchActionProvider.ID_TOOLBARMANAGER_COOLBAR);
 			IContributionItem[] coolBarItems = coolBarItemManager.getItems();
-			for(IContributionItem coolItem : coolBarItems){
+			for (IContributionItem coolItem : coolBarItems) {
 				try {
-					ActionContributionItem actionItem =(ActionContributionItem) coolItem;
-					if(actionItem.getId().equals("USER_INFO_ACTION")){
-						actionItem.getAction().setText(Business.getInstance().getUser()+" - "+Business.getInstance().getUserGroup().getRole().toString());
+					ActionContributionItem actionItem = (ActionContributionItem) coolItem;
+					if (actionItem.getId().equals("USER_INFO_ACTION")) {
+						actionItem.getAction().setText(
+								Business.getInstance().getUser()
+										+ " - "
+										+ Business.getInstance().getUserGroup()
+												.getRole().toString());
 					}
-					authListener.filterViewAction("Application View", actionItem);					
-					if(!actionItem.isEnabled())
+					authListener.filterViewAction("Application View",
+							actionItem);
+					if (!actionItem.isEnabled())
 						newToolBarManager.remove(actionItem.getId());
-					
+
 				} catch (Exception e) {
-					log.error("e:"+e.getMessage());
+					log.error("e:" + e.getMessage());
 				}
 
 			}
 
 			// filter this item or your coolbar will add gap when every login.
-			IContributionItem items[]=  getWindowConfigurer().getActionBarConfigurer().getCoolBarManager().getItems();
-			for(IContributionItem item : items){
-				if(!item.getClass().getSimpleName().contains("GroupMarker"))
-					getWindowConfigurer().getActionBarConfigurer().getCoolBarManager().remove(item);
+			IContributionItem items[] = getWindowConfigurer()
+					.getActionBarConfigurer().getCoolBarManager().getItems();
+			for (IContributionItem item : items) {
+				if (!item.getClass().getSimpleName().contains("GroupMarker"))
+					getWindowConfigurer().getActionBarConfigurer()
+							.getCoolBarManager().remove(item);
 			}
-			getWindowConfigurer().getActionBarConfigurer().getCoolBarManager().add(newToolBarManager);
+			getWindowConfigurer().getActionBarConfigurer().getCoolBarManager()
+					.add(newToolBarManager);
 
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -157,14 +185,14 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 
 	private void setUserAccount(String user, String account) {
 		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
-		configurer.setTitle(title + " - " +
-				user + "/" + account);
+		configurer.setTitle(title + " - " + user + "/" + account);
 	}
 
 	@Override
 	public void onEvent(AsyncEvent event) {
-		if(event instanceof SelectUserAccountEvent) {
-			setUserAccount(((SelectUserAccountEvent) event).getUser(), ((SelectUserAccountEvent) event).getAccount());
+		if (event instanceof SelectUserAccountEvent) {
+			setUserAccount(((SelectUserAccountEvent) event).getUser(),
+					((SelectUserAccountEvent) event).getAccount());
 		}
 	}
 

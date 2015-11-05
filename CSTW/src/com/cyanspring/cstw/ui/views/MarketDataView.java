@@ -161,7 +161,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 				false, 1, 1));
 
 		cbSymbol = new CCombo(topComposite, SWT.BORDER);
-		List<String> symbolList = Business.getInstance().getSymbolList();
+		List<String> symbolList = Business.getBusinessService().getSymbolList();
 		if (null != symbolList && !symbolList.isEmpty()) {
 			cbSymbol.setItems(symbolList.toArray(new String[symbolList.size()]));
 			cbSymbol.setText(cbSymbol.getItem(0));
@@ -345,13 +345,14 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 		Business.getInstance().getEventManager()
 				.subscribe(QuoteSymbolSelectEvent.class, this);
 		cbSymbol.notifyListeners(SWT.Selection, new Event());
-		
-		try{
-			if(cbSymbol != null&& cbSymbol.getItems().length>0 && cbSymbol.getItem(0) != null) 
+
+		try {
+			if (cbSymbol != null && cbSymbol.getItems().length > 0
+					&& cbSymbol.getItem(0) != null)
 				cbSymbol.setText(cbSymbol.getItem(0) + " ");
 
-		}catch(Exception e){
-			log.info(e.getMessage(),e);
+		} catch (Exception e) {
+			log.info(e.getMessage(), e);
 		}
 
 		quoteChangeListener = new IQuoteChangeListener() {

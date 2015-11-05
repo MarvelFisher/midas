@@ -41,15 +41,16 @@ import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 
-
-public class KDBInfoView extends ViewPart implements IAsyncEventListener{
-	enum Column{
-		Symbol,Time,Scale
+public class KDBInfoView extends ViewPart implements IAsyncEventListener {
+	enum Column {
+		Symbol, Time, Scale
 	}
-	private static final Logger log = LoggerFactory.getLogger(KDBInfoView.class);
+
+	private static final Logger log = LoggerFactory
+			.getLogger(KDBInfoView.class);
 	public static final String ID = "com.cyanspring.cstw.kdb.gui.KDBInfoViewer";
 	private Composite parentComposite;
-	private ImageRegistry imageRegistry;	
+	private ImageRegistry imageRegistry;
 	private ArrayMap<String, Volatility> realTimeMap = new ArrayMap<String, Volatility>();
 	private ArrayMap<String, List<Volatility>> historyMap = new ArrayMap<String, List<Volatility>>();
 	private ReentrantLock lock = new ReentrantLock();
@@ -60,31 +61,32 @@ public class KDBInfoView extends ViewPart implements IAsyncEventListener{
 	private DynamicTableViewer realTimeViewer;
 	private DynamicTableViewer pastTimeViewer;
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-	
+
 	private Image redIcon = null;
 	private Image yellowIcon = null;
 	private Image greenIcon = null;
 
 	@Override
 	public void onEvent(AsyncEvent event) {
-		if(event instanceof VolatilityListReplyEvent){
+		if (event instanceof VolatilityListReplyEvent) {
 			log.info("receive VolatilityListReplyEvent");
 			VolatilityListReplyEvent e = (VolatilityListReplyEvent) event;
 			updateVolatilityMap(e.getVolatilities());
 			needUpdate = true;
-		}else if(event instanceof VolatilityUpdateEvent){
+		} else if (event instanceof VolatilityUpdateEvent) {
 			log.info("receive VolatilityUpdateEvent");
 			VolatilityUpdateEvent e = (VolatilityUpdateEvent) event;
 			updateVolatilityMap(e.getVolatilities());
 			needUpdate = true;
-		}else if(event instanceof AsyncTimerEvent){
-			if(needUpdate)
+		} else if (event instanceof AsyncTimerEvent) {
+			if (needUpdate)
 				refreshRealTimeTable();
 		}
 	}
+
 	private void refreshRealTimeTable() {
 		needUpdate = false;
-		realTimeViewer.getControl().getDisplay().asyncExec(new Runnable(){
+		realTimeViewer.getControl().getDisplay().asyncExec(new Runnable() {
 
 			@Override
 			public void run() {
@@ -103,7 +105,7 @@ public class KDBInfoView extends ViewPart implements IAsyncEventListener{
 						ArrayList<Volatility> list = realTimeMap.toArray();
 						if (list.isEmpty())
 							return;
-												
+
 						Object obj = list.get(0);
 						List<ColumnProperty> properties = realTimeViewer
 								.setObjectColumnProperties(obj);
@@ -112,90 +114,92 @@ public class KDBInfoView extends ViewPart implements IAsyncEventListener{
 
 						realTimeColumnCreated = true;
 						realTimeViewer.setInput(list);
-					} 
-					
-					
+					}
 
-					realTimeViewer.refresh();	
-					
-				}				
+					realTimeViewer.refresh();
+
+				}
 			}
 		});
-		
+
 		setTableItemFormat();
 	}
-	
-	private void setTableItemFormat(){
-		
-		realTimeViewer.getControl().getDisplay().asyncExec(new Runnable(){
+
+	private void setTableItemFormat() {
+
+		realTimeViewer.getControl().getDisplay().asyncExec(new Runnable() {
 
 			@Override
 			public void run() {
 				synchronized (realTimeViewer) {
-					int timeColumn = getColumnPosition(realTimeViewer.getTable(),Column.Time);
-					int scaleColumn = getColumnPosition(realTimeViewer.getTable(),Column.Scale);
+					int timeColumn = getColumnPosition(
+							realTimeViewer.getTable(), Column.Time);
+					int scaleColumn = getColumnPosition(
+							realTimeViewer.getTable(), Column.Scale);
 					TableItem items[] = realTimeViewer.getTable().getItems();
-					for(TableItem item:items){
-						Volatility bean= (Volatility)item.getData();
+					for (TableItem item : items) {
+						Volatility bean = (Volatility) item.getData();
 						String time = timeFormat.format(bean.getTime());
 						double scale = bean.getScale();
-						item.setText(timeColumn, time);	
-						SignalType type = Business.getInstance().getSignal(bean.getSymbol(), scale);
-						if(SignalType.RED == type){
-							item.setImage(scaleColumn,redIcon);
-						}else if(SignalType.YELLOW == type){
-							item.setImage(scaleColumn,yellowIcon);
-						}else if(SignalType.GREEN == type){
-							item.setImage(scaleColumn,greenIcon);
+						item.setText(timeColumn, time);
+						SignalType type = Business.getBusinessService()
+								.getSignal(bean.getSymbol(), scale);
+						if (SignalType.RED == type) {
+							item.setImage(scaleColumn, redIcon);
+						} else if (SignalType.YELLOW == type) {
+							item.setImage(scaleColumn, yellowIcon);
+						} else if (SignalType.GREEN == type) {
+							item.setImage(scaleColumn, greenIcon);
 						}
 					}
-				}				
+				}
 			}
 		});
 	}
-	
-	private int getColumnPosition(Table table,Column col){
+
+	private int getColumnPosition(Table table, Column col) {
 		TableColumn columns[] = table.getColumns();
-		for(int i=0 ;i < columns.length ; i++){
-			if(col.name().equals(columns[i].getText()))
+		for (int i = 0; i < columns.length; i++) {
+			if (col.name().equals(columns[i].getText()))
 				return i;
 		}
 		return -1;
 	}
 
-	
 	@Override
 	public void createPartControl(Composite parent) {
 		parentComposite = parent;
 		imageRegistry = Activator.getDefault().getImageRegistry();
-		redIcon = imageRegistry
-				.getDescriptor(ImageID.REDLIGHT_ICON.toString()).createImage();
-		yellowIcon = imageRegistry
-				.getDescriptor(ImageID.YELLOWLIGHT_ICON.toString()).createImage();
-		greenIcon = imageRegistry
-				.getDescriptor(ImageID.GREENLIGHT_ICON.toString()).createImage();
-		parent.setLayout(new FillLayout(SWT.HORIZONTAL));	
+		redIcon = imageRegistry.getDescriptor(ImageID.REDLIGHT_ICON.toString())
+				.createImage();
+		yellowIcon = imageRegistry.getDescriptor(
+				ImageID.YELLOWLIGHT_ICON.toString()).createImage();
+		greenIcon = imageRegistry.getDescriptor(
+				ImageID.GREENLIGHT_ICON.toString()).createImage();
+		parent.setLayout(new FillLayout(SWT.HORIZONTAL));
 		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(new FillLayout(SWT.HORIZONTAL));	
-		SashForm sashForm = new SashForm(composite, SWT.VERTICAL);	
+		composite.setLayout(new FillLayout(SWT.HORIZONTAL));
+		SashForm sashForm = new SashForm(composite, SWT.VERTICAL);
 		createRealTimeViewer(sashForm);
 		createPastTimeViewer(sashForm);
 
 		subEvent(VolatilityListReplyEvent.class);
 		subEvent(VolatilityUpdateEvent.class);
-		VolatilityListRequestEvent request = new VolatilityListRequestEvent(IdGenerator.getInstance().getNextID(), Business.getInstance().getFirstServer());
+		VolatilityListRequestEvent request = new VolatilityListRequestEvent(
+				IdGenerator.getInstance().getNextID(), Business.getInstance()
+						.getFirstServer());
 		sendRemoteEvent(request);
 		scheduleJob(refreshEvent, minRefreshInterval);
 	}
-	
-	private void createRealTimeViewer(Composite parent){
+
+	private void createRealTimeViewer(Composite parent) {
 		String strFile = Business.getInstance().getConfigPath()
 				+ "VolatilityTable.xml";
 		realTimeViewer = new DynamicTableViewer(parent, SWT.SINGLE
 				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, Business
 				.getInstance().getXstream(), strFile, BeanHolder.getInstance()
 				.getDataConverter());
-		
+
 		realTimeViewer.init();
 		realTimeViewer.getTable().addSelectionListener(new SelectionListener() {
 
@@ -216,8 +220,8 @@ public class KDBInfoView extends ViewPart implements IAsyncEventListener{
 			}
 		});
 	}
-	
-	private void createPastTimeViewer(Composite parent){
+
+	private void createPastTimeViewer(Composite parent) {
 		String strFile = Business.getInstance().getConfigPath()
 				+ "VolatilityTable.xml";
 		pastTimeViewer = new DynamicTableViewer(parent, SWT.SINGLE
@@ -244,37 +248,37 @@ public class KDBInfoView extends ViewPart implements IAsyncEventListener{
 			}
 		});
 	}
-	
+
 	private void updateVolatilityMap(List<Volatility> volatilities) {
-		try{
+		try {
 			lock.lock();
-			for(Volatility vol : volatilities){
+			for (Volatility vol : volatilities) {
 				String symbol = vol.getSymbol();
-				if(!StringUtils.hasText(symbol)){
+				if (!StringUtils.hasText(symbol)) {
 					continue;
 				}
-				if(historyMap.toMap().containsKey(symbol)){
+				if (historyMap.toMap().containsKey(symbol)) {
 					List<Volatility> list = historyMap.get(symbol);
 					list.add(vol);
 					historyMap.put(symbol, list);
-				}else{
+				} else {
 					List<Volatility> list = new ArrayList<Volatility>();
 					list.add(vol);
 					historyMap.put(symbol, list);
 				}
 				realTimeMap.put(symbol, vol);
 			}
-		}finally{
-			if(lock.isLocked())
+		} finally {
+			if (lock.isLocked())
 				lock.unlock();
 		}
 	}
-	
+
 	@Override
 	public void setFocus() {
-		
-	} 
-	
+
+	}
+
 	@Override
 	public void dispose() {
 		super.dispose();
@@ -282,6 +286,7 @@ public class KDBInfoView extends ViewPart implements IAsyncEventListener{
 		unSubEvent(VolatilityListReplyEvent.class);
 		unSubEvent(VolatilityUpdateEvent.class);
 	}
+
 	private void sendRemoteEvent(RemoteAsyncEvent event) {
 		try {
 			Business.getInstance().getEventManager().sendRemoteEvent(event);
@@ -316,7 +321,7 @@ public class KDBInfoView extends ViewPart implements IAsyncEventListener{
 
 		});
 	}
-	
+
 	private void subEvent(Class<? extends AsyncEvent> clazz) {
 		Business.getInstance().getEventManager().subscribe(clazz, this);
 	}
@@ -325,16 +330,16 @@ public class KDBInfoView extends ViewPart implements IAsyncEventListener{
 		Business.getInstance().getEventManager().subscribe(clazz, this);
 	}
 
-	class VolatilitySorter implements Comparator<Volatility>{
+	class VolatilitySorter implements Comparator<Volatility> {
 
 		@Override
 		public int compare(Volatility vol1, Volatility vol2) {
-			if(vol1.getTime().getTime() > vol2.getTime().getTime()){
+			if (vol1.getTime().getTime() > vol2.getTime().getTime()) {
 				return 0;
 			}
-			
+
 			return 1;
 		}
-		
+
 	}
 }

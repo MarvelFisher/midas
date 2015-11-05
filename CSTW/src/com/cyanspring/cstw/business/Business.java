@@ -22,7 +22,6 @@ import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.Clock;
@@ -35,12 +34,7 @@ import com.cyanspring.common.account.UserGroup;
 import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.business.FieldDef;
 import com.cyanspring.common.business.MultiInstrumentStrategyDisplayConfig;
-import com.cyanspring.common.cstw.auth.IAuthChecker;
-import com.cyanspring.common.cstw.kdb.SignalManager;
-import com.cyanspring.common.cstw.kdb.SignalType;
 import com.cyanspring.common.cstw.position.AllPositionManager;
-import com.cyanspring.common.cstw.tick.TickManager;
-import com.cyanspring.common.cstw.tick.Ticker;
 import com.cyanspring.common.data.AlertType;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
@@ -60,12 +54,10 @@ import com.cyanspring.common.event.strategy.SingleInstrumentStrategyFieldDefUpda
 import com.cyanspring.common.event.strategy.SingleOrderStrategyFieldDefUpdateEvent;
 import com.cyanspring.common.event.system.NodeInfoEvent;
 import com.cyanspring.common.event.system.ServerHeartBeatEvent;
-import com.cyanspring.common.fx.FxConverter;
 import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.DataReceiver;
 import com.cyanspring.common.marketsession.DefaultStartEndTime;
 import com.cyanspring.common.server.event.ServerReadyEvent;
-import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.cachingmanager.quote.QuoteCachingManager;
@@ -73,11 +65,11 @@ import com.cyanspring.cstw.cachingmanager.riskcontrol.FrontRCOrderCachingManager
 import com.cyanspring.cstw.cachingmanager.riskcontrol.FrontRCPositionCachingManager;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.BackRCOpenPositionEventController;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.FrontRCOpenPositionEventController;
-import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCTradeEventController;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCIndividualEventController;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCInstrumentStatisticsEventController;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCInstrumentSummaryEventController;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCOrderEventController;
+import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCTradeEventController;
 import com.cyanspring.cstw.event.SelectUserAccountEvent;
 import com.cyanspring.cstw.event.ServerStatusEvent;
 import com.cyanspring.cstw.gui.session.GuiSession;
@@ -86,16 +78,15 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class Business {
-	static Logger log = LoggerFactory.getLogger(Business.class);
+	private static Logger log = LoggerFactory.getLogger(Business.class);
+	private static Business instance; // Singleton
+	private CSTWBeanPool beanPool;
+
 	private XStream xstream = new XStream(new DomDriver());
-	static private Business instance; // Singleton
 	private String configPath;
 	private SystemInfo systemInfo;
 	private IRemoteEventManager eventManager;
 	private OrderCachingManager orderManager;
-	private IAuthChecker authManager;
-	private TickManager tickManager;
-	private SignalManager signalManager;
 	private String inbox;
 	private String channel;
 	private String nodeInfoChannel;
@@ -120,20 +111,109 @@ public class Business {
 	private UserGroup userGroup = new UserGroup("Admin", UserRole.Admin);
 	private List<String> accountGroupList = new ArrayList<String>();
 	private List<Account> accountList = new ArrayList<Account>();
-	private List<String> symbolList = new ArrayList<String>();
+
 	private TraderInfoListener traderInfoListener = null;
 	private DataReceiver quoteDataReceiver = null;
 	private AllPositionManager allPositionManager = null;
 	private IFxConverter rateConverter = null;
-	// singleton implementation
-	private Business() {
-	}
 
-	static public Business getInstance() {
+	public static Business getInstance() {
 		if (null == instance) {
 			instance = new Business();
 		}
 		return instance;
+	}
+
+	/*
+	 * singleton implementation
+	 */
+	private Business() {
+	}
+
+	public void init() throws Exception {
+		Version ver = new Version();
+		log.info(ver.getVersionDetails());
+		log.info("Initializing business obj...");
+		this.systemInfo = BeanHolder.getInstance().getSystemInfo();
+		this.user = Default.getUser();
+		this.account = Default.getAccount();
+
+		// create node.info subscriber and publisher
+		this.channel = systemInfo.getEnv() + "." + systemInfo.getCategory()
+				+ "." + "channel";
+		this.nodeInfoChannel = systemInfo.getEnv() + "."
+				+ systemInfo.getCategory() + "." + "node";
+		InetAddress addr = InetAddress.getLocalHost();
+		String hostName = addr.getHostName();
+		String userName = System.getProperty("user.name");
+		userName = userName == null ? "" : userName;
+		this.inbox = hostName + "." + userName + "."
+				+ IdGenerator.getInstance().getNextID();
+		BeanHolder beanHolder = BeanHolder.getInstance();
+		if (beanHolder == null) {
+			throw new Exception("BeanHolder is not yet initialised");
+		}
+		beanPool = new CSTWBeanPool(beanHolder);
+		// ActiveMQObjectService transport = new ActiveMQObjectService();
+		// transport.setUrl(systemInfo.getUrl());
+
+		// eventManager = new
+		// RemoteEventManager(beanHolder.getTransportService());
+		eventManager = beanHolder.getEventManager();
+		alertColorConfig = beanHolder.getAlertColorConfig();
+		quoteDataReceiver = beanHolder.getDataReceiver();
+		allPositionManager = beanHolder.getAllPositionManager();
+		boolean ok = false;
+		while (!ok) {
+			try {
+				eventManager.init(channel, inbox);
+			} catch (Exception e) {
+				log.error(e.getMessage());
+				log.debug("Retrying in 3 seconds...");
+				ok = false;
+				Thread.sleep(3000);
+				continue;
+			}
+			ok = true;
+		}
+
+		eventManager.addEventChannel(this.channel);
+		eventManager.addEventChannel(this.nodeInfoChannel);
+
+		orderManager = new OrderCachingManager(eventManager);
+
+		ServerStatusDisplay.getInstance().init();
+
+		eventManager.subscribe(NodeInfoEvent.class, listener);
+		eventManager.subscribe(InitClientEvent.class, listener);
+		eventManager.subscribe(UserLoginReplyEvent.class, listener);
+		eventManager.subscribe(SelectUserAccountEvent.class, listener);
+		eventManager.subscribe(ServerHeartBeatEvent.class, listener);
+		eventManager.subscribe(ServerReadyEvent.class, listener);
+		eventManager.subscribe(SingleOrderStrategyFieldDefUpdateEvent.class,
+				listener);
+		eventManager.subscribe(
+				MultiInstrumentStrategyFieldDefUpdateEvent.class, listener);
+		eventManager.subscribe(CSTWUserLoginReplyEvent.class, listener);
+		eventManager
+				.subscribe(AccountSettingSnapshotReplyEvent.class, listener);
+		eventManager.subscribe(RateConverterReplyEvent.class, listener);
+		// schedule timer
+		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval, listener,
+				timerEvent);
+		log.info("TraderInfoListener not init version");
+		// traderInfoListener = new TraderInfoListener();
+		// initSessionListener();
+
+	}
+
+	public void start() throws Exception {
+		// publish my node info
+		NodeInfoEvent nodeInfo = new NodeInfoEvent(null, null, false, true,
+				inbox, inbox);
+		eventManager.publishRemoteEvent(nodeInfoChannel, nodeInfo);
+		log.info("Published my node info");
+
 	}
 
 	class EventListener implements IAsyncEventListener {
@@ -173,17 +253,16 @@ public class Business {
 				if (!isLoginRequired()) {
 					requestStrategyInfo(initClientEvent.getSender());
 				}
-				
-			} else if (event instanceof CSTWUserLoginReplyEvent) {
 
+			} else if (event instanceof CSTWUserLoginReplyEvent) {
 				CSTWUserLoginReplyEvent evt = (CSTWUserLoginReplyEvent) event;
 				processCSTWUserLoginReplyEvent(evt);
 				if (evt.isOk()) {
-					tickManager.init(getFirstServer());
+					beanPool.getTickManager().init(getFirstServer());
 					requestRateConverter();
-//					if(null != loginAccount);
-//						traderInfoListener.init(loginAccount);
-						
+					// if(null != loginAccount);
+					// traderInfoListener.init(loginAccount);
+
 				}
 				if (isLoginRequired() && evt.isOk()) {
 					requestStrategyInfo(evt.getSender());
@@ -224,9 +303,9 @@ public class Business {
 			} else if (event instanceof SelectUserAccountEvent) {
 				processSelectUserAccountEvent((SelectUserAccountEvent) event);
 			} else if (event instanceof RateConverterReplyEvent) {
-				RateConverterReplyEvent e =  (RateConverterReplyEvent) event;
+				RateConverterReplyEvent e = (RateConverterReplyEvent) event;
 				rateConverter = e.getConverter();
-			}else {
+			} else {
 				log.error("I dont expect this event: " + event);
 			}
 		}
@@ -234,14 +313,15 @@ public class Business {
 	}
 
 	private void requestRateConverter() {
-		RateConverterRequestEvent request = new RateConverterRequestEvent(IdGenerator.getInstance().getNextID(),getFirstServer());
+		RateConverterRequestEvent request = new RateConverterRequestEvent(
+				IdGenerator.getInstance().getNextID(), getFirstServer());
 		try {
 			getEventManager().sendRemoteEvent(request);
 		} catch (Exception e) {
-			log.error(e.getMessage(),e);
+			log.error(e.getMessage(), e);
 		}
 	}
-	
+
 	private void processSelectUserAccountEvent(SelectUserAccountEvent event) {
 		log.info("Setting current user/account to: " + this.user + "/"
 				+ this.account);
@@ -302,91 +382,6 @@ public class Business {
 				}
 			}
 		}
-	}
-
-	public void init() throws Exception {
-		Version ver = new Version();
-		log.info(ver.getVersionDetails());
-		log.info("Initializing business obj...");
-		this.systemInfo = BeanHolder.getInstance().getSystemInfo();
-		this.user = Default.getUser();
-		this.account = Default.getAccount();
-
-		// create node.info subscriber and publisher
-		this.channel = systemInfo.getEnv() + "." + systemInfo.getCategory()
-				+ "." + "channel";
-		this.nodeInfoChannel = systemInfo.getEnv() + "."
-				+ systemInfo.getCategory() + "." + "node";
-		InetAddress addr = InetAddress.getLocalHost();
-		String hostName = addr.getHostName();
-		String userName = System.getProperty("user.name");
-		userName = userName == null ? "" : userName;
-		this.inbox = hostName + "." + userName + "."
-				+ IdGenerator.getInstance().getNextID();
-		BeanHolder beanHolder = BeanHolder.getInstance();
-		if (beanHolder == null)
-			throw new Exception("BeanHolder is not yet initialised");
-		// ActiveMQObjectService transport = new ActiveMQObjectService();
-		// transport.setUrl(systemInfo.getUrl());
-
-		// eventManager = new
-		// RemoteEventManager(beanHolder.getTransportService());
-		eventManager = beanHolder.getEventManager();
-		alertColorConfig = beanHolder.getAlertColorConfig();
-		authManager = beanHolder.getAuthManager();
-		tickManager = beanHolder.getTickManager();
-		signalManager = beanHolder.getSignalManager();
-		quoteDataReceiver = beanHolder.getDataReceiver();
-		allPositionManager = beanHolder.getAllPositionManager();
-		boolean ok = false;
-		while (!ok) {
-			try {
-				eventManager.init(channel, inbox);
-			} catch (Exception e) {
-				log.error(e.getMessage());
-				log.debug("Retrying in 3 seconds...");
-				ok = false;
-				Thread.sleep(3000);
-				continue;
-			}
-			ok = true;
-		}
-
-		eventManager.addEventChannel(this.channel);
-		eventManager.addEventChannel(this.nodeInfoChannel);
-
-		orderManager = new OrderCachingManager(eventManager);
-		tickManager = new TickManager(eventManager);
-
-		ServerStatusDisplay.getInstance().init();
-
-		eventManager.subscribe(NodeInfoEvent.class, listener);
-
-		eventManager.subscribe(InitClientEvent.class, listener);		
-		eventManager.subscribe(UserLoginReplyEvent.class, listener);		
-		eventManager.subscribe(SelectUserAccountEvent.class, listener);		
-		eventManager.subscribe(ServerHeartBeatEvent.class, listener);		
-		eventManager.subscribe(ServerReadyEvent.class, listener);		
-		eventManager.subscribe(SingleOrderStrategyFieldDefUpdateEvent.class, listener);		
-		eventManager.subscribe(MultiInstrumentStrategyFieldDefUpdateEvent.class, listener);		
-		eventManager.subscribe(CSTWUserLoginReplyEvent.class, listener);		
-		eventManager.subscribe(AccountSettingSnapshotReplyEvent.class, listener);
-		eventManager.subscribe(RateConverterReplyEvent.class, listener);
-		//schedule timer
-		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval , listener, timerEvent);	
-		log.info("TraderInfoListener not init version");
-//		traderInfoListener = new TraderInfoListener();
-//		initSessionListener();
-
-	}
-
-	public void start() throws Exception {
-		// publish my node info
-		NodeInfoEvent nodeInfo = new NodeInfoEvent(null, null, false, true,
-				inbox, inbox);
-		eventManager.publishRemoteEvent(nodeInfoChannel, nodeInfo);
-		log.info("Published my node info");
-
 	}
 
 	public int getHeartBeatInterval() {
@@ -539,7 +534,7 @@ public class Business {
 		if (null != user2AccoutMap && !user2AccoutMap.isEmpty()) {
 			accountList.addAll(user2AccoutMap.values());
 			for (Account acc : user2AccoutMap.values()) {
-				accountGroupList.add(acc.getId());		
+				accountGroupList.add(acc.getId());
 			}
 		}
 		UserGroup userGroup = event.getUserGroup();
@@ -552,6 +547,7 @@ public class Business {
 		}
 
 		this.userGroup = userGroup;
+		beanPool.setUserGroup(userGroup);
 		log.info("login user:{},{}", user, userGroup.getRole());
 
 		QuoteCachingManager.getInstance().init();
@@ -573,7 +569,7 @@ public class Business {
 			RCIndividualEventController.getInstance().init();
 			RCInstrumentSummaryEventController.getInstance().init();
 			RCOrderEventController.getInstance().init();
-		}	
+		}
 
 		return true;
 	}
@@ -634,14 +630,6 @@ public class Business {
 		return false;
 	}
 
-	public boolean hasAuth(String view, String action) {
-		return this.authManager.hasAuth(userGroup.getRole(), view, action);
-	}
-
-	public boolean hasViewAuth(String view) {
-		return this.authManager.hasViewAuth(userGroup.getRole(), view);
-	}
-
 	public Account getLoginAccount() {
 		return loginAccount;
 	}
@@ -652,37 +640,6 @@ public class Business {
 
 	public void setAccountSetting(AccountSetting accountSetting) {
 		this.accountSetting = accountSetting;
-	}
-
-	public Ticker getTicker(String symbol) {
-		Ticker ticker = tickManager.getTicker(symbol);
-		if (null == ticker && StringUtils.hasText(symbol)) {
-			tickManager.requestTickTableInfo(symbol);
-		}
-		return ticker;
-	}
-
-	public List<String> getSymbolList() {
-		if ((null == symbolList || symbolList.isEmpty()) && null != tickManager)
-			symbolList = tickManager.getSymbolList();
-
-		return symbolList;
-	}
-
-	public List<RefData> getRefDataList() {
-		return tickManager.getRefDataList();
-	}
-
-	public RefData getRefData(String symbol){
-		return tickManager.getRefDataMap().get(symbol);
-	}
-	
-	public Map<String,RefData> getRefDataMap() {
-		return tickManager.getRefDataMap();
-	}
-	
-	public SignalType getSignal(String symbol, double scale) {
-		return signalManager.getSignal(symbol, scale);
 	}
 
 	private void initSessionListener() {
@@ -705,8 +662,8 @@ public class Business {
 	public AllPositionManager getAllPositionManager() {
 		return allPositionManager;
 	}
-	
-	public IFxConverter getRateConverter(){
+
+	public IFxConverter getRateConverter() {
 		return rateConverter;
 	}
 
@@ -717,4 +674,9 @@ public class Business {
 	public List<Account> getAccountList() {
 		return this.accountList;
 	}
+
+	public static IBusinessService getBusinessService() {
+		return instance.beanPool;
+	}
+
 }

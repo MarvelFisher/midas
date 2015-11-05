@@ -38,9 +38,9 @@ public class CurrentPositionServiceImpl extends BasicServiceImpl implements
 	private double allPnl = 0.0;
 
 	private List<RCOpenPositionModel> currentPositionModelList;
-	
+
 	private List<RCOpenPositionModel> overallPositionModelList;
-	
+
 	private UserRole roleType;
 
 	public CurrentPositionServiceImpl() {
@@ -48,7 +48,8 @@ public class CurrentPositionServiceImpl extends BasicServiceImpl implements
 
 	@Override
 	public void queryOpenPosition() {
-		OpenPositionSnapshotListRequestLocalEvent event = new OpenPositionSnapshotListRequestLocalEvent(roleType.name());
+		OpenPositionSnapshotListRequestLocalEvent event = new OpenPositionSnapshotListRequestLocalEvent(
+				roleType.name());
 		sendEvent(event);
 	}
 
@@ -68,16 +69,17 @@ public class CurrentPositionServiceImpl extends BasicServiceImpl implements
 			currentPositionModelList = getOpenPositionFromOverallPosition(overallPositionModelList);
 			return RefreshEventType.RWCurrentPositionList;
 		}
-		if (event instanceof OpenPositionUpdateLocalEvent) {						
+		if (event instanceof OpenPositionUpdateLocalEvent) {
 			OpenPositionUpdateLocalEvent replyEvent = (OpenPositionUpdateLocalEvent) event;
-			overallPositionModelList = replyEvent.getAllPositionModelList();			
+			overallPositionModelList = replyEvent.getAllPositionModelList();
 			currentPositionModelList = getOpenPositionFromOverallPosition(overallPositionModelList);
 			return RefreshEventType.RWCurrentPositionList;
 		}
 		return RefreshEventType.Default;
 	}
-	
-	private List<RCOpenPositionModel> getOpenPositionFromOverallPosition(List<RCOpenPositionModel> overall){
+
+	private List<RCOpenPositionModel> getOpenPositionFromOverallPosition(
+			List<RCOpenPositionModel> overall) {
 		List<RCOpenPositionModel> result = new ArrayList<RCOpenPositionModel>();
 		for (RCOpenPositionModel model : overall) {
 			if (model.getType() == RCPositionType.Open) {
@@ -86,7 +88,7 @@ public class CurrentPositionServiceImpl extends BasicServiceImpl implements
 		}
 		return result;
 	}
-	
+
 	public void setRoleType(UserRole roleType) {
 		this.roleType = roleType;
 	}
@@ -97,10 +99,10 @@ public class CurrentPositionServiceImpl extends BasicServiceImpl implements
 	}
 
 	@Override
-	public String getAllMarketCapitalization() {	
+	public String getAllMarketCapitalization() {
 		marketCapital = 0.0;
 		for (RCOpenPositionModel model : currentPositionModelList) {
-			double pricePerUnit = Business.getInstance()
+			double pricePerUnit = Business.getBusinessService()
 					.getRefData(model.getInstrumentCode()).getPricePerUnit();
 			if (pricePerUnit == 0) {
 				pricePerUnit = 1.0;
@@ -114,7 +116,7 @@ public class CurrentPositionServiceImpl extends BasicServiceImpl implements
 	@Override
 	public String getUnrealizedPNL() {
 		unrealizedPnl = 0.0;
-		for ( RCOpenPositionModel model : currentPositionModelList ) {
+		for (RCOpenPositionModel model : currentPositionModelList) {
 			unrealizedPnl += model.getUrPnl();
 		}
 		return LTWStringUtils.cashDoubleToString(unrealizedPnl);
@@ -123,7 +125,7 @@ public class CurrentPositionServiceImpl extends BasicServiceImpl implements
 	@Override
 	public String getPNL() {
 		pnl = 0.0;
-		for ( RCOpenPositionModel model : overallPositionModelList ) {
+		for (RCOpenPositionModel model : overallPositionModelList) {
 			pnl += model.getPnl();
 		}
 		return LTWStringUtils.cashDoubleToString(pnl);
@@ -138,19 +140,16 @@ public class CurrentPositionServiceImpl extends BasicServiceImpl implements
 	@Override
 	public void forceClosePosition(String account, String symbol) {
 		String server = Business.getInstance().getFirstServer();
-		
+
 		ClosePositionRequestEvent request = new ClosePositionRequestEvent(
-				account, server,
-				account, symbol,
-				0.0, OrderReason.ManualClose, IdGenerator
-						.getInstance().getNextID());
+				account, server, account, symbol, 0.0, OrderReason.ManualClose,
+				IdGenerator.getInstance().getNextID());
 		try {
-			Business.getInstance().getEventManager()
-					.sendRemoteEvent(request);
+			Business.getInstance().getEventManager().sendRemoteEvent(request);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
-		
+
 	}
 
 }

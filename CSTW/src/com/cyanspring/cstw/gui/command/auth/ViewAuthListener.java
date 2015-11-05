@@ -18,63 +18,68 @@ import com.cyanspring.cstw.business.Business;
 public class ViewAuthListener implements IPartListener2 {
 	private static final Logger log = LoggerFactory
 			.getLogger(ViewAuthListener.class);
-	
-	
-	public void filterViewAllAction(String partName,IWorkbenchPart part){
-		filterToolbarAction(partName,part);
+
+	public void filterViewAllAction(String partName, IWorkbenchPart part) {
+		filterToolbarAction(partName, part);
 		filterMenuAction(partName);
 	}
-	
-	public void filterViewAction(String partName,ActionContributionItem actionItem){
-		
-		if(!Business.getInstance().hasAuth(partName, actionItem.getId())){
+
+	public void filterViewAction(String partName,
+			ActionContributionItem actionItem) {
+		if (!Business.getBusinessService().hasAuth(partName,
+				actionItem.getId())) {
 			actionItem.getAction().setEnabled(false);
-		}else{
+		} else {
 			actionItem.getAction().setEnabled(true);
 		}
 	}
-	
-	public void filterToolbarAction(String partName,IWorkbenchPart part){
-		IViewSite site= (IViewSite) part.getSite();
-		ToolBarManager bar = (ToolBarManager) site.getActionBars().getToolBarManager();
-		IContributionItem items []=  bar.getItems();
-		for(IContributionItem item : items){
-			ActionContributionItem actionItem = (ActionContributionItem)item;
-			if(!Business.getInstance().hasAuth(partName, actionItem.getId())){
+
+	public void filterToolbarAction(String partName, IWorkbenchPart part) {
+		IViewSite site = (IViewSite) part.getSite();
+		ToolBarManager bar = (ToolBarManager) site.getActionBars()
+				.getToolBarManager();
+		IContributionItem items[] = bar.getItems();
+		for (IContributionItem item : items) {
+			ActionContributionItem actionItem = (ActionContributionItem) item;
+			if (!Business.getBusinessService().hasAuth(partName,
+					actionItem.getId())) {
 				actionItem.setVisible(false);
-			}else{
+			} else {
 				actionItem.setVisible(true);
 			}
 		}
 		bar.update(true);
 	}
-	
-	public void filterMenuAction(String partName){
-		List <ActionContributionItem> list = AuthMenuManager.getViewMenuActions(partName);
 
-		for(ActionContributionItem actionItem : list ){
-//			log.info("menu actionItem:{} hasAuth:{}",actionItem.getId(),Business.getInstance().hasAuth(partName, actionItem.getId()));
-			if(!Business.getInstance().hasAuth(partName, actionItem.getId())){
+	public void filterMenuAction(String partName) {
+		List<ActionContributionItem> list = AuthMenuManager
+				.getViewMenuActions(partName);
+
+		for (ActionContributionItem actionItem : list) {
+			// log.info("menu actionItem:{} hasAuth:{}",actionItem.getId(),Business.getInstance().hasAuth(partName,
+			// actionItem.getId()));
+			if (!Business.getBusinessService().hasAuth(partName,
+					actionItem.getId())) {
 				actionItem.setVisible(false);
-			}else{
+			} else {
 				actionItem.setVisible(true);
 			}
 		}
 	}
-	
+
 	@Override
 	public void partActivated(IWorkbenchPartReference partRef) {
-		
+
 		UserRole role = Business.getInstance().getUserGroup().getRole();
-		String partName = partRef.getPartName();	
-//		log.info("partActviated:{}",partRef.getPartName());
-		filterToolbarAction(partName,partRef.getPart(true));
+		String partName = partRef.getPartName();
+		// log.info("partActviated:{}",partRef.getPartName());
+		filterToolbarAction(partName, partRef.getPart(true));
 		filterMenuAction(partName);
 	}
 
 	@Override
 	public void partBroughtToTop(IWorkbenchPartReference partRef) {
-		
+
 	}
 
 	@Override

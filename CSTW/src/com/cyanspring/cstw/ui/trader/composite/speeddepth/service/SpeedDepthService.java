@@ -52,7 +52,7 @@ public final class SpeedDepthService {
 	private int rowLength = 10;
 
 	public List<SpeedDepthModel> getSpeedDepthList(Quote quote, boolean isLock) {
-		ticker = Business.getInstance().getTicker(quote.getSymbol());
+		ticker = Business.getBusinessService().getTicker(quote.getSymbol());
 		if (ticker == null) {
 			return null;
 		} else {
@@ -191,10 +191,10 @@ public final class SpeedDepthService {
 			OrdStatus status = (OrdStatus) map.get("Status");
 			if (!status.isCompleted()) {
 				for (SpeedDepthModel currentModel : currentList) {
-					String symbol = (String) map.get("Symbol");					
-					if( null == map.get("Price"))
+					String symbol = (String) map.get("Symbol");
+					if (null == map.get("Price"))
 						continue;
-					
+
 					double price = (Double) map.get("Price");
 
 					if (currentModel.getSymbol().equals(symbol)
@@ -225,7 +225,7 @@ public final class SpeedDepthService {
 		}
 		log.info("SpeedDepthOrder : " + sb.toString());
 	}
-	
+
 	public void quickEnterOrder(SpeedDepthModel model, String side,
 			String quantity, String receiverId) {
 		HashMap<String, Object> fields = new HashMap<String, Object>();
@@ -261,7 +261,7 @@ public final class SpeedDepthService {
 		for (Map<String, Object> map : orders) {
 			String symbol = (String) map.get(OrderField.SYMBOL.value());
 			String id = (String) map.get(OrderField.ID.value());
-			
+
 			OrdStatus status = (OrdStatus) map
 					.get(OrderField.ORDSTATUS.value());
 			boolean isPriceEqual;
@@ -276,9 +276,9 @@ public final class SpeedDepthService {
 			}
 			if (!status.isCompleted() && symbol.equals(currentSymbol)
 					&& isPriceEqual) {
-				if(null != symbol && id != null)
-					log.info("SpeedDepth cancelOrder:{},{}",symbol,id);
-				
+				if (null != symbol && id != null)
+					log.info("SpeedDepth cancelOrder:{},{}", symbol, id);
+
 				CancelParentOrderEvent event = new CancelParentOrderEvent(id,
 						Business.getInstance().getFirstServer(), id, false,
 						null, true);

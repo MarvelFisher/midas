@@ -1703,7 +1703,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 			public void run() {
 				if (panelComposite.isVisible() && null != nowQuote) {
 					txtSymbol.setText(nowQuote.getSymbol());
-					ticker = Business.getInstance().getTicker(
+					ticker = Business.getBusinessService().getTicker(
 							nowQuote.getSymbol());
 					String orderSide = cbOrderSide.getText();
 					if (orderSide.equals(OrderSide.Buy.toString())) {
