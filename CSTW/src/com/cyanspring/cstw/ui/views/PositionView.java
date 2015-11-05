@@ -351,8 +351,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void createExecutionViewer(Composite parent) {
-		String strFile = CSTWSession.getInstance().getConfigPath()
-				+ "ExecutionPositionTable.xml";
+		String strFile = "ExecutionPositionTable.xml";
 		executionViewer = new DynamicTableViewer(parent, SWT.MULTI
 				| SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL, strFile);
 		executionViewer.init();
