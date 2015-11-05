@@ -119,7 +119,7 @@
 			<list>
                 <bean class="com.cyanspring.common.marketsession.MarketSessionData">
                     <constructor-arg><value>CLOSE</value></constructor-arg>
-                    <constructor-arg><value>-12:30:00</value></constructor-arg>
+                    <constructor-arg><value>-12:-30:00</value></constructor-arg>
                     <constructor-arg><value>08:30:00</value></constructor-arg>
                 </bean>
                 <bean class="com.cyanspring.common.marketsession.MarketSessionData">
