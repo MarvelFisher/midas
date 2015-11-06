@@ -60,20 +60,6 @@ public class FutureOrderQuantityValidator implements IFieldValidator {
 				type = order.getOrderType();	
 			}
 			
-			if(OrderType.Market.equals(type)){
-				if(!PriceUtils.isZero(marketMaxQty) && PriceUtils.GreaterThan(qty, (double)marketMaxQty.longValue())){
-					throw new OrderValidationException(field + " exceed maximum number:"+marketMaxQty+" order qty:"+qty,ErrorMessage.ORDER_QTY_OVER_MAX_SETTING);
-				}
-			}else{
-				if(!PriceUtils.isZero(limitMaxQty) && PriceUtils.GreaterThan(qty, (double)limitMaxQty.longValue())){
-					throw new OrderValidationException(field + " exceed maximum number:"+limitMaxQty+" order qty:"+qty,ErrorMessage.ORDER_QTY_OVER_MAX_SETTING);
-				}
-			}
-			
-			if(!PriceUtils.isZero(minQty) && PriceUtils.GreaterThan((double)minQty.longValue(), qty)){
-				throw new OrderValidationException(field + " not met minimum number:"+minQty+" order qty:"+qty,ErrorMessage.ORDER_QTY_NOT_MET_MINIMUM_SETTING);
-			}
-			
 			String symbol = (String)map.get(OrderField.SYMBOL.value());
 			if(symbol == null)
 				symbol = order.getSymbol();
@@ -84,6 +70,28 @@ public class FutureOrderQuantityValidator implements IFieldValidator {
 			RefData refData = refDataManager.getRefData(symbol);
 			if(null == refData)
 				throw new OrderValidationException("Can't find symbol in refdata: " + symbol,ErrorMessage.ORDER_SYMBOL_NOT_FOUND);
+			
+			if(OrderType.Market.equals(type)){
+				if(refData.getMarketMaximumLot() != 0){
+					if(PriceUtils.GreaterThan(qty, (double)refData.getMarketMaximumLot()))
+						throw new OrderValidationException(field + " exceed maximum number:"+refData.getMarketMaximumLot()+" order qty:"+qty,ErrorMessage.ORDER_QTY_OVER_MAX_SETTING);
+
+				}else if(!PriceUtils.isZero(marketMaxQty) && PriceUtils.GreaterThan(qty, (double)marketMaxQty.longValue())){
+					throw new OrderValidationException(field + " exceed maximum number:"+marketMaxQty+" order qty:"+qty,ErrorMessage.ORDER_QTY_OVER_MAX_SETTING);
+				}
+			}else{
+				if(refData.getLimitMaximumLot() != 0){
+					if(PriceUtils.GreaterThan(qty, (double)refData.getLimitMaximumLot()))
+						throw new OrderValidationException(field + " exceed maximum number:"+refData.getLimitMaximumLot()+" order qty:"+qty,ErrorMessage.ORDER_QTY_OVER_MAX_SETTING);
+
+				}else if(!PriceUtils.isZero(limitMaxQty) && PriceUtils.GreaterThan(qty, (double)limitMaxQty.longValue())){
+					throw new OrderValidationException(field + " exceed maximum number:"+limitMaxQty+" order qty:"+qty,ErrorMessage.ORDER_QTY_OVER_MAX_SETTING);
+				}
+			}
+			
+			if(!PriceUtils.isZero(minQty) && PriceUtils.GreaterThan((double)minQty.longValue(), qty)){
+				throw new OrderValidationException(field + " not met minimum number:"+minQty+" order qty:"+qty,ErrorMessage.ORDER_QTY_NOT_MET_MINIMUM_SETTING);
+			}
 			
 			if(qty.longValue() % refData.getLotSize() != 0)
 				throw new OrderValidationException("Invalid Quantity!",ErrorMessage.INVALID_QUANTITY);
