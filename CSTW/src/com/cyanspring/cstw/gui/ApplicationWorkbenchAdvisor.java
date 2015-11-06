@@ -10,17 +10,13 @@
  ******************************************************************************/
 package com.cyanspring.cstw.gui;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 
 import com.cyanspring.cstw.business.Business;
-import com.cyanspring.cstw.gui.assist.OpenSingleOrderStrategyViewAssist;
+import com.cyanspring.cstw.ui.shortcutkey.ShortCutKeyManager;
 
 public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 
@@ -53,14 +49,7 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 
 	@Override
 	public void postStartup() {
-		Display.getDefault().addFilter(SWT.KeyDown, new Listener() {
-			public void handleEvent(Event e) {
-				if (e.keyCode == SWT.F1 || e.keyCode == SWT.F2
-						|| e.keyCode == SWT.ESC) {
-					new OpenSingleOrderStrategyViewAssist().run(e.keyCode);
-				}
-			}
-		});
+		ShortCutKeyManager.getInstance().init();
 	}
 
 	@Override
