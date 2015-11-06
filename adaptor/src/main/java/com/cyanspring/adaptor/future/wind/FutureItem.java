@@ -184,6 +184,7 @@ public class FutureItem implements AutoCloseable {
                 case PREMARKET:
                 case CLOSE:
                 case BREAK:
+                case PRECLOSE:
                     quote.setStale(true);
                     break;
                 case OPEN:
