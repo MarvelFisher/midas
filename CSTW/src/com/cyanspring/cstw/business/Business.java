@@ -74,8 +74,6 @@ import com.cyanspring.cstw.event.SelectUserAccountEvent;
 import com.cyanspring.cstw.event.ServerStatusEvent;
 import com.cyanspring.cstw.gui.session.GuiSession;
 import com.cyanspring.cstw.ui.views.ServerStatusDisplay;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class Business {
 	private static Logger log = LoggerFactory.getLogger(Business.class);
@@ -89,17 +87,17 @@ public class Business {
 	private String channel;
 	private String nodeInfoChannel;
 	private HashMap<String, Boolean> servers = new HashMap<String, Boolean>();
-	private EventListener listener = new EventListener();
-	private List<String> singleOrderDisplayFields;
-	private List<String> singleInstrumentDisplayFields;
-	private Map<String, Map<String, FieldDef>> singleOrderFieldDefs;
-	private Map<String, Map<String, FieldDef>> singleInstrumentFieldDefs;
-	private List<String> multiInstrumentDisplayFields;
-	private Map<String, MultiInstrumentStrategyDisplayConfig> multiInstrumentFieldDefs;
+	private EventListenerImpl listener = new EventListenerImpl();
+	private List<String> singleOrderDisplayFieldList;
+	private List<String> singleInstrumentDisplayFieldList;
+	private List<String> multiInstrumentDisplayFieldList;
+	private Map<String, Map<String, FieldDef>> singleOrderFieldDefMap;
+	private Map<String, Map<String, FieldDef>> singleInstrumentFieldDefMap;
+	private Map<String, MultiInstrumentStrategyDisplayConfig> multiInstrumentFieldDefMap;
 	private ScheduleManager scheduleManager = new ScheduleManager();
 	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	private int heartBeatInterval = 10000; // 5 seconds
-	private HashMap<String, Date> lastHeartBeats = new HashMap<String, Date>();
+	private HashMap<String, Date> lastHeartBeatMap = new HashMap<String, Date>();
 	private DefaultStartEndTime defaultStartEndTime;
 	private Map<AlertType, Integer> alertColorConfig;
 	private String user = Default.getUser();
@@ -214,7 +212,7 @@ public class Business {
 
 	}
 
-	class EventListener implements IAsyncEventListener {
+	class EventListenerImpl implements IAsyncEventListener {
 		@Override
 		public void onEvent(AsyncEvent event) {
 			// log.info("Received message: " + message);
@@ -229,24 +227,24 @@ public class Business {
 						return;
 					}
 					servers.put(nodeInfo.getInbox(), true);
-					lastHeartBeats.put(nodeInfo.getInbox(), Clock.getInstance()
-							.now());
+					lastHeartBeatMap.put(nodeInfo.getInbox(), Clock
+							.getInstance().now());
 				}
 			} else if (event instanceof InitClientEvent) {
 				log.debug("Received event: " + event);
 				InitClientEvent initClientEvent = (InitClientEvent) event;
-				singleOrderFieldDefs = initClientEvent
+				singleOrderFieldDefMap = initClientEvent
 						.getSingleOrderFieldDefs();
-				singleOrderDisplayFields = initClientEvent
+				singleOrderDisplayFieldList = initClientEvent
 						.getSingleOrderDisplayFields();
-				singleInstrumentFieldDefs = initClientEvent
+				singleInstrumentFieldDefMap = initClientEvent
 						.getSingleInstrumentFieldDefs();
-				singleInstrumentDisplayFields = initClientEvent
+				singleInstrumentDisplayFieldList = initClientEvent
 						.getSingleInstrumentDisplayFields();
 				defaultStartEndTime = initClientEvent.getDefaultStartEndTime();
-				multiInstrumentDisplayFields = initClientEvent
+				multiInstrumentDisplayFieldList = initClientEvent
 						.getMultiInstrumentDisplayFields();
-				multiInstrumentFieldDefs = initClientEvent
+				multiInstrumentFieldDefMap = initClientEvent
 						.getMultiInstrumentStrategyFieldDefs();
 				if (!isLoginRequired()) {
 					requestStrategyInfo(initClientEvent.getSender());
@@ -340,31 +338,31 @@ public class Business {
 
 	synchronized private void processingSingleOrderStrategyFieldDefUpdateEvent(
 			SingleOrderStrategyFieldDefUpdateEvent event) {
-		singleOrderFieldDefs.put(event.getName(), event.getFieldDefs());
+		singleOrderFieldDefMap.put(event.getName(), event.getFieldDefs());
 		log.info("Single-order strategy field def update: " + event.getName());
 	}
 
 	public void processingSingleInstrumentStrategyFieldDefUpdateEvent(
 			SingleInstrumentStrategyFieldDefUpdateEvent event) {
-		singleInstrumentFieldDefs.put(event.getName(), event.getFieldDefs());
+		singleInstrumentFieldDefMap.put(event.getName(), event.getFieldDefs());
 		log.info("Single-instrument strategy field def update: "
 				+ event.getName());
 	}
 
 	synchronized private void processingMultiInstrumentStrategyFieldDefUpdateEvent(
 			MultiInstrumentStrategyFieldDefUpdateEvent event) {
-		multiInstrumentFieldDefs.put(event.getConfig().getStrategy(),
+		multiInstrumentFieldDefMap.put(event.getConfig().getStrategy(),
 				event.getConfig());
 		log.info("Multi-Instrument strategy field def update: "
 				+ event.getConfig().getStrategy());
 	}
 
 	public void processServerHeartBeatEvent(ServerHeartBeatEvent event) {
-		lastHeartBeats.put(event.getSender(), Clock.getInstance().now());
+		lastHeartBeatMap.put(event.getSender(), Clock.getInstance().now());
 	}
 
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
-		for (Entry<String, Date> entry : lastHeartBeats.entrySet()) {
+		for (Entry<String, Date> entry : lastHeartBeatMap.entrySet()) {
 			if (TimeUtil.getTimePass(entry.getValue()) > heartBeatInterval) {
 				log.debug("Sending server down event: " + entry.getKey());
 				servers.put(entry.getKey(), false);
@@ -418,7 +416,7 @@ public class Business {
 	}
 
 	synchronized public List<String> getParentOrderDisplayFields() {
-		return singleOrderDisplayFields;
+		return singleOrderDisplayFieldList;
 	}
 
 	synchronized public DefaultStartEndTime getDefaultStartEndTime() {
@@ -426,32 +424,32 @@ public class Business {
 	}
 
 	synchronized public List<String> getSingleOrderDisplayFields() {
-		return singleOrderDisplayFields;
+		return singleOrderDisplayFieldList;
 	}
 
 	synchronized public Map<String, Map<String, FieldDef>> getSingleOrderFieldDefs() {
-		return singleOrderFieldDefs;
+		return singleOrderFieldDefMap;
 	}
 
 	synchronized public List<String> getSingleInstrumentDisplayFields() {
-		return singleInstrumentDisplayFields;
+		return singleInstrumentDisplayFieldList;
 	}
 
 	synchronized public Map<String, Map<String, FieldDef>> getSingleInstrumentFieldDefs() {
-		return singleInstrumentFieldDefs;
+		return singleInstrumentFieldDefMap;
 	}
 
 	synchronized public Map<String, MultiInstrumentStrategyDisplayConfig> getMultiInstrumentFieldDefs() {
-		return multiInstrumentFieldDefs;
+		return multiInstrumentFieldDefMap;
 	}
 
 	synchronized public List<String> getMultiInstrumentDisplayFields() {
-		return multiInstrumentDisplayFields;
+		return multiInstrumentDisplayFieldList;
 	}
 
 	synchronized public List<String> getSingleOrderAmendableFields(String key) {
 		List<String> result = new ArrayList<String>();
-		Map<String, FieldDef> fieldDefs = singleOrderFieldDefs.get(key);
+		Map<String, FieldDef> fieldDefs = singleOrderFieldDefMap.get(key);
 		if (null != fieldDefs) {
 			for (FieldDef fieldDef : fieldDefs.values()) {
 				if (fieldDef.isAmendable())
@@ -464,7 +462,7 @@ public class Business {
 	synchronized public List<String> getSingleInstrumentAmendableFields(
 			String key) {
 		List<String> result = new ArrayList<String>();
-		Map<String, FieldDef> fieldDefs = singleInstrumentFieldDefs.get(key);
+		Map<String, FieldDef> fieldDefs = singleInstrumentFieldDefMap.get(key);
 		if (null != fieldDefs) {
 			for (FieldDef fieldDef : fieldDefs.values()) {
 				if (fieldDef.isAmendable())
