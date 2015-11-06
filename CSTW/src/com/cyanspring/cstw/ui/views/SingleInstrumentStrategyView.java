@@ -34,7 +34,6 @@ import org.eclipse.ui.part.ViewPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.event.AsyncEvent;

@@ -18,16 +18,13 @@ import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountState;
-import com.cyanspring.common.account.User;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.account.ChangeAccountStateReplyEvent;
 import com.cyanspring.common.event.account.ChangeAccountStateRequestEvent;
-import com.cyanspring.common.event.account.ChangeUserRoleReplyEvent;
 import com.cyanspring.common.message.MessageBean;
 import com.cyanspring.common.message.MessageLookup;
-import com.cyanspring.common.util.ArrayMap;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.GUIUtils;

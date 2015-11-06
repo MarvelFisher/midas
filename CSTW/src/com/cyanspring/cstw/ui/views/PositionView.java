@@ -64,7 +64,6 @@ import com.cyanspring.cstw.gui.command.auth.AuthMenuManager;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
-import com.cyanspring.cstw.session.CSTWSession;
 import com.cyanspring.cstw.ui.views.SetPriceDialog.Mode;
 
 public class PositionView extends ViewPart implements IAsyncEventListener {
@@ -219,12 +218,11 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 			Business.getInstance().getEventManager()
 					.subscribe(OrderCacheReadyEvent.class, this);
 		}
-			
 
 		sendTraderRequestEvent();
 
 	}
-	
+
 	@Override
 	public void dispose() {
 		Business.getInstance().getEventManager()

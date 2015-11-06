@@ -63,7 +63,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.Clock;
-import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.cstw.tick.Ticker;
 import com.cyanspring.common.event.AsyncEvent;

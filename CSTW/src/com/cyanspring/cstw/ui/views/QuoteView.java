@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
@@ -52,7 +51,6 @@ import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
 import com.cyanspring.cstw.preference.PreferenceStoreManager;
-import com.cyanspring.cstw.session.CSTWSession;
 import com.cyanspring.cstw.session.GuiSession;
 import com.cyanspring.cstw.ui.trader.helper.QuoteHelper;
 

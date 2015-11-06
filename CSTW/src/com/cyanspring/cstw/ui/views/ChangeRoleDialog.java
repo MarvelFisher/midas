@@ -1,7 +1,6 @@
 package com.cyanspring.cstw.ui.views;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -24,9 +23,6 @@ import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.account.ChangeUserRoleEvent;
 import com.cyanspring.common.event.account.ChangeUserRoleReplyEvent;
-import com.cyanspring.common.event.account.CreateGroupManagementReplyEvent;
-import com.cyanspring.common.event.account.DeleteGroupManagementReplyEvent;
-import com.cyanspring.common.event.account.GroupManageeReplyEvent;
 import com.cyanspring.common.message.MessageBean;
 import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.util.IdGenerator;
