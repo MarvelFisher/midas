@@ -36,7 +36,8 @@ public class CommissionManager implements ICommissionManager{
 			double lotCommissionFee = refData.getLotCommissionFee();
 			if (!nullOrZero(lotCommissionFee)) {
 				double quantity = execution.getQuantity();
-				return lotCommissionFee * quantity * accountCommission;
+				commission = lotCommissionFee * quantity * accountCommission;
+				return Math.ceil(commission);
 			}
 
 			double minCF = refData.getMinimalCommissionFee();
@@ -54,12 +55,10 @@ public class CommissionManager implements ICommissionManager{
 			commission *= value; // The calculated commission fee
 			if (PriceUtils.EqualLessThan(commission, minCommissionFee)) {
 				commission =  minCommissionFee; // If less than minCF, take minCF
-			} else {
-				commission = Math.ceil(commission);
 			}
 		}
 
-		return commission;
+		return Math.ceil(commission);
 	}
 
 	private boolean nullOrZero(Double commission) {
