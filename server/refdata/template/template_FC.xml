@@ -15,7 +15,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>人民幣/點</string>
+        <string>人民幣/指數點</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -67,7 +67,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>人民币/点</string>
+        <string>人民币/指数点</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -139,7 +139,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>人民幣/點</string>
+        <string>人民幣/指數點</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -191,7 +191,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>人民币/点</string>
+        <string>人民币/指数点</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -263,7 +263,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>人民幣/點</string>
+        <string>人民幣/指數點</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -315,7 +315,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>人民币/点</string>
+        <string>人民币/指数点</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -384,7 +384,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/千克</string>
+        <string>千克/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -433,7 +433,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/千克</string>
+        <string>千克/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -477,7 +477,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Kilogram</string>
+        <string>Kilogram/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -505,7 +505,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -553,7 +553,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -597,7 +597,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -626,7 +626,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/克</string>
+        <string>克/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -675,7 +675,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/克</string>
+        <string>克/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -719,7 +719,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Gram</string>
+        <string>Gram/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -748,7 +748,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -797,7 +797,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -841,7 +841,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -869,7 +869,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -917,7 +917,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -961,7 +961,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -990,7 +990,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -1039,7 +1039,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -1083,7 +1083,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -1111,7 +1111,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -1167,7 +1167,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -1204,7 +1204,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -1232,7 +1232,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -1288,7 +1288,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -1324,7 +1324,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -1353,7 +1353,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -1409,7 +1409,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -1446,7 +1446,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -1475,7 +1475,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -1531,7 +1531,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -1568,7 +1568,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -1597,7 +1597,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -1653,7 +1653,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -1689,7 +1689,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -1718,7 +1718,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -1774,7 +1774,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -1811,7 +1811,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -1840,7 +1840,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -1896,7 +1896,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -1933,7 +1933,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -1962,7 +1962,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/500千克</string>
+        <string>500千克/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -2018,7 +2018,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/500千克</string>
+        <string>500千克/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -2030,7 +2030,7 @@
       </entry>
       <entry>
         <string>Price per unit</string>
-        <double>20</double>
+        <double>10</double>
       </entry>
       <entry>
         <string>Strategy</string>
@@ -2055,7 +2055,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/500Kilograms</string>
+        <string>500Kilograms/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -2083,7 +2083,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -2131,7 +2131,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -2175,7 +2175,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -2203,7 +2203,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -2251,7 +2251,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -2295,7 +2295,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -2323,7 +2323,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -2375,7 +2375,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -2415,7 +2415,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -2444,7 +2444,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -2496,7 +2496,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -2536,7 +2536,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -2565,7 +2565,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -2617,7 +2617,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -2657,7 +2657,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -2685,7 +2685,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -2737,7 +2737,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -2777,7 +2777,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -2805,7 +2805,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -2853,7 +2853,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -2897,7 +2897,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -2925,7 +2925,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -2973,7 +2973,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -3017,7 +3017,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -3045,7 +3045,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -3093,7 +3093,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -3137,7 +3137,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -3165,7 +3165,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -3213,7 +3213,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -3257,7 +3257,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -3285,7 +3285,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -3333,7 +3333,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -3377,7 +3377,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -3405,7 +3405,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -3453,7 +3453,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -3497,7 +3497,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -3525,7 +3525,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -3573,7 +3573,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -3617,7 +3617,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -3645,7 +3645,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -3693,7 +3693,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -3737,7 +3737,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -3765,7 +3765,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -3821,7 +3821,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -3857,7 +3857,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -3885,7 +3885,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -3941,7 +3941,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -3977,7 +3977,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -4006,7 +4006,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -4062,7 +4062,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -4099,7 +4099,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -4128,7 +4128,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -4184,7 +4184,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -4221,7 +4221,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -4250,7 +4250,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/張</string>
+        <string>張/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -4306,7 +4306,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/张</string>
+        <string>张/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -4343,7 +4343,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Lot</string>
+        <string>Piece/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -4372,7 +4372,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -4428,7 +4428,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -4465,7 +4465,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -4494,7 +4494,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/張</string>
+        <string>張/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -4550,7 +4550,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/张</string>
+        <string>张/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -4587,7 +4587,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Lot</string>
+        <string>Piece/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -4616,7 +4616,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -4668,7 +4668,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -4708,7 +4708,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -4737,7 +4737,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -4789,7 +4789,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -4829,7 +4829,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -4858,7 +4858,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -4910,7 +4910,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -4950,7 +4950,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -4979,7 +4979,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -5031,7 +5031,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -5071,7 +5071,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -5100,7 +5100,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -5152,7 +5152,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -5192,7 +5192,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -5221,7 +5221,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -5273,7 +5273,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -5313,7 +5313,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
@@ -5342,7 +5342,7 @@
       </entry>
       <entry>
         <string>TWTrading unit</string>
-        <string>元(人民幣)/噸</string>
+        <string>噸/手</string>
       </entry>
       <entry>
         <string>Price limit</string>
@@ -5394,7 +5394,7 @@
       </entry>
       <entry>
         <string>CNTrading unit</string>
-        <string>元(人民币)/吨</string>
+        <string>吨/手</string>
       </entry>
       <entry>
         <string>Spot TWName</string>
@@ -5434,7 +5434,7 @@
       </entry>
       <entry>
         <string>ENTrading unit</string>
-        <string>RMB/Tonne</string>
+        <string>Tonne/Lot</string>
       </entry>
       <entry>
         <string>TWName</string>
