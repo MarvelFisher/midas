@@ -175,7 +175,17 @@ public class SingleInstrumentStrategyView extends ViewPart implements
 				.subscribe(GuiSingleInstrumentStrategyUpdateEvent.class, this);
 		showInstruments();
 	}
-
+	
+	@Override
+	public void dispose() {
+		Business.getInstance().getEventManager()
+				.unsubscribe(OrderCacheReadyEvent.class, this);
+		Business.getInstance()
+				.getEventManager()
+				.unsubscribe(GuiSingleInstrumentStrategyUpdateEvent.class, this);
+		super.dispose();
+	}
+	
 	private void createBodyMenu(final Composite parent) {
 		final Table table = viewer.getTable();
 		menu = new Menu(table.getShell(), SWT.POP_UP);
