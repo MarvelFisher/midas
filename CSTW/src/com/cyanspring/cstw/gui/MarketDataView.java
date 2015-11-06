@@ -97,7 +97,8 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 	private Composite detailComposite = null;
 	private Label lblBidvolume = null;
 	private Composite mainComposite = null;
-
+	private boolean changeSubSymbol = false;
+	
 	public MarketDataView() {
 	}
 
@@ -175,6 +176,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 				String symbol = cbSymbol.getText();
 				String server = symbolServer.get(symbol);
 				subscribeMD(symbol, server);
+				changeSubSymbol = true;
 			}
 		});
 
@@ -198,6 +200,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 					}
 					subscribeMD(symbol, server);
 					addSymbol(symbol);
+					changeSubSymbol = true;
 				}
 
 			}
@@ -556,6 +559,13 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 			return;
 		}
 		nowQuote = quote;
+		
+		if(changeSubSymbol){
+			MarketDataReplyEvent reply = new MarketDataReplyEvent(nowQuote);
+			Business.getInstance().getEventManager().sendEvent(reply);
+			changeSubSymbol = false;
+		}
+		
 		tableViewer.getControl().getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
