@@ -30,13 +30,15 @@ public class IMManager extends Compute
 	private int maxRetrytimes;
 	private long killTimeoutSecond;
 
-	private String serverAccount = "";
-	private String uri = "";
+	private String accountPrice = "im_price";
+	private String accountOrder = "im_trade";
+	private String uri = "https://api.netease.im/nimserver/";
 	private String appKey = "";
 	private String appSecret = "";
 	private String tokenSalt = "0123456789abcdef";
 	private String iv = "0123456789abcdef";
 	private String action = "";
+	private boolean attach = true;
 
 	private int CheckThreadStatusInterval = 60000; // 60 seconds
 
@@ -77,8 +79,8 @@ public class IMManager extends Compute
 				{
 					strThreadId = "IMThread" + String.valueOf(i);
 					IMThread IMT = new IMThread(strThreadId, ParseDataQueue, 
-							timeoutSecond, maxRetrytimes, serverAccount, 
-							uri, appKey, appSecret, tokenSalt, iv, action);
+							timeoutSecond, maxRetrytimes, accountPrice, accountOrder,
+							uri, appKey, appSecret, tokenSalt, iv, action, attach);
 					log.info("[" + strThreadId + "] New.");
 					IMThreadList.add(IMT);
 					IMT.start();
@@ -185,13 +187,53 @@ public class IMManager extends Compute
 		this.action = action;
 	}
 
-	public String getServerAccount()
+	public String getAccountPrice()
 	{
-		return serverAccount;
+		return accountPrice;
 	}
 
-	public void setServerAccount(String serverAccount)
+	public void setAccountPrice(String accountPrice)
 	{
-		this.serverAccount = serverAccount;
+		this.accountPrice = accountPrice;
+	}
+
+	public String getAccountOrder()
+	{
+		return accountOrder;
+	}
+
+	public void setAccountOrder(String accountOrder)
+	{
+		this.accountOrder = accountOrder;
+	}
+
+	public int getTimeoutSecond()
+	{
+		return timeoutSecond;
+	}
+
+	public void setTimeoutSecond(int timeoutSecond)
+	{
+		this.timeoutSecond = timeoutSecond;
+	}
+
+	public int getMaxRetrytimes()
+	{
+		return maxRetrytimes;
+	}
+
+	public void setMaxRetrytimes(int maxRetrytimes)
+	{
+		this.maxRetrytimes = maxRetrytimes;
+	}
+
+	public boolean isAttach()
+	{
+		return attach;
+	}
+
+	public void setAttach(boolean attach)
+	{
+		this.attach = attach;
 	}
 }
