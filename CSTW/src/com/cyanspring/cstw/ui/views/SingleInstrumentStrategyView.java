@@ -85,7 +85,6 @@ public class SingleInstrumentStrategyView extends ViewPart implements
 	private boolean setColumns;
 	private AsyncTimerEvent timerEvent;
 	private Date lastRefreshTime = Clock.getInstance().now();
-	private final long maxRefreshInterval = 300;
 
 	private String maTag;
 	private String maValue;
@@ -174,7 +173,7 @@ public class SingleInstrumentStrategyView extends ViewPart implements
 				.subscribe(GuiSingleInstrumentStrategyUpdateEvent.class, this);
 		showInstruments();
 	}
-	
+
 	@Override
 	public void dispose() {
 		Business.getInstance().getEventManager()
@@ -184,7 +183,7 @@ public class SingleInstrumentStrategyView extends ViewPart implements
 				.unsubscribe(GuiSingleInstrumentStrategyUpdateEvent.class, this);
 		super.dispose();
 	}
-	
+
 	private void createBodyMenu(final Composite parent) {
 		final Table table = viewer.getTable();
 		menu = new Menu(table.getShell(), SWT.POP_UP);
@@ -619,6 +618,7 @@ public class SingleInstrumentStrategyView extends ViewPart implements
 	}
 
 	private void smartShowInstruments() {
+		long maxRefreshInterval = 300;
 		if (TimeUtil.getTimePass(lastRefreshTime) > maxRefreshInterval) {
 			asyncShowInstruments();
 		} else if (timerEvent == null) {
