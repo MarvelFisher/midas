@@ -55,10 +55,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 
 	@Override
 	public void preWindowOpen() {
-		if (Business.getInstance().isLoginRequired()) {
-			LoginDialog loginDialog = new LoginDialog(null);
-			loginDialog.open();
-		}
+		LoginDialog loginDialog = new LoginDialog(null);
+		loginDialog.open();
 		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
 		configurer.setInitialSize(new Point(1024, 768));
 		if (Business.getInstance().getUserGroup().getRole()

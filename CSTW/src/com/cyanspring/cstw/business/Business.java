@@ -142,7 +142,9 @@ public class Business {
 		InetAddress addr = InetAddress.getLocalHost();
 		String hostName = addr.getHostName();
 		String userName = System.getProperty("user.name");
-		userName = userName == null ? "" : userName;
+		if (userName == null) {
+			userName = "";
+		}
 		this.inbox = hostName + "." + userName + "."
 				+ IdGenerator.getInstance().getNextID();
 		BeanHolder beanHolder = BeanHolder.getInstance();
@@ -246,9 +248,6 @@ public class Business {
 						.getMultiInstrumentDisplayFields();
 				multiInstrumentFieldDefMap = initClientEvent
 						.getMultiInstrumentStrategyFieldDefs();
-				if (!isLoginRequired()) {
-					requestStrategyInfo(initClientEvent.getSender());
-				}
 
 			} else if (event instanceof CSTWUserLoginReplyEvent) {
 				CSTWUserLoginReplyEvent evt = (CSTWUserLoginReplyEvent) event;
@@ -256,12 +255,10 @@ public class Business {
 				if (evt.isOk()) {
 					beanPool.getTickManager().init(getFirstServer());
 					requestRateConverter();
+					requestStrategyInfo(evt.getSender());
 					// if(null != loginAccount);
 					// traderInfoListener.init(loginAccount);
 
-				}
-				if (isLoginRequired() && evt.isOk()) {
-					requestStrategyInfo(evt.getSender());
 				}
 
 			} else if (event instanceof AccountSettingSnapshotReplyEvent) {
@@ -269,10 +266,9 @@ public class Business {
 				AccountSettingSnapshotReplyEvent evt = (AccountSettingSnapshotReplyEvent) event;
 				processAccountSettingSnapshotReplyEvent(evt);
 			} else if (event instanceof UserLoginReplyEvent) {
-
 				UserLoginReplyEvent evt = (UserLoginReplyEvent) event;
 				processUserLoginReplyEvent(evt);
-				if (isLoginRequired() && evt.isOk()) {
+				if (evt.isOk()) {
 					requestStrategyInfo(evt.getSender());
 				}
 			} else if (event instanceof ServerReadyEvent) {
@@ -487,10 +483,6 @@ public class Business {
 	public boolean isFirstServerReady() {
 		Boolean result = servers.get(getFirstServer());
 		return result == null ? false : result;
-	}
-
-	public boolean isLoginRequired() {
-		return BeanHolder.getInstance().isLoginRequired();
 	}
 
 	public void processAccountSettingSnapshotReplyEvent(
