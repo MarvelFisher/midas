@@ -59,15 +59,20 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 	}
 
 	protected String getSymbol(RefData data) {
-		if (IType.FUTURES.getValue().equals(data.getIType())) {
+		String iType = data.getIType();
+		if (IType.FUTURES.getValue().equals(iType)) {
 			return data.getRefSymbol();
-		} else if (IType.FUTURES_CX.getValue().equals(data.getIType())) {
-			return data.getCNDisplayName().replaceAll("\\W", "") + "." + data.getExchange();
-		} else if (IType.FUTURES_IDX.getValue().equals(data.getIType())) {
+		} else if (IType.FUTURES_CX.getValue().equals(iType)) {
+			String cnName = data.getCNDisplayName();
+			if (!cnName.matches("^[a-zA-z0-9]*")) {
+				cnName = cnName.replaceAll("^[a-zA-z]*\\W*", "");
+			}
+			return cnName + "." + data.getExchange();
+		} else if (IType.FUTURES_IDX.getValue().equals(iType)) {
 			return data.getRefSymbol();
-		} else if (IType.FUTURES_CX_IDX.getValue().equals(data.getIType())) {
+		} else if (IType.FUTURES_CX_IDX.getValue().equals(iType)) {
 			return data.getCategory() + data.getCNDisplayName().replaceAll("\\D", "") + "." + data.getExchange();
-		} else if (IType.FUTURES_FT.getValue().equals(data.getIType())) {
+		} else if (IType.FUTURES_FT.getValue().equals(iType)) {
 			return data.getSymbol();
 		} else {
 			return "";
