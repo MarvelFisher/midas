@@ -342,7 +342,8 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 
         log.info("Order update, type:" + type + ", status: " + status +
 				", id:" + update.getOrderId() + ", exchangeOrderId: " + update.getExchangeOrderId() +
-                ", qty: " + update.getQuantity() + ", price: " + update.getPrice() + ", delta: " + delta + ", msg:" + update.getMsg());
+                ", qty: " + update.getQuantity() + ", price: " + update.getPrice() + ", avgPx: " + update.getAvgPx()
+                + ", delta: " + delta + ", msg:" + update.getMsg());
 
 		if (PriceUtils.GreaterThan(delta, 0)) {
 			order.setOrdStatus(status);
