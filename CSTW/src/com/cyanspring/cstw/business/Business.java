@@ -10,8 +10,6 @@
  ******************************************************************************/
 package com.cyanspring.cstw.business;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,7 +26,6 @@ import com.cyanspring.common.Clock;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.SystemInfo;
 import com.cyanspring.common.account.Account;
-import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.OverallPosition;
 import com.cyanspring.common.account.UserGroup;
 import com.cyanspring.common.account.UserRole;
@@ -72,7 +69,7 @@ import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCOrderEve
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCTradeEventController;
 import com.cyanspring.cstw.event.SelectUserAccountEvent;
 import com.cyanspring.cstw.event.ServerStatusEvent;
-import com.cyanspring.cstw.session.GuiSession;
+import com.cyanspring.cstw.session.CSTWSession;
 import com.cyanspring.cstw.ui.views.ServerStatusDisplay;
 
 public class Business {
@@ -106,7 +103,7 @@ public class Business {
 	private String userId;
 	private String accountId;
 	private Account loginAccount;
-	private AccountSetting accountSetting;
+
 	private UserGroup userGroup;
 	private List<String> accountGroupList;
 	private List<Account> accountList;
@@ -498,7 +495,8 @@ public class Business {
 	private void processAccountSettingSnapshotReplyEvent(
 			AccountSettingSnapshotReplyEvent event) {
 		if (null != event.getAccountSetting()) {
-			accountSetting = event.getAccountSetting();
+			CSTWSession.getInstance().setAccountSetting(
+					event.getAccountSetting());
 		}
 	}
 
@@ -604,26 +602,6 @@ public class Business {
 
 	public Account getLoginAccount() {
 		return loginAccount;
-	}
-
-	public AccountSetting getAccountSetting() {
-		return accountSetting;
-	}
-
-	public void setAccountSetting(AccountSetting accountSetting) {
-		this.accountSetting = accountSetting;
-	}
-
-	private void initSessionListener() {
-		GuiSession.getInstance().addPropertyChangeListener(
-				GuiSession.Property.ACCOUNT_SETTING.toString(),
-				new PropertyChangeListener() {
-					@Override
-					public void propertyChange(PropertyChangeEvent arg0) {
-						accountSetting = GuiSession.getInstance()
-								.getAccountSetting();
-					}
-				});
 	}
 
 	public DataReceiver getQuoteDataReceiver() {

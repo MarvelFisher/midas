@@ -1,5 +1,6 @@
 package com.cyanspring.cstw.session;
 
+import com.cyanspring.common.account.AccountSetting;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
@@ -15,6 +16,8 @@ public class CSTWSession {
 	private String configPath;
 
 	private XStream xstream = new XStream(new DomDriver());
+
+	private AccountSetting accountSetting;
 
 	private static CSTWSession instance;
 
@@ -35,6 +38,14 @@ public class CSTWSession {
 
 	public XStream getXstream() {
 		return xstream;
+	}
+
+	public AccountSetting getAccountSetting() {
+		return accountSetting;
+	}
+
+	public void setAccountSetting(AccountSetting accountSetting) {
+		this.accountSetting = accountSetting;
 	}
 
 }

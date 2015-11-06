@@ -327,7 +327,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 	private void getDefaultQuickData() {
 		sendMarketDataRequestEvent(null);
-		setDefaultQty(Business.getInstance().getAccountSetting());
+		refreshDefaultQty();
 	}
 
 	private void initKeyListener() {
@@ -1719,21 +1719,15 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 	}
 
-	private void setDefaultQty(final AccountSetting accountSetting) {
+	private void refreshDefaultQty() {
 		panelComposite.getDisplay().asyncExec(new Runnable() {
-
 			@Override
 			public void run() {
-				if (panelComposite.isVisible()) {
-					if (null == accountSetting) {
-						if (null != Business.getInstance().getAccountSetting())
-							txtQuantity.setText(""
-									+ Business.getInstance()
-											.getAccountSetting()
-											.getDefaultQty());
-					} else {
-						txtQuantity.setText("" + accountSetting.getDefaultQty());
-					}
+				if (panelComposite.isVisible()
+						&& CSTWSession.getInstance().getAccountSetting() != null) {
+					txtQuantity.setText(""
+							+ CSTWSession.getInstance().getAccountSetting()
+									.getDefaultQty());
 				}
 			}
 		});
