@@ -72,7 +72,7 @@ import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCOrderEve
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCTradeEventController;
 import com.cyanspring.cstw.event.SelectUserAccountEvent;
 import com.cyanspring.cstw.event.ServerStatusEvent;
-import com.cyanspring.cstw.gui.session.GuiSession;
+import com.cyanspring.cstw.session.GuiSession;
 import com.cyanspring.cstw.ui.views.ServerStatusDisplay;
 
 public class Business {

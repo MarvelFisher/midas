@@ -101,9 +101,9 @@ import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
 import com.cyanspring.cstw.gui.filter.ParentOrderFilter;
-import com.cyanspring.cstw.gui.session.GuiSession;
 import com.cyanspring.cstw.service.iservice.ServiceFactory;
 import com.cyanspring.cstw.session.CSTWSession;
+import com.cyanspring.cstw.session.GuiSession;
 
 public class SingleOrderStrategyView extends ViewPart implements
 		IAsyncEventListener {

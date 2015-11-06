@@ -12,7 +12,7 @@ import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.account.AccountSettingSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AccountSettingSnapshotRequestEvent;
 import com.cyanspring.cstw.event.AccountSelectionEvent;
-import com.cyanspring.cstw.gui.session.GuiSession;
+import com.cyanspring.cstw.session.GuiSession;
 
 public class TraderInfoListener implements IAsyncEventListener{
 	private static final Logger log = LoggerFactory

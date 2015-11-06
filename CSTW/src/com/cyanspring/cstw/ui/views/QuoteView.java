@@ -51,9 +51,9 @@ import com.cyanspring.cstw.gui.command.auth.AuthMenuManager;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
-import com.cyanspring.cstw.gui.session.GuiSession;
 import com.cyanspring.cstw.preference.PreferenceStoreManager;
 import com.cyanspring.cstw.session.CSTWSession;
+import com.cyanspring.cstw.session.GuiSession;
 import com.cyanspring.cstw.ui.trader.helper.QuoteHelper;
 
 public class QuoteView extends ViewPart implements IAsyncEventListener {

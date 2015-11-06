@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.gui.session;
+package com.cyanspring.cstw.session;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

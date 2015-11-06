@@ -39,7 +39,7 @@ import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.gui.Activator;
-import com.cyanspring.cstw.gui.session.GuiSession;
+import com.cyanspring.cstw.session.GuiSession;
 
 public class TraderPropertyView extends ViewPart implements IAsyncEventListener{
 	public TraderPropertyView() {
