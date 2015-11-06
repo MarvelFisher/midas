@@ -1060,7 +1060,7 @@ public class BusinessManager implements ApplicationContextAware {
 
 	public void processMarketSessionEvent(MarketSessionEvent event) {
 		log.info("Received MarketSessionEvent: " + event);
-		if (event.getSession().equals(MarketSessionType.CLOSE)) {
+		if (event.getSession().equals(MarketSessionType.PRECLOSE)) {
 			if (this.cancelAllOrdersAtClose) {
 				for (ParentOrder order : orders.values()) {
 					if (!order.getOrdStatus().isCompleted()) {
@@ -1103,7 +1103,7 @@ public class BusinessManager implements ApplicationContextAware {
 			String entryKey = sessionDataMapEntry.getKey();
 			MarketSessionData entrySessionData = sessionDataMapEntry.getValue();
 
-			if (entrySessionData.getSessionType().equals(MarketSessionType.CLOSE)) {
+			if (entrySessionData.getSessionType().equals(MarketSessionType.PRECLOSE)) {
 				if (this.cancelAllOrdersAtClose) {
 					for (ParentOrder order : orders.values()) {
 						String orderKey = order.getSymbol();
