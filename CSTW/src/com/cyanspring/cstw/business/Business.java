@@ -78,40 +78,42 @@ import com.cyanspring.cstw.ui.views.ServerStatusDisplay;
 public class Business {
 	private static Logger log = LoggerFactory.getLogger(Business.class);
 	private static Business instance; // Singleton
+
+	private IRemoteEventManager eventManager;
+	private EventListenerImpl listener;
 	private CSTWBeanPool beanPool;
+	private OrderCachingManager orderManager;
+	private AllPositionManager allPositionManager;
 
 	private SystemInfo systemInfo;
-	private IRemoteEventManager eventManager;
-	private OrderCachingManager orderManager;
 	private String inbox;
 	private String channel;
 	private String nodeInfoChannel;
-	private HashMap<String, Boolean> servers = new HashMap<String, Boolean>();
-	private EventListenerImpl listener = new EventListenerImpl();
+	private HashMap<String, Boolean> servers;
+
 	private List<String> singleOrderDisplayFieldList;
 	private List<String> singleInstrumentDisplayFieldList;
 	private List<String> multiInstrumentDisplayFieldList;
 	private Map<String, Map<String, FieldDef>> singleOrderFieldDefMap;
 	private Map<String, Map<String, FieldDef>> singleInstrumentFieldDefMap;
 	private Map<String, MultiInstrumentStrategyDisplayConfig> multiInstrumentFieldDefMap;
-	private ScheduleManager scheduleManager = new ScheduleManager();
-	private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
-	private int heartBeatInterval = 10000; // 5 seconds
-	private HashMap<String, Date> lastHeartBeatMap = new HashMap<String, Date>();
+	private ScheduleManager scheduleManager;
+	private AsyncTimerEvent timerEvent;
+	private int heartBeatInterval; // 5 seconds
+	private HashMap<String, Date> lastHeartBeatMap;
 	private DefaultStartEndTime defaultStartEndTime;
 	private Map<AlertType, Integer> alertColorConfig;
-	private String userId = Default.getUser();
-	private String accountId = Default.getAccount();
-	private Account loginAccount = null;
-	private AccountSetting accountSetting = null;
-	private UserGroup userGroup = new UserGroup("Admin", UserRole.Admin);
-	private List<String> accountGroupList = new ArrayList<String>();
-	private List<Account> accountList = new ArrayList<Account>();
+	private String userId;
+	private String accountId;
+	private Account loginAccount;
+	private AccountSetting accountSetting;
+	private UserGroup userGroup;
+	private List<String> accountGroupList;
+	private List<Account> accountList;
 
-	private TraderInfoListener traderInfoListener = null;
-	private DataReceiver quoteDataReceiver = null;
-	private AllPositionManager allPositionManager = null;
-	private IFxConverter rateConverter = null;
+	private TraderInfoListener traderInfoListener;
+	private DataReceiver quoteDataReceiver;
+	private IFxConverter rateConverter;
 
 	public static Business getInstance() {
 		if (null == instance) {
@@ -124,6 +126,17 @@ public class Business {
 	 * singleton implementation
 	 */
 	private Business() {
+		servers = new HashMap<String, Boolean>();
+		listener = new EventListenerImpl();
+		scheduleManager = new ScheduleManager();
+		timerEvent = new AsyncTimerEvent();
+		userId = Default.getUser();
+		accountId = Default.getAccount();
+		lastHeartBeatMap = new HashMap<String, Date>();
+		heartBeatInterval = 10000;
+		accountGroupList = new ArrayList<String>();
+		accountList = new ArrayList<Account>();
+		userGroup = new UserGroup("Admin", UserRole.Admin);
 	}
 
 	public void init() throws Exception {
@@ -131,9 +144,6 @@ public class Business {
 		log.info(ver.getVersionDetails());
 		log.info("Initializing business obj...");
 		this.systemInfo = BeanHolder.getInstance().getSystemInfo();
-		this.userId = Default.getUser();
-		this.accountId = Default.getAccount();
-
 		// create node.info subscriber and publisher
 		this.channel = systemInfo.getEnv() + "." + systemInfo.getCategory()
 				+ "." + "channel";
