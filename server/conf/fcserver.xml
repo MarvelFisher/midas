@@ -114,7 +114,7 @@
 		  class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
 		<property name="id" value="W02"/>
 		<property name="showGui" value="true"/>
-		<property name="gatewayIp" value="10.0.0.33"/>
+		<property name="gatewayIp" value="10.0.0.20"/>
 		<property name="gatewayPort" value="10046"/>
 		<property name="marketDataLog" value="false"/>
 		<property name="tradeDateCheckIsOpen" value="true"/>
