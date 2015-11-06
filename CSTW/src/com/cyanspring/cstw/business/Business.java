@@ -100,8 +100,8 @@ public class Business {
 	private HashMap<String, Date> lastHeartBeatMap = new HashMap<String, Date>();
 	private DefaultStartEndTime defaultStartEndTime;
 	private Map<AlertType, Integer> alertColorConfig;
-	private String user = Default.getUser();
-	private String account = Default.getAccount();
+	private String userId = Default.getUser();
+	private String accountId = Default.getAccount();
 	private Account loginAccount = null;
 	private AccountSetting accountSetting = null;
 	private UserGroup userGroup = new UserGroup("Admin", UserRole.Admin);
@@ -131,8 +131,8 @@ public class Business {
 		log.info(ver.getVersionDetails());
 		log.info("Initializing business obj...");
 		this.systemInfo = BeanHolder.getInstance().getSystemInfo();
-		this.user = Default.getUser();
-		this.account = Default.getAccount();
+		this.userId = Default.getUser();
+		this.accountId = Default.getAccount();
 
 		// create node.info subscriber and publisher
 		this.channel = systemInfo.getEnv() + "." + systemInfo.getCategory()
@@ -315,10 +315,10 @@ public class Business {
 	}
 
 	private void processSelectUserAccountEvent(SelectUserAccountEvent event) {
-		log.info("Setting current user/account to: " + this.user + "/"
-				+ this.account);
-		this.user = event.getUser();
-		this.account = event.getAccount();
+		log.info("Setting current user/account to: " + this.userId + "/"
+				+ this.accountId);
+		this.userId = event.getUser();
+		this.accountId = event.getAccount();
 	}
 
 	private void requestStrategyInfo(String server) {
@@ -510,17 +510,17 @@ public class Business {
 			}
 		}
 		UserGroup userGroup = event.getUserGroup();
-		this.user = userGroup.getUser();
+		this.userId = userGroup.getUser();
 
 		if (null != loginAccount) {
-			this.account = loginAccount.getId();
+			this.accountId = loginAccount.getId();
 		} else {
-			this.account = userGroup.getUser();
+			this.accountId = userGroup.getUser();
 		}
 
 		this.userGroup = userGroup;
 		beanPool.setUserGroup(userGroup);
-		log.info("login user:{},{}", user, userGroup.getRole());
+		log.info("login user:{},{}", userId, userGroup.getRole());
 
 		QuoteCachingManager.getInstance().init();
 
@@ -557,27 +557,23 @@ public class Business {
 		}
 	}
 
-	public boolean processUserLoginReplyEvent(UserLoginReplyEvent event) {
-		if (!event.isOk())
-			return false;
+	private void processUserLoginReplyEvent(UserLoginReplyEvent event) {
+		this.userId = event.getUser().getId();
+		if (event.getDefaultAccount() != null) {
+			this.accountId = event.getDefaultAccount().getId();
+		} else if (null != event.getAccounts()
+				&& event.getAccounts().size() > 0) {
+			this.accountId = event.getAccounts().get(0).getId();
+		}
 
-		this.user = event.getUser().getId();
-		if (event.getDefaultAccount() != null)
-			this.account = event.getDefaultAccount().getId();
-		else if (null != event.getAccounts() && event.getAccounts().size() > 0)
-			this.account = event.getAccounts().get(0).getId();
-		else
-			return false;
-
-		return true;
 	}
 
 	public String getUser() {
-		return user;
+		return userId;
 	}
 
 	public String getAccount() {
-		return account;
+		return accountId;
 	}
 
 	public UserGroup getUserGroup() {
@@ -589,16 +585,10 @@ public class Business {
 	}
 
 	public boolean isManagee(String account) {
-
-		if (userGroup.isAdmin())
+		if (userGroup.isAdmin() || userGroup.isGroupPairExist(account)
+				|| userGroup.isManageeExist(account)) {
 			return true;
-
-		if (userGroup.isGroupPairExist(account))
-			return true;
-
-		if (userGroup.isManageeExist(account))
-			return true;
-
+		}
 		return false;
 	}
 
@@ -618,7 +608,6 @@ public class Business {
 		GuiSession.getInstance().addPropertyChangeListener(
 				GuiSession.Property.ACCOUNT_SETTING.toString(),
 				new PropertyChangeListener() {
-
 					@Override
 					public void propertyChange(PropertyChangeEvent arg0) {
 						accountSetting = GuiSession.getInstance()
