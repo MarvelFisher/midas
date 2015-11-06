@@ -1,6 +1,8 @@
 package com.cyanspring.server.livetrading;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,9 +117,8 @@ public class TradingUtil {
 			IRemoteEventManager eventManager, boolean checkValidQuote,OrderReason orderReason, 
 			RiskOrderController riskOrderController){
 						
-		TradingUtil.cancelAllOrders(account, positionKeeper, eventManager, orderReason,riskOrderController);
-		TradingUtil.closeOpenPositions(account, positionKeeper, eventManager, checkValidQuote, orderReason,riskOrderController);
-		
+		TradingUtil.cancelAllOrders(account, positionKeeper, eventManager, orderReason, riskOrderController);
+		TradingUtil.closeOpenPositions(account, positionKeeper, eventManager, checkValidQuote, orderReason, riskOrderController);						
 	}
 
 }
