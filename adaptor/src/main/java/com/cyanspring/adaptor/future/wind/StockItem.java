@@ -184,8 +184,10 @@ public class StockItem implements AutoCloseable {
                 case PREMARKET:
                 case CLOSE:
                 case BREAK:
-                case PRECLOSE:
                     quote.setStale(true);
+                    break;
+                case PRECLOSE:
+                    quote.setStale(false);
                     break;
                 default:
                     break;

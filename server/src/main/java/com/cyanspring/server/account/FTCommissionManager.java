@@ -29,11 +29,11 @@ public class FTCommissionManager extends CommissionManager {
 		}
 
         double tax = value * trxTaxRate;
-        tax = Math.round(tax) * accountCommission;
+        tax = Math.round(tax * accountCommission);
 
         double commissionFee = tax + lotCF;
 
-        return commissionFee;
+        return Math.ceil(commissionFee);
 	}
 
 }
