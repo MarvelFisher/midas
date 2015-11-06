@@ -348,7 +348,7 @@ public class Business {
 		log.info("Single-order strategy field def update: " + event.getName());
 	}
 
-	public void processingSingleInstrumentStrategyFieldDefUpdateEvent(
+	private void processingSingleInstrumentStrategyFieldDefUpdateEvent(
 			SingleInstrumentStrategyFieldDefUpdateEvent event) {
 		singleInstrumentFieldDefMap.put(event.getName(), event.getFieldDefs());
 		log.info("Single-instrument strategy field def update: "
@@ -363,11 +363,11 @@ public class Business {
 				+ event.getConfig().getStrategy());
 	}
 
-	public void processServerHeartBeatEvent(ServerHeartBeatEvent event) {
+	private void processServerHeartBeatEvent(ServerHeartBeatEvent event) {
 		lastHeartBeatMap.put(event.getSender(), Clock.getInstance().now());
 	}
 
-	public void processAsyncTimerEvent(AsyncTimerEvent event) {
+	private void processAsyncTimerEvent(AsyncTimerEvent event) {
 		for (Entry<String, Date> entry : lastHeartBeatMap.entrySet()) {
 			if (TimeUtil.getTimePass(entry.getValue()) > heartBeatInterval) {
 				log.debug("Sending server down event: " + entry.getKey());
@@ -495,7 +495,7 @@ public class Business {
 		return result == null ? false : result;
 	}
 
-	public void processAccountSettingSnapshotReplyEvent(
+	private void processAccountSettingSnapshotReplyEvent(
 			AccountSettingSnapshotReplyEvent event) {
 		if (null != event.getAccountSetting()) {
 			accountSetting = event.getAccountSetting();
