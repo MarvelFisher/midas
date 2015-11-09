@@ -85,6 +85,9 @@ public final class ModelTransfer {
 	 */
 	public static RCInstrumentModel parseStockStatisticModel(
 			OverallPosition position) {
+		if (PriceUtils.isZero(position.getQty())) {
+			return null;
+		}
 		RCInstrumentModel model = new RCInstrumentModel.Builder()
 				.account(position.getExchangeSubAccount())
 				.symbol(position.getSymbol()).realizedProfit(position.getPnL())
@@ -110,6 +113,9 @@ public final class ModelTransfer {
 		double pnl = 0.0;
 		double totalTurnOver = 0.0;
 		for (OverallPosition position : positionMap.values()) {
+			if (PriceUtils.isZero(position.getQty())) {
+				continue;
+			}
 			if (trader == null) {
 				trader = position.getAccount();
 			}
@@ -167,6 +173,9 @@ public final class ModelTransfer {
 		String subAccount = null;
 		String symbol = null;
 		for (OverallPosition position : positionList) {
+			if (PriceUtils.isZero(position.getQty())) {
+				continue;
+			}
 			subAccount = position.getExchangeSubAccount();
 			symbol = position.getSymbol();
 			if (subAccountSybmolRecordMap.containsKey(subAccount)) {
