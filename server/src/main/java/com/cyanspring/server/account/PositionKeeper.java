@@ -31,6 +31,7 @@ import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.QuoteUtils;
 import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.staticdata.IRefDataChecker;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.type.OrdStatus;
@@ -659,7 +660,7 @@ public class PositionKeeper {
 				Map<String, ParentOrder> symbolMap = accountMap.get(symbol);
 				if(null != symbolMap) {
 					for(ParentOrder order: symbolMap.values()) {
-						if(order.getOrdStatus().isReady()) {
+						if(!order.getOrdStatus().isCompleted()) {
 							if(order.getSide().isBuy()) {
 								buyQty += order.getQuantity() - order.getCumQty();
 							} else {
@@ -769,14 +770,41 @@ public class PositionKeeper {
 
 		RefData refData = refDataManager.getRefData(symbol);
 		double leverage = leverageManager.getLeverage(refData, accountSetting);
-//		double commission = commissionManager.getCommission(refData, accountSetting, deltaValue);
-//		deltaValue += commission * leverage ;
 		
 		if(account.getCashAvailable() * Default.getMarginCall() - deltaValue/leverage >= 0) {
 			return true;
 		} else {
-//			log.debug("Credit check fail: " + account.getCashAvailable() + ", " + deltaValue + ", " + leverage + ", " + commission);
-			log.debug("Credit check fail: " + account.getCashAvailable() + ", " + deltaValue + ", " + leverage);
+			log.debug("Credit check fail: " + account.getCashAvailable() + ", " + deltaValue + ", " + leverage + ", " + quote);
+			return false;
+		}
+	}
+	
+	public boolean checkPartialCreditByAccountAndSymbol(Account account, String symbol, Quote quote, 
+			double extraQty, double ratio) throws AccountException {
+
+		double futureMarginQty = getMarginQtyByAccountAndSymbol(account, symbol, extraQty);
+		
+		double price = QuoteUtils.getMarketablePrice(quote, futureMarginQty);
+		if(!PriceUtils.validPrice(price))
+			price =	QuoteUtils.getValidPrice(quote);
+		
+		if(!PriceUtils.validPrice(price)) {
+			log.error("Quote invalid: " + quote);
+			return false;
+		}
+
+		double deltaValue = Math.abs(FxUtils.convertPositionToCurrency(refDataManager, fxConverter,
+				account.getCurrency(), quote.getSymbol(), 
+				futureMarginQty, price));
+				
+		AccountSetting accountSetting = accountKeeper.getAccountSetting(account.getId());
+		RefData refData = refDataManager.getRefData(symbol);
+		double leverage = leverageManager.getLeverage(refData, accountSetting);
+		
+		if(account.getValue() * ratio  - deltaValue/leverage >= 0) {
+			return true;
+		} else {
+			log.debug("Partial credit check fail: " + account.getCashAvailable() + ", " + deltaValue + ", " + leverage + ", " + quote);
 			return false;
 		}
 	}
