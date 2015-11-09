@@ -20,6 +20,7 @@ public class OverallPosition implements Serializable, Cloneable {
 	private double buyQty;
 	private double sellQty;
 	private double UrPnL;
+	private double RealizedPnL;
 	private double PnL;
 	private double commission;
 	private double execCount;
@@ -210,6 +211,14 @@ public class OverallPosition implements Serializable, Cloneable {
 	
 	public double getAvgPrice() {
 		return avgPrice;
+	}
+
+	public double getRealizedPnL() {
+		return RealizedPnL;
+	}
+
+	public void setRealizedPnL(double realizedPnL) {
+		RealizedPnL = realizedPnL;
 	}
 
 	@Override
