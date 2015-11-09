@@ -25,7 +25,6 @@ public class BRWPositionComposite extends BasicComposite {
 	
 	private Label lblAllMarketCapitalization;	// 总市值
 	private Label lblUnrealizedPL;				// 浮盈
-	private Label lblRealizedPNL;				// 实现盈利
 	private Label lblAllPNL;					// 总盈利
 	
 	public BRWPositionComposite(Composite parent, int style) {
@@ -64,14 +63,6 @@ public class BRWPositionComposite extends BasicComposite {
 		lblUnrealizedPL = new Label(composite, SWT.NONE);
 		lblUnrealizedPL.setLayoutData(gd2);
 		
-		Label lbl3 = new Label(composite, SWT.NONE);
-		lbl3.setAlignment(SWT.RIGHT);
-		lbl3.setLayoutData(gd1);
-		lbl3.setText("Realized PnL: ");
-		
-		lblRealizedPNL = new Label(composite, SWT.NONE);
-		lblRealizedPNL.setLayoutData(gd2);
-		
 		Label lbl4= new Label(composite, SWT.NONE);
 		lbl4.setAlignment(SWT.RIGHT);
 		lbl4.setLayoutData(gd1);
@@ -97,7 +88,6 @@ public class BRWPositionComposite extends BasicComposite {
 			tableComposite.setInput(service.getOpenPositionModelList());
 			lblAllMarketCapitalization.setText(service.getAllMarketCapitalization());
 			lblUnrealizedPL.setText(service.getUnrealizedPNL());
-			lblRealizedPNL.setText(service.getPNL());
 			lblAllPNL.setText(service.getAllPNL());
 		}
 	}
