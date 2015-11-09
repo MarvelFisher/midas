@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.ui.bw.composite;
+package com.cyanspring.cstw.ui.brw.composite;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
@@ -9,19 +9,19 @@ import com.cyanspring.cstw.service.iservice.IBasicService;
 import com.cyanspring.cstw.service.iservice.ServiceFactory;
 import com.cyanspring.cstw.service.iservice.riskmgr.ITradeRecordService;
 import com.cyanspring.cstw.ui.basic.BasicComposite;
-import com.cyanspring.cstw.ui.bw.composite.table.BWTradeRecordTableComposite;
+import com.cyanspring.cstw.ui.brw.composite.table.BRWTradeRecordTableComposite;
 
 /**
  * @author Junfeng
  * @create 27 Oct 2015
  */
-public class BWTradeRecordComposite extends BasicComposite {
+public class BRWTradeRecordComposite extends BasicComposite {
 	
 	private ITradeRecordService service;
 	
-	private BWTradeRecordTableComposite tableComposite;
+	private BRWTradeRecordTableComposite tableComposite;
 	
-	public BWTradeRecordComposite(Composite parent, int style) {
+	public BRWTradeRecordComposite(Composite parent, int style) {
 		super(parent, style);
 		initComponent();
 		initQuery();
@@ -29,7 +29,7 @@ public class BWTradeRecordComposite extends BasicComposite {
 
 	private void initComponent() {
 		setLayout(new FillLayout());
-		tableComposite = new BWTradeRecordTableComposite(this, SWT.NONE);
+		tableComposite = new BRWTradeRecordTableComposite(this, SWT.NONE);
 	}
 
 	private void initQuery() {

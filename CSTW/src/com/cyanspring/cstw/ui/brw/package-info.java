@@ -5,4 +5,4 @@
  * @author Junfeng
  *
  */
-package com.cyanspring.cstw.ui.bw;
+package com.cyanspring.cstw.ui.brw;

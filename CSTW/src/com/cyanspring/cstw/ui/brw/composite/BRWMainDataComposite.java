@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.ui.bw.composite;
+package com.cyanspring.cstw.ui.brw.composite;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
@@ -12,7 +12,7 @@ import com.cyanspring.cstw.ui.rw.composite.RWInstrumentSummaryComposite;
  * @author Junfeng
  * @create 27 Oct 2015
  */
-public class BWMainDataComposite extends Composite {
+public class BRWMainDataComposite extends Composite {
 	
 	private TabItem tbtmPosition;
 	private TabItem tbtmRecord;
@@ -21,7 +21,7 @@ public class BWMainDataComposite extends Composite {
 	
 	private TabFolder tabFolder;
 	
-	public BWMainDataComposite(Composite parent, int style) {
+	public BRWMainDataComposite(Composite parent, int style) {
 		super(parent, style);
 		setLayout(new FillLayout(SWT.HORIZONTAL));
 		initTabItem();
@@ -50,13 +50,13 @@ public class BWMainDataComposite extends Composite {
 	}
 	
 	private void initComposite() {
-		BWPositionComposite position = new BWPositionComposite(tabFolder, SWT.NONE);
+		BRWPositionComposite position = new BRWPositionComposite(tabFolder, SWT.NONE);
 		tbtmPosition.setControl(position);
 		
-		BWTradeRecordComposite tradeRecord = new BWTradeRecordComposite(tabFolder, SWT.NONE);
+		BRWTradeRecordComposite tradeRecord = new BRWTradeRecordComposite(tabFolder, SWT.NONE);
 		tbtmRecord.setControl(tradeRecord);
 		
-		BWInstrumentStatisticsComposite instrumentStatistics = new BWInstrumentStatisticsComposite(tabFolder, SWT.NONE);
+		BRWInstrumentStatisticsComposite instrumentStatistics = new BRWInstrumentStatisticsComposite(tabFolder, SWT.NONE);
 		tbtmInstrument.setControl(instrumentStatistics);
 		
 		RWInstrumentSummaryComposite instrumentSummary = new RWInstrumentSummaryComposite(tabFolder, SWT.NONE);

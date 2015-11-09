@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.ui.bw.composite.table.provider;
+package com.cyanspring.cstw.ui.brw.composite.table.provider;
 
 import com.cyanspring.cstw.service.model.riskmgr.RCTradeRecordModel;
 import com.cyanspring.cstw.ui.basic.DefaultLabelProviderAdapter;
@@ -8,7 +8,7 @@ import com.cyanspring.cstw.ui.utils.LTWStringUtils;
  * @author Junfeng
  * @create 27 Oct 2015
  */
-public class BWTradeRecordLabelProvider extends DefaultLabelProviderAdapter {
+public class BRWTradeRecordLabelProvider extends DefaultLabelProviderAdapter {
 
 	@Override
 	public String getColumnText(Object element, int columnIndex) {

@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.ui.bw.composite;
+package com.cyanspring.cstw.ui.brw.composite;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -11,23 +11,23 @@ import com.cyanspring.cstw.service.iservice.IBasicService;
 import com.cyanspring.cstw.service.iservice.ServiceFactory;
 import com.cyanspring.cstw.service.iservice.riskmgr.IInstrumentStatisticsService;
 import com.cyanspring.cstw.ui.basic.BasicComposite;
-import com.cyanspring.cstw.ui.bw.composite.table.BWInstrumentStatisticsTableComposite;
+import com.cyanspring.cstw.ui.brw.composite.table.BRWInstrumentStatisticsTableComposite;
 
 /**
  * @author Junfeng
  * @create 27 Oct 2015
  */
-public class BWInstrumentStatisticsComposite extends BasicComposite {
+public class BRWInstrumentStatisticsComposite extends BasicComposite {
 	
 	private IInstrumentStatisticsService service;
 	
-	private BWInstrumentStatisticsTableComposite tableComposite;
+	private BRWInstrumentStatisticsTableComposite tableComposite;
 	
 	private Label lblRealizedProfit;		// 实现盈利
 	private Label lblConsiderartion;		// 总交易额
 	private Label lblProductivity;			// 效率
 	
-	public BWInstrumentStatisticsComposite(Composite parent, int style) {
+	public BRWInstrumentStatisticsComposite(Composite parent, int style) {
 		super(parent, style);
 		initComponent();
 		initQuery();
@@ -71,7 +71,7 @@ public class BWInstrumentStatisticsComposite extends BasicComposite {
 		lblProductivity = new Label(composite, SWT.NONE);
 		lblProductivity.setLayoutData(gd2);
 		
-		tableComposite = new BWInstrumentStatisticsTableComposite(this, SWT.NONE);
+		tableComposite = new BRWInstrumentStatisticsTableComposite(this, SWT.NONE);
 		GridData gd_table = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		tableComposite.setLayoutData(gd_table);
 	}

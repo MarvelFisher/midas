@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.ui.bw.command;
+package com.cyanspring.cstw.ui.brw.command;
 
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -11,21 +11,21 @@ import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cyanspring.cstw.ui.views.BWInfoView;
+import com.cyanspring.cstw.ui.views.BRWInfoView;
 
 /**
  * @author Junfeng
  * @create 27 Oct 2015
  */
-public class BWInfoViewCommand extends AbstractHandler {
-	private static final Logger log = LoggerFactory.getLogger(BWInfoViewCommand.class);
+public class BRWInfoViewCommand extends AbstractHandler {
+	private static final Logger log = LoggerFactory.getLogger(BRWInfoViewCommand.class);
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		IWorkbenchPage page = window.getActivePage();
 		try {
-			page.showView(BWInfoView.ID);
+			page.showView(BRWInfoView.ID);
 		} catch (PartInitException e) {
 			log.error(e.getMessage(), e);
 		}
