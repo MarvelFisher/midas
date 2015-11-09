@@ -10,6 +10,11 @@
  ******************************************************************************/
 package com.cyanspring.cstw.business;
 
+/**
+ * This class is used to init different server.
+ * Get data form sever.
+ * Support api to visit common service and bean.
+ */
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
