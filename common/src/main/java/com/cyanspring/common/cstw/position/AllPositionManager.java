@@ -369,6 +369,7 @@ public class AllPositionManager implements IAsyncEventListener {
 			oap.setBuyQty(oap.getBuyQty()+qty);
 			oap.setSellQty(oap.getSellQty()+qty);
 			oap.setPnL(cp.getAcPnL()+oap.getPnL());
+			oap.setRealizedPnL(cp.getAcPnL()+oap.getRealizedPnL());
 		}
 //		log.info("buysum:{} , totalBuyQty:{} , sellsum:{}, totalSellQty:{}"
 //				,new Object[]{buySum,totalBuyQty,sellSum,totalSellQty});
