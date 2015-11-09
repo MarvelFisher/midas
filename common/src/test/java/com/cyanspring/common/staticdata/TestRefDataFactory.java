@@ -4,6 +4,7 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -29,12 +30,16 @@ public class TestRefDataFactory {
 	public void validateRefDataTemplateMap() throws Exception {
 		// Only allow category INDEX to have multiple records in single template
 		factory.init();
-		Map<String, List<RefData>> lstRefDataTemplateMap = factory.getRefDataTemplateMap();
-		Set<String> keys = lstRefDataTemplateMap.keySet();
-		for (String key : keys) {
-			List<RefData> lstRefData = lstRefDataTemplateMap.get(key);
-			if (!key.equals("INDEX") && lstRefData.size() > 1) {
-				fail("Categoy " + key + " is not allowed to have multiple entries in template_FC");
+		Map<String, Map<String, List<RefData>>> refDataTemplateMap = factory.getTemplateMap();
+		
+		for (Entry<String, Map<String, List<RefData>>> eMap : refDataTemplateMap.entrySet()) {
+			Map<String, List<RefData>> lstRefDataTemplateMap = eMap.getValue();
+			Set<String> keys = lstRefDataTemplateMap.keySet();
+			for (String key : keys) {
+				List<RefData> lstRefData = lstRefDataTemplateMap.get(key);
+				if (!key.equals("INDEX") && lstRefData.size() > 1) {
+					fail("Categoy " + key + " is not allowed to have multiple entries in template_FC");
+				}
 			}
 		}
 	}

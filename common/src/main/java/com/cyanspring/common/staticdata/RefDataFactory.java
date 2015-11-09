@@ -28,7 +28,7 @@ public class RefDataFactory extends RefDataService {
 	private String strategyPack = "com.cyanspring.common.staticdata.strategy";
 	private String refDataTemplatePath;
 	private List<RefData> refDataTemplateList;
-	private Map<String, List<RefData>> refDataTemplateMap = new HashMap<String, List<RefData>>();
+	private Map<String, Map<String, List<RefData>>> templateMap = new HashMap<>(); // exchange/category/refdatas
 	private Map<String, Quote> qMap;
 
 	@SuppressWarnings("unchecked")
@@ -54,15 +54,34 @@ public class RefDataFactory extends RefDataService {
 
 	private void buildTemplateMap(List<RefData> refDataTemplateList) {
 		for (RefData ref : refDataTemplateList) {
-			String spotName = ref.getCategory();
-			List<RefData> list = refDataTemplateMap.get(spotName);
-			if (list == null) {
-				list = new ArrayList<>();
-				refDataTemplateMap.put(spotName, list);
+			String symbol = ref.getSymbol();
+			String exchange = ref.getExchange();
+			if (exchange == null) {
+				log.warn("Template exchange is null, skip it, symbol:{}", symbol);
+				continue;
 			}
-
-			log.info("build template category:{},strategy:{}", spotName, ref.getStrategy());
-			list.add(ref);
+			String category = ref.getCategory();
+			if (category == null) {
+				log.warn("Template category is null, skip it, symbol:{}", symbol);
+				continue;
+			}
+			
+			Map<String, List<RefData>> exchangeMap = templateMap.get(exchange);
+			if (exchangeMap == null) {
+				exchangeMap = new HashMap<>();
+				templateMap.put(exchange, exchangeMap);
+			}
+			List<RefData> categoryList = exchangeMap.get(category);
+			if (categoryList == null) {
+				categoryList = new ArrayList<>();
+				exchangeMap.put(category, categoryList);
+			}
+			
+			if (!categoryList.contains(ref)) {
+				log.info("build template, excahnge: " + exchange + ", category: " 
+			 + category + ", symbol: " + symbol + ", strategy: " +  ref.getStrategy());				
+				categoryList.add(ref);			
+			}
 		}
 	}
 
@@ -72,12 +91,14 @@ public class RefDataFactory extends RefDataService {
 		List<RefData> addList = new ArrayList<>();
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(getSettlementDateFormat().parse(tradeDate));
-		for (Entry<String, List<RefData>> entry : refDataTemplateMap.entrySet()) {
-			List<RefData> tmpList = entry.getValue();
-			for (RefData refData : tmpList) {
-				List<RefData> list = updateRefData(cal, refData);
-				if (list.size() > 0) {
-					addList.addAll(list);
+		
+		for (Entry<String, Map<String, List<RefData>>> eMap : templateMap.entrySet()) {
+			for (Entry<String, List<RefData>> cateMap : eMap.getValue().entrySet()) {
+				for (RefData refData : cateMap.getValue()) {
+					List<RefData> list = updateRefData(cal, refData);
+					if (list.size() > 0) {
+						addList.addAll(list);
+					}
 				}
 			}
 		}
@@ -185,7 +206,7 @@ public class RefDataFactory extends RefDataService {
 		List<RefData> ret = new ArrayList<>();
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(getSettlementDateFormat().parse(tradeDate));
-		List<RefData> list = refDataTemplateMap.get(index);
+		List<RefData> list = searchTemplate(index);
 		if (list != null) {
 			for (RefData tmp : list) {
 				ret.addAll(updateRefData(cal, tmp));
@@ -204,13 +225,42 @@ public class RefDataFactory extends RefDataService {
 
 		return ret;
 	}
-
-	public Map<String, List<RefData>> getRefDataTemplateMap() {
-		return refDataTemplateMap;
+	
+	private List<RefData> searchTemplate(String index) {
+		List<RefData> list = new ArrayList<>();
+		Map<String, List<RefData>> exchangeMap = templateMap.get(index);
+		if (exchangeMap != null) {
+			for (Entry<String, List<RefData>> cateMap : exchangeMap.entrySet()) {
+				list.addAll(cateMap.getValue());
+			}
+			return list;
+		}
+		
+		for (Entry<String, Map<String, List<RefData>>> eMap : templateMap.entrySet()) {
+			List<RefData> tempList = eMap.getValue().get(index);
+			if (tempList != null) {
+				list.addAll(tempList);
+				return list;
+			}
+		}
+		
+		for (Entry<String, Map<String, List<RefData>>> eMap : templateMap.entrySet()) {
+			for (Entry<String, List<RefData>> cateMap : eMap.getValue().entrySet()) {
+				for (RefData refData : cateMap.getValue()) {
+					if(refData.getSymbol().equals(index)) {
+						list.add(refData);
+						return list;
+					}
+				}
+			}
+		}
+		
+		log.warn("No refData template found, index: " + index);
+		return list;
 	}
 
-	public void setRefDataTemplateMap(Map<String, List<RefData>> refDataTemplateMap) {
-		this.refDataTemplateMap = refDataTemplateMap;
+	public Map<String, Map<String, List<RefData>>> getTemplateMap() {
+		return templateMap;
 	}
 
 	@Override
