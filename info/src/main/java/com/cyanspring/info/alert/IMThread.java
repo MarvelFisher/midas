@@ -15,11 +15,14 @@ import com.cyanspring.info.ne.NetEaseClient;
 public class IMThread extends Thread{
 	private String strThreadId = "";
 	private String action = "";
-	private String serverAccount = "";
+	private String accountPrice = "im_price";
+	private String accountOrder = "im_trade";
 	private NetEaseClient NEClient;
 	ThreadStatus threadStatus ;
 	private int timeoutSecond;
 	private int retryTimes;
+	// Send attach or not, for IM & Parse both up
+	private boolean attach;
 	private ConcurrentLinkedQueue<ParseData> ParseDataQueue ;
 	
 	private boolean startThread;
@@ -38,19 +41,25 @@ public class IMThread extends Thread{
     //App-Secret = dd9712c1d9a5
     //********************************************************************************************	
 	
-	public IMThread(String strThreadId, ConcurrentLinkedQueue<ParseData> parseDataQueue, 
-			int timeoutSecond, int retryTimes, String serverAccount, 
+	public IMThread(String strThreadId, 
+			ConcurrentLinkedQueue<ParseData> parseDataQueue, 
+			int timeoutSecond, 
+			int retryTimes, 
+			String accountPrice, 
+			String accountOrder, 
 			String uri, String appKey, String appSecret, String tokenSalt, String iv, 
-			String action)	
+			String action,
+			boolean attach)	
 	{
 		try
 		{
-			if (uri == "" || appKey == "" || appSecret == "" || serverAccount == "")
+			if (uri == "" || appKey == "" || appSecret == "" || accountPrice == "" || accountOrder == "")
 			{
 				return ;
 			}
 			NEClient = new NetEaseClient(uri, appKey, appSecret, tokenSalt, iv);
-			this.serverAccount = serverAccount;
+			this.accountPrice = accountPrice;
+			this.accountOrder = accountOrder;
 	        this.action = action;
 			this.startThread = true ;
 	        this.ParseDataQueue = parseDataQueue ;
@@ -58,6 +67,7 @@ public class IMThread extends Thread{
 	        this.strThreadId = strThreadId;
 	        this.retryTimes = retryTimes ;
 	        this.threadStatus = new ThreadStatus();
+	        this.attach = attach;
 			setDaemon(true);
 		}
 		catch(Exception e)
@@ -123,24 +133,69 @@ public class IMThread extends Thread{
 	
 	protected void sendPost(ParseData PD) throws Exception 
 	{ 
-		String strPoststring = 
-				"{\"type\": \"3\" \"data\": {\"alert\": \"" + PD.getStrpushMessage() + 
-				"\",\"msgid\":\"" + PD.getStrMsgId() + 
-				"\",\"msgType\":\"" + PD.getStrMsgType() +
-                "\",\"action\":\"" + action + 
-                ((PD.getStrLocalTime().length() > 0) ? ("\",\"datetime\":\"" + PD.getStrLocalTime()) : "") + 
-                (((PD.getStrKeyValue()).length() > 0) ? ("\",\"KeyValue\":\"" + PD.getStrKeyValue()) : "") +
-                ((PD.getStrDeepLink().length() > 0) ? ("\",\"deeplink\":\"" + PD.getStrDeepLink()) :"") +
-                "\"" + ", \"badge\": \"Increment\"}}";
-		
+//		String strPoststring = 
+//				"{\"type\": \"3\" \"data\": {\"alert\": \"" + PD.getStrpushMessage() + 
+//				"\",\"msgid\":\"" + PD.getStrMsgId() + 
+//				"\",\"msgType\":\"" + PD.getStrMsgType() +
+//                "\",\"action\":\"" + action + 
+//                ((PD.getStrLocalTime().length() > 0) ? ("\",\"datetime\":\"" + PD.getStrLocalTime()) : "") + 
+//                (((PD.getStrKeyValue()).length() > 0) ? ("\",\"KeyValue\":\"" + PD.getStrKeyValue()) : "") +
+//                ((PD.getStrDeepLink().length() > 0) ? ("\",\"deeplink\":\"" + PD.getStrDeepLink()) :"") +
+//                "\"" + ", \"badge\": \"Increment\"}}";
+		String serverAccount;
+		switch (PD.getStrMsgType())
+		{
+		case "1":
+		{
+			serverAccount = accountPrice;
+			break;
+		}
+		case "2":
+		case "3":
+		{
+			serverAccount = accountOrder;
+			break;
+		}
+		default:
+			log.warn("Invalid MsgType:" + PD.getStrMsgType());
+			return;
+		}
+		JSONObject data = new JSONObject();
+		data.put("alert", PD.getStrpushMessage());
+        data.put("msgid", PD.getStrMsgId());
+        data.put("msgType", PD.getStrMsgType());
+        data.put("action", action);
+        data.put("datetime", ((PD.getStrLocalTime().length() > 0) ? PD.getStrLocalTime() : ""));
+        data.put("KeyValue", (((PD.getStrKeyValue()).length() > 0) ? PD.getStrKeyValue() : ""));
+        data.put("deeplink", ((PD.getStrDeepLink().length() > 0) ? PD.getStrDeepLink() :""));
+        data.put("badge", "Increment");
 		JSONObject json = new JSONObject();
-		json.put("msg", strPoststring);
-		JSONObject responseJSON = 
+		json.put("type", 3);
+		json.put("data", data);
+		JSONObject responseJSON;
+		String responseCode;
+		if (attach && PD.getStrDeepLink().length() > 0)
+		{
+			log.info("Sending System Notification:" + PD.getStrUserId() + " " + PD.getStrMsgId());
+			responseJSON = 
+					new JSONObject(NEClient.sendAttachMsg(
+							serverAccount, 
+							PD.getStrUserId(), 
+							PD.getStrDeepLink(), 
+							"(IM) " + PD.getStrpushMessage(), 
+							PD.getStrDeepLink()));
+			responseCode = responseJSON.get("code").toString();
+			if (responseCode.equals("200") == false)
+				responseCode += ", " + responseJSON.get("desc");
+			log.info("Return code: " + responseCode);
+		}
+		
+		log.info("Sending Custom Message:" + PD.getStrUserId() + " " + PD.getStrMsgId());
+		responseJSON = 
 				new JSONObject(NEClient.sendThirdPartyMsg(serverAccount, PD.getStrUserId(), json));
-		String responseCode = responseJSON.get("code").toString();
+		responseCode = responseJSON.get("code").toString();
 		if (responseCode.equals("200") == false)
 			responseCode += ", " + responseJSON.get("desc");
-		
 		log.info("Return code: " + responseCode);
 	}
 	
@@ -157,15 +212,5 @@ public class IMThread extends Thread{
 	public ThreadStatus getThreadStatus()
 	{
 		return threadStatus ;
-	}
-
-	public String getServerAccount()
-	{
-		return serverAccount;
-	}
-
-	public void setServerAccount(String serverAccount)
-	{
-		this.serverAccount = serverAccount;
 	}
 }

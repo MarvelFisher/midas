@@ -33,6 +33,18 @@
 		<property name="parseRestApiId" value="Jss9g8JzivcLTaO8ESUgcte69VnlvHqNuhxCgDNx" />
 		<property name="ParseAction" value="com.hkfdt.activity.UPDATE_STATUS.FX"/>
 	</bean>	
+	<bean id="IMManager" class="com.cyanspring.info.alert.IMManager">
+		<property name="timeoutSecond" value="3000" />
+		<property name="createThreadCount" value="5" />
+		<property name="maxRetrytimes" value="3" />
+		<property name="killTimeoutSecond" value="60000" />
+		<property name="accountPrice" value="im_price" />
+		<property name="accountOrder" value="im_trade" />
+		<property name="appKey" value="c146348b9dd8f246cef2f42750f160a8" />
+		<property name="appSecret" value="b6eb8125c0ea" />
+		<property name="action" value="com.hkfdt.activity.UPDATE_STATUS.FX"/>
+		<property name="attach" value="true"/>
+	</bean>	
 	
 	<bean id="newsManager" class="com.cyanspring.info.alert.NewsManager">
 		<property name="endString" value="（更多精彩" />
