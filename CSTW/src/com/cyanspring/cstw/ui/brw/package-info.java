@@ -1,5 +1,6 @@
 /**
- * 
+ * BRW = Back Risk Ware
+ * Back Risk Manager UIs separately from RW.
  */
 /**
  * @author Junfeng

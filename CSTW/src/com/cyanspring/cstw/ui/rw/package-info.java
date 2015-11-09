@@ -1,5 +1,6 @@
 /**
- * 
+ * RW = Risk Ware
+ * Front Risk Manager UIs
  */
 /**
  * @author Junfeng
