@@ -58,7 +58,7 @@ public final class ModelTransfer {
 				.subAccount(position.getExchangeSubAccount())
 				.instrumentCode(position.getSymbol())
 				.quality(Math.abs(position.getQty()))
-				.urPnl(position.getUrPnL()).pnl(position.getPnL())
+				.urPnl(position.getUrPnL()).pnl(position.getRealizedPnL())
 				.trader(position.getAccount()).build();
 
 		if (PriceUtils.isZero(position.getQty())) {
@@ -90,7 +90,7 @@ public final class ModelTransfer {
 		}
 		RCInstrumentModel model = new RCInstrumentModel.Builder()
 				.account(position.getExchangeSubAccount())
-				.symbol(position.getSymbol()).realizedProfit(position.getPnL())
+				.symbol(position.getSymbol()).realizedProfit(position.getRealizedPnL())
 				.trades(position.getExecCount()).volume(position.getTotalQty())
 				.turnover(position.getTurnover())
 				.commission(position.getCommission())
@@ -119,7 +119,7 @@ public final class ModelTransfer {
 			if (trader == null) {
 				trader = position.getAccount();
 			}
-			pnl += position.getPnL();
+			pnl += position.getRealizedPnL();
 			totalTurnOver += position.getTurnover();
 		}
 		RCUserStatisticsModel model = new RCUserStatisticsModel.Builder()
@@ -202,7 +202,7 @@ public final class ModelTransfer {
 				double commission = 0.0;
 				symbol = symbolEntry.getKey();
 				for (OverallPosition position : symbolEntry.getValue()) {
-					pnl += position.getPnL();
+					pnl += position.getRealizedPnL();
 					tradeCount += position.getExecCount();
 					volume += position.getTotalQty();
 					totalTurnOver += position.getTurnover();
