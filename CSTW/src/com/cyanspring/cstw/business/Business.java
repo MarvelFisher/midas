@@ -10,11 +10,6 @@
  ******************************************************************************/
 package com.cyanspring.cstw.business;
 
-/**
- * This class is used to init different server.
- * Get data form sever.
- * Support api to visit common service and bean.
- */
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
@@ -77,6 +72,10 @@ import com.cyanspring.cstw.event.ServerStatusEvent;
 import com.cyanspring.cstw.session.CSTWSession;
 import com.cyanspring.cstw.ui.views.ServerStatusDisplay;
 
+/**
+ * This class is used to init different server. Get data form sever. Support api
+ * to visit common service and bean.
+ */
 public class Business {
 	private static Logger log = LoggerFactory.getLogger(Business.class);
 	private static Business instance; // Singleton
