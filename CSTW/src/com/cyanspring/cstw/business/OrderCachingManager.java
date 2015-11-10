@@ -67,7 +67,8 @@ public class OrderCachingManager implements IAsyncEventListener {
 	public synchronized void processStrategySnapshotEvent(StrategySnapshotEvent event) {
 		// clearing strategy log for this server
 		clearLogs(event.getSender());
-		servers.add(event.getSender());
+		if(!servers.contains(event.getSender()))
+			servers.add(event.getSender());
 		
 		// processing parent orders snapshot for this server
 		singleOrderStrategyCache.clearOrders(event.getSender());

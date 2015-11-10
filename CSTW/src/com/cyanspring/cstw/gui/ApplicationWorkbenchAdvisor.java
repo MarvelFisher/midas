@@ -56,7 +56,8 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 		Display.getDefault().addFilter(SWT.KeyDown, new Listener() {
 			public void handleEvent(Event e) {
 				if (e.keyCode == SWT.F1 || e.keyCode == SWT.F2
-						|| e.keyCode == SWT.ESC) {
+						|| e.keyCode == SWT.ESC || e.keyCode == SWT.F3
+						|| e.keyCode == SWT.F4) {
 					new OpenSingleOrderStrategyViewAssist().run(e.keyCode);
 				}
 			}
