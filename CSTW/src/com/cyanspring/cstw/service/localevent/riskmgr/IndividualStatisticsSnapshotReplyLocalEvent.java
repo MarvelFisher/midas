@@ -3,7 +3,7 @@ package com.cyanspring.cstw.service.localevent.riskmgr;
 import java.util.List;
 
 import com.cyanspring.common.event.AsyncEvent;
-import com.cyanspring.cstw.service.model.riskmgr.RCUserStatisticsModel;
+import com.cyanspring.cstw.model.riskmgr.RCUserStatisticsModel;
 
 /**
  * @author GuoWei

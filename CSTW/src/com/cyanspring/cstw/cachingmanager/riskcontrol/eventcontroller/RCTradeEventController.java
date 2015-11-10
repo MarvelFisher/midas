@@ -10,13 +10,13 @@ import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.model.riskmgr.RCTradeRecordModel;
 import com.cyanspring.cstw.service.eventadapter.EventAdaptorPool;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCTradeEventAdaptor;
 import com.cyanspring.cstw.service.localevent.riskmgr.TradeRecordUpdateEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.TradeRecordsSnapshotReplyLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.TradeRecordsSnapshotRequestLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCParentOrderUpdateCachingLocalEvent;
-import com.cyanspring.cstw.service.model.riskmgr.RCTradeRecordModel;
 
 /**
  * 

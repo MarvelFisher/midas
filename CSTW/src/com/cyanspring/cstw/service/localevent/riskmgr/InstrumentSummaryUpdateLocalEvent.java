@@ -6,7 +6,7 @@ package com.cyanspring.cstw.service.localevent.riskmgr;
 import java.util.List;
 
 import com.cyanspring.common.event.AsyncEvent;
-import com.cyanspring.cstw.service.model.riskmgr.RCInstrumentModel;
+import com.cyanspring.cstw.model.riskmgr.RCInstrumentModel;
 
 /**
  * 

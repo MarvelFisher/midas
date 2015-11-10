@@ -1,6 +1,6 @@
 package com.cyanspring.cstw.ui.rw.composite.table.provider;
 
-import com.cyanspring.cstw.service.model.riskmgr.RCTradeRecordModel;
+import com.cyanspring.cstw.model.riskmgr.RCTradeRecordModel;
 import com.cyanspring.cstw.ui.basic.DefaultLabelProviderAdapter;
 import com.cyanspring.cstw.ui.utils.LTWStringUtils;
 

@@ -6,13 +6,13 @@ import java.util.List;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.model.riskmgr.RCUserStatisticsModel;
 import com.cyanspring.cstw.service.eventadapter.EventAdaptorPool;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCIndividualEventAdaptor;
 import com.cyanspring.cstw.service.localevent.riskmgr.IndividualStatisticsSnapshotReplyLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.IndividualStatisticsSnapshotRequestLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.IndividualStatisticsUpdateLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCPositionUpdateCachingLocalEvent;
-import com.cyanspring.cstw.service.model.riskmgr.RCUserStatisticsModel;
 
 /**
  * 

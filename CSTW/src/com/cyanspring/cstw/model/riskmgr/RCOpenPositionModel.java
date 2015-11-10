@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.service.model.riskmgr;
+package com.cyanspring.cstw.model.riskmgr;
 
 
 /**

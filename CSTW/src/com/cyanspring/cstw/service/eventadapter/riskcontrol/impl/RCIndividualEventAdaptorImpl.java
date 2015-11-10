@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.cyanspring.common.account.OverallPosition;
+import com.cyanspring.cstw.model.riskmgr.RCUserStatisticsModel;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCIndividualEventAdaptor;
 import com.cyanspring.cstw.service.helper.transfer.ModelTransfer;
 import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCPositionUpdateCachingLocalEvent;
-import com.cyanspring.cstw.service.model.riskmgr.RCUserStatisticsModel;
 
 /**
  * @author GuoWei

@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.cstw.model.riskmgr.RCUserStatisticsModel;
 import com.cyanspring.cstw.service.common.BasicServiceImpl;
 import com.cyanspring.cstw.service.common.RefreshEventType;
 import com.cyanspring.cstw.service.iservice.riskmgr.IUserStatisticsService;
 import com.cyanspring.cstw.service.localevent.riskmgr.IndividualStatisticsSnapshotReplyLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.IndividualStatisticsSnapshotRequestLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.IndividualStatisticsUpdateLocalEvent;
-import com.cyanspring.cstw.service.model.riskmgr.RCUserStatisticsModel;
 
 /**
  * @author Yu-Junfeng

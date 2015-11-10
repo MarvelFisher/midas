@@ -8,8 +8,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.cstw.model.riskmgr.RCOpenPositionModel;
 import com.cyanspring.cstw.service.iservice.riskmgr.ICurrentPositionService;
-import com.cyanspring.cstw.service.model.riskmgr.RCOpenPositionModel;
 import com.cyanspring.cstw.ui.basic.BasicTableComposite;
 import com.cyanspring.cstw.ui.common.TableType;
 import com.cyanspring.cstw.ui.rw.composite.table.provider.RWPositionLabelProvider;

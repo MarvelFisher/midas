@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.cyanspring.cstw.service.model.riskmgr;
+package com.cyanspring.cstw.model.riskmgr;
 
 /**
  * @author Yu-Junfeng
