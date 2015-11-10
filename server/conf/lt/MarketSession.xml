@@ -49,28 +49,28 @@
             <list>
                 <bean class="com.cyanspring.common.marketsession.MarketSessionData">
                     <constructor-arg><value>OPEN</value></constructor-arg>
-                    <constructor-arg><value>-18:-45:00</value></constructor-arg>
-                    <constructor-arg><value>04:50:00</value></constructor-arg>
+                    <constructor-arg><value>-17:-45:00</value></constructor-arg>
+                    <constructor-arg><value>05:50:00</value></constructor-arg>
                 </bean>
                 <bean class="com.cyanspring.common.marketsession.MarketSessionData">
                     <constructor-arg><value>PRECLOSE</value></constructor-arg>
-                    <constructor-arg><value>04:50:00</value></constructor-arg>
-                    <constructor-arg><value>05:00:00</value></constructor-arg>
+                    <constructor-arg><value>05:50:00</value></constructor-arg>
+                    <constructor-arg><value>06:00:00</value></constructor-arg>
                 </bean>
                 <bean class="com.cyanspring.common.marketsession.MarketSessionData">
                     <constructor-arg><value>CLOSE</value></constructor-arg>
-                    <constructor-arg><value>05:00:00</value></constructor-arg>
-                    <constructor-arg><value>05:10:00</value></constructor-arg>
+                    <constructor-arg><value>06:00:00</value></constructor-arg>
+                    <constructor-arg><value>06:10:00</value></constructor-arg>
                 </bean>
                 <bean class="com.cyanspring.common.marketsession.MarketSessionData">
                     <constructor-arg><value>PREMARKET</value></constructor-arg>
-                    <constructor-arg><value>05:10:00</value></constructor-arg>
-                    <constructor-arg><value>05:15:00</value></constructor-arg>
+                    <constructor-arg><value>06:10:00</value></constructor-arg>
+                    <constructor-arg><value>06:15:00</value></constructor-arg>
                 </bean>
                 <bean class="com.cyanspring.common.marketsession.MarketSessionData">
                     <constructor-arg><value>OPEN</value></constructor-arg>
-                    <constructor-arg><value>05:15:00</value></constructor-arg>
-                    <constructor-arg><value>29:00:00</value></constructor-arg>
+                    <constructor-arg><value>06:15:00</value></constructor-arg>
+                    <constructor-arg><value>30:00:00</value></constructor-arg>
                 </bean>
             </list>
         </constructor-arg>
@@ -81,18 +81,18 @@
             <list>
                 <bean class="com.cyanspring.common.marketsession.MarketSessionData">
                     <constructor-arg><value>CLOSE</value></constructor-arg>
-                    <constructor-arg><value>-19:00:00</value></constructor-arg>
-                    <constructor-arg><value>05:10:00</value></constructor-arg>
+                    <constructor-arg><value>-18:00:00</value></constructor-arg>
+                    <constructor-arg><value>06:10:00</value></constructor-arg>
                 </bean>
                 <bean class="com.cyanspring.common.marketsession.MarketSessionData">
                     <constructor-arg><value>PREMARKET</value></constructor-arg>
-                    <constructor-arg><value>05:10:00</value></constructor-arg>
-                    <constructor-arg><value>05:15:00</value></constructor-arg>
+                    <constructor-arg><value>06:10:00</value></constructor-arg>
+                    <constructor-arg><value>06:15:00</value></constructor-arg>
                 </bean>
                 <bean class="com.cyanspring.common.marketsession.MarketSessionData">
                     <constructor-arg><value>OPEN</value></constructor-arg>
-                    <constructor-arg><value>05:15:00</value></constructor-arg>
-                    <constructor-arg><value>29:00:00</value></constructor-arg>
+                    <constructor-arg><value>06:15:00</value></constructor-arg>
+                    <constructor-arg><value>30:00:00</value></constructor-arg>
                 </bean>
             </list>
         </constructor-arg>
@@ -103,18 +103,18 @@
             <list>
                 <bean class="com.cyanspring.common.marketsession.MarketSessionData">
                     <constructor-arg><value>OPEN</value></constructor-arg>
-                    <constructor-arg><value>-18:-45:00</value></constructor-arg>
-                    <constructor-arg><value>04:50:00</value></constructor-arg>
+                    <constructor-arg><value>-17:-45:00</value></constructor-arg>
+                    <constructor-arg><value>05:50:00</value></constructor-arg>
                 </bean>
                 <bean class="com.cyanspring.common.marketsession.MarketSessionData">
                     <constructor-arg><value>PRECLOSE</value></constructor-arg>
-                    <constructor-arg><value>04:50:00</value></constructor-arg>
-                    <constructor-arg><value>05:00:00</value></constructor-arg>
+                    <constructor-arg><value>05:50:00</value></constructor-arg>
+                    <constructor-arg><value>06:00:00</value></constructor-arg>
                 </bean>
                 <bean class="com.cyanspring.common.marketsession.MarketSessionData">
                     <constructor-arg><value>CLOSE</value></constructor-arg>
-                    <constructor-arg><value>05:00:00</value></constructor-arg>
-                    <constructor-arg><value>29:00:00</value></constructor-arg>
+                    <constructor-arg><value>06:00:00</value></constructor-arg>
+                    <constructor-arg><value>30:00:00</value></constructor-arg>
                 </bean>
             </list>
         </constructor-arg>
@@ -125,8 +125,8 @@
             <list>
                 <bean class="com.cyanspring.common.marketsession.MarketSessionData">
                     <constructor-arg><value>CLOSE</value></constructor-arg>
-                    <constructor-arg><value>-19:00:00</value></constructor-arg>
-                    <constructor-arg><value>29:00:00</value></constructor-arg>
+                    <constructor-arg><value>-18:00:00</value></constructor-arg>
+                    <constructor-arg><value>30:00:00</value></constructor-arg>
                 </bean>
             </list>
         </constructor-arg>
