@@ -17,6 +17,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 
+import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
+import com.cyanspring.cstw.model.admin.SubAccountModel;
+
 /**
  * @author Junfeng
  * @create 9 Nov 2015
@@ -91,8 +94,8 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 
 	@Override
 	protected void registerPages(DetailsPart detailsPart) {
-		// TODO Auto-generated method stub
-		
+		detailsPart.registerPage(ExchangeAccountModel.class, new ExchangeAccountDetailsPage());
+		detailsPart.registerPage(SubAccountModel.class, new SubAccountDetailsPage());
 	}
 
 	@Override
