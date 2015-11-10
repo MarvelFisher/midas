@@ -47,16 +47,19 @@ public class CreditPartialValidator implements IOrderValidator {
 		try {
 			if(null == order) { // new order
 				String symbol = (String)map.get(OrderField.SYMBOL.value());
+				RefData refData = refDataManager.getRefData(symbol);
+				if (refData == null)
+					throw new OrderValidationException("Can't find refData", ErrorMessage.REF_SYMBOL_NOT_FOUND);
+				
+				if(!refDataChecker.check(refData)) // no null check here because refDataChecker must be set or its a programming error!!!
+					return;
+				
 				Quote quote = positionKeeper.getQuote(symbol);
 				if(null == quote) {
 					log.warn("No quote for " + symbol + " can't validate credit");
 					return;
 				}
 				
-				RefData refData = refDataManager.getRefData(symbol);
-				if(!refDataChecker.check(refData)) // no null check here because refDataChecker must be set or its a programming error!!!
-					return;
-
 				String accountId = (String)map.get(OrderField.ACCOUNT.value());
 				Account account = accountKeeper.getAccount(accountId);
 				OrderSide side = (OrderSide)map.get(OrderField.SIDE.value());
@@ -66,6 +69,9 @@ public class CreditPartialValidator implements IOrderValidator {
 					throw new OrderValidationException("Order exceeds cash available", ErrorMessage.ORDER_ACCOUNT_OVER_CREDIT_LIMIT);
 			} else { //amemnd order
 				RefData refData = refDataManager.getRefData(order.getSymbol());
+				if (refData == null)
+					throw new OrderValidationException("Can't find refData", ErrorMessage.REF_SYMBOL_NOT_FOUND);
+				
 				if(!refDataChecker.check(refData)) // no null check here because refDataChecker must be set or its a programming error!!!
 					return;
 
