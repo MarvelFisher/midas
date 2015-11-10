@@ -197,6 +197,14 @@
             id="com.cyanspring.cstw.ui.bw.views.BWInfoView"
             name="BW Info"
             restorable="true">
+      </view>
+      <view
+            allowMultiple="false"
+            class="com.cyanspring.cstw.ui.views.SubAccountView"
+            icon="icons/Leaves16.png"
+            id="com.cyanspring.cstw.ui.views.SubAccountView"
+            name="SubAccount"
+            restorable="true">
       </view>        
    </extension>
    <extension
@@ -580,6 +588,22 @@
                   </or>
                </visibleWhen>
             </command>
+            <command
+                  commandId="CSTW.SubAccountManage"
+                  label="SubAccount"
+                  style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                  <or>
+                     <with
+                           variable="Admin">
+                        <equals
+                              value="ENABLED">
+                        </equals>
+                     </with>
+                  </or>
+               </visibleWhen>
+            </command>
          </menu>
       </menuContribution>
    </extension>
@@ -747,6 +771,11 @@
             defaultHandler="com.cyanspring.cstw.ui.brw.command.BRWInfoViewCommand"
             id="CSTW.BackRiskManager.Data"
             name="BackRiskManager Data">
+      </command>
+      <command
+            defaultHandler="com.cyanspring.cstw.gui.command.SubAccoutViewCommand"
+            id="CSTW.SubAccountManage"
+            name="SubAccountManage">
       </command>      
    </extension>
    <extension

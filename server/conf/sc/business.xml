@@ -12,7 +12,6 @@
 	<bean id="parentOrderValidator" class="com.cyanspring.server.validation.ParentOrderValidator">       
 	    <constructor-arg>
 	        <list>
-	        	
 	        	<ref bean="accountStateValidator"/>
 				<ref bean="marketSessionValidator"/>
 				<ref bean="liveTradingSessionValidator"/>
@@ -24,10 +23,17 @@
 				<ref bean="orderCountValidator"/>
 				<ref bean="maxLotValidator"/>
 				<ref bean="ceilFloorValidator"/>
+				<ref bean="creditPartialValidator"/>
 				<ref bean="availablePositionValidator"/>
 	        </list>
 	    </constructor-arg>
 	</bean>	
+	
+	<bean id="creditPartialValidator" class="com.cyanspring.server.validation.CreditPartialValidator">
+		<property name="refDataChecker" ref="fcRefDataChecker"></property>
+	</bean>
+	
+	<bean id="fcRefDataChecker" class="com.cyanspring.server.validation.FcRefDataChecker"></bean>
 	
 	<bean id="stockStatusValidator" class="com.cyanspring.server.validation.StockStatusValidator">
 	</bean>
