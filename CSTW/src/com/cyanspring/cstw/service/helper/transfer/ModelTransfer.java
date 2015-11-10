@@ -117,7 +117,7 @@ public final class ModelTransfer {
 			if (trader == null) {
 				trader = position.getAccount();
 			}
-			pnl += position.getPnL();
+			pnl += position.getRealizedPnL();
 			totalTurnOver += position.getTurnover();
 			totalQty += position.getTotalQty();
 		}
