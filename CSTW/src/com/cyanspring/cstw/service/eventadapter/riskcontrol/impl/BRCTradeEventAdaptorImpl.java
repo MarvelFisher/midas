@@ -6,10 +6,10 @@ import java.util.Map;
 
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.type.OrdStatus;
+import com.cyanspring.cstw.model.riskmgr.RCTradeRecordModel;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCTradeEventAdaptor;
 import com.cyanspring.cstw.service.helper.transfer.ModelTransfer;
 import com.cyanspring.cstw.service.localevent.riskmgr.caching.BasicRCParentOrderUpdateCachingLocalEvent;
-import com.cyanspring.cstw.service.model.riskmgr.RCTradeRecordModel;
 
 /**
  * @author Yu-Junfeng

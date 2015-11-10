@@ -3,7 +3,7 @@
  */
 package com.cyanspring.cstw.ui.rw.composite.table.provider;
 
-import com.cyanspring.cstw.service.model.riskmgr.RCOrderRecordModel;
+import com.cyanspring.cstw.model.riskmgr.RCOrderRecordModel;
 import com.cyanspring.cstw.ui.basic.DefaultLabelProviderAdapter;
 
 /**

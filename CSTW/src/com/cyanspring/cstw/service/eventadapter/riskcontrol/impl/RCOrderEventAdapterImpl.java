@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.cstw.model.riskmgr.RCOrderRecordModel;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCOrderEventAdapter;
 import com.cyanspring.cstw.service.helper.transfer.ModelTransfer;
 import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCParentOrderUpdateCachingLocalEvent;
-import com.cyanspring.cstw.service.model.riskmgr.RCOrderRecordModel;
 
 /**
  * @author GuoWei

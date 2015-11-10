@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cyanspring.common.event.AsyncEvent;
-import com.cyanspring.cstw.service.model.riskmgr.RCOpenPositionModel;
+import com.cyanspring.cstw.model.riskmgr.RCOpenPositionModel;
 
 /**
  * @author Yu-Junfeng

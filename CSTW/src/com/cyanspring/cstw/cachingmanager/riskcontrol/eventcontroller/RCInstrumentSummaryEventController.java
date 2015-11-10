@@ -6,6 +6,7 @@ import java.util.List;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.model.riskmgr.RCInstrumentModel;
 import com.cyanspring.cstw.service.eventadapter.EventAdaptorPool;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCInstrumentSummaryEventAdaptor;
 import com.cyanspring.cstw.service.localevent.riskmgr.InstrumentSummarySnapshotReplyLocalEvent;
@@ -14,7 +15,6 @@ import com.cyanspring.cstw.service.localevent.riskmgr.InstrumentSummaryUpdateLoc
 import com.cyanspring.cstw.service.localevent.riskmgr.caching.BackRCPositionUpdateCachingLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.caching.BasicRCPositionUpdateCachingLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCPositionUpdateCachingLocalEvent;
-import com.cyanspring.cstw.service.model.riskmgr.RCInstrumentModel;
 
 /**
  * 股票汇总

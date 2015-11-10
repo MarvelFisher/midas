@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.cstw.model.riskmgr.RCTradeRecordModel;
 import com.cyanspring.cstw.service.common.BasicServiceImpl;
 import com.cyanspring.cstw.service.common.RefreshEventType;
 import com.cyanspring.cstw.service.iservice.riskmgr.ITradeRecordService;
 import com.cyanspring.cstw.service.localevent.riskmgr.TradeRecordUpdateEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.TradeRecordsSnapshotReplyLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.TradeRecordsSnapshotRequestLocalEvent;
-import com.cyanspring.cstw.service.model.riskmgr.RCTradeRecordModel;
 
 /**
  * @author Yu-Junfeng

@@ -5,8 +5,8 @@ package com.cyanspring.cstw.service.iservice.riskmgr;
 
 import java.util.List;
 
+import com.cyanspring.cstw.model.riskmgr.RCInstrumentModel;
 import com.cyanspring.cstw.service.iservice.IBasicService;
-import com.cyanspring.cstw.service.model.riskmgr.RCInstrumentModel;
 
 /**
  * @author Yu-Junfeng

@@ -7,13 +7,13 @@ import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.model.riskmgr.RCInstrumentModel;
 import com.cyanspring.cstw.service.eventadapter.EventAdaptorPool;
 import com.cyanspring.cstw.service.eventadapter.riskcontrol.IRCInstrumentStatisticsEventAdaptor;
 import com.cyanspring.cstw.service.localevent.riskmgr.InstrumentSnapshotReplyLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.InstrumentStatisticsSnapshotRequestLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.InstrumentStatisticsUpdateLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCPositionUpdateCachingLocalEvent;
-import com.cyanspring.cstw.service.model.riskmgr.RCInstrumentModel;
 
 /**
  * 

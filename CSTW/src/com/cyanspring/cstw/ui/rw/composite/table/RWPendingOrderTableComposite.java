@@ -6,8 +6,8 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 
+import com.cyanspring.cstw.model.riskmgr.RCOrderRecordModel;
 import com.cyanspring.cstw.service.iservice.riskmgr.IOrderRecordService;
-import com.cyanspring.cstw.service.model.riskmgr.RCOrderRecordModel;
 import com.cyanspring.cstw.ui.basic.BasicTableComposite;
 import com.cyanspring.cstw.ui.common.TableType;
 import com.cyanspring.cstw.ui.rw.composite.table.provider.PendingOrderLabelProvider;

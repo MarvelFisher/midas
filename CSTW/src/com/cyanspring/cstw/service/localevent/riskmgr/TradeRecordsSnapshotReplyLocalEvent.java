@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cyanspring.common.event.AsyncEvent;
-import com.cyanspring.cstw.service.model.riskmgr.RCTradeRecordModel;
+import com.cyanspring.cstw.model.riskmgr.RCTradeRecordModel;
 
 /**
  * 
