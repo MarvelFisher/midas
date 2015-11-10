@@ -112,15 +112,17 @@ public final class ModelTransfer {
 		String trader = null;
 		double pnl = 0.0;
 		double totalTurnOver = 0.0;
+		double totalQty = 0.0;
 		for (OverallPosition position : positionMap.values()) {
-			if (PriceUtils.isZero(position.getTotalQty())) {
-				continue;
-			}
 			if (trader == null) {
 				trader = position.getAccount();
 			}
-			pnl += position.getRealizedPnL();
+			pnl += position.getPnL();
 			totalTurnOver += position.getTurnover();
+			totalQty += position.getTotalQty();
+		}
+		if (PriceUtils.isZero(totalQty)) {
+			return null;
 		}
 		RCUserStatisticsModel model = new RCUserStatisticsModel.Builder()
 				.trader(trader).realizedProfit(pnl).turnover(totalTurnOver)
