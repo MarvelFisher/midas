@@ -43,7 +43,7 @@
 		<property name="cpds" ref="cpds"/>
 		<property name="serverMarket" value="FX"/>
 		<property name="nChefCount" value="5"/>
-		<property name="retrieveTime" value="0505"/>
+		<property name="retrieveTime" value="0605"/>
 		<property name="preSubscriptionList">
 			<list>
 	            <value>USDCNH</value>
