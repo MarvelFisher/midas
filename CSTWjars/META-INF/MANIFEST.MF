@@ -25,7 +25,8 @@ Bundle-ClassPath: apache-log4j-extras-1.1.jar,
  cyanspring-transport-2.56.jar,
  fst-2.16.jar,
  cyanspring-common-2.56.jar,
- commons-csv-1.2.jar
+ commons-csv-1.2.jar,
+ gson-2.4.jar
 Export-Package: com.cyanspring.common;uses:="com.cyanspring.common.business.util,com.cyanspring.common.transport,com.cyanspring.common.event",
  com.cyanspring.common.account,
  com.cyanspring.common.business;uses:="com.cyanspring.common.data,com.cyanspring.common.type,com.cyanspring.common.strategy",
