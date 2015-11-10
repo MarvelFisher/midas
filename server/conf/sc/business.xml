@@ -23,16 +23,10 @@
 				<ref bean="orderCountValidator"/>
 				<ref bean="maxLotValidator"/>
 				<ref bean="ceilFloorValidator"/>
-	        	<ref bean="creditPartialValidator"/>
 				<ref bean="availablePositionValidator"/>
 	        </list>
 	    </constructor-arg>
 	</bean>	
-	
-	<bean id="creditPartialValidator" class="com.cyanspring.server.validation.CreditPartialValidator">
-		<property name="refDataChecker" ref="fcRefDataChecker"></property>
-	</bean>
-	<bean id="fcRefDataChecker" class="com.cyanspring.server.validation.FcRefDataChecker"></bean>
 	
 	<bean id="stockStatusValidator" class="com.cyanspring.server.validation.StockStatusValidator">
 	</bean>
@@ -120,15 +114,6 @@
 	<bean id="marketSessionValidator" class="com.cyanspring.server.validation.IndexMarketSessionValidator"></bean>
 
 	<bean id="availablePositionValidator" class="com.cyanspring.server.validation.AvailablePositionValidator" >
-		<property name="futureITypeSet" >
-			<set value-type="com.cyanspring.common.staticdata.fu.IType">
-				<value>FUTURES_CX</value>
-				<value>FUTURES_IDX</value>
-				<value>FUTURES_CX_IDX</value>
-				<value>FUTURES</value>
-				<value>FUTURES_EFP</value>
-			</set>
-		</property>
 	</bean>
 	
 	<bean id="fixToOrderMap" class="com.cyanspring.common.util.DualMap">
