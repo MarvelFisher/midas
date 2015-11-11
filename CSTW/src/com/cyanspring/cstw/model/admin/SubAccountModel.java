@@ -1,5 +1,7 @@
 package com.cyanspring.cstw.model.admin;
 
+import com.cyanspring.cstw.model.BasicModel;
+
 
 /**
  * 
@@ -7,7 +9,7 @@ package com.cyanspring.cstw.model.admin;
  * @create date 2015/05/19
  *
  */
-public final class SubAccountModel {
+public final class SubAccountModel extends BasicModel{
 
 	private String id;
 
@@ -58,6 +60,46 @@ public final class SubAccountModel {
 
 	public void setCommissionRate(double commissionRate) {
 		this.commissionRate = commissionRate;
+	}
+	
+	public static class Builder {
+		private String id;
+		private String name;
+		private ExchangeAccountModel exchangeAccountModel;
+		private double useableMoney;
+		private double commissionRate;
+		
+		public Builder id(String val) {
+			id = val;		return this;
+		}
+		
+		public Builder name(String val) {
+			name = val;		return this;
+		}
+		
+		public Builder exchangeAccount(ExchangeAccountModel val) {
+			exchangeAccountModel = val;		return this;
+		}
+		
+		public Builder useableMoney(double val) {
+			useableMoney = val; 	return this;
+		}
+		
+		public Builder commissionRate(double val) {
+			commissionRate = val; 	return this;
+		}
+		
+		public SubAccountModel build() {
+			return new SubAccountModel(this);
+		}
+	}
+	
+	public SubAccountModel(Builder builder) {
+		id = builder.id;
+		name = builder.name;
+		exchangeAccountModel = builder.exchangeAccountModel;
+		useableMoney = builder.useableMoney;
+		commissionRate = builder.commissionRate;
 	}
 
 }
