@@ -66,7 +66,7 @@ public class CreditPartialValidator implements IOrderValidator {
 				double qty = (Double)map.get(OrderField.QUANTITY.value());
 				if(!positionKeeper.checkPartialCreditByAccountAndSymbol(account, symbol, quote, 
 						side.isBuy()?qty:-qty, ratio))
-					throw new OrderValidationException("Order exceeds cash available", ErrorMessage.ORDER_ACCOUNT_OVER_CREDIT_LIMIT);
+					throw new OrderValidationException("Order execeeds account value percentage of " + ratio, ErrorMessage.ORDER_OVER_ACCOUNT_VALUE_PERCENTAGE);
 			} else { //amemnd order
 				RefData refData = refDataManager.getRefData(order.getSymbol());
 				if (refData == null)
@@ -95,7 +95,7 @@ public class CreditPartialValidator implements IOrderValidator {
 				
 				if(!positionKeeper.checkPartialCreditByAccountAndSymbol(account, order.getSymbol(), quote, 
 						order.getSide().isBuy()?qty:-qty, ratio))
-					throw new OrderValidationException("Order exceeds cash available", ErrorMessage.AMEND_ORDER_OVER_CREDIT_LIMIT);
+					throw new OrderValidationException("Order execeeds account value percentage of " + ratio, ErrorMessage.ORDER_OVER_ACCOUNT_VALUE_PERCENTAGE);
 			}
 		} catch(OrderValidationException e) {
 			throw e;
