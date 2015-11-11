@@ -1,10 +1,20 @@
 package com.cyanspring.cstw.ui.forms;
 
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.IDetailsPage;
 import org.eclipse.ui.forms.IFormPart;
 import org.eclipse.ui.forms.IManagedForm;
+import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.Section;
+import org.eclipse.ui.forms.widgets.TableWrapData;
+import org.eclipse.ui.forms.widgets.TableWrapLayout;
+
+import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
 
 /**
  * @author Junfeng
@@ -12,94 +22,107 @@ import org.eclipse.ui.forms.IManagedForm;
  */
 public class ExchangeAccountDetailsPage implements IDetailsPage {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.forms.IFormPart#initialize(org.eclipse.ui.forms.IManagedForm)
-	 */
+	private ExchangeAccountModel input;
+	
+	private IManagedForm mform;
+	private Section dataSection;
+	
 	@Override
 	public void initialize(IManagedForm form) {
-		// TODO Auto-generated method stub
-
+		this.mform = form;
+	}
+	
+	@Override
+	public void createContents(Composite parent) {
+		TableWrapLayout layout = new TableWrapLayout();
+		layout.topMargin = 5;
+		layout.leftMargin = 5;
+		layout.rightMargin = 2;
+		layout.bottomMargin = 2;
+		parent.setLayout(layout);
+		
+		//init head
+		FormToolkit toolkit = mform.getToolkit();
+		dataSection = toolkit.createSection(parent, Section.TITLE_BAR | Section.EXPANDED);
+		dataSection.marginWidth = 10;
+		dataSection.setText("Exchange Account Details: ");
+		
+		TableWrapData td = new TableWrapData(TableWrapData.FILL, TableWrapData.TOP);
+		td.grabHorizontal = true;
+		dataSection.setLayoutData(td);
+		
+		Composite client = toolkit.createComposite(dataSection);
+		GridLayout glayout = new GridLayout();
+		glayout.marginWidth = glayout.marginHeight = 0;
+		glayout.numColumns = 2;
+		client.setLayout(glayout);
+		
+		createSpacer(toolkit, client, 2);
+		
+		toolkit.paintBordersFor(dataSection);
+		dataSection.setClient(client);
+	}
+	
+	private void createSpacer(FormToolkit toolkit, Composite parent, int span) {
+		Label spacer = toolkit.createLabel(parent, "");
+		GridData gd = new GridData();
+		gd.horizontalSpan = span;
+		spacer.setLayoutData(gd);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.forms.IFormPart#dispose()
-	 */
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.forms.IFormPart#isDirty()
-	 */
 	@Override
 	public boolean isDirty() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.forms.IFormPart#commit(boolean)
-	 */
 	@Override
 	public void commit(boolean onSave) {
-		// TODO Auto-generated method stub
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.forms.IFormPart#setFormInput(java.lang.Object)
-	 */
 	@Override
 	public boolean setFormInput(Object input) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.forms.IFormPart#setFocus()
-	 */
 	@Override
 	public void setFocus() {
-		// TODO Auto-generated method stub
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.forms.IFormPart#isStale()
-	 */
 	@Override
 	public boolean isStale() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.forms.IFormPart#refresh()
-	 */
 	@Override
 	public void refresh() {
-		// TODO Auto-generated method stub
-
+		update();
 	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.forms.IPartSelectionListener#selectionChanged(org.eclipse.ui.forms.IFormPart, org.eclipse.jface.viewers.ISelection)
-	 */
+	
 	@Override
 	public void selectionChanged(IFormPart part, ISelection selection) {
-		// TODO Auto-generated method stub
-
+		IStructuredSelection selected = (IStructuredSelection) selection; 
+		if ( selected.size() == 1 ) {
+			input = (ExchangeAccountModel) selected.getFirstElement();
+		} else {
+			input = null;
+		}
+		update();
+	}
+	
+	private void update() {
+		if ( input != null ) {
+			dataSection.setText("Exchange Account Details: " + input.getName());
+		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.forms.IDetailsPage#createContents(org.eclipse.swt.widgets.Composite)
-	 */
-	@Override
-	public void createContents(Composite parent) {
-		// TODO Auto-generated method stub
-
-	}
+	
 
 }

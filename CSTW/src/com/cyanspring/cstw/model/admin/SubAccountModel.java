@@ -94,7 +94,7 @@ public final class SubAccountModel extends BasicModel{
 		}
 	}
 	
-	public SubAccountModel(Builder builder) {
+	private SubAccountModel(Builder builder) {
 		id = builder.id;
 		name = builder.name;
 		exchangeAccountModel = builder.exchangeAccountModel;

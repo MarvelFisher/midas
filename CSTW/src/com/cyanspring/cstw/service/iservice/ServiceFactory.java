@@ -2,12 +2,14 @@ package com.cyanspring.cstw.service.iservice;
 
 import com.cyanspring.common.account.UserRole;
 import com.cyanspring.cstw.service.common.ExportCsvServiceImpl;
+import com.cyanspring.cstw.service.impl.admin.SubAccountManageServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.CurrentPositionServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.InstrumentStatisticsServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.InstrumentSummaryServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.OrderRecordServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.TradeRecordServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.UserStatisticsServiceImpl;
+import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
 import com.cyanspring.cstw.service.iservice.riskmgr.ICurrentPositionService;
 import com.cyanspring.cstw.service.iservice.riskmgr.IInstrumentStatisticsService;
 import com.cyanspring.cstw.service.iservice.riskmgr.IInstrumentSummaryService;
@@ -64,6 +66,11 @@ public final class ServiceFactory {
 	
 	public static IExportCsvService createExportCsvService() {
 		ExportCsvServiceImpl instance = new ExportCsvServiceImpl();
+		return instance;
+	}
+	
+	public static ISubAccountManagerService createSubAccountManagerService() {
+		SubAccountManageServiceImpl instance = new SubAccountManageServiceImpl();
 		return instance;
 	}
 

@@ -19,6 +19,7 @@ import org.eclipse.ui.forms.widgets.TableWrapData;
 
 import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
 import com.cyanspring.cstw.model.admin.SubAccountModel;
+import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
 
 /**
  * @author Junfeng
@@ -26,9 +27,14 @@ import com.cyanspring.cstw.model.admin.SubAccountModel;
  */
 public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 	
+	private ISubAccountManagerService service;
+	
 	private FormToolkit toolkit;
 	private TreeViewer editTree;
-	private Object rootList;
+	
+	public SubAccountManageMasterDetailBlock(ISubAccountManagerService service) {
+		this.service = service;
+	}
 	
 	@Override
 	protected void createMasterPart(final IManagedForm managedForm, Composite parent) {
@@ -59,7 +65,7 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 		data.widthHint = 200;
 		memberTree.setLayoutData(data);
 		editTree = new TreeViewer(memberTree);
-		editTree.setContentProvider(new EditTreeContentProvider());
+		editTree.setContentProvider(new EditTreeContentProvider(service));
 		editTree.setLabelProvider(new EditTreeLabelProvider());
 		// register SelectionListener 
 		editTree.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -82,7 +88,7 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 	}
 
 	private void refreshTree() {
-		editTree.setInput(rootList);		
+		editTree.setInput(service.getExchangeAccountList());		
 		editTree.expandToLevel(3);
 		editTree.refresh();
 	}
@@ -100,7 +106,7 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 
 	@Override
 	protected void createToolBarActions(IManagedForm managedForm) {
-		// TODO Auto-generated method stub
+		// Do Nothing
 		
 	}
 

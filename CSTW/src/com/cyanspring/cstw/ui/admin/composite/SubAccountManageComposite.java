@@ -7,6 +7,8 @@ import org.eclipse.ui.forms.ManagedForm;
 
 import com.cyanspring.cstw.service.common.RefreshEventType;
 import com.cyanspring.cstw.service.iservice.IBasicService;
+import com.cyanspring.cstw.service.iservice.ServiceFactory;
+import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
 import com.cyanspring.cstw.ui.basic.BasicComposite;
 import com.cyanspring.cstw.ui.forms.SubAccountManageMasterDetailBlock;
 
@@ -15,6 +17,8 @@ import com.cyanspring.cstw.ui.forms.SubAccountManageMasterDetailBlock;
  * @create 10 Nov 2015
  */
 public class SubAccountManageComposite extends BasicComposite {
+	
+	private ISubAccountManagerService service;
 	
 	private IManagedForm managedForm;
 	private SubAccountManageMasterDetailBlock masterDetailBlock;
@@ -28,7 +32,7 @@ public class SubAccountManageComposite extends BasicComposite {
 		setLayout(new FillLayout());
 		managedForm = new ManagedForm(this);
 		managedForm.setContainer(this);
-		masterDetailBlock = new SubAccountManageMasterDetailBlock();
+		masterDetailBlock = new SubAccountManageMasterDetailBlock(service);
 		masterDetailBlock.createContent(managedForm);
 	}
 
@@ -40,8 +44,8 @@ public class SubAccountManageComposite extends BasicComposite {
 
 	@Override
 	protected IBasicService createService() {
-		// TODO Auto-generated method stub
-		return null;
+		service = ServiceFactory.createSubAccountManagerService();
+		return service;
 	}
 
 }

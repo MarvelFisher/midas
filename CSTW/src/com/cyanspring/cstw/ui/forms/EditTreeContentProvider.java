@@ -1,27 +1,30 @@
 package com.cyanspring.cstw.ui.forms;
 
-import org.eclipse.jface.viewers.IContentProvider;
+import java.util.List;
+
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+
+import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
+import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
 
 /**
  * @author Junfeng
  * @create 9 Nov 2015
  */
 public class EditTreeContentProvider implements ITreeContentProvider {
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
-	 */
+	
+	private ISubAccountManagerService service;
+	
+	public EditTreeContentProvider(ISubAccountManagerService service) {
+		this.service = service;
+	}
+	
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
-	 */
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		// TODO Auto-generated method stub
@@ -30,25 +33,31 @@ public class EditTreeContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object[] getElements(Object inputElement) {
-		// TODO Auto-generated method stub
+		if (inputElement instanceof List) {
+			return ((List) inputElement).toArray();
+		}
 		return null;
 	}
 
 	@Override
 	public Object[] getChildren(Object parentElement) {
-		// TODO Auto-generated method stub
+		if (parentElement instanceof ExchangeAccountModel) {
+			ExchangeAccountModel parent = (ExchangeAccountModel) parentElement;
+			return service.getSubAccountListByExchangeAccountName(parent.getName()).toArray();
+		}
 		return null;
 	}
 
 	@Override
 	public Object getParent(Object element) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean hasChildren(Object element) {
-		// TODO Auto-generated method stub
+		if (element instanceof ExchangeAccountModel) {
+			return true;
+		}
 		return false;
 	}
 
