@@ -1,21 +1,18 @@
 package com.cyanspring.server.account;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import com.cyanspring.common.Clock;
-import com.cyanspring.common.util.TimeUtil;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.Clock;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.ClosedPosition;
@@ -27,6 +24,7 @@ import com.cyanspring.common.business.RefDataField;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.type.OrderSide;
+import com.cyanspring.common.util.TimeUtil;
 
 public class TestPositionKeeper {
 	private static final Logger log = LoggerFactory

@@ -7,10 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.account.AccountException;
+import com.cyanspring.common.account.AccountKeeper;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.LiveTradingType;
 import com.cyanspring.common.util.TimeUtil;
-import com.cyanspring.server.account.AccountKeeper;
 import com.cyanspring.server.livetrading.checker.LiveTradingCheckHandler;
 
 public class CustomTrading implements IUserLiveTradingRule{

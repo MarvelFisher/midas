@@ -3,319 +3,374 @@
 "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
-<hibernate-mapping> 
-  <class name="com.cyanspring.common.business.Execution" table="ANYONE.EXECUTIONS"> 
-    <id 	  column="OBJECT_ID" 		name="id" type="java.lang.String"/> 
-    <property column="SYMBOL" 			name="symbol" type="java.lang.String"/>
-	<property column="SIDE" 			name="side" length="30">
-   		<type name="org.hibernate.type.EnumType">
-   			<param name="enumClass">com.cyanspring.common.type.OrderSide</param>   
-       		<param name="type">12</param>
-   		</type>
-	</property>
-	<property column="QUANTITY" 		name="quantity" type="java.lang.Double"/>
-	<property column="PRICE" 			name="price" type="java.lang.Double"/>
-	<property column="ORDER_ID" 		name="orderId" type="java.lang.String"/>
-	<property column="PARENT_ID" 		name="parentOrderId" type="java.lang.String"/>
-	<property column="STRATEGY_ID" 		name="strategyId" type="java.lang.String"/>
-	<property column="EXEC_ID" 			name="execId" type="java.lang.String"/>
-	<property column="MODIFIED" 		name="modified" type="java.util.Date"/>
-	<property column="CREATED" 			name="created" type="java.util.Date"/>
-	<property column="SEQ_ID" 			name="seqId" type="java.lang.String"/>
-	<property column="SERVER_ID" 		name="serverId" type="java.lang.String"/>
-	<property column="TRADER" 			name="user" type="java.lang.String"/>
-	<property column="ACCOUNT" 			name="account" type="java.lang.String"/>
-	<property column="ROUTE" 			name="route" type="java.lang.String"/>
-  </class> 
-  
-  <class name="com.cyanspring.common.business.ChildOrder" table="ANYONE.ACTIVE_CHILD_ORDERS"> 
-    <id 	  column="OBJECT_ID" 		name="id" type="java.lang.String"/> 
-    <property column="SYMBOL" 			name="symbol" type="java.lang.String"/>
-	<property column="SIDE" 			name="side" length="30">
-   		<type name="org.hibernate.type.EnumType">
-   			<param name="enumClass">com.cyanspring.common.type.OrderSide</param>   
-       		<param name="type">12</param>
-   		</type>
-	</property>
-	<property column="QUANTITY" 		name="quantity" type="java.lang.Double"/>
-	<property column="PRICE" 			name="price" type="java.lang.Double"/>
-	<property column="CUM_QTY" 			name="cumQty" type="java.lang.Double"/>
-	<property column="AVG_PX" 			name="avgPx" type="java.lang.Double"/>
-	<property column="ORDER_TYPE" 		name="type" length="30">
-   		<type name="org.hibernate.type.EnumType">
-   			<param name="enumClass">com.cyanspring.common.type.ExchangeOrderType</param>   
-       		<param name="type">12</param>
-   		</type>
-	</property>
-	<property column="ORD_STATUS" 	name="ordStatus" length="30">
-   		<type name="org.hibernate.type.EnumType">
-   			<param name="enumClass">com.cyanspring.common.type.OrdStatus</param>   
-       		<param name="type">12</param>
-   		</type>
-	</property>
-	<property column="PARENT_ID" 		name="parentOrderId" type="java.lang.String"/>
-	<property column="STRATEGY_ID" 		name="strategyId" type="java.lang.String"/>
-	<property column="MODIFIED" 		name="modified" type="java.util.Date"/>
-	<property column="CREATED" 			name="created" type="java.util.Date"/>
-	<property column="SEQ_ID" 			name="seqId" type="java.lang.String"/>
-	<property column="CLORDER_ID"		name="clOrderId" type="java.lang.String"/>
-	<property column="SERVER_ID" 		name="serverId" type="java.lang.String"/>
-	<property column="TRADER" 			name="user" type="java.lang.String"/>
-	<property column="ACCOUNT" 			name="account" type="java.lang.String"/>
-	<property column="ROUTE" 			name="route" type="java.lang.String"/>
-	<property column="EXCHANGE_ORDER_ID" name="exchangeOrderId" type="java.lang.String"/>
-  </class> 
-  
-  <class name="com.cyanspring.server.persistence.ChildOrderAudit" table="ANYONE.CHILD_ORDER_AUDIT"> 
-    <id 	  column="AUDIT_ID" 		name="auditId" type="java.lang.String"/> 
-    <property column="OBJECT_ID" 		name="id" type="java.lang.String"/> 
-	<property column="EXEC_TYPE" 		name="execType" length="30">
-   		<type name="org.hibernate.type.EnumType">
-   			<param name="enumClass">com.cyanspring.common.type.ExecType</param>   
-       		<param name="type">12</param>
-   		</type>
-	</property>
-    <property column="SYMBOL" 			name="symbol" type="java.lang.String"/>
-	<property column="SIDE" 			name="side" length="30">
-   		<type name="org.hibernate.type.EnumType">
-   			<param name="enumClass">com.cyanspring.common.type.OrderSide</param>   
-       		<param name="type">12</param>
-   		</type>
-	</property>
-	<property column="QUANTITY" 		name="quantity" type="java.lang.Double"/>
-	<property column="PRICE" 			name="price" type="java.lang.Double"/>
-	<property column="CUM_QTY" 			name="cumQty" type="java.lang.Double"/>
-	<property column="AVG_PX" 			name="avgPx" type="java.lang.Double"/>
-	<property column="ORDER_TYPE" 		name="type" length="30">
-   		<type name="org.hibernate.type.EnumType">
-   			<param name="enumClass">com.cyanspring.common.type.ExchangeOrderType</param>   
-       		<param name="type">12</param>
-   		</type>
-	</property>
-	<property column="ORD_STATUS" 	name="ordStatus" length="30">
-   		<type name="org.hibernate.type.EnumType">
-   			<param name="enumClass">com.cyanspring.common.type.OrdStatus</param>   
-       		<param name="type">12</param>
-   		</type>
-	</property>
-	<property column="PARENT_ID" 		name="parentOrderId" type="java.lang.String"/>
-	<property column="STRATEGY_ID" 		name="strategyId" type="java.lang.String"/>
-	<property column="MODIFIED" 		name="modified" type="java.util.Date"/>
-	<property column="CREATED" 			name="created" type="java.util.Date"/>
-	<property column="SEQ_ID" 			name="seqId" type="java.lang.String"/>
-	<property column="CLORDER_ID"		name="clOrderId" type="java.lang.String"/>
-	<property column="SERVER_ID" 		name="serverId" type="java.lang.String"/>
-	<property column="TRADER" 			name="user" type="java.lang.String"/>
-	<property column="ACCOUNT" 			name="account" type="java.lang.String"/>
-	<property column="ROUTE" 			name="route" type="java.lang.String"/>
-	<property column="EXCHANGE_ORDER_ID" name="exchangeOrderId" type="java.lang.String"/>
-  </class> 
-  
-  <class name="com.cyanspring.server.persistence.TextObject" table="ANYONE.TEXT_OBJECTS"> 
-  	<composite-id>
-	    <key-property 	column="OBJECT_ID" 		name="id" type="java.lang.String"/> 
-	    <key-property 	column="OBJECT_TYPE" 	name="persistType" length="40"> 
-	   		<type name="org.hibernate.type.EnumType">
-	   			<param name="enumClass">com.cyanspring.common.type.PersistType</param>   
-	       		<param name="type">12</param>
-	   		</type>
-		</key-property>
-		<key-property 	column="LINE_NO" 		name="line" type="java.lang.Integer"/>
-  	</composite-id> 
-	<property column="STRATEGY_STATE" 		name="state" 	length="20">
-   		<type name="org.hibernate.type.EnumType">
-   			<param name="enumClass">com.cyanspring.common.type.StrategyState</param>   
-       		<param name="type">12</param>
-   		</type>
-	</property>
-	<property column="TIME_STAMP" 		name="timeStamp" type="java.util.Date"/>
-	<property column="XML_TEXT" 		name="xml" type="java.lang.String"/>
-	<property column="SERVER_ID" 		name="serverId" type="java.lang.String"/>
-	<property column="TRADER" 			name="user" type="java.lang.String"/>
-	<property column="ACCOUNT" 			name="account" type="java.lang.String"/>
-	<property column="ROUTE" 			name="route" type="java.lang.String"/>
-  </class> 
-  
-  <class name="com.cyanspring.common.account.User" table="ANYONE.USERS">
-  	<id 	  column="USER_ID" 			name="id"			type="java.lang.String"/>
-  	<property column="USER_NAME"		name="name"			type="java.lang.String"/>
-  	<property column="PASSWORD"			name="password"		type="java.lang.String"/>
-  	<property column="EMAIL"			name="email"		type="java.lang.String"/>
-  	<property column="PHONE"			name="phone"		type="java.lang.String"/>
-  	<property column="CREATED"			name="created"		type="java.util.Date"/>
-  	<property column="LAST_LOGIN"		name="lastLogin"	type="java.util.Date"/>
-	<property column="USER_TYPE" 		name="userType" 	length="20">
-   		<type name="org.hibernate.type.EnumType">
-   			<param name="enumClass">com.cyanspring.common.account.UserType</param>   
-       		<param name="type">12</param>
-   		</type>
-	</property>
-	<property column="USER_ROLE" 		name="role" 	length="20">
-   		<type name="org.hibernate.type.EnumType">
-   			<param name="enumClass">com.cyanspring.common.account.UserRole</param>   
-       		<param name="type">12</param>
-   		</type>
-	</property>
-  	<property column="DEFAULT_ACCOUNT"	name="defaultAccount" type="java.lang.String"/>
-  </class>
+<hibernate-mapping>
+	<class name="com.cyanspring.common.business.Execution" table="ANYONE.EXECUTIONS">
+		<id column="OBJECT_ID" name="id" type="java.lang.String" />
+		<property column="SYMBOL" name="symbol" type="java.lang.String" />
+		<property column="SIDE" name="side" length="30">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">com.cyanspring.common.type.OrderSide</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		<property column="QUANTITY" name="quantity" type="java.lang.Double" />
+		<property column="PRICE" name="price" type="java.lang.Double" />
+		<property column="ORDER_ID" name="orderId" type="java.lang.String" />
+		<property column="PARENT_ID" name="parentOrderId" type="java.lang.String" />
+		<property column="STRATEGY_ID" name="strategyId" type="java.lang.String" />
+		<property column="EXEC_ID" name="execId" type="java.lang.String" />
+		<property column="MODIFIED" name="modified" type="java.util.Date" />
+		<property column="CREATED" name="created" type="java.util.Date" />
+		<property column="SEQ_ID" name="seqId" type="java.lang.String" />
+		<property column="SERVER_ID" name="serverId" type="java.lang.String" />
+		<property column="TRADER" name="user" type="java.lang.String" />
+		<property column="ACCOUNT" name="account" type="java.lang.String" />
+		<property column="ROUTE" name="route" type="java.lang.String" />
+	</class>
 
-  <class name="com.cyanspring.common.account.Account" table="ANYONE.ACCOUNTS">
-  	<id 	  column="ACCOUNT_ID" 		name="id"			 type="java.lang.String"/>
-  	<property column="USER_ID"			name="userId"		 type="java.lang.String"/>
-  	<property column="MARKET"			name="market"		 type="java.lang.String"/>
-  	<property column="CASH"				name="cash"			 type="java.lang.Double"/>
-  	<property column="CASH_AVAILABLE"	name="cashAvailable"			 type="java.lang.Double"/>
-  	<property column="MARGIN"			name="margin"		 type="java.lang.Double"/>
-  	<property column="MARGIN_HELD"			name="marginHeld"		type="java.lang.Double"/>
-  	<property column="PNL"				name="PnL"			 type="java.lang.Double"/>
-  	<property column="ALL_TIME_PNL"		name="allTimePnL"	 type="java.lang.Double"/>
-  	<property column="UR_PNL"			name="urPnL"		 type="java.lang.Double"/>
-  	<property column="CASH_DEPOSITED"	name="cashDeposited" type="java.lang.Double"/>
-  	<property column="ROLL_PRICE"		name="rollPrice"	 type="java.lang.Double"/>
-  	<property column="UNIT_PRICE"		name="unitPrice"	 type="java.lang.Double"/>
-  	<property column="ACTIVE"			name="active"		 type="java.lang.Boolean"/>
-  	<property column="CREATED"			name="created"		 type="java.util.Date"/>
-  	<property column="CURRENCY"			name="currency" 	 type="java.lang.String"/>
-  	<property column="START_ACCOUNT_VALUE"			name="startAccountValue"		 type="java.lang.Double"/>
-  	<property column="STATE" 		name="state" length="20">
-   		<type name="org.hibernate.type.EnumType">
-   			<param name="enumClass">com.cyanspring.common.account.AccountState</param>   
-       		<param name="type">12</param>
-   		</type>
-	</property>
-  </class>
-  
-<!--   
-  <class name="com.cyanspring.common.account.AccountDaily" table="ANYONE.ACCOUNTS_DAILY">
-  	<composite-id>
-	  	<key-property 	column="ACCOUNT_ID" 	name="id"			type="java.lang.String"/>
-  		<key-property 	column="ON_DATE"		name="onDate"		type="java.util.Date"/>
-  	</composite-id> 
-  	<property column="USER_ID"			name="userId"		type="java.lang.String"/>
-  	<property column="MARKET"			name="market"		type="java.lang.String"/>
-  	<property column="CASH"				name="cash"			type="java.lang.Double"/>
-  	<property column="MARGIN"			name="margin"		type="java.lang.Double"/>
-  	<property column="PNL"				name="PnL"			type="java.lang.Double"/>
-  	<property column="ALL_TIME_PNL"		name="allTimePnL"	type="java.lang.Double"/>
-  	<property column="UR_PNL"			name="urPnL"		type="java.lang.Double"/>
-  	<property column="CASH_DEPOSITED"	name="cashDeposited"		type="java.lang.Double"/>
-  	<property column="ROLL_PRICE"		name="rollPrice"	type="java.lang.Double"/>
-  	<property column="UNIT_PRICE"		name="unitPrice"	type="java.lang.Double"/>
-  	<property column="ACTIVE"			name="active"		type="java.lang.Boolean"/>
-  	<property column="CREATED"			name="created"		type="java.util.Date"/>
-  	<property column="CURRENCY"			name="currency" 	type="java.lang.String"/>
-  	<property column="ON_TIME"			name="onTime"		type="java.util.Date"/>
-  	<property column="TRADE_DATE"		name="tradeDate"	type="java.lang.String"/>
-  </class>
- -->
- 
-  <class name="com.cyanspring.common.account.Position" abstract="true">
-  	<id 	  column="POSITION_ID" 		name="id"			type="java.lang.String"/>
-  	<property column="USER_ID"			name="user"			type="java.lang.String"/>
-  	<property column="ACCOUNT_ID"		name="account"		type="java.lang.String"/>
-  	<property column="SYMBOL"			name="symbol"		type="java.lang.String"/>
-  	<property column="QTY"				name="qty"			type="java.lang.Double"/>
-  	<property column="PNL"				name="PnL"			type="java.lang.Double"/>
-  	<property column="AC_PNL"			name="acPnL"		type="java.lang.Double"/>
-  	<property column="CREATED"			name="created"		type="java.util.Date"/>
+	<class name="com.cyanspring.common.business.ChildOrder" table="ANYONE.ACTIVE_CHILD_ORDERS">
+		<id column="OBJECT_ID" name="id" type="java.lang.String" />
+		<property column="SYMBOL" name="symbol" type="java.lang.String" />
+		<property column="SIDE" name="side" length="30">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">com.cyanspring.common.type.OrderSide</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		<property column="QUANTITY" name="quantity" type="java.lang.Double" />
+		<property column="PRICE" name="price" type="java.lang.Double" />
+		<property column="CUM_QTY" name="cumQty" type="java.lang.Double" />
+		<property column="AVG_PX" name="avgPx" type="java.lang.Double" />
+		<property column="ORDER_TYPE" name="type" length="30">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">com.cyanspring.common.type.ExchangeOrderType</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		<property column="ORD_STATUS" name="ordStatus" length="30">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">com.cyanspring.common.type.OrdStatus</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		<property column="PARENT_ID" name="parentOrderId" type="java.lang.String" />
+		<property column="STRATEGY_ID" name="strategyId" type="java.lang.String" />
+		<property column="MODIFIED" name="modified" type="java.util.Date" />
+		<property column="CREATED" name="created" type="java.util.Date" />
+		<property column="SEQ_ID" name="seqId" type="java.lang.String" />
+		<property column="CLORDER_ID" name="clOrderId" type="java.lang.String" />
+		<property column="SERVER_ID" name="serverId" type="java.lang.String" />
+		<property column="TRADER" name="user" type="java.lang.String" />
+		<property column="ACCOUNT" name="account" type="java.lang.String" />
+		<property column="ROUTE" name="route" type="java.lang.String" />
+		<property column="EXCHANGE_ORDER_ID" name="exchangeOrderId"
+			type="java.lang.String" />
+	</class>
 
-    <union-subclass name="com.cyanspring.common.account.OpenPosition" table="ANYONE.OPEN_POSITIONS">
-	  	<property column="PRICE"		name="price"		type="java.lang.Double"/>
-	  	<property column="MARGIN"		name="margin"		type="java.lang.Double"/>
-    </union-subclass>
-    
-    <union-subclass name="com.cyanspring.common.account.ClosedPosition" table="ANYONE.CLOSED_POSITIONS">
-	  	<property column="BUY_PRICE"	name="buyPrice"		type="java.lang.Double"/>
-	  	<property column="SELL_PRICE"	name="sellPrice"	type="java.lang.Double"/>
-    </union-subclass>
-  </class>
-  
-  <class name="com.cyanspring.common.account.AccountSetting" table="ANYONE.ACCOUNT_SETTINGS">
-  	<id 	  column="ACCOUNT_ID" 		name="id"			  type="java.lang.String"/>
-  	<property column="DEFAULT_QTY"		name="defaultQty"	  type="java.lang.Double"/>
-  	<property column="STOP_LOSS_VALUE"	name="stopLossValue"  type="java.lang.Double"/>
-  	<property column="COMPANY_SL_VALUE"	name="companySLValue" type="java.lang.Double"/>
-  	<property column="MARGIN"			name="margin"	      type="java.lang.Double"/>
-	<property column="ROUTE" 			name="route" 		  type="java.lang.String"/>
-	<property column="COMMISSION" 			name="commission" type="java.lang.Double"/>
-	<property column="LEVERAGE_RATE" 			name="leverageRate" 		  type="java.lang.Double"/>
-	<property column="DAILY_STOPLOSS" 			name="dailyStopLoss" 		  type="java.lang.Double"/>
-  	<property column="TRAILING_STOP" 			name="trailingStop" 		  type="java.lang.Double"/>
-  	<property column="STOP_LOSS_PERCENT" 			name="stopLossPercent" 		  type="java.lang.Double"/>
-  	<property column="FREEZE_PERCENT" 			name="freezePercent" 		  type="java.lang.Double"/>
-  	<property column="TERMINATE_PERCENT" 			name="terminatePercent" 		  type="java.lang.Double"/>
-  	<property column="LIVE_TRADING"			name="liveTrading"		 type="java.lang.Boolean"/>
-  	<property column="USER_LIVE_TRADING"			name="userLiveTrading"		 type="java.lang.Boolean"/>
-    <property column="LIVE_TRADING_TYPE" 			name="liveTradingType" length="30">
-   		<type name="org.hibernate.type.EnumType">
-   			<param name="enumClass">com.cyanspring.common.account.LiveTradingType</param>   
-       		<param name="type">12</param>
-   		</type>
-	</property>
-	<property column="LIVE_TRADING_SETTED_DATE" 			name="liveTradingSettedDate" 		  type="java.lang.String"/>
-  	<property column="FREEZE_VALUE" 			name="freezeValue" 		  type="java.lang.Double"/>
-  	<property column="TERMINATE_VALUE" 			name="terminateValue" 		  type="java.lang.Double"/>	
-  	<property column="DEFAULT_QTY2"		name="defaultQty2"	  type="java.lang.String"/>
-  	<property column="LTS_API_PERM"          name="ltsApiPerm"       type="java.lang.Boolean"/>
-  </class>
-  
-  <class name="com.cyanspring.common.account.PositionPeakPrice" table="ANYONE.POSITION_PEAK_PRICE">
-  	<composite-id>
-	  	<key-property 	column="ACCOUNT_ID" 	name="account"			type="java.lang.String"/>
-  		<key-property 	column="SYMBOL"			name="symbol"		type="java.lang.String"/>
-  	</composite-id> 	
-    <property column="POSITION"	name="position" type="java.lang.Double"/>
-	<property column="PRICE"	name="price" type="java.lang.Double"/>
-  </class>
+	<class name="com.cyanspring.server.persistence.ChildOrderAudit"
+		table="ANYONE.CHILD_ORDER_AUDIT">
+		<id column="AUDIT_ID" name="auditId" type="java.lang.String" />
+		<property column="OBJECT_ID" name="id" type="java.lang.String" />
+		<property column="EXEC_TYPE" name="execType" length="30">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">com.cyanspring.common.type.ExecType</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		<property column="SYMBOL" name="symbol" type="java.lang.String" />
+		<property column="SIDE" name="side" length="30">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">com.cyanspring.common.type.OrderSide</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		<property column="QUANTITY" name="quantity" type="java.lang.Double" />
+		<property column="PRICE" name="price" type="java.lang.Double" />
+		<property column="CUM_QTY" name="cumQty" type="java.lang.Double" />
+		<property column="AVG_PX" name="avgPx" type="java.lang.Double" />
+		<property column="ORDER_TYPE" name="type" length="30">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">com.cyanspring.common.type.ExchangeOrderType</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		<property column="ORD_STATUS" name="ordStatus" length="30">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">com.cyanspring.common.type.OrdStatus</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		<property column="PARENT_ID" name="parentOrderId" type="java.lang.String" />
+		<property column="STRATEGY_ID" name="strategyId" type="java.lang.String" />
+		<property column="MODIFIED" name="modified" type="java.util.Date" />
+		<property column="CREATED" name="created" type="java.util.Date" />
+		<property column="SEQ_ID" name="seqId" type="java.lang.String" />
+		<property column="CLORDER_ID" name="clOrderId" type="java.lang.String" />
+		<property column="SERVER_ID" name="serverId" type="java.lang.String" />
+		<property column="TRADER" name="user" type="java.lang.String" />
+		<property column="ACCOUNT" name="account" type="java.lang.String" />
+		<property column="ROUTE" name="route" type="java.lang.String" />
+		<property column="EXCHANGE_ORDER_ID" name="exchangeOrderId"
+			type="java.lang.String" />
+	</class>
 
-  <class name="com.cyanspring.common.business.GroupManagement" table="ANYONE.GROUP_MANAGEMENT">
-  	<composite-id>
-	  	<key-property 	column="MANAGER" 	name="manager"	type="java.lang.String"/>
-  		<key-property 	column="MANAGED"	name="managed"	type="java.lang.String"/>
-  	</composite-id> 	
-  </class>
+	<class name="com.cyanspring.server.persistence.TextObject" table="ANYONE.TEXT_OBJECTS">
+		<composite-id>
+			<key-property column="OBJECT_ID" name="id" type="java.lang.String" />
+			<key-property column="OBJECT_TYPE" name="persistType"
+				length="40">
+				<type name="org.hibernate.type.EnumType">
+					<param name="enumClass">com.cyanspring.common.type.PersistType</param>
+					<param name="type">12</param>
+				</type>
+			</key-property>
+			<key-property column="LINE_NO" name="line" type="java.lang.Integer" />
+		</composite-id>
+		<property column="STRATEGY_STATE" name="state" length="20">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">com.cyanspring.common.type.StrategyState</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		<property column="TIME_STAMP" name="timeStamp" type="java.util.Date" />
+		<property column="XML_TEXT" name="xml" type="java.lang.String" />
+		<property column="SERVER_ID" name="serverId" type="java.lang.String" />
+		<property column="TRADER" name="user" type="java.lang.String" />
+		<property column="ACCOUNT" name="account" type="java.lang.String" />
+		<property column="ROUTE" name="route" type="java.lang.String" />
+	</class>
 
-  <class name="com.cyanspring.common.business.CashAudit" table="ANYONE.CASH_AUDIT">
-      <id name="cashID" column="CASH_ID" type="java.lang.String"/>
-      <property name="accountID" column="ACCOUNT_ID"	type="java.lang.String"/>
-      <property name="type" column="TYPE">
-      	<type name="org.hibernate.type.EnumType">
-        <param name="enumClass">com.cyanspring.common.business.AuditType</param>
-        <param name="type">12</param>
-    	</type>
-      </property>
-      <property name="addCash" column="ADD_CASH" type="java.lang.Double"/>
-      <property name="cashDeposited" column="CASH_DEPOSITED" type="java.lang.Double"/>
-      <property name="time" column="ADD_TIME" type="java.util.Date"/>
-  </class>
+	<class name="com.cyanspring.common.account.User" table="ANYONE.USERS">
+		<id column="USER_ID" name="id" type="java.lang.String" />
+		<property column="USER_NAME" name="name" type="java.lang.String" />
+		<property column="PASSWORD" name="password" type="java.lang.String" />
+		<property column="EMAIL" name="email" type="java.lang.String" />
+		<property column="PHONE" name="phone" type="java.lang.String" />
+		<property column="CREATED" name="created" type="java.util.Date" />
+		<property column="LAST_LOGIN" name="lastLogin" type="java.util.Date" />
+		<property column="USER_TYPE" name="userType" length="20">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">com.cyanspring.common.account.UserType</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		<property column="USER_ROLE" name="role" length="20">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">com.cyanspring.common.account.UserRole</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		<property column="DEFAULT_ACCOUNT" name="defaultAccount"
+			type="java.lang.String" />
+	</class>
 
-  <class name="com.cyanspring.common.business.CoinControl" table="ANYONE.COIN_CONTROL">
-  		<id name="accountId" column="ACCOUNT_ID"  	type="java.lang.String"/>
-  		<property name="checkPositionStopLossStart" column="CHECK_POSITION_STOP_LOSS_START" type="java.util.Date"/>
-  		<property name="checkPositionStopLossEnd" column="CHECK_POSITION_STOP_LOSS_END" type="java.util.Date"/>	
-  		<property name="checkDailyStopLossStart" column="CHECK_DAILY_STOP_LOSS_START" type="java.util.Date"/>
-  		<property name="checkDailyStopLossEnd" column="CHECK_DAILY_STOP_LOSS_END" type="java.util.Date"/>	
-  		<property name="checkTrailingStopStart" column="CHECK_TRAILING_STOP_START" type="java.util.Date"/>
-  		<property name="checkTrailingStopEnd" column="CHECK_TRAILING_STOP_END" type="java.util.Date"/>	  
-  		<property name="checkDayTradingModeStart" column="CHECK_DAY_TRADING_MODE_START" type="java.util.Date"/>
-  		<property name="checkDayTradingModeEnd" column="CHECK_DAY_TRADING_MODE_END" type="java.util.Date"/>	
-  		<property name="modifyTime" column="MODIFY_TIME" type="java.util.Date"/>	
-  </class>
-  
-  <sql-query name="rollEndOfDay2">
+	<class name="com.cyanspring.common.account.Account" table="ANYONE.ACCOUNTS">
+		<id column="ACCOUNT_ID" name="id" type="java.lang.String" />
+		<property column="USER_ID" name="userId" type="java.lang.String" />
+		<property column="MARKET" name="market" type="java.lang.String" />
+		<property column="CASH" name="cash" type="java.lang.Double" />
+		<property column="CASH_AVAILABLE" name="cashAvailable" type="java.lang.Double" />
+		<property column="MARGIN" name="margin" type="java.lang.Double" />
+		<property column="MARGIN_HELD" name="marginHeld" type="java.lang.Double" />
+		<property column="PNL" name="PnL" type="java.lang.Double" />
+		<property column="ALL_TIME_PNL" name="allTimePnL" type="java.lang.Double" />
+		<property column="UR_PNL" name="urPnL" type="java.lang.Double" />
+		<property column="CASH_DEPOSITED" name="cashDeposited" type="java.lang.Double" />
+		<property column="ROLL_PRICE" name="rollPrice" type="java.lang.Double" />
+		<property column="UNIT_PRICE" name="unitPrice" type="java.lang.Double" />
+		<property column="ACTIVE" name="active" type="java.lang.Boolean" />
+		<property column="CREATED" name="created" type="java.util.Date" />
+		<property column="CURRENCY" name="currency" type="java.lang.String" />
+		<property column="START_ACCOUNT_VALUE" name="startAccountValue"
+			type="java.lang.Double" />
+		<property column="STATE" name="state" length="20">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">com.cyanspring.common.account.AccountState</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+	</class>
+
+	<class name="com.cyanspring.common.pool.AccountPool" table="ANYONE.ACCOUNT_POOL">
+		<id column="ACCOUNT" name="account" type="java.lang.String" />
+		<property column="INSTRUMENT_POOL_ID" name="instrumentPool"
+			type="java.lang.String" />
+	</class>
+
+	<class name="com.cyanspring.common.pool.ExchangeAccount" table="ANYONE.EXCHANGE_ACCOUNT">
+		<id column="EXCHANGE_ACCOUNT_ID" name="id" type="java.lang.String" />
+		<property column="EXCHANGE_ACCOUNT_NAME" name="name"
+			type="java.lang.String" />
+	</class>
+
+	<class name="com.cyanspring.common.pool.ExchangeSubAccount"
+		table="ANYONE.EXCHANGE_SUB_ACCOUNT">
+		<id column="EXCHANGE_SUB_ACCOUNT_ID" name="id" type="java.lang.String" />
+		<property column="EXCHANGE_ACCOUNT_ID" name="exchangeAccount"
+			type="java.lang.String" />
+		<property column="DESCRIPTION" name="desc" type="java.lang.String" />
+	</class>
+
+	<class name="com.cyanspring.common.pool.InstrumentPool" table="ANYONE.INSTRUMENT_POOL">
+		<id column="INSTRUMENT_POOL_ID" name="id" type="java.lang.String" />
+		<property column="EXCHANGE_SUB_ACCOUNT_ID" name="exchangeSubAccount"
+			type="java.lang.String" />
+	</class>
+
+	<class name="com.cyanspring.common.pool.InstrumentPoolRecord"
+		table="ANYONE.INSTRUMENT_POOL_RECORD">
+		<id column="INSTRUMENT_POOL_ID" name="instrumentPoolId" type="java.lang.String" />
+		<property column="SYMBOL" name="symbol" type="java.lang.String" />
+		<property column="QTY" name="qty" type="java.lang.Double" />
+		<property column="BUY_HELD" name="buyHeld" type="java.lang.Double" />
+		<property column="SELL_HELD" name="sellHeld" type="java.lang.Double" />
+	</class>
+
+	<!-- <class name="com.cyanspring.common.account.AccountDaily" table="ANYONE.ACCOUNTS_DAILY"> 
+		<composite-id> <key-property column="ACCOUNT_ID" name="id" type="java.lang.String"/> 
+		<key-property column="ON_DATE" name="onDate" type="java.util.Date"/> </composite-id> 
+		<property column="USER_ID" name="userId" type="java.lang.String"/> <property 
+		column="MARKET" name="market" type="java.lang.String"/> <property column="CASH" 
+		name="cash" type="java.lang.Double"/> <property column="MARGIN" name="margin" 
+		type="java.lang.Double"/> <property column="PNL" name="PnL" type="java.lang.Double"/> 
+		<property column="ALL_TIME_PNL" name="allTimePnL" type="java.lang.Double"/> 
+		<property column="UR_PNL" name="urPnL" type="java.lang.Double"/> <property 
+		column="CASH_DEPOSITED" name="cashDeposited" type="java.lang.Double"/> <property 
+		column="ROLL_PRICE" name="rollPrice" type="java.lang.Double"/> <property 
+		column="UNIT_PRICE" name="unitPrice" type="java.lang.Double"/> <property 
+		column="ACTIVE" name="active" type="java.lang.Boolean"/> <property column="CREATED" 
+		name="created" type="java.util.Date"/> <property column="CURRENCY" name="currency" 
+		type="java.lang.String"/> <property column="ON_TIME" name="onTime" type="java.util.Date"/> 
+		<property column="TRADE_DATE" name="tradeDate" type="java.lang.String"/> 
+		</class> -->
+
+	<class name="com.cyanspring.common.account.Position" abstract="true">
+		<id column="POSITION_ID" name="id" type="java.lang.String" />
+		<property column="USER_ID" name="user" type="java.lang.String" />
+		<property column="ACCOUNT_ID" name="account" type="java.lang.String" />
+		<property column="SYMBOL" name="symbol" type="java.lang.String" />
+		<property column="QTY" name="qty" type="java.lang.Double" />
+		<property column="PNL" name="PnL" type="java.lang.Double" />
+		<property column="AC_PNL" name="acPnL" type="java.lang.Double" />
+		<property column="CREATED" name="created" type="java.util.Date" />
+
+		<union-subclass name="com.cyanspring.common.account.OpenPosition"
+			table="ANYONE.OPEN_POSITIONS">
+			<property column="PRICE" name="price" type="java.lang.Double" />
+			<property column="MARGIN" name="margin" type="java.lang.Double" />
+		</union-subclass>
+
+		<union-subclass name="com.cyanspring.common.account.ClosedPosition"
+			table="ANYONE.CLOSED_POSITIONS">
+			<property column="BUY_PRICE" name="buyPrice" type="java.lang.Double" />
+			<property column="SELL_PRICE" name="sellPrice" type="java.lang.Double" />
+		</union-subclass>
+	</class>
+
+	<class name="com.cyanspring.common.account.AccountSetting" table="ANYONE.ACCOUNT_SETTINGS">
+		<id column="ACCOUNT_ID" name="id" type="java.lang.String" />
+		<property column="DEFAULT_QTY" name="defaultQty" type="java.lang.Double" />
+		<property column="STOP_LOSS_VALUE" name="stopLossValue" type="java.lang.Double" />
+		<property column="COMPANY_SL_VALUE" name="companySLValue"
+			type="java.lang.Double" />
+		<property column="MARGIN" name="margin" type="java.lang.Double" />
+		<property column="ROUTE" name="route" type="java.lang.String" />
+		<property column="COMMISSION" name="commission" type="java.lang.Double" />
+		<property column="LEVERAGE_RATE" name="leverageRate" type="java.lang.Double" />
+		<property column="DAILY_STOPLOSS" name="dailyStopLoss" type="java.lang.Double" />
+		<property column="TRAILING_STOP" name="trailingStop" type="java.lang.Double" />
+		<property column="STOP_LOSS_PERCENT" name="stopLossPercent"
+			type="java.lang.Double" />
+		<property column="FREEZE_PERCENT" name="freezePercent" type="java.lang.Double" />
+		<property column="TERMINATE_PERCENT" name="terminatePercent"
+			type="java.lang.Double" />
+		<property column="LIVE_TRADING" name="liveTrading" type="java.lang.Boolean" />
+		<property column="USER_LIVE_TRADING" name="userLiveTrading"
+			type="java.lang.Boolean" />
+		<property column="LIVE_TRADING_TYPE" name="liveTradingType"
+			length="30">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">com.cyanspring.common.account.LiveTradingType</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		<property column="LIVE_TRADING_SETTED_DATE" name="liveTradingSettedDate"
+			type="java.lang.String" />
+		<property column="FREEZE_VALUE" name="freezeValue" type="java.lang.Double" />
+		<property column="TERMINATE_VALUE" name="terminateValue"
+			type="java.lang.Double" />
+		<property column="DEFAULT_QTY2" name="defaultQty2" type="java.lang.String" />
+		<property column="LTS_API_PERM" name="ltsApiPerm" type="java.lang.Boolean" />
+	</class>
+
+	<class name="com.cyanspring.common.account.PositionPeakPrice"
+		table="ANYONE.POSITION_PEAK_PRICE">
+		<composite-id>
+			<key-property column="ACCOUNT_ID" name="account"
+				type="java.lang.String" />
+			<key-property column="SYMBOL" name="symbol" type="java.lang.String" />
+		</composite-id>
+		<property column="POSITION" name="position" type="java.lang.Double" />
+		<property column="PRICE" name="price" type="java.lang.Double" />
+	</class>
+
+	<class name="com.cyanspring.common.business.GroupManagement"
+		table="ANYONE.GROUP_MANAGEMENT">
+		<composite-id>
+			<key-property column="MANAGER" name="manager" type="java.lang.String" />
+			<key-property column="MANAGED" name="managed" type="java.lang.String" />
+		</composite-id>
+	</class>
+
+	<class name="com.cyanspring.common.business.CashAudit" table="ANYONE.CASH_AUDIT">
+		<id name="cashID" column="CASH_ID" type="java.lang.String" />
+		<property name="accountID" column="ACCOUNT_ID" type="java.lang.String" />
+		<property name="type" column="TYPE">
+			<type name="org.hibernate.type.EnumType">
+				<param name="enumClass">com.cyanspring.common.business.AuditType</param>
+				<param name="type">12</param>
+			</type>
+		</property>
+		<property name="addCash" column="ADD_CASH" type="java.lang.Double" />
+		<property name="cashDeposited" column="CASH_DEPOSITED" type="java.lang.Double" />
+		<property name="time" column="ADD_TIME" type="java.util.Date" />
+	</class>
+
+	<class name="com.cyanspring.common.business.CoinControl" table="ANYONE.COIN_CONTROL">
+		<id name="accountId" column="ACCOUNT_ID" type="java.lang.String" />
+		<property name="checkPositionStopLossStart" column="CHECK_POSITION_STOP_LOSS_START"
+			type="java.util.Date" />
+		<property name="checkPositionStopLossEnd" column="CHECK_POSITION_STOP_LOSS_END"
+			type="java.util.Date" />
+		<property name="checkDailyStopLossStart" column="CHECK_DAILY_STOP_LOSS_START"
+			type="java.util.Date" />
+		<property name="checkDailyStopLossEnd" column="CHECK_DAILY_STOP_LOSS_END"
+			type="java.util.Date" />
+		<property name="checkTrailingStopStart" column="CHECK_TRAILING_STOP_START"
+			type="java.util.Date" />
+		<property name="checkTrailingStopEnd" column="CHECK_TRAILING_STOP_END"
+			type="java.util.Date" />
+		<property name="checkDayTradingModeStart" column="CHECK_DAY_TRADING_MODE_START"
+			type="java.util.Date" />
+		<property name="checkDayTradingModeEnd" column="CHECK_DAY_TRADING_MODE_END"
+			type="java.util.Date" />
+		<property name="modifyTime" column="MODIFY_TIME" type="java.util.Date" />
+	</class>
+
+	<sql-query name="rollEndOfDay2">
     <![CDATA[
 	INSERT INTO ANYONE.ACCOUNTS_DAILY(ACCOUNT_ID, USER_ID, MARKET, CASH, MARGIN, MARGIN_HELD, PNL, ALL_TIME_PNL, UR_PNL, CASH_DEPOSITED, ROLL_PRICE, UNIT_PRICE, ACTIVE, CREATED, CASH_AVAILABLE, CURRENCY, ON_DATE, ON_TIME, TRADE_DATE) SELECT ACCOUNT_ID, USER_ID, MARKET, CASH, MARGIN, MARGIN_HELD, PNL, ALL_TIME_PNL, UR_PNL, CASH_DEPOSITED, ROLL_PRICE, UNIT_PRICE, ACTIVE, CREATED, CASH_AVAILABLE, CURRENCY, CURRENT_DATE, CURRENT_TIMESTAMP, :tradeDate FROM ANYONE.ACCOUNTS    ]]>
-  </sql-query>
-  <sql-query name="rollEndOfDay3">
+	</sql-query>
+	<sql-query name="rollEndOfDay3">
     <![CDATA[
     UPDATE ANYONE.ACCOUNTS SET PNL = 0  
     ]]>
-  </sql-query>    
-  <sql-query name="cleanAccountsDailyByAccount">
+	</sql-query>
+	<sql-query name="cleanAccountsDailyByAccount">
     <![CDATA[
     DELETE FROM ANYONE.ACCOUNTS_DAILY WHERE ACCOUNT_ID = :account
     ]]>
-  </sql-query>
+	</sql-query>
 
 
 

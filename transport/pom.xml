@@ -79,8 +79,8 @@
 	</dependency>		
 	<dependency>
 		<groupId>org.apache.activemq</groupId>
-		<artifactId>activemq-all</artifactId>
-		<version>5.10.0</version>
+		<artifactId>activemq-core</artifactId>
+		<version>5.7.0</version>
 		<exclusions>
       		<exclusion> 
         		<groupId>org.slf4j</groupId>

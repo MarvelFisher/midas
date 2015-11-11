@@ -23,4 +23,16 @@ public class ExchangeSubAccount {
 	public String getExchangeAccount() {
 		return exchangeAccount;
 	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
+
+	public void setExchangeAccount(String exchangeAccount) {
+		this.exchangeAccount = exchangeAccount;
+	}
 }

@@ -11,9 +11,9 @@ import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.AccountSettingType;
 import com.cyanspring.common.account.LiveTradingType;
+import com.cyanspring.common.livetrading.TradingUtil;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.util.PriceUtils;
-import com.cyanspring.server.livetrading.TradingUtil;
 
 public class LiveTradingRuleHandler{
 	

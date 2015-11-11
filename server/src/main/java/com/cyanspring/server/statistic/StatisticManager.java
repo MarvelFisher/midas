@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.account.Account;
+import com.cyanspring.common.account.AccountKeeper;
 import com.cyanspring.common.event.GenericAsyncEventProcessor;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.statistic.AccountNumberReplyEvent;
@@ -17,7 +18,6 @@ import com.cyanspring.common.event.statistic.AccountStatisticRequestEvent;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.util.IdGenerator;
-import com.cyanspring.server.account.AccountKeeper;
 
 public class StatisticManager implements IPlugin {
 

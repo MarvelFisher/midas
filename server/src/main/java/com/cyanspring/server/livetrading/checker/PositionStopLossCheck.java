@@ -15,14 +15,14 @@ import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.order.ClosePositionRequestEvent;
+import com.cyanspring.common.livetrading.TradingUtil;
 import com.cyanspring.common.marketdata.IQuoteChecker;
 import com.cyanspring.common.marketdata.PriceQuoteChecker;
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.common.order.RiskOrderController;
+import com.cyanspring.common.position.PositionKeeper;
 import com.cyanspring.common.util.IdGenerator;
-import com.cyanspring.server.account.PositionKeeper;
 import com.cyanspring.server.livetrading.LiveTradingSetting;
-import com.cyanspring.server.livetrading.TradingUtil;
-import com.cyanspring.server.order.RiskOrderController;
 
 public class PositionStopLossCheck implements ILiveTradingChecker {
 	

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.account.Account;
+import com.cyanspring.common.account.AccountKeeper;
 import com.cyanspring.common.business.CoinControl;
 import com.cyanspring.common.business.CoinType;
 import com.cyanspring.common.event.AsyncEventProcessor;

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.IPlugin;
+import com.cyanspring.common.account.AccountKeeper;
 import com.cyanspring.common.alert.PriceAlert;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.event.AsyncTimerEvent;
@@ -25,7 +26,6 @@ import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.event.AsyncEventProcessor;
-import com.cyanspring.server.account.AccountKeeper;
 
 public class AlertManager implements IPlugin {
 	private static final Logger log = LoggerFactory

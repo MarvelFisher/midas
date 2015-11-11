@@ -16,12 +16,12 @@ import com.cyanspring.common.event.account.AccountStateReplyEvent;
 import com.cyanspring.common.event.account.AccountUpdateEvent;
 import com.cyanspring.common.event.account.PmUpdateAccountEvent;
 import com.cyanspring.common.event.account.UserTerminateReplyEvent;
+import com.cyanspring.common.livetrading.TradingUtil;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
-import com.cyanspring.server.account.PositionKeeper;
+import com.cyanspring.common.order.RiskOrderController;
+import com.cyanspring.common.position.PositionKeeper;
 import com.cyanspring.server.livetrading.LiveTradingSetting;
-import com.cyanspring.server.livetrading.TradingUtil;
-import com.cyanspring.server.order.RiskOrderController;
 import com.cyanspring.server.persistence.PersistenceManager;
 
 public class TerminateStopLossCheck implements ILiveTradingChecker {

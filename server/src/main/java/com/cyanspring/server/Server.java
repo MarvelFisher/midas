@@ -59,6 +59,12 @@ import com.cyanspring.common.event.system.NodeInfoEvent;
 import com.cyanspring.common.event.system.ServerHeartBeatEvent;
 import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.marketdata.TickField;
+import com.cyanspring.common.pool.AccountPool;
+import com.cyanspring.common.pool.ExchangeAccount;
+import com.cyanspring.common.pool.ExchangeSubAccount;
+import com.cyanspring.common.pool.InstrumentPool;
+import com.cyanspring.common.pool.InstrumentPoolManager;
+import com.cyanspring.common.pool.InstrumentPoolRecord;
 import com.cyanspring.common.server.event.DownStreamReadyEvent;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.server.event.ServerReadyEvent;
@@ -104,9 +110,11 @@ public class Server implements ApplicationContextAware {
 	CoinManager coinManager;
 
 	@Autowired(required = false)
+	@Qualifier("executionRecoveryProcessor")
 	IRecoveryProcessor<Execution> executionRecoveryProcessor;
 
 	@Autowired(required = false)
+	@Qualifier("strategyRecoveryProcessor")
 	IRecoveryProcessor<DataObject> strategyRecoveryProcessor;
 
 	@Autowired(required = false)
@@ -122,13 +130,38 @@ public class Server implements ApplicationContextAware {
 	IRecoveryProcessor<CoinControl> coinControlRecoveryProcessor;
 
 	@Autowired(required = false)
+	@Qualifier("accountRecoveryProcessor")
 	IRecoveryProcessor<Account> accountRecoveryProcessor;
 
 	@Autowired(required = false)
+	@Qualifier("accountSettingRecoveryProcessor")
 	IRecoveryProcessor<AccountSetting> accountSettingRecoveryProcessor;
 
 	@Autowired(required = false)
+	@Qualifier("exchangeAccountRecoveryProcessor")
+	IRecoveryProcessor<ExchangeAccount> exchangeAccountRecoveryProcessor;
+
+	@Autowired(required = false)
+	@Qualifier("exchangeSubAccountRecoveryProcessor")
+	IRecoveryProcessor<ExchangeSubAccount> exchangeSubAccountRecoveryProcessor;
+
+	@Autowired(required = false)
+	@Qualifier("instrumentPoolRecoveryProcessor")
+	IRecoveryProcessor<InstrumentPool> instrumentPoolRecoveryProcessor;
+
+	@Autowired(required = false)
+	@Qualifier("accountPoolRecoveryProcessor")
+	IRecoveryProcessor<AccountPool> accountPoolRecoveryProcessor;
+
+	@Autowired(required = false)
+	@Qualifier("instrumentPoolRecordRecoveryProcessor")
+	IRecoveryProcessor<InstrumentPoolRecord> instrumentPoolRecordRecoveryProcessor;
+
+	@Autowired(required = false)
 	AccountPositionManager accountPositionManager;
+
+	@Autowired(required = false)
+	InstrumentPoolManager instrumentPoolManager;
 
 	@Autowired(required = false)
 	PositionRecoveryProcessor positionRecoveryProcessor;
@@ -237,7 +270,8 @@ public class Server implements ApplicationContextAware {
 		}
 	}
 
-	public void processServerShutdownEvent(ServerShutdownEvent event) throws Exception {
+	public void processServerShutdownEvent(ServerShutdownEvent event)
+			throws Exception {
 		shutdown();
 	}
 
@@ -318,8 +352,7 @@ public class Server implements ApplicationContextAware {
 		}
 
 		if (null != coinControlRecoveryProcessor && null != coinManager) {
-			List<CoinControl> list = coinControlRecoveryProcessor
-					.recover();
+			List<CoinControl> list = coinControlRecoveryProcessor.recover();
 			log.info("CoinControl loaded: " + list.size());
 			coinManager.injectCoinControls(list);
 		}
@@ -332,6 +365,41 @@ public class Server implements ApplicationContextAware {
 					.recoverClosedPositions();
 			log.info("Closed positions loaded: " + list2.size());
 			accountPositionManager.injectPositions(list1, list2);
+		}
+
+		if (null != exchangeAccountRecoveryProcessor) {
+			List<ExchangeAccount> list = exchangeAccountRecoveryProcessor
+					.recover();
+			log.info("ExchangeAccount loaded: " + list.size());
+			instrumentPoolManager.injectExchangeAccounts(list);
+		}
+
+		if (null != exchangeSubAccountRecoveryProcessor) {
+			List<ExchangeSubAccount> list = exchangeSubAccountRecoveryProcessor
+					.recover();
+			log.info("ExchangeSubAccount loaded: " + list.size());
+			instrumentPoolManager.injectExchangeSubAccounts(list);
+		}
+
+		if (null != instrumentPoolRecoveryProcessor) {
+			List<InstrumentPool> list = instrumentPoolRecoveryProcessor
+					.recover();
+			log.info("InstrumentPool loaded: " + list.size());
+			instrumentPoolManager.injectInstrumentPools(list);
+		}
+
+		if (null != accountPoolRecoveryProcessor) {
+			List<AccountPool> list = accountPoolRecoveryProcessor.recover();
+			log.info("AccountPool loaded: " + list.size());
+			accountPositionManager.injectAccountPools(list);
+			instrumentPoolManager.injectAccountPools(list);
+		}
+
+		if (null != instrumentPoolRecordRecoveryProcessor) {
+			List<InstrumentPoolRecord> list = instrumentPoolRecordRecoveryProcessor
+					.recover();
+			log.info("InstrumentPoolRecords loaded: " + list.size());
+			instrumentPoolManager.injectInstrumentPoolRecords(list);
 		}
 
 		accountPositionManager.endAcountPositionRecovery();

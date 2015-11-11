@@ -98,7 +98,7 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 		// dateTimeRoller = new DateTimeRoller(now, 100);
 		// scheduleManager.scheduleRepeatTimerEvent(1000, this, timerEvent);
 
-		threadSentinel = true;
+		threadSentinel = false;
 		thread = new Thread() {
 			@Override
 			public void run() {

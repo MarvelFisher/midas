@@ -1,6 +1,8 @@
 package com.cyanspring.server.validation;
 
-import java.util.List;
+import static com.cyanspring.common.account.AccountState.FROZEN;
+import static com.cyanspring.common.account.AccountState.TERMINATED;
+
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -9,16 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.account.Account;
+import com.cyanspring.common.account.AccountKeeper;
 import com.cyanspring.common.account.AccountState;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.message.ErrorMessage;
-import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
-import com.cyanspring.server.account.AccountKeeper;
-
-import static com.cyanspring.common.account.AccountState.*;
 
 public class AccountStateValidator  implements IOrderValidator{
 	

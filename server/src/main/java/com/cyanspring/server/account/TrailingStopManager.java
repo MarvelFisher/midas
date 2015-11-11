@@ -12,6 +12,7 @@ import webcurve.util.PriceUtils;
 
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.account.Account;
+import com.cyanspring.common.account.AccountKeeper;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.OrderReason;
@@ -27,6 +28,7 @@ import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.order.ClosePositionRequestEvent;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.QuoteUtils;
+import com.cyanspring.common.position.PositionKeeper;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PerfDurationCounter;

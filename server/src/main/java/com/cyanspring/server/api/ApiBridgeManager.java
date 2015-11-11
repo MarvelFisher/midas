@@ -15,6 +15,7 @@ import com.cyanspring.apievent.request.UserLoginEvent;
 import com.cyanspring.apievent.version.ApiVersion;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.account.AccountException;
+import com.cyanspring.common.account.AccountKeeper;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncPriorityEventThread;
@@ -33,7 +34,6 @@ import com.cyanspring.event.api.obj.SpamController;
 import com.cyanspring.event.api.obj.reply.IApiReply;
 import com.cyanspring.event.api.obj.request.ApiUserLoginEvent;
 import com.cyanspring.event.api.obj.request.IApiRequest;
-import com.cyanspring.server.account.AccountKeeper;
 
 public class ApiBridgeManager implements IPlugin, IAsyncEventBridge, IAsyncEventListener {
 

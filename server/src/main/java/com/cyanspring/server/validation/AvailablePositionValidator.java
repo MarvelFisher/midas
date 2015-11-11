@@ -8,17 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.Default;
 import com.cyanspring.common.account.Account;
+import com.cyanspring.common.account.AccountKeeper;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.position.PositionKeeper;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataBitUtil;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
-import com.cyanspring.server.account.AccountKeeper;
-import com.cyanspring.server.account.PositionKeeper;
 
 public class AvailablePositionValidator implements IOrderValidator {
 	private static final Logger log = LoggerFactory.getLogger(AvailablePositionValidator.class);
