@@ -322,6 +322,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 
 	private void createUserAccountAction(final Composite parent) {
 		createUserDialog = new CreateUserDialog(parent.getShell());
+		createUserDialog.onlyTraderUserRole(true);
 		// create local toolbars
 		createUserAction = new Action() {
 			public void run() {
@@ -332,7 +333,6 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		createUserAction.setId(ID_CREATE_USER_ACTION);
 		createUserAction.setText("Creat a user & account");
 		createUserAction.setToolTipText("Create a user & account");
-
 		ImageDescriptor imageDesc = imageRegistry
 				.getDescriptor(ImageID.PLUS_ICON.toString());
 		createUserAction.setImageDescriptor(imageDesc);
