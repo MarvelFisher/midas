@@ -17,13 +17,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
-import webcurve.util.PriceUtils;
-
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
+import com.cyanspring.common.account.AccountKeeper;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.AccountState;
 import com.cyanspring.common.account.ClosedPosition;
@@ -126,6 +125,7 @@ import com.cyanspring.common.event.order.UpdateOpenPositionPriceEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
 import com.cyanspring.common.fx.FxUtils;
 import com.cyanspring.common.fx.IFxConverter;
+import com.cyanspring.common.livetrading.TradingUtil;
 import com.cyanspring.common.marketdata.IQuoteChecker;
 import com.cyanspring.common.marketdata.PriceQuoteChecker;
 import com.cyanspring.common.marketdata.Quote;
@@ -136,6 +136,11 @@ import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.ExtraEventMessage;
 import com.cyanspring.common.message.ExtraEventMessageBuilder;
 import com.cyanspring.common.message.MessageLookup;
+import com.cyanspring.common.order.RiskOrderController;
+import com.cyanspring.common.pool.AccountPool;
+import com.cyanspring.common.position.IPositionListener;
+import com.cyanspring.common.position.IQuoteFeeder;
+import com.cyanspring.common.position.PositionKeeper;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.staticdata.AccountSaver;
 import com.cyanspring.common.staticdata.IRefDataManager;
@@ -144,14 +149,13 @@ import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PerfDurationCounter;
 import com.cyanspring.common.util.PerfFrequencyCounter;
+import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeThrottler;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.server.livetrading.LiveTradingSetting;
-import com.cyanspring.server.livetrading.TradingUtil;
 import com.cyanspring.server.livetrading.checker.FrozenStopLossCheck;
 import com.cyanspring.server.livetrading.checker.LiveTradingCheckHandler;
 import com.cyanspring.server.livetrading.checker.TerminateStopLossCheck;
-import com.cyanspring.server.order.RiskOrderController;
 import com.cyanspring.server.persistence.PersistenceManager;
 import com.cyanspring.server.validation.transaction.SystemSuspendValidator;
 import com.google.common.base.Strings;
@@ -2332,6 +2336,10 @@ public class AccountPositionManager implements IPlugin {
 			List<ClosedPosition> closed) {
 		positionKeeper.injectOpenPositions(opens);
 		positionKeeper.injectClosedPositions(closed);
+	}
+
+	public void injectAccountPools(List<AccountPool> accountPools) {
+		accountKeeper.injectAccountPools(accountPools);
 	}
 
 	public void endAcountPositionRecovery() {

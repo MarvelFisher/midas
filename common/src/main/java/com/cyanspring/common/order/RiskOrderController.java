@@ -1,4 +1,4 @@
-package com.cyanspring.server.order;
+package com.cyanspring.common.order;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,28 +8,36 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RiskOrderController {
-    private static final Logger log = LoggerFactory
-            .getLogger(RiskOrderController.class);
+	private static final Logger log = LoggerFactory
+			.getLogger(RiskOrderController.class);
 
 	private int maxRiskOrderCount = 50;
 	private int maxTotalOrderCount = 450;
 	Map<String, AtomicInteger> userRiskOrderCounts = new ConcurrentHashMap<String, AtomicInteger>();
 	private AtomicInteger maxTotalOrderCounts = new AtomicInteger(0);
-	
-	public boolean check(String account){
+
+	public boolean check(String account) {
 		AtomicInteger atomicCount = userRiskOrderCounts.get(account);
-		if(null == atomicCount) {
+		if (null == atomicCount) {
 			atomicCount = new AtomicInteger(0);
 			userRiskOrderCounts.put(account, atomicCount);
 		}
-		
+
 		int count = atomicCount.get();
 		int totalCount = maxTotalOrderCounts.get();
-		if(count >= maxRiskOrderCount || totalCount >= maxTotalOrderCount){
+		if (count >= maxRiskOrderCount || totalCount >= maxTotalOrderCount) {
 			log.error("Risk order count reach max, please contact support immediately!!! account: "
-					+ account + "," + count + " --> " + maxRiskOrderCount+" , total count:"+totalCount+" --> "+maxTotalOrderCount);
+					+ account
+					+ ","
+					+ count
+					+ " --> "
+					+ maxRiskOrderCount
+					+ " , total count:"
+					+ totalCount
+					+ " --> "
+					+ maxTotalOrderCount);
 			return false;
-		}else{
+		} else {
 			atomicCount.incrementAndGet();
 			maxTotalOrderCounts.incrementAndGet();
 		}
@@ -50,7 +58,7 @@ public class RiskOrderController {
 	}
 
 	public void setMaxTotalOrderCount(int maxTotalOrderCount) {
-		this.maxTotalOrderCount = maxTotalOrderCount ;
+		this.maxTotalOrderCount = maxTotalOrderCount;
 	}
-	
+
 }

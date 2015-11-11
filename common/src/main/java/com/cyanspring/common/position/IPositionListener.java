@@ -1,4 +1,4 @@
-package com.cyanspring.server.account;
+package com.cyanspring.common.position;
 
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.ClosedPosition;

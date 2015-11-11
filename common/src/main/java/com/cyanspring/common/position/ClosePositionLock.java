@@ -1,7 +1,6 @@
-package com.cyanspring.server.account;
+package com.cyanspring.common.position;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,14 +8,11 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import webcurve.util.PriceUtils;
-
-import com.cyanspring.common.Clock;
 import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.business.Execution;
 import com.cyanspring.common.business.ParentOrder;
-import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.util.DualMap;
+import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
 
 public class ClosePositionLock {

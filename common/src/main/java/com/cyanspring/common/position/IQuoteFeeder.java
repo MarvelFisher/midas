@@ -1,4 +1,4 @@
-package com.cyanspring.server.account;
+package com.cyanspring.common.position;
 
 import com.cyanspring.common.marketdata.Quote;
 
