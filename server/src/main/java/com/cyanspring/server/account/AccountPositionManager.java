@@ -93,6 +93,7 @@ import com.cyanspring.common.event.account.OverAllPositionRequestEvent;
 import com.cyanspring.common.event.account.PmAddCashEvent;
 import com.cyanspring.common.event.account.PmChangeAccountSettingEvent;
 import com.cyanspring.common.event.account.PmCreateAccountEvent;
+import com.cyanspring.common.event.account.PmCreateCSTWUserEvent;
 import com.cyanspring.common.event.account.PmCreateGroupManagementEvent;
 import com.cyanspring.common.event.account.PmCreateUserEvent;
 import com.cyanspring.common.event.account.PmDeleteGroupManagementEvent;
@@ -724,11 +725,15 @@ public class AccountPositionManager implements IPlugin {
                 if (null == user.getUserType()) {
 					user.setUserType(UserType.NORMAL);
 				}
-
-                Account account = new Account(defaultAccountId, event.getUser().getId());
-                accountKeeper.setupAccount(account);
-
-                eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, user, event, Arrays.asList(account)));
+                
+                if(user.getRole().isManagerLevel() || user.getRole().equals(UserRole.Admin)){
+                    eventManager.sendEvent(new PmCreateCSTWUserEvent(PersistenceManager.ID, null, user, event));
+                }else{
+                    Account account = new Account(defaultAccountId, event.getUser().getId());
+                    accountKeeper.setupAccount(account);
+                    eventManager.sendEvent(new PmCreateUserEvent(PersistenceManager.ID, null, user, event, Arrays.asList(account)));
+                }
+                	
             } catch (UserException ue) {
                 message = MessageLookup.buildEventMessage(ue.getClientMessage(), ue.getMessage());
                 ok = false;
@@ -843,9 +848,11 @@ public class AccountPositionManager implements IPlugin {
     public void processOnUserCreatedEvent(OnUserCreatedEvent event) {
         try {
             userKeeper.createUser(event.getUser());
-            for (Account account : event.getAccounts()) {
-				accountKeeper.addAccount(account);
-			}
+            if( null != event.getAccounts()){
+                for (Account account : event.getAccounts()) {
+    				accountKeeper.addAccount(account);
+    			}
+            }
         } catch (Exception e) {
             log.error(e.getMessage() + ", possible data inconsistency", e);
         }
@@ -1037,7 +1044,9 @@ public class AccountPositionManager implements IPlugin {
 	    		userGroup = new UserGroup(id,user.getRole());
 	    	}
 	    	user2AccountMap = new HashMap<>();
-	    	user2AccountMap.put(id, accountList.get(0));
+	    	if(!userGroup.getRole().isManagerLevel() && !userGroup.isAdmin())
+	    		user2AccountMap.put(id, accountList.get(0));
+	    	
 			for (UserGroup ug : userGroup.getManageeSet()) {
 				user2AccountMap.put(ug.getUser(),
 						accountKeeper.getAccounts(ug.getUser()).get(0));

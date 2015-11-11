@@ -141,6 +141,7 @@ public class PersistenceManager {
 			subscribeToEvent(PmUserLoginEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmUserCreateAndLoginEvent.class, PersistenceManager.ID);
 			subscribeToEvent(PmCreateUserEvent.class, PersistenceManager.ID);
+			subscribeToEvent(PmCreateCSTWUserEvent.class, PersistenceManager.ID);
 			subscribeToEvent(ChangeUserPasswordEvent.class, null);
 			subscribeToEvent(UserTerminateEvent.class, null);
 			subscribeToEvent(UserMappingEvent.class, null);
@@ -1490,7 +1491,53 @@ public class PersistenceManager {
 		}
 		return result;
 	}
+	
+	public void processPmCreateCSTWUserEvent(PmCreateCSTWUserEvent event){
+		Session session = sessionFactory.openSession();
+		User user = event.getUser();
+		Transaction tx = null;
+		boolean ok = true;
+		String message = "";
 
+		try {
+			tx = session.beginTransaction();
+			session.save(user);
+			tx.commit();
+			log.info("Created CSTW user: " + event.getUser());
+		} catch (Exception e) {
+
+			message = MessageLookup.buildEventMessage(ErrorMessage.CREATE_USER_FAILED,
+					String.format("can't create user, err=[%s]", e.getMessage()));
+			log.error(e.getMessage(), e);	
+			ok = false;
+			if (tx != null) {
+				tx.rollback();
+			}
+		} finally {
+			session.close();
+		}
+
+		if (ok) {
+
+			eventManager.sendEvent(new OnUserCreatedEvent(user, null));
+			try {
+				eventManager.sendRemoteEvent(new UserUpdateEvent(null, null, user));
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+			}
+		}
+
+		if (event.getOriginalEvent() != null) {
+			try {
+				eventManager.sendRemoteEvent(new CreateUserReplyEvent(event.getOriginalEvent().getKey(),
+						event.getOriginalEvent().getSender(), user, ok, message, event.getOriginalEvent().getTxId()));
+
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+			}
+		}
+	}
+	
 	public void processPmCreateUserEvent(PmCreateUserEvent event) {
 		Session session = sessionFactory.openSession();
 		User user = event.getUser();
