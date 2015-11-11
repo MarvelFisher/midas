@@ -340,7 +340,6 @@
 		</constructor-arg>
 		<constructor-arg>
 			<list>
-				<ref bean="avroAdaptor" />
 			</list>
 		</constructor-arg>
 	</bean>
@@ -351,26 +350,6 @@
     <bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
         <property name="checkSingleSide" value="true"/>
     </bean>
-
-	<bean id="avroAdaptor" class="com.cyanspring.adaptor.avro.AvroAdaptor">
-		<property name="connections">
-			<list>
-				<ref bean="avroDownStreamConnection"/>
-			</list>
-		</property>
-	</bean>
-	
-	<bean id="avroDownStreamConnection" class="com.cyanspring.adaptor.avro.AvroDownStreamConnection">
-		<property name="downStreamEventSender" ref="avroEventSender"></property>
-		<property name="id" value="avro01"></property>
-		<property name="exchangeAccount" value="YF01"></property>
-	</bean>
-	
-	<bean id="avroEventSender" class="com.cyanspring.adaptor.avro.AvroEventSender">	
-		<constructor-arg>
-			<ref bean="transportService"/>
-		</constructor-arg>
-	</bean>
 
 	<bean id="quoteCleaner" class="com.cyanspring.common.marketdata.WindQuoteCleaner" />
 	<bean id="quoteExtendCleaner" class="com.cyanspring.common.marketdata.QuoteExtendCleaner" />
