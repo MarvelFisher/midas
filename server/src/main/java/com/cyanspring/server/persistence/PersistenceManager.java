@@ -242,10 +242,16 @@ public class PersistenceManager {
 		Transaction tx = null;
 		try {
 			tx = session.beginTransaction();
-			String hql = "delete from User where created < :created";
+
+			String hql = "delete from GroupManagement";
 			Query query = session.createQuery(hql);
-			query.setParameter("created", date);
 			int rowCount = query.executeUpdate();
+			log.debug("GROUP_MANAGEMENT Records deleted: " + rowCount);
+
+			hql = "delete from User where created < :created";
+			query = session.createQuery(hql);
+			query.setParameter("created", date);
+			rowCount = query.executeUpdate();
 			log.debug("USER Records deleted: " + rowCount);
 
 			hql = "delete from Account where created < :created";
@@ -1755,8 +1761,8 @@ public class PersistenceManager {
 		}
 		return result;
 	}
-	
-	public void processPmCreateCSTWUserEvent(PmCreateCSTWUserEvent event){
+
+	public void processPmCreateCSTWUserEvent(PmCreateCSTWUserEvent event) {
 		Session session = sessionFactory.openSession();
 		User user = event.getUser();
 		Transaction tx = null;
@@ -1770,9 +1776,10 @@ public class PersistenceManager {
 			log.info("Created CSTW user: " + event.getUser());
 		} catch (Exception e) {
 
-			message = MessageLookup.buildEventMessage(ErrorMessage.CREATE_USER_FAILED,
-					String.format("can't create user, err=[%s]", e.getMessage()));
-			log.error(e.getMessage(), e);	
+			message = MessageLookup.buildEventMessage(
+					ErrorMessage.CREATE_USER_FAILED, String.format(
+							"can't create user, err=[%s]", e.getMessage()));
+			log.error(e.getMessage(), e);
 			ok = false;
 			if (tx != null) {
 				tx.rollback();
@@ -1785,7 +1792,8 @@ public class PersistenceManager {
 
 			eventManager.sendEvent(new OnUserCreatedEvent(user, null));
 			try {
-				eventManager.sendRemoteEvent(new UserUpdateEvent(null, null, user));
+				eventManager.sendRemoteEvent(new UserUpdateEvent(null, null,
+						user));
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
@@ -1793,15 +1801,17 @@ public class PersistenceManager {
 
 		if (event.getOriginalEvent() != null) {
 			try {
-				eventManager.sendRemoteEvent(new CreateUserReplyEvent(event.getOriginalEvent().getKey(),
-						event.getOriginalEvent().getSender(), user, ok, message, event.getOriginalEvent().getTxId()));
+				eventManager.sendRemoteEvent(new CreateUserReplyEvent(event
+						.getOriginalEvent().getKey(), event.getOriginalEvent()
+						.getSender(), user, ok, message, event
+						.getOriginalEvent().getTxId()));
 
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
 		}
 	}
-	
+
 	public void processPmCreateUserEvent(PmCreateUserEvent event) {
 		Session session = sessionFactory.openSession();
 		User user = event.getUser();

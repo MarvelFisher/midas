@@ -15,6 +15,8 @@ import com.cyanspring.common.event.pool.AccountInstrumentSnapshotReplyEvent;
 import com.cyanspring.common.event.pool.AccountInstrumentSnapshotRequestEvent;
 import com.cyanspring.common.event.pool.ExchangeAccountOperationReplyEvent;
 import com.cyanspring.common.event.pool.ExchangeAccountOperationRequestEvent;
+import com.cyanspring.common.event.pool.PmExchangeAccountInsertEvent;
+import com.cyanspring.common.event.pool.PmExchangeAccountUpdateEvent;
 
 /**
  * @author GuoWei
@@ -83,13 +85,29 @@ public class InstrumentPoolManager implements IPlugin {
 				+ exchangeAccount + ", " + type);
 
 		if (type == OperationType.CREATE) {
-			if (instrumentPoolKeeper.ifExists(exchangeAccount)) {
+			if (!instrumentPoolKeeper.ifExists(exchangeAccount)) {
+				PmExchangeAccountInsertEvent insertEvent = new PmExchangeAccountInsertEvent(
+						exchangeAccount);
+				eventManager.sendEvent(insertEvent);
+			} else {
 				ok = false;
 				errorCode = 4;
 				message = exchangeAccount.getId();
 			}
-		} else if (type == OperationType.UPDATE || type == OperationType.DELETE) {
-			if (!instrumentPoolKeeper.ifExists(exchangeAccount)) {
+		} else if (type == OperationType.UPDATE) {
+			if (instrumentPoolKeeper.ifExists(exchangeAccount)) {
+				PmExchangeAccountUpdateEvent updateEvent = new PmExchangeAccountUpdateEvent(
+						exchangeAccount);
+				eventManager.sendEvent(updateEvent);
+			} else {
+				ok = false;
+				errorCode = 5;
+				message = exchangeAccount.getId();
+			}
+		} else if (type == OperationType.DELETE) {
+			if (instrumentPoolKeeper.ifExists(exchangeAccount)) {
+				//instrumentPoolKeeper.get,
+			} else {
 				ok = false;
 				errorCode = 5;
 				message = exchangeAccount.getId();
@@ -101,7 +119,7 @@ public class InstrumentPoolManager implements IPlugin {
 		if (ok) {
 			InstrumentPoolHelper.updateExchangeAccount(instrumentPoolKeeper,
 					exchangeAccount, type);
-			
+
 			replyEvent.setExchangeAccount(exchangeAccount);
 			replyEvent.setOperationType(type);
 		}

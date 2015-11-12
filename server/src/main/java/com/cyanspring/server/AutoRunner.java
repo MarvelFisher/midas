@@ -50,14 +50,13 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class AutoRunner implements IPlugin, IAsyncEventListener {
-	private static final Logger log = LoggerFactory
-			.getLogger(AutoRunner.class);
+	private static final Logger log = LoggerFactory.getLogger(AutoRunner.class);
 	@Autowired
 	IAsyncEventManager eventManager;
-	
+
 	@Autowired
 	ScheduleManager scheduleManager;
-	
+
 	AsyncTimerEvent timerEvent = new AsyncTimerEvent();
 	Thread thread;
 	DateTimeRoller dateTimeRoller;
@@ -66,15 +65,16 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 	static class DateTimeRoller {
 		int countToRollDate;
 		int count;
+
 		DateTimeRoller(Date startDate, int countToRollDate) {
 			Clock.getInstance().setMode(Mode.MANUAL);
 			Clock.getInstance().setManualClock(startDate);
 			this.countToRollDate = countToRollDate;
 		}
-		
+
 		Date getNextTime() {
 			Date now = Clock.getInstance().now();
-			if(count >= countToRollDate) {
+			if (count >= countToRollDate) {
 				now.setTime(now.getTime() + 24 * 60 * 60 * 1000);
 				count = 0;
 			} else {
@@ -82,11 +82,11 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 				count++;
 			}
 			Clock.getInstance().setManualClock(now);
-			
+
 			return now;
 		}
 	}
-	
+
 	public void init() throws ParseException {
 		log.info("Initialising AutoRunner");
 		eventManager.subscribe(ServerReadyEvent.class, this);
@@ -98,12 +98,12 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 		// dateTimeRoller = new DateTimeRoller(now, 100);
 		// scheduleManager.scheduleRepeatTimerEvent(1000, this, timerEvent);
 
-		threadSentinel = false;
+		threadSentinel = true;
 		thread = new Thread() {
 			@Override
 			public void run() {
 				try {
-					synchronized(this) {
+					synchronized (this) {
 						this.wait();
 					}
 					asyncRun();
@@ -113,26 +113,26 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 
 			}
 		};
-		
+
 		thread.start();
 
 	}
-	
-//	private void asyncRun() throws InterruptedException {
-//		Thread.sleep(20000);
-//		Random ran = new Random();
-//		
-//		for(int i=0; i<1000; i++) {
-//			EnterParentOrderEvent sdma = createSDMA();
-//			if(ran.nextBoolean())
-//				sdma.getFields().put(OrderField.PRICE.value(), "68.3");
-//			else
-//				sdma.getFields().put(OrderField.PRICE.value(), "68.2");
-//			sdma.getFields().put(OrderField.NOTE.value(), ""+i);
-//			eventManager.sendEvent(sdma);
-//		}
-//	}
-	
+
+	// private void asyncRun() throws InterruptedException {
+	// Thread.sleep(20000);
+	// Random ran = new Random();
+	//
+	// for(int i=0; i<1000; i++) {
+	// EnterParentOrderEvent sdma = createSDMA();
+	// if(ran.nextBoolean())
+	// sdma.getFields().put(OrderField.PRICE.value(), "68.3");
+	// else
+	// sdma.getFields().put(OrderField.PRICE.value(), "68.2");
+	// sdma.getFields().put(OrderField.NOTE.value(), ""+i);
+	// eventManager.sendEvent(sdma);
+	// }
+	// }
+
 	private void asyncRun() {
 		// add Trader User
 		for (int i = 1; i <= 10; i++) {
@@ -155,7 +155,8 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 			frontUser.setPhone("110110");
 			frontUser.setUserType(UserType.FRONTMANAGER);
 			frontUser.setRole(UserRole.RiskManager);
-			CreateUserEvent event1 = new CreateUserEvent(null, null, frontUser, "", "", "123");
+			CreateUserEvent event1 = new CreateUserEvent(null, null, frontUser,
+					"", "", "123");
 			eventManager.sendEvent(event1);
 			User backUser = new User("back_risk", "xxx");
 			backUser.setName("back_risk");
@@ -163,24 +164,27 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 			backUser.setPhone("110110");
 			backUser.setUserType(UserType.BACKMANAGER);
 			backUser.setRole(UserRole.BackEndRiskManager);
-			CreateUserEvent event2 = new CreateUserEvent(null, null, backUser, "", "", "123");
+			CreateUserEvent event2 = new CreateUserEvent(null, null, backUser,
+					"", "", "123");
 			eventManager.sendEvent(event2);
-			
+
 			List<GroupManagement> group1 = new ArrayList<GroupManagement>();
-			for(int i = 1; i < 5; i++) {
-				group1.add(new GroupManagement(frontUser.getId(), "test"+i));
+			for (int i = 1; i < 5; i++) {
+				group1.add(new GroupManagement(frontUser.getId(), "test" + i));
 			}
-			PmCreateGroupManagementEvent groupEvent1 = new PmCreateGroupManagementEvent(null, null, group1);
+			PmCreateGroupManagementEvent groupEvent1 = new PmCreateGroupManagementEvent(
+					null, null, group1);
 			eventManager.sendEvent(groupEvent1);
-			
+
 			List<GroupManagement> group2 = new ArrayList<GroupManagement>();
-			for(int i = 4; i < 8; i++) {
-				group2.add(new GroupManagement(backUser.getId(), "test"+i));
+			for (int i = 4; i < 8; i++) {
+				group2.add(new GroupManagement(backUser.getId(), "test" + i));
 			}
-			PmCreateGroupManagementEvent groupEvent2 = new PmCreateGroupManagementEvent(null, null, group2);
+			PmCreateGroupManagementEvent groupEvent2 = new PmCreateGroupManagementEvent(
+					null, null, group2);
 			eventManager.sendEvent(groupEvent2);
 		}
-		
+
 	}
 
 	@Override
@@ -191,25 +195,25 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 
 	@Override
 	public void onEvent(AsyncEvent event) {
-		if(event instanceof ServerReadyEvent) {
-			ServerReadyEvent e = (ServerReadyEvent)event;
-			if(!e.isReady())
+		if (event instanceof ServerReadyEvent) {
+			ServerReadyEvent e = (ServerReadyEvent) event;
+			if (!e.isReady())
 				return;
-			
-			synchronized(thread) {
+
+			synchronized (thread) {
 				thread.notify();
 			}
-		} else if(event == timerEvent) {
-			processAsyncTimerEvent((AsyncTimerEvent)event);
+		} else if (event == timerEvent) {
+			processAsyncTimerEvent((AsyncTimerEvent) event);
 		}
 	}
-	
+
 	public void processAsyncTimerEvent(AsyncTimerEvent event) {
 		dateTimeRoller.getNextTime();
 	}
 
 	static EnterParentOrderEvent createSDMA() {
-		// SDMA 
+		// SDMA
 		HashMap<String, Object> fields;
 		EnterParentOrderEvent enterOrderEvent;
 		fields = new HashMap<String, Object>();
@@ -219,10 +223,11 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 		fields.put(OrderField.PRICE.value(), "68.25");
 		fields.put(OrderField.QUANTITY.value(), "2000");
 		fields.put(OrderField.STRATEGY.value(), "SDMA");
-		enterOrderEvent = new EnterParentOrderEvent(null, null, fields, IdGenerator.getInstance().getNextID(), false,true);
+		enterOrderEvent = new EnterParentOrderEvent(null, null, fields,
+				IdGenerator.getInstance().getNextID(), false, true);
 		return enterOrderEvent;
 	}
-	
+
 	static EnterParentOrderEvent createPOV() {
 		// POV
 		HashMap<String, Object> fields;
@@ -236,10 +241,11 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 		fields.put(OrderField.POV.value(), "30");
 		fields.put(OrderField.POV_LIMIT.value(), "30");
 		fields.put(OrderField.STRATEGY.value(), "POV");
-		enterOrderEvent = new EnterParentOrderEvent(null, null, fields, IdGenerator.getInstance().getNextID(), false,true);
+		enterOrderEvent = new EnterParentOrderEvent(null, null, fields,
+				IdGenerator.getInstance().getNextID(), false, true);
 		return enterOrderEvent;
 	}
-	
+
 	static NewMultiInstrumentStrategyEvent createDollarNeutral() {
 		// DOLLAR_NEUTRAL
 		Map<String, Object> strategyLevelParams = new HashMap<String, Object>();
@@ -252,7 +258,7 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 		strategyLevelParams.put("Low flat", "-0.01");
 		strategyLevelParams.put("Low take", "-0.02");
 		strategyLevelParams.put("Low stop", "-0.05");
-		
+
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		Map<String, Object> instr1 = new HashMap<String, Object>();
 		instr1.put(OrderField.SYMBOL.value(), "RIO.AX");
@@ -260,14 +266,14 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 		instr1.put("Weight", "1");
 		instr1.put("Ref price", "55");
 		list.add(instr1);
-		
+
 		Map<String, Object> instr2 = new HashMap<String, Object>();
 		instr2.put(OrderField.SYMBOL.value(), "WBC.AX");
 		instr2.put("Leg", "1");
 		instr2.put("Weight", "2");
 		instr2.put("Ref price", "20.5");
 		list.add(instr2);
-		
+
 		Map<String, Object> instr3 = new HashMap<String, Object>();
 		instr3.put(OrderField.SYMBOL.value(), "BHP.AX");
 		instr3.put("Leg", "2");
@@ -281,18 +287,18 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 		instr4.put("Weight", "2");
 		instr4.put("Ref price", "21.6");
 		list.add(instr4);
-		
-		NewMultiInstrumentStrategyEvent newMultiInstrumentStrategyEvent 
-			= new NewMultiInstrumentStrategyEvent(null, null, strategyLevelParams, list);
-		
+
+		NewMultiInstrumentStrategyEvent newMultiInstrumentStrategyEvent = new NewMultiInstrumentStrategyEvent(
+				null, null, strategyLevelParams, list);
+
 		return newMultiInstrumentStrategyEvent;
 	}
-	
+
 	static NewMultiInstrumentStrategyEvent createLowHigh() {
 		// LOW_HIGH
 		Map<String, Object> lowHigh = new HashMap<String, Object>();
 		lowHigh.put(OrderField.STRATEGY.value(), "LOW_HIGH");
-		
+
 		List<Map<String, Object>> listLowHigh = new ArrayList<Map<String, Object>>();
 		Map<String, Object> instrLowHigh1 = new HashMap<String, Object>();
 		instrLowHigh1.put(OrderField.SYMBOL.value(), "0001.HK");
@@ -301,7 +307,7 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 		instrLowHigh1.put("Low take", "87");
 		instrLowHigh1.put("Low stop", "82");
 		listLowHigh.add(instrLowHigh1);
-		
+
 		Map<String, Object> instrLowHigh2 = new HashMap<String, Object>();
 		instrLowHigh2.put(OrderField.SYMBOL.value(), "0005.HK");
 		instrLowHigh2.put("Qty", "2000");
@@ -313,13 +319,13 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 		instrLowHigh2.put("Low stop", "67.4");
 		instrLowHigh2.put("Shortable", "true");
 		listLowHigh.add(instrLowHigh2);
-		
-		NewMultiInstrumentStrategyEvent newLowHighStrategyEvent 
-			= new NewMultiInstrumentStrategyEvent(null, null, lowHigh, listLowHigh);
-		
+
+		NewMultiInstrumentStrategyEvent newLowHighStrategyEvent = new NewMultiInstrumentStrategyEvent(
+				null, null, lowHigh, listLowHigh);
+
 		return newLowHighStrategyEvent;
 	}
-	
+
 	static NewSingleInstrumentStrategyEvent createStopWinLoss() {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put(OrderField.SYMBOL.value(), "0005.HK");
@@ -329,25 +335,31 @@ public class AutoRunner implements IPlugin, IAsyncEventListener {
 		map.put("Min win", 3.0);
 		map.put("High fall", 1.0);
 		map.put("Low fall", 3.0);
-		NewSingleInstrumentStrategyEvent event = new NewSingleInstrumentStrategyEvent(null, null, "", map);
-		
+		NewSingleInstrumentStrategyEvent event = new NewSingleInstrumentStrategyEvent(
+				null, null, "", map);
+
 		return event;
 	}
-	
-	static void saveXML(String name, AsyncEvent event, XStream xstream) throws IOException {
+
+	static void saveXML(String name, AsyncEvent event, XStream xstream)
+			throws IOException {
 		File file = new File(name);
 		file.createNewFile();
 		FileOutputStream os = new FileOutputStream(file);
 		xstream.toXML(event, os);
 	}
-	
+
 	public static void main(String[] args) throws IOException {
 		XStream xstream = new XStream(new DomDriver());
-		AutoRunner.saveXML("templates/SDMA.xml", AutoRunner.createSDMA(), xstream);
-		AutoRunner.saveXML("templates/POV.xml", AutoRunner.createPOV(), xstream);
-		AutoRunner.saveXML("templates/LOW_HIGH.xml", AutoRunner.createLowHigh(), xstream);
-		AutoRunner.saveXML("templates/DOLLAR_NEUTRAL.xml", AutoRunner.createDollarNeutral(), xstream);
-		
+		AutoRunner.saveXML("templates/SDMA.xml", AutoRunner.createSDMA(),
+				xstream);
+		AutoRunner
+				.saveXML("templates/POV.xml", AutoRunner.createPOV(), xstream);
+		AutoRunner.saveXML("templates/LOW_HIGH.xml",
+				AutoRunner.createLowHigh(), xstream);
+		AutoRunner.saveXML("templates/DOLLAR_NEUTRAL.xml",
+				AutoRunner.createDollarNeutral(), xstream);
+
 	}
 
 }
