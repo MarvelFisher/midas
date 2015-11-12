@@ -57,19 +57,19 @@ public class PositionKeeper {
 	private boolean useMid;
 
 	@Autowired
-	IRefDataManager refDataManager;
+	public IRefDataManager refDataManager;
 
 	@Autowired
 	IFxConverter fxConverter;
 
 	@Autowired
-	AccountKeeper accountKeeper;
+	public AccountKeeper accountKeeper;
 
 	@Autowired
-	ILeverageManager leverageManager;
+	public ILeverageManager leverageManager;
 
 	@Autowired
-	ICommissionManager commissionManager;
+	public ICommissionManager commissionManager;
 
 	private ClosePositionLock closePositionLock = new ClosePositionLock();
 
@@ -411,7 +411,7 @@ public class PositionKeeper {
 	}
 
 	// this one gives the raw positions
-	protected List<OpenPosition> getOpenPositions(String account) {
+	public List<OpenPosition> getOpenPositions(String account) {
 		Map<String, List<OpenPosition>> symbolPositions = accountPositions
 				.get(account);
 		if (null == symbolPositions) {
