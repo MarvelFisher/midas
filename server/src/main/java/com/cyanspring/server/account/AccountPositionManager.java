@@ -1044,12 +1044,16 @@ public class AccountPositionManager implements IPlugin {
 	    		userGroup = new UserGroup(id,user.getRole());
 	    	}
 	    	user2AccountMap = new HashMap<>();
-	    	if(!userGroup.getRole().isManagerLevel() && !userGroup.isAdmin())
+	    	if(null != accountList && !accountList.isEmpty())
 	    		user2AccountMap.put(id, accountList.get(0));
 	    	
 			for (UserGroup ug : userGroup.getManageeSet()) {
+				List <Account>tempList = accountKeeper.getAccounts(ug.getUser());
+				if( null == tempList || tempList.isEmpty())
+					continue;
+				
 				user2AccountMap.put(ug.getUser(),
-						accountKeeper.getAccounts(ug.getUser()).get(0));
+						tempList.get(0));
 			}
 	    	log.info("CSTW Login success:{} - {}",id,userGroup.getRole());
 			user.setLastLogin(Clock.getInstance().now());
