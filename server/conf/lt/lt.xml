@@ -1,6 +1,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	   xsi:schemaLocation="http://www.springframework.org/schema/context
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
 	http://www.springframework.org/schema/context/spring-context.xsd
 	http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans.xsd">
@@ -27,18 +27,18 @@
 		</property>
 		<property name="plugins">
 			<list>
-				<ref bean="genericAsyncEventProcessor"/>
-			    <ref bean="marketSessionUtil"/>
-				<ref bean="indexMarketSessionManager"/>
+				<ref bean="genericAsyncEventProcessor" />
+				<ref bean="marketSessionUtil" />
+				<ref bean="indexMarketSessionManager" />
 				<ref bean="apiBridgeManager" />
-                <ref bean="refDataHandler" />
+				<ref bean="refDataHandler" />
 				<ref bean="mdManager" />
 				<ref bean="downStreamManager" />
 				<ref bean="accountPositionManager" />
-				<ref bean="trailingStopManager"/>
-				<ref bean="liveTradingSession" />	
-				<ref bean="statisticManager" />	
-            	<ref bean="systemSuspendValidator"/>
+				<ref bean="trailingStopManager" />
+				<ref bean="liveTradingSession" />
+				<ref bean="statisticManager" />
+				<ref bean="systemSuspendValidator" />
 			</list>
 		</property>
 		<property name="readyMap">
@@ -53,17 +53,17 @@
 	<bean id="genericAsyncEventProcessor" class="com.cyanspring.common.event.GenericAsyncEventProcessor">
 		<property name="eventManager" ref="eventManager"></property>
 	</bean>
-	
+
 	<bean id="statisticManager" class="com.cyanspring.server.statistic.StatisticManager">
 	</bean>
-	
+
 	<bean id="trailingStopManager" class="com.cyanspring.server.account.TrailingStopManager">
 	</bean>
 	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
 		<constructor-arg>
 			<ref bean="transportService" />
 		</constructor-arg>
-		<property name="embedBroker" value="true"/>
+		<property name="embedBroker" value="true" />
 		<property name="bridges">
 			<list>
 				<ref bean="apiBridgeManager" />
@@ -74,39 +74,67 @@
 	<bean id="apiBridgeManager" class="com.cyanspring.server.api.ApiBridgeManager">
 		<property name="requestMap">
 			<map>
-				<entry key="UserLoginEvent" value="com.cyanspring.event.api.obj.request.ApiUserLoginEvent"/>
-				<entry key="StrategySnapshotRequestEvent" value="com.cyanspring.event.api.obj.request.ApiStrategySnapshotRequestEvent"/>
-				<entry key="QuoteSubEvent" value="com.cyanspring.event.api.obj.request.ApiQuoteSubEvent" />
-				<entry key="NewSingleInstrumnetStrategyEvent" value="com.cyanspring.event.api.obj.request.ApiNewSingleInstrumentStrategyEvent"/>
-				<entry key="NewMultiInstrumentStrategyEvent" value="com.cyanspring.event.api.obj.request.ApiNewMultiInstrumentStrategyEvent"/>
-				<entry key="EnterParentOrderEvent" value="com.cyanspring.event.api.obj.request.ApiEnterParentOrderEvent"/>
-				<entry key="CancelSingleInstrumentStrategyEvent" value="com.cyanspring.event.api.obj.request.ApiCancelSingleInstrumentStrategyEvent"/>
-				<entry key="CancelParentOrderEvent" value="com.cyanspring.event.api.obj.request.ApiCancelParentOrderEvent"/>
-				<entry key="CancelMultiInstrumentStrategyEvent" value="com.cyanspring.event.api.obj.request.ApiCancelMultiInstrumentStrategyEvent"/>
-				<entry key="AmendSingleInstrumentStrategyEvent" value="com.cyanspring.event.api.obj.request.ApiAmendSingleInstrumentStrategyEvent"/>
-				<entry key="AmendParentOrderEvent" value="com.cyanspring.event.api.obj.request.ApiAmendParentOrderEvent"/>
-				<entry key="AmendMultiInstrumentStrategyEvent" value="com.cyanspring.event.api.obj.request.ApiAmendMultiInstrumentStrategyEvent"/>
-				<entry key="AccountSnapshotRequestEvent" value="com.cyanspring.event.api.obj.request.ApiAccountSnapshotRequestEvent"/>
+				<entry key="UserLoginEvent"
+					value="com.cyanspring.event.api.obj.request.ApiUserLoginEvent" />
+				<entry key="StrategySnapshotRequestEvent"
+					value="com.cyanspring.event.api.obj.request.ApiStrategySnapshotRequestEvent" />
+				<entry key="QuoteSubEvent"
+					value="com.cyanspring.event.api.obj.request.ApiQuoteSubEvent" />
+				<entry key="NewSingleInstrumnetStrategyEvent"
+					value="com.cyanspring.event.api.obj.request.ApiNewSingleInstrumentStrategyEvent" />
+				<entry key="NewMultiInstrumentStrategyEvent"
+					value="com.cyanspring.event.api.obj.request.ApiNewMultiInstrumentStrategyEvent" />
+				<entry key="EnterParentOrderEvent"
+					value="com.cyanspring.event.api.obj.request.ApiEnterParentOrderEvent" />
+				<entry key="CancelSingleInstrumentStrategyEvent"
+					value="com.cyanspring.event.api.obj.request.ApiCancelSingleInstrumentStrategyEvent" />
+				<entry key="CancelParentOrderEvent"
+					value="com.cyanspring.event.api.obj.request.ApiCancelParentOrderEvent" />
+				<entry key="CancelMultiInstrumentStrategyEvent"
+					value="com.cyanspring.event.api.obj.request.ApiCancelMultiInstrumentStrategyEvent" />
+				<entry key="AmendSingleInstrumentStrategyEvent"
+					value="com.cyanspring.event.api.obj.request.ApiAmendSingleInstrumentStrategyEvent" />
+				<entry key="AmendParentOrderEvent"
+					value="com.cyanspring.event.api.obj.request.ApiAmendParentOrderEvent" />
+				<entry key="AmendMultiInstrumentStrategyEvent"
+					value="com.cyanspring.event.api.obj.request.ApiAmendMultiInstrumentStrategyEvent" />
+				<entry key="AccountSnapshotRequestEvent"
+					value="com.cyanspring.event.api.obj.request.ApiAccountSnapshotRequestEvent" />
 			</map>
 		</property>
 		<property name="replyMap">
 			<map>
-				<entry key="UserLoginReplyEvent" value="com.cyanspring.event.api.obj.reply.ApiUserLoginReplyEvent"/>
-				<entry key="AccountSnapshotReplyEvent" value="com.cyanspring.event.api.obj.reply.ApiAccountSnapshotReplyEvent"/>
-				<entry key="AccountUpdateEvent" value="com.cyanspring.event.api.obj.reply.ApiAccountUpdateEvent"/>
-				<entry key="AmendMultiInstrumentStrategyReplyEvent" value="com.cyanspring.event.api.obj.reply.ApiAmendMultiInstrumentStrategyReplyEvent"/>
-				<entry key="AmendParentOrderReplyEvent" value="com.cyanspring.event.api.obj.reply.ApiAmendParentOrderReplyEvent"/>
-				<entry key="AmendSingleInstrumentStrategyEvent" value="com.cyanspring.event.api.obj.reply.ApiAmendSingleInstrumentStrategyReplyEvent"/>
-				<entry key="CancelMultiInstrumentStrategyEvent" value="com.cyanspring.event.api.obj.reply.ApiCancelMultiInstrumentStrategyReplyEvent"/>
-				<entry key="CancelParentOrderReplyEvent" value="com.cyanspring.event.api.obj.reply.ApiCancelParentOrderReplyEvent"/>
-				<entry key="CancelSingleInstrumentStrategyReplyEvent" value="com.cyanspring.event.api.obj.reply.ApiCancelSingleInstrumentStrategyReplyEvent"/>
-				<entry key="EnterParentOrderReplyEvent" value="com.cyanspring.event.api.obj.reply.ApiEnterParentOrderReplyEvent"/>
-				<entry key="NewMultuInstrumentStrategyReplyEvent" value="com.cyanspring.event.api.obj.reply.ApiNewMultiInstrumentStrategyReplyEvent"/>
-				<entry key="NewSingleInstrumentStrategyReplyEvent" value="com.cyanspring.event.api.obj.reply.ApiNewSingleInstrumentStrategyReplyEvent"/>
-				<entry key="OpenPositionUpdateEvent" value="com.cyanspring.event.api.obj.reply.ApiOpenPositionUpdateEvent"/>
-				<entry key="ParentOrderUpdateEvent" value="com.cyanspring.event.api.obj.reply.ApiParentOrderUpdateEvent"/>
-				<entry key="QuoteEvent" value="com.cyanspring.event.api.obj.reply.ApiQuoteEvent"/>
-				<entry key="StrategySnapshotEvent" value="com.cyanspring.event.api.obj.reply.ApiStrategySnapshotEvent"/>
+				<entry key="UserLoginReplyEvent"
+					value="com.cyanspring.event.api.obj.reply.ApiUserLoginReplyEvent" />
+				<entry key="AccountSnapshotReplyEvent"
+					value="com.cyanspring.event.api.obj.reply.ApiAccountSnapshotReplyEvent" />
+				<entry key="AccountUpdateEvent"
+					value="com.cyanspring.event.api.obj.reply.ApiAccountUpdateEvent" />
+				<entry key="AmendMultiInstrumentStrategyReplyEvent"
+					value="com.cyanspring.event.api.obj.reply.ApiAmendMultiInstrumentStrategyReplyEvent" />
+				<entry key="AmendParentOrderReplyEvent"
+					value="com.cyanspring.event.api.obj.reply.ApiAmendParentOrderReplyEvent" />
+				<entry key="AmendSingleInstrumentStrategyEvent"
+					value="com.cyanspring.event.api.obj.reply.ApiAmendSingleInstrumentStrategyReplyEvent" />
+				<entry key="CancelMultiInstrumentStrategyEvent"
+					value="com.cyanspring.event.api.obj.reply.ApiCancelMultiInstrumentStrategyReplyEvent" />
+				<entry key="CancelParentOrderReplyEvent"
+					value="com.cyanspring.event.api.obj.reply.ApiCancelParentOrderReplyEvent" />
+				<entry key="CancelSingleInstrumentStrategyReplyEvent"
+					value="com.cyanspring.event.api.obj.reply.ApiCancelSingleInstrumentStrategyReplyEvent" />
+				<entry key="EnterParentOrderReplyEvent"
+					value="com.cyanspring.event.api.obj.reply.ApiEnterParentOrderReplyEvent" />
+				<entry key="NewMultuInstrumentStrategyReplyEvent"
+					value="com.cyanspring.event.api.obj.reply.ApiNewMultiInstrumentStrategyReplyEvent" />
+				<entry key="NewSingleInstrumentStrategyReplyEvent"
+					value="com.cyanspring.event.api.obj.reply.ApiNewSingleInstrumentStrategyReplyEvent" />
+				<entry key="OpenPositionUpdateEvent"
+					value="com.cyanspring.event.api.obj.reply.ApiOpenPositionUpdateEvent" />
+				<entry key="ParentOrderUpdateEvent"
+					value="com.cyanspring.event.api.obj.reply.ApiParentOrderUpdateEvent" />
+				<entry key="QuoteEvent" value="com.cyanspring.event.api.obj.reply.ApiQuoteEvent" />
+				<entry key="StrategySnapshotEvent"
+					value="com.cyanspring.event.api.obj.reply.ApiStrategySnapshotEvent" />
 			</map>
 		</property>
 	</bean>
@@ -118,27 +146,27 @@
 	</bean>
 
 	<bean id="socketService" class="com.cyanspring.transport.socket.ServerSocketService">
-		<property name="port" value="52323"/>
+		<property name="port" value="52323" />
 	</bean>
 
 	<bean id="persistenceManager" class="com.cyanspring.server.persistence.PersistenceManager">
-		<property name="embeddedSQLServer" value="true"/>
-		<property name="embeddedHost" value="0.0.0.0"/>
-		<property name="embeddedPort" ref="derbyPort"/>
-		<property name="deleteTerminated" value="false"/>
-		<property name="textSize" value="4000"/>
-		<property name="cleanStart" value="false"/>
-		<property name="todayOnly" value="false"/>
-		<property name="checkEmailUnique" value="onlyExist"/>
-		<property name="checkPhoneUnique" value="noCheck"/>
-		<property name="syncCentralDb" value="true"/>
+		<property name="embeddedSQLServer" value="true" />
+		<property name="embeddedHost" value="0.0.0.0" />
+		<property name="embeddedPort" ref="derbyPort" />
+		<property name="deleteTerminated" value="false" />
+		<property name="textSize" value="4000" />
+		<property name="cleanStart" value="false" />
+		<property name="todayOnly" value="false" />
+		<property name="checkEmailUnique" value="onlyExist" />
+		<property name="checkPhoneUnique" value="noCheck" />
+		<property name="syncCentralDb" value="true" />
 		<property name="useLtsGateway" value="false" />
 	</bean>
 
-	<bean id="quoteSaver" class="com.cyanspring.common.marketdata.QuoteSaver"/>
+	<bean id="quoteSaver" class="com.cyanspring.common.marketdata.QuoteSaver" />
 	<bean id="quoteChecker" class="com.cyanspring.common.marketdata.QuoteChecker">
-		<property name="quotePriceWarningIsOpen" value="true"/>
-		<property name="quotePriceWarningPercent" value="50"/>
+		<property name="quotePriceWarningIsOpen" value="true" />
+		<property name="quotePriceWarningPercent" value="50" />
 	</bean>
 
 	<bean id="preSubscriptionList" class="java.util.ArrayList">
@@ -149,11 +177,11 @@
 	</bean>
 
 	<bean id="strategyContainer" class="com.cyanspring.strategy.AsyncStrategyContainer"
-		  scope="prototype">
+		scope="prototype">
 	</bean>
 
 	<bean id="orderManager" class="com.cyanspring.server.OrderManager">
-		<property name="publishChildOrder" value="true"/>
+		<property name="publishChildOrder" value="true" />
 	</bean>
 
 	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">
@@ -167,7 +195,11 @@
 	<bean id="eurrubForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 		<property name="tickTable">
 			<array>
-				<array><value>0</value><value>1000000</value><value>0.0001</value></array>
+				<array>
+					<value>0</value>
+					<value>1000000</value>
+					<value>0.0001</value>
+				</array>
 			</array>
 		</property>
 	</bean>
@@ -175,15 +207,23 @@
 	<bean id="usdrubForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 		<property name="tickTable">
 			<array>
-				<array><value>0</value><value>1000000</value><value>0.00005</value></array>
+				<array>
+					<value>0</value>
+					<value>1000000</value>
+					<value>0.00005</value>
+				</array>
 			</array>
 		</property>
 	</bean>
-	
+
 	<bean id="audusdForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 		<property name="tickTable">
 			<array>
-				<array><value>0</value><value>1000000</value><value>0.00005</value></array>
+				<array>
+					<value>0</value>
+					<value>1000000</value>
+					<value>0.00005</value>
+				</array>
 			</array>
 		</property>
 	</bean>
@@ -191,82 +231,114 @@
 	<bean id="usdjpyForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 		<property name="tickTable">
 			<array>
-				<array><value>0</value><value>1000000</value><value>0.005</value></array>
+				<array>
+					<value>0</value>
+					<value>1000000</value>
+					<value>0.005</value>
+				</array>
 			</array>
 		</property>
 	</bean>
-	
+
 	<bean id="usdchfForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 		<property name="tickTable">
 			<array>
-				<array><value>0</value><value>1000000</value><value>0.00005</value></array>
+				<array>
+					<value>0</value>
+					<value>1000000</value>
+					<value>0.00005</value>
+				</array>
 			</array>
 		</property>
-	</bean>	
+	</bean>
 
 	<bean id="usdcadForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 		<property name="tickTable">
 			<array>
-				<array><value>0</value><value>1000000</value><value>0.00005</value></array>
+				<array>
+					<value>0</value>
+					<value>1000000</value>
+					<value>0.00005</value>
+				</array>
 			</array>
 		</property>
 	</bean>
-	
+
 	<bean id="eurusdForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 		<property name="tickTable">
 			<array>
-				<array><value>0</value><value>1000000</value><value>0.00005</value></array>
+				<array>
+					<value>0</value>
+					<value>1000000</value>
+					<value>0.00005</value>
+				</array>
 			</array>
 		</property>
-	</bean>	
-	
+	</bean>
+
 	<bean id="eurjpyForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 		<property name="tickTable">
 			<array>
-				<array><value>0</value><value>1000000</value><value>0.005</value></array>
+				<array>
+					<value>0</value>
+					<value>1000000</value>
+					<value>0.005</value>
+				</array>
 			</array>
 		</property>
 	</bean>
-	
+
 	<bean id="gbpusdForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 		<property name="tickTable">
 			<array>
-				<array><value>0</value><value>1000000</value><value>0.00005</value></array>
+				<array>
+					<value>0</value>
+					<value>1000000</value>
+					<value>0.00005</value>
+				</array>
 			</array>
 		</property>
 	</bean>
-	
+
 	<bean id="nzdusdForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 		<property name="tickTable">
 			<array>
-				<array><value>0</value><value>1000000</value><value>0.00005</value></array>
+				<array>
+					<value>0</value>
+					<value>1000000</value>
+					<value>0.00005</value>
+				</array>
 			</array>
 		</property>
 	</bean>
-	
+
 	<bean id="gbpjpyForexTickTable" class="com.cyanspring.common.staticdata.ForexTickTable">
 		<property name="tickTable">
 			<array>
-				<array><value>0</value><value>1000000</value><value>0.005</value></array>
+				<array>
+					<value>0</value>
+					<value>1000000</value>
+					<value>0.005</value>
+				</array>
 			</array>
 		</property>
-	</bean>			
-	
+	</bean>
+
 	<bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
 		<property name="tickTables">
 			<map key-type="java.lang.String" value-type="com.cyanspring.common.staticdata.ITickTable">
 				<entry key="DEFAULT" value-ref="hkexTickTable" />
 				<entry key="FX" value-ref="forexTickTable" />
 				<entry key="EURRUB" value-ref="eurrubForexTickTable" />
-				<entry key="USDRUB" value-ref="usdrubForexTickTable" />		
+				<entry key="USDRUB" value-ref="usdrubForexTickTable" />
 				<entry key="AUDUSD" value-ref="audusdForexTickTable" />
 				<entry key="USDJPY" value-ref="usdjpyForexTickTable" />
 				<entry key="USDCHF" value-ref="usdchfForexTickTable" />
 				<entry key="USDCAD" value-ref="usdcadForexTickTable" />
-				<entry key="EURUSD" value-ref="eurusdForexTickTable" />				
-				<entry key="EURJPY" value-ref="eurjpyForexTickTable"/>
-				<entry key="GBPUSD" value-ref="gbpusdForexTickTable"/>
-				<entry key="NZDUSD" value-ref="nzdusdForexTickTable"/>
+				<entry key="EURUSD" value-ref="eurusdForexTickTable" />
+				<entry key="EURJPY" value-ref="eurjpyForexTickTable" />
+				<entry key="GBPUSD" value-ref="gbpusdForexTickTable" />
+				<entry key="NZDUSD" value-ref="nzdusdForexTickTable" />
 				<entry key="GBPJPY" value-ref="gbpjpyForexTickTable" />
 			</map>
 		</property>
@@ -279,27 +351,27 @@
 		<property name="autoStartStrategy">
 			<value>true</value>
 		</property>
-		<property name="cancelAllOrdersAtClose" value="false"/>
-		<property name="closeAllPositionsAtClose" value="false"/>
+		<property name="cancelAllOrdersAtClose" value="false" />
+		<property name="closeAllPositionsAtClose" value="false" />
 	</bean>
 
 	<bean id="accountPositionManager" class="com.cyanspring.server.account.AccountPositionManager">
-		<property name="sendDynamicPositionUpdate" value="true"/>		
+		<property name="sendDynamicPositionUpdate" value="true" />
 		<property name="quoteChecker">
-			<bean class="com.cyanspring.common.marketdata.PriceQuoteChecker"/>
+			<bean class="com.cyanspring.common.marketdata.PriceQuoteChecker" />
 		</property>
-		<property name="rmUpdateInterval" value="1000"/>
+		<property name="rmUpdateInterval" value="1000" />
 		<property name="fxSymbols">
 			<list>
 				<value>AUDUSD</value>
-	            <value>USDJPY</value>
-	            <value>USDCHF</value>
-	            <value>USDCAD</value>
-	            <value>EURUSD</value>
-	            <value>EURJPY</value>
-	            <value>GBPUSD</value>
-	            <value>NZDUSD</value>
-	            <value>GBPJPY</value>
+				<value>USDJPY</value>
+				<value>USDCHF</value>
+				<value>USDCAD</value>
+				<value>EURUSD</value>
+				<value>EURJPY</value>
+				<value>GBPUSD</value>
+				<value>NZDUSD</value>
+				<value>GBPJPY</value>
 			</list>
 		</property>
 		<property name="dailyExecTime" ref="dailyExec" /> <!-- format=[HH:mm:ss] 24hr -->
@@ -308,12 +380,17 @@
 	<bean id="userKeeper" class="com.cyanspring.server.account.UserKeeper">
 	</bean>
 
-	<bean id="accountKeeper" class="com.cyanspring.server.account.AccountKeeper">
-		<property name="rmJobBatch" value="10000"/>
+	<bean id="accountKeeper" class="com.cyanspring.common.account.AccountKeeper">
+		<property name="rmJobBatch" value="10000" />
 	</bean>
 
-	<bean id="positionKeeper" class="com.cyanspring.server.account.PositionKeeper">
+	<bean id="positionKeeper" class="com.cyanspring.common.position.PositionKeeper">
 		<property name="useMid" value="true"></property>
+	</bean>
+
+	<bean id="instrumentPoolManager" class="com.cyanspring.common.pool.InstrumentPoolManager"></bean>
+
+	<bean id="instrumentPoolKeeper" class="com.cyanspring.common.pool.InstrumentPoolKeeper">
 	</bean>
 
 	<bean id="fxConverter" class="com.cyanspring.common.fx.FxConverter">
@@ -325,8 +402,8 @@
 	<bean id="commissionManager" class="com.cyanspring.server.account.CommissionManager">
 	</bean>
 
-    <bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler">
-		<property name="eventManager" ref="eventManager"/>
+	<bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler">
+		<property name="eventManager" ref="eventManager" />
 	</bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataManager">
@@ -354,7 +431,7 @@
 	</bean>
 
 	<bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
-	   <property name="liveTrading" value="true" />
+		<property name="liveTrading" value="true" />
 	</bean>
 
 	<bean id="orderRouter" class="com.cyanspring.server.downstream.AccountOrderRouter">
@@ -377,37 +454,40 @@
 	<bean id="hyperDownStreamAdaptor" class="com.cyanspring.server.sim.HyperDownStreamAdaptor">
 	</bean>
 
-	<bean id="riskOrderController" class="com.cyanspring.server.order.RiskOrderController">
-		<property name="maxRiskOrderCount"  ref="maxRiskOrderCount"/>
-		<property name="maxTotalOrderCount"  ref="maxTotalOrderCount"/>
+	<bean id="riskOrderController" class="com.cyanspring.common.order.RiskOrderController">
+		<property name="maxRiskOrderCount" ref="maxRiskOrderCount" />
+		<property name="maxTotalOrderCount" ref="maxTotalOrderCount" />
 	</bean>
 
 	<bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
-        <property name="quoteChecker" ref="priceQuoteChecker"/>
-    </bean>
-
-    <bean id="priceQuoteChecker" class="com.cyanspring.common.marketdata.PriceQuoteChecker"/>
-
-    <bean id="quoteAggregator" class="com.cyanspring.common.marketdata.QuoteAggregatorSimple">
+		<property name="quoteChecker" ref="priceQuoteChecker" />
 	</bean>
 
-    <bean id="transactionValidator" class="com.cyanspring.server.validation.transaction.TransactionValidator">
-        <property name="validators">
-            <list>
-            	<ref bean="systemSuspendValidator"/>
-            	<ref bean="transactionThrottleValidator"/>
-            </list>
-        </property>
-    </bean>
-        
-    <bean id="systemSuspendValidator" class="com.cyanspring.server.validation.transaction.SystemSuspendValidator"/>
+	<bean id="priceQuoteChecker" class="com.cyanspring.common.marketdata.PriceQuoteChecker" />
 
-    <bean id="transactionThrottleValidator" class="com.cyanspring.server.validation.transaction.TransactionThrottleValidator">
+	<bean id="quoteAggregator" class="com.cyanspring.common.marketdata.QuoteAggregatorSimple">
+	</bean>
+
+	<bean id="transactionValidator"
+		class="com.cyanspring.server.validation.transaction.TransactionValidator">
+		<property name="validators">
+			<list>
+				<ref bean="systemSuspendValidator" />
+				<ref bean="transactionThrottleValidator" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="systemSuspendValidator"
+		class="com.cyanspring.server.validation.transaction.SystemSuspendValidator" />
+
+	<bean id="transactionThrottleValidator"
+		class="com.cyanspring.server.validation.transaction.TransactionThrottleValidator">
 		<property name="interval">
 			<value>300</value>
 		</property>
-    </bean>
+	</bean>
 
-	<bean id="quoteCleaner" class="com.cyanspring.common.marketdata.ForexQuoteCleaner"/>
+	<bean id="quoteCleaner" class="com.cyanspring.common.marketdata.ForexQuoteCleaner" />
 
 </beans>

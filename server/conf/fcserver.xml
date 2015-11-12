@@ -42,11 +42,11 @@
 	<bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
 		<property name="url" value="nio://0.0.0.0:61626"></property>
 	</bean>
-	
+	<!-- 
 	<bean id="globalTransportService" class="com.cyanspring.transport.ActiveMQObjectService">
 		<property name="url" value="failover:(nio://10.0.0.51:60006)?initialReconnectDelay=2000&amp;maxReconnectDelay=5000&amp;maxReconnectAttempts=100"></property>
 	</bean>
-
+ -->
 	<bean id="dataBaseUrl" class="java.lang.String">
 		<constructor-arg
 			value="jdbc:mysql://125.227.191.247:3306/LTS_China?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
@@ -114,7 +114,7 @@
 		  class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
 		<property name="id" value="W02"/>
 		<property name="showGui" value="true"/>
-		<property name="gatewayIp" value="10.0.0.20"/>
+		<property name="gatewayIp" value="125.227.191.247"/>
 		<property name="gatewayPort" value="10046"/>
 		<property name="marketDataLog" value="false"/>
 		<property name="tradeDateCheckIsOpen" value="true"/>

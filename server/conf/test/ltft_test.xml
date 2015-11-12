@@ -17,7 +17,7 @@
 		</property>
 		<property name="plugins">
 			<list>
-				<ref bean="genericAsyncEventProcessor"/>
+				<ref bean="genericAsyncEventProcessor" />
 				<!-- <ref bean="marketSessionManager" /> -->
 				<ref bean="marketSessionUtil" />
 				<ref bean="indexMarketSessionManager" />
@@ -42,7 +42,7 @@
 			</map>
 		</property>
 	</bean>
-	
+
 	<bean id="genericAsyncEventProcessor" class="com.cyanspring.common.event.GenericAsyncEventProcessor">
 		<property name="eventManager" ref="eventManager"></property>
 	</bean>
@@ -252,11 +252,16 @@
 	<bean id="userKeeper" class="com.cyanspring.server.account.UserKeeper">
 	</bean>
 
-	<bean id="accountKeeper" class="com.cyanspring.server.account.AccountKeeper">
+	<bean id="accountKeeper" class="com.cyanspring.common.account.AccountKeeper">
 		<property name="rmJobBatch" value="5000" />
 	</bean>
 
-	<bean id="positionKeeper" class="com.cyanspring.server.account.PositionKeeper">
+	<bean id="positionKeeper" class="com.cyanspring.common.position.PositionKeeper">
+	</bean>
+
+	<bean id="instrumentPoolManager" class="com.cyanspring.common.pool.InstrumentPoolManager"></bean>
+
+	<bean id="instrumentPoolKeeper" class="com.cyanspring.common.pool.InstrumentPoolKeeper">
 	</bean>
 
 	<bean id="fxConverter" class="com.cyanspring.common.fx.FxConverter">
@@ -265,7 +270,7 @@
 	<bean id="autoRunner" class="com.cyanspring.server.AutoRunner">
 	</bean>
 
-	<bean id="riskOrderController" class="com.cyanspring.server.order.RiskOrderController">
+	<bean id="riskOrderController" class="com.cyanspring.common.order.RiskOrderController">
 		<property name="maxRiskOrderCount" value="3" />
 	</bean>
 
@@ -350,23 +355,23 @@
 	<bean id="avroAdaptor" class="com.cyanspring.adaptor.avro.AvroAdaptor">
 		<property name="connections">
 			<list>
-				<ref bean="avroDownStreamConnection"/>
+				<ref bean="avroDownStreamConnection" />
 			</list>
 		</property>
 	</bean>
-	
+
 	<bean id="avroDownStreamConnection" class="com.cyanspring.adaptor.avro.AvroDownStreamConnection">
 		<property name="downStreamEventSender" ref="avroEventSender"></property>
 		<property name="id" value="avro01"></property>
 		<property name="exchangeAccount" value="YF01"></property>
 	</bean>
-	
-	<bean id="avroEventSender" class="com.cyanspring.adaptor.avro.AvroEventSender">	
+
+	<bean id="avroEventSender" class="com.cyanspring.adaptor.avro.AvroEventSender">
 		<constructor-arg>
-			<ref bean="transportService"/>
+			<ref bean="transportService" />
 		</constructor-arg>
 	</bean>
-	
+
 	<bean id="upStreamManager" class="com.cyanspring.server.upstream.UpStreamManager">
 		<constructor-arg>
 			<list>

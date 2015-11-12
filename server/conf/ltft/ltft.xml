@@ -27,7 +27,7 @@
 		</property>
 		<property name="plugins">
 			<list>
-				<ref bean="genericAsyncEventProcessor"/>
+				<ref bean="genericAsyncEventProcessor" />
 				<ref bean="marketSessionUtil" />
 				<ref bean="apiBridgeManager" />
 				<ref bean="indexMarketSessionManager" />
@@ -50,7 +50,7 @@
 			</map>
 		</property>
 	</bean>
-	
+
 	<bean id="genericAsyncEventProcessor" class="com.cyanspring.common.event.GenericAsyncEventProcessor">
 		<property name="eventManager" ref="eventManager"></property>
 	</bean>
@@ -66,7 +66,7 @@
 
 	<bean id="systemSuspendValidator"
 		class="com.cyanspring.server.validation.transaction.SystemSuspendValidator" />
-		
+
 	<bean id="statisticManager" class="com.cyanspring.server.statistic.StatisticManager">
 	</bean>
 
@@ -179,19 +179,19 @@
 		<property name="syncCentralDb" value="true" />
 		<property name="useLtsGateway" value="false" />
 	</bean>
-	
+
 	<bean id="positionRecoveryProcessor" class="com.cyanspring.server.PositionRecoveryProcessor">
-        <property name="todayOnly" value="true"></property>
-    </bean>
+		<property name="todayOnly" value="true"></property>
+	</bean>
 
-    <bean id="executionRecoveryProcessor" class="com.cyanspring.server.ExecutionRecoveryProcessor">
-        <property name="todayOnly" value="true"></property>
-    </bean>
+	<bean id="executionRecoveryProcessor" class="com.cyanspring.server.ExecutionRecoveryProcessor">
+		<property name="todayOnly" value="true"></property>
+	</bean>
 
-    <bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
-        <property name="todayOnly" value="true" />
-        <property name="liveTrading" value="true" />
-    </bean>
+	<bean id="strategyRecoveryProcessor" class="com.cyanspring.server.StrategyRecoveryProcessor">
+		<property name="todayOnly" value="true" />
+		<property name="liveTrading" value="true" />
+	</bean>
 
 	<bean id="quoteSaver" class="com.cyanspring.common.marketdata.QuoteSaver" />
 	<bean id="quoteChecker" class="com.cyanspring.common.marketdata.QuoteChecker">
@@ -254,8 +254,8 @@
 			<value>false</value>
 		</property>
 		<property name="closeAllPositionsAtClose">
-            <value>false</value>
-        </property>
+			<value>false</value>
+		</property>
 	</bean>
 
 	<bean id="accountPositionManager" class="com.cyanspring.server.account.AccountPositionManager">
@@ -268,25 +268,30 @@
 		</property>
 		<property name="dailyExecTime" ref="dailyExec" /> <!-- format=[HH:mm:ss] 24hr -->
 		<property name="dynamicUpdateInterval">
-            <value>100</value>
+			<value>100</value>
 		</property>
 		<property name="rmUpdateInterval">
-            <value>120</value>
-        </property>
-        <property name="sendDynamicPositionUpdate">
-            <value>true</value>
-        </property>
+			<value>120</value>
+		</property>
+		<property name="sendDynamicPositionUpdate">
+			<value>true</value>
+		</property>
 	</bean>
 
 	<bean id="userKeeper" class="com.cyanspring.server.account.UserKeeper">
 	</bean>
 
-	<bean id="accountKeeper" class="com.cyanspring.server.account.AccountKeeper">
+	<bean id="accountKeeper" class="com.cyanspring.common.account.AccountKeeper">
 		<property name="rmJobBatch" value="5000" />
 	</bean>
 
-	<bean id="positionKeeper" class="com.cyanspring.server.account.PositionKeeper">
+	<bean id="positionKeeper" class="com.cyanspring.common.position.PositionKeeper">
 		<property name="useMid" value="false"></property>
+	</bean>
+
+	<bean id="instrumentPoolManager" class="com.cyanspring.common.pool.InstrumentPoolManager"></bean>
+
+	<bean id="instrumentPoolKeeper" class="com.cyanspring.common.pool.InstrumentPoolKeeper">
 	</bean>
 
 	<bean id="fxConverter" class="com.cyanspring.common.fx.FxConverter">
@@ -298,18 +303,18 @@
 	<bean id="commissionManager" class="com.cyanspring.server.account.FTCommissionManager">
 		<property name="trxTaxRate" value="0.00002" />
 	</bean>
-	
+
 	<bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler">
-        <property name="eventManager" ref="eventManager"/>
-    </bean>
+		<property name="eventManager" ref="eventManager" />
+	</bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
 		<property name="refDataTemplatePath">
 			<value>refdata/template/template_FT.xml</value>
 		</property>
 		<property name="refDataFile">
-            <value>ticks/last.xml</value>
-        </property>
+			<value>ticks/last.xml</value>
+		</property>
 	</bean>
 
 	<bean id="refDataUtil" class="com.cyanspring.common.staticdata.RefDataUtil">
@@ -327,7 +332,7 @@
 	<bean id="accountSettingRecoveryProcessor" class="com.cyanspring.server.AccountSettingRecoveryProcessor">
 	</bean>
 
-	<bean id="riskOrderController" class="com.cyanspring.server.order.RiskOrderController">
+	<bean id="riskOrderController" class="com.cyanspring.common.order.RiskOrderController">
 		<property name="maxRiskOrderCount" ref="maxRiskOrderCount" />
 		<property name="maxTotalOrderCount" ref="maxTotalOrderCount" />
 	</bean>
@@ -349,29 +354,29 @@
 	</bean>
 
 	<bean id="hyperDownStreamAdaptor" class="com.cyanspring.server.sim.HyperDownStreamAdaptor">
-    </bean>
+	</bean>
 
-    <bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
-        <property name="checkSingleSide" value="true"/>
-    </bean>
+	<bean id="hyperDownStreamConnection" class="com.cyanspring.server.sim.HyperDownStreamConnection">
+		<property name="checkSingleSide" value="true" />
+	</bean>
 
 	<bean id="avroAdaptor" class="com.cyanspring.adaptor.avro.AvroAdaptor">
 		<property name="connections">
 			<list>
-				<ref bean="avroDownStreamConnection"/>
+				<ref bean="avroDownStreamConnection" />
 			</list>
 		</property>
 	</bean>
-	
+
 	<bean id="avroDownStreamConnection" class="com.cyanspring.adaptor.avro.AvroDownStreamConnection">
 		<property name="downStreamEventSender" ref="avroEventSender"></property>
 		<property name="id" value="avro01"></property>
 		<property name="exchangeAccount" value="YF01"></property>
 	</bean>
-	
-	<bean id="avroEventSender" class="com.cyanspring.adaptor.avro.AvroEventSender">	
+
+	<bean id="avroEventSender" class="com.cyanspring.adaptor.avro.AvroEventSender">
 		<constructor-arg>
-			<ref bean="transportService"/>
+			<ref bean="transportService" />
 		</constructor-arg>
 	</bean>
 
@@ -415,5 +420,5 @@
 			<value>13:30:00</value><!-- HH:mm:ss -->
 		</property>
 	</bean>
-	
+
 </beans>
