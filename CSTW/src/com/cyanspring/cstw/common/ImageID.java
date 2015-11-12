@@ -53,7 +53,9 @@ public enum ImageID {
 	DETAILS_ICON("icons/details.png"),
 	REDLIGHT_ICON("icons/redlight.png"),
 	YELLOWLIGHT_ICON("icons/yellowlight.png"),
-	GREENLIGHT_ICON("icons/greenlight.png")
+	GREENLIGHT_ICON("icons/greenlight.png"),
+	EXCHANGEACCOUNT_ICON("icon/exchange_account.png"),
+	SUBACCOUNT_ICON("icon/subaccount.png"),
 	;
 	private String value;
 	ImageID(String value) {

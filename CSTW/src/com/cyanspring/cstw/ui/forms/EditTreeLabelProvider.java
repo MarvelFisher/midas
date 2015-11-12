@@ -1,6 +1,10 @@
 package com.cyanspring.cstw.ui.forms;
 
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.graphics.Image;
+
+import com.cyanspring.cstw.common.ImageID;
+import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
 import com.cyanspring.cstw.model.admin.SubAccountModel;
 
@@ -20,5 +24,17 @@ public class EditTreeLabelProvider extends LabelProvider {
 		}
 		return super.getText(element);
 	}
-
+	
+	@Override
+	public Image getImage(Object element) {
+		if (element instanceof ExchangeAccountModel) {
+			return Activator.getImageDescriptor(
+					ImageID.EXCHANGEACCOUNT_ICON.toString()).createImage();
+		}
+		if (element instanceof SubAccountModel) {
+			return Activator.getImageDescriptor(
+					ImageID.SUBACCOUNT_ICON.toString()).createImage();
+		}
+		return super.getImage(element);
+	}
 }
