@@ -67,7 +67,7 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 	private String accountId;
 	private String ID = IdGenerator.getInstance().getNextID();
 	private UserGroup userGroup;
-	private java.util.List<User> users = new ArrayList();
+	private java.util.List<User> users = new ArrayList<User>();
 	private ArrayList <String>manageeList = new ArrayList<String>();
 	private ArrayList <String>nonManageeList = new ArrayList<String>();
 	private TableViewer manageeListView;
@@ -209,6 +209,13 @@ public class GroupManagementDialog extends Dialog implements IAsyncEventListener
 		lblbackEndRiskColor.setLayoutData(gdLblMessage3);
 		lblbackEndRiskColor.setText("Backend Risk Manager");
 		lblbackEndRiskColor.setForeground(RISK_MANAGER_COLOR);
+		
+		Label lblGroupColor = new Label(container, SWT.NONE);
+		GridData gdLblMessage8 = new GridData(SWT.FILL, SWT.CENTER, true,
+				false, 2, 1);
+		gdLblMessage8.horizontalIndent = 1;
+		lblGroupColor.setLayoutData(gdLblMessage3);
+		lblGroupColor.setText("Group");
 		
 		Label lbltraderColor = new Label(container, SWT.NONE);
 		GridData gdLblMessage2 = new GridData(SWT.FILL, SWT.CENTER, true,

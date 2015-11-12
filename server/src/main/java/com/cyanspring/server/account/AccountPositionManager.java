@@ -782,8 +782,7 @@ public class AccountPositionManager implements IPlugin {
 					user.setUserType(UserType.NORMAL);
 				}
 
-				if (user.getRole().isManagerLevel()
-						|| user.getRole().equals(UserRole.Admin)) {
+				if (!user.getRole().equals(UserRole.Trader)) {
 					eventManager.sendEvent(new PmCreateCSTWUserEvent(
 							PersistenceManager.ID, null, user, event));
 				} else {
@@ -1092,115 +1091,101 @@ public class AccountPositionManager implements IPlugin {
 	}
 
 	public void processCSTWUserLoginEvent(CSTWUserLoginEvent event) {
-		String id = event.getId();
-		String pwd = event.getPassword();
-		boolean isOk = false;
-		String message = "";
-		UserGroup userGroup = null;
-		List<Account> accountList = null;
-		Map<String, Account> user2AccountMap = null;
+    	String id = event.getId();
+    	String pwd = event.getPassword();
+    	boolean isOk = false;
+    	String message = "";
+    	UserGroup userGroup = null;
+    	List <Account> accountList = null;
+    	Map<String, Account> user2AccountMap = null;
 
-		boolean isAdminRole = false;
-		boolean isServerShutdownEvent = event.getShutdownServer();
+    	boolean isAdminRole = false;
+    	boolean isServerShutdownEvent = event.getShutdownServer();
 
-		if (userKeeper.isAdmin(id, pwd)) {
-			isAdminRole = true;
+    	if (userKeeper.isAdmin(id, pwd)) {
+    		isAdminRole = true;
+    	}
+
+    	if (isAdminRole) {
+    		userGroup = new UserGroup(id,UserRole.Admin);
+	    	accountList = accountKeeper.getAllAccounts();
+	    	user2AccountMap = new HashMap<>();
+    		if(null == accountList)
+    			accountList = new ArrayList<>();
+    		
+	    	if(accountList.size() < limitUser){
+	    		log.info("get all Account:{}",accountList.size());
+	    		for(Account account:accountList){
+	    			if(account != null){
+	    				user2AccountMap.put(account.getId(), account);
+	    			}
+	    		}
+	    	}else{    		
+	    		log.info("over user limit:{},{}",accountList.size(),limitUser);
+	    	}
+
+    		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(event.getKey(),event.getSender(),true,"",userGroup,accountList,user2AccountMap );
+    		try {
+    			eventManager.sendRemoteEvent(reply);
+    		} catch (Exception e) {
+    			log.warn(e.getMessage(),e);
+    		}
+    		return;
 		}
 
-		if (isAdminRole) {
-			userGroup = new UserGroup(id, UserRole.Admin);
-			accountList = accountKeeper.getAllAccounts();
-			user2AccountMap = new HashMap<>();
-			if (null == accountList)
-				accountList = new ArrayList<>();
 
-			if (accountList.size() < limitUser) {
-				log.info("get all Account:{}", accountList.size());
-				for (Account account : accountList) {
-					if (account != null) {
-						user2AccountMap.put(account.getId(), account);
-					}
-				}
-			} else {
-				log.info("over user limit:{},{}", accountList.size(), limitUser);
-			}
+    	try{
+	    	if (!StringUtils.hasText(id) || !StringUtils.hasText(pwd)) {
+        		throw new UserException("id or password is empty!",ErrorMessage.CSTW_LOGIN_FAILED);
+	    	} else {
+	    		id = id.toLowerCase().trim();
+	    	}
 
-			CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(
-					event.getKey(), event.getSender(), true, "", userGroup,
-					accountList, user2AccountMap);
-			try {
-				eventManager.sendRemoteEvent(reply);
-			} catch (Exception e) {
-				log.warn(e.getMessage(), e);
-			}
-			return;
-		}
+	    	if ( null == userKeeper.getUser(id) ) {
+        		throw new UserException("id not exist",ErrorMessage.CSTW_LOGIN_FAILED);
+	    	}
 
-		try {
-			if (!StringUtils.hasText(id) || !StringUtils.hasText(pwd)) {
-				throw new UserException("id or password is empty!",
-						ErrorMessage.CSTW_LOGIN_FAILED);
-			} else {
-				id = id.toLowerCase().trim();
-			}
+	    	User user = userKeeper.getUser(id);
+	    	if (!pwd.equals(user.getPassword())) {
+        		throw new UserException("wrong password!",ErrorMessage.CSTW_LOGIN_FAILED);
+	    	}
 
-			if (null == userKeeper.getUser(id)) {
-				throw new UserException("id not exist",
-						ErrorMessage.CSTW_LOGIN_FAILED);
-			}
-
-			User user = userKeeper.getUser(id);
-			if (!pwd.equals(user.getPassword())) {
-				throw new UserException("wrong password!",
-						ErrorMessage.CSTW_LOGIN_FAILED);
-			}
-
-			if (isServerShutdownEvent && !isAdminRole) {
+	    	if (isServerShutdownEvent && !isAdminRole) {
 				throw new UserException("only admin has permission",
 						ErrorMessage.CSTW_LOGIN_FAILED);
 			}
 
-			if (!StringUtils.hasText(message)) {
-				isOk = true;
+	    	if (!StringUtils.hasText(message)) {
+				isOk =true;
 			}
 
-			userGroup = userKeeper.getUserGroup(id);
-			accountList = accountKeeper.getAccounts(id);
-			if (null == userGroup) {
-				userGroup = new UserGroup(id, user.getRole());
-			}
-			user2AccountMap = new HashMap<>();
-			if (null != accountList && !accountList.isEmpty())
-				user2AccountMap.put(id, accountList.get(0));
-
+	    	userGroup = userKeeper.getUserGroup(id);
+	    	accountList = accountKeeper.getAccounts(id);
+	    	if ( null == userGroup ) {
+	    		userGroup = new UserGroup(id,user.getRole());
+	    	}
+	    	user2AccountMap = new HashMap<>();
+	    	user2AccountMap.put(id, accountList.get(0));
 			for (UserGroup ug : userGroup.getManageeSet()) {
-				List<Account> tempList = accountKeeper
-						.getAccounts(ug.getUser());
-				if (null == tempList || tempList.isEmpty())
-					continue;
-
-				user2AccountMap.put(ug.getUser(), tempList.get(0));
+				user2AccountMap.put(ug.getUser(),
+						accountKeeper.getAccounts(ug.getUser()).get(0));
 			}
-			log.info("CSTW Login success:{} - {}", id, userGroup.getRole());
+	    	log.info("CSTW Login success:{} - {}",id,userGroup.getRole());
 			user.setLastLogin(Clock.getInstance().now());
-			eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID,
-					null, user));
+			eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));
 
-		} catch (UserException e) {
-			message = MessageLookup.buildEventMessage(e.getClientMessage(),
-					e.getMessage());
-			log.info("CSTW Login fail:{} - {}", id, message);
-		}
+    	}catch(UserException e) {
+    		message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
+    		log.info("CSTW Login fail:{} - {}",id,message);
+    	}
 
-		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(
-				event.getKey(), event.getSender(), isOk, message, userGroup,
-				accountList, user2AccountMap);
+		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(event.getKey(),event.getSender(),isOk,message,userGroup,accountList,user2AccountMap);
 		try {
 			eventManager.sendRemoteEvent(reply);
 		} catch (Exception e) {
-			log.warn(e.getMessage(), e);
+			log.warn(e.getMessage(),e);
 		}
-	}
+    }
 
 	public void processGroupManageeRequestEvent(GroupManageeRequestEvent event) {
 		String manager = event.getManager();

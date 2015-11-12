@@ -28,12 +28,15 @@ public class EditTreeLabelProvider extends LabelProvider {
 	@Override
 	public Image getImage(Object element) {
 		if (element instanceof ExchangeAccountModel) {
-			return Activator.getImageDescriptor(
-					ImageID.EXCHANGEACCOUNT_ICON.toString()).createImage();
+			return Activator.getDefault().getImageRegistry()
+					.getDescriptor(ImageID.EXCHANGEACCOUNT_ICON.toString())
+					.createImage();
+
 		}
 		if (element instanceof SubAccountModel) {
-			return Activator.getImageDescriptor(
-					ImageID.SUBACCOUNT_ICON.toString()).createImage();
+			return Activator.getDefault().getImageRegistry()
+					.getDescriptor(ImageID.SUBACCOUNT_ICON.toString())
+					.createImage();
 		}
 		return super.getImage(element);
 	}
