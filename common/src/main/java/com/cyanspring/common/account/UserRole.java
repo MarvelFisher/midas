@@ -5,6 +5,7 @@ public enum UserRole {
 	RiskManager(2,"Frontend Risk Manager"),//FrontEndRiskManager
 	Admin(3,"Admin"),
 	BackEndRiskManager(4,"Backend Risk Manager"),
+	Group(5,"Group"),
 	;
 
 	private final int value;
@@ -12,6 +13,13 @@ public enum UserRole {
 	private UserRole(int value,String desc) {
 		this.value = value;
 		this.desc = desc;
+	}
+	
+	public boolean allowLogin(){
+		if( Group == this)
+			return false;
+		
+		return true;
 	}
 	
 	public  boolean isManagerLevel(){
