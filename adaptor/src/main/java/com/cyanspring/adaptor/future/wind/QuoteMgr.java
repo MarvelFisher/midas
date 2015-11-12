@@ -45,40 +45,20 @@ public class QuoteMgr {
                     	for (Object obj : qList) {
                     		try {
                     			arr = (Object[]) obj;                    			
+	                    		if (arr == null || arr.length != 2) {
+	                                continue;
+	                            }
+	                            type = (int) arr[0];
+	                            process(type, arr[1]);
                     		} catch (Exception e) {
                     			log.error(e.getMessage(),e);
                     			continue;
                     		}
-                    		if (arr == null || arr.length != 2) {
-                                continue;
-                            }
-                            type = (int) arr[0];
-                            process(type, arr[1]);
                     	}
                     	if(cnt > max) {
                     		max = cnt;
                     		log.info("windAdaptor queue reach new max: " + max);
                     	}
-//                            if (queue.size() > 0) {
-//                                Object[] arr;
-//                                try {
-//                                    arr = (Object[]) queue.poll();
-//                                }catch (Exception e){
-//                                    log.error(e.getMessage(),e);
-//                                    arr = null;
-//                                }
-//                                if (arr == null || arr.length != 2) {
-//                                    continue;
-//                                }
-//                                int type = (int) arr[0];
-//                                process(type, arr[1]);
-//                            }else{
-//                                try {
-//                                    TimeUnit.MILLISECONDS.sleep(1);
-//                                } catch (InterruptedException e) {
-//                                    e.printStackTrace();
-//                                }
-//                            }
                     }
                 }
             });
