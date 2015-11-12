@@ -12,6 +12,7 @@ import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.RefDataBitUtil;
 import com.cyanspring.common.validation.IOrderValidator;
 import com.cyanspring.common.validation.OrderValidationException;
 
@@ -22,8 +23,6 @@ public class TradableValidator implements IOrderValidator{
 	
 	@Autowired
 	IRefDataManager refDataManager;
-
-	private final String NONE_TRADABLE = "0";
 	
 	@Override
 	public void validate(Map<String, Object> map, ParentOrder order)
@@ -47,7 +46,7 @@ public class TradableValidator implements IOrderValidator{
 			return;
 		}
 
-		if(NONE_TRADABLE.equals(refData.getTradable())){
+		if(RefDataBitUtil.isTradable(refData.getInstrumentType())){
 			throw new OrderValidationException("Trade-related functions are not available for this contract."
 					,ErrorMessage.SYMBOL_NOT_TRADABLE);
 		}

@@ -1,4 +1,4 @@
-package com.cyanspring.common.position;
+package com.cyanspring.server.account;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,10 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cyanspring.apievent.obj.OrderType;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
-import com.cyanspring.common.account.AccountKeeper;
 import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.ClosedPosition;
 import com.cyanspring.common.account.ICommissionManager;
@@ -31,10 +31,10 @@ import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.QuoteUtils;
 import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.staticdata.IRefDataChecker;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.type.OrdStatus;
-import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
@@ -57,19 +57,19 @@ public class PositionKeeper {
 	private boolean useMid;
 
 	@Autowired
-	public IRefDataManager refDataManager;
+	IRefDataManager refDataManager;
 
 	@Autowired
 	IFxConverter fxConverter;
 
 	@Autowired
-	public AccountKeeper accountKeeper;
+	AccountKeeper accountKeeper;
 
 	@Autowired
-	public ILeverageManager leverageManager;
+	ILeverageManager leverageManager;
 
 	@Autowired
-	public ICommissionManager commissionManager;
+	ICommissionManager commissionManager;
 
 	private ClosePositionLock closePositionLock = new ClosePositionLock();
 
@@ -370,7 +370,7 @@ public class PositionKeeper {
 	}
 
 	// this one gives the raw positions
-	public List<OpenPosition> getOpenPositions(String account) {
+	protected List<OpenPosition> getOpenPositions(String account) {
 			Map<String, List<OpenPosition>> symbolPositions = accountPositions.get(account);
 			if(null == symbolPositions) {
 				return null;
@@ -804,7 +804,7 @@ public class PositionKeeper {
 
 		RefData refData = refDataManager.getRefData(symbol);
 		double leverage = leverageManager.getLeverage(refData, accountSetting);
-
+		
 		if(account.getCashAvailable() * Default.getMarginCall() - deltaValue/leverage >= 0) {
 			return true;
 		} else {
@@ -856,7 +856,7 @@ public class PositionKeeper {
 		return quoteFeeder;
 	}
 
-	public void setQuoteFeeder(IQuoteFeeder quoteFeeder) {
+	protected void setQuoteFeeder(IQuoteFeeder quoteFeeder) {
 		this.quoteFeeder = quoteFeeder;
 	}
 
