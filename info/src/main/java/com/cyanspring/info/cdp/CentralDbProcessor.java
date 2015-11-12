@@ -279,7 +279,7 @@ public class CentralDbProcessor implements IPlugin
 		
 		MarketSessionType sessionType = data.getSessionType();
 		Date sessionEnd = data.getSessionEnd();
-		if (sessionType == MarketSessionType.OPEN)
+		if (sessionType == MarketSessionType.OPEN || sessionType == MarketSessionType.PRECLOSE)
 		{
 			if (quote.getTimeStamp().getTime() >= sessionEnd.getTime())
 			{
