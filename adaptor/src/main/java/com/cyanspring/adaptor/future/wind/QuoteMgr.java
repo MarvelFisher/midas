@@ -46,15 +46,15 @@ public class QuoteMgr {
                     	for (Object obj : qList) {
                     		try {
                     			arr = (Object[]) obj;                    			
+	                    		if (arr == null || arr.length != 2) {
+	                                continue;
+	                            }
+	                            type = (int) arr[0];
+	                            process(type, arr[1]);
                     		} catch (Exception e) {
                     			log.error(e.getMessage(),e);
                     			continue;
                     		}
-                    		if (arr == null || arr.length != 2) {
-                                continue;
-                            }
-                            type = (int) arr[0];
-                            process(type, arr[1]);
                     	}
                     	if(cnt > min && cnt > max) {
                     		max = cnt;
