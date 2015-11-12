@@ -112,7 +112,7 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 		setStrategy(refdata.getStrategy());
 		setMarginRate(refdata.getMarginRate());
 		setDenominator(refdata.getDenominator());
-		setTradable(refdata.getTradable());
+		setTradable(RefDataBitUtil.isTradable(refdata.getInstrumentType()));
 		setSpellName(refdata.getSpellName());
 //        if (RefDataBitUtil.isForex(refdata.getInstrumentType())) {
 //        	setCommodity("F");
