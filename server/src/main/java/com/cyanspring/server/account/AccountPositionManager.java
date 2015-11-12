@@ -140,6 +140,7 @@ import com.cyanspring.common.message.ExtraEventMessage;
 import com.cyanspring.common.message.ExtraEventMessageBuilder;
 import com.cyanspring.common.message.MessageLookup;
 import com.cyanspring.common.order.RiskOrderController;
+import com.cyanspring.common.pool.AccountPool;
 import com.cyanspring.common.position.IPositionListener;
 import com.cyanspring.common.position.IQuoteFeeder;
 import com.cyanspring.common.position.PositionKeeper;
@@ -2351,6 +2352,10 @@ public class AccountPositionManager implements IPlugin {
 			List<ClosedPosition> closed) {
 		positionKeeper.injectOpenPositions(opens);
 		positionKeeper.injectClosedPositions(closed);
+	}
+
+	public void injectAccountPools(List<AccountPool> accountPools) {
+		accountKeeper.injectAccountPools(accountPools);
 	}
 
 	public void endAcountPositionRecovery() {
