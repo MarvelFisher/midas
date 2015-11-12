@@ -7,13 +7,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.IPlugin;
-import com.cyanspring.common.account.Account;
 import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.OperationType;
 import com.cyanspring.common.event.pool.AccountInstrumentSnapshotReplyEvent;
 import com.cyanspring.common.event.pool.AccountInstrumentSnapshotRequestEvent;
+import com.cyanspring.common.event.pool.ExchangeAccountOperationReplyEvent;
 import com.cyanspring.common.event.pool.ExchangeAccountOperationRequestEvent;
 
 /**
@@ -68,16 +68,44 @@ public class InstrumentPoolManager implements IPlugin {
 		AccountInstrumentSnapshotReplyEvent replyEvent = new AccountInstrumentSnapshotReplyEvent(
 				requestEvent.getKey(), requestEvent.getSender(), true, "ok",
 				-1, requestEvent.getTxId());
+		log.info("Received AccountInstrumentSnapshotReplyEvent");
 		eventManager.sendRemoteEvent(replyEvent);
 	}
 
 	public void processExchangeAccountOperationRequestEvent(
-			ExchangeAccountOperationRequestEvent requestEvent) {
+			ExchangeAccountOperationRequestEvent requestEvent) throws Exception {
+		boolean ok = true;
+		int errorCode = -1;
+		String message = "";
 		OperationType type = requestEvent.getOperationType();
 		ExchangeAccount exchangeAccount = requestEvent.getExchangeAccount();
-		InstrumentPoolHelper.updateExchangeAccount(instrumentPoolKeeper,
-				exchangeAccount, type);
-		// ExchangeAccountOperationReplyEvent
+		log.info("Received ExchangeAccountOperationRequestEvent: "
+				+ exchangeAccount + ", " + type);
+
+		if (type == OperationType.CREATE) {
+			if (instrumentPoolKeeper.ifExists(exchangeAccount)) {
+				ok = false;
+				errorCode = 4;
+				message = exchangeAccount.getId();
+			}
+		} else if (type == OperationType.UPDATE || type == OperationType.DELETE) {
+			if (!instrumentPoolKeeper.ifExists(exchangeAccount)) {
+				ok = false;
+				errorCode = 5;
+				message = exchangeAccount.getId();
+			}
+		}
+		ExchangeAccountOperationReplyEvent replyEvent = new ExchangeAccountOperationReplyEvent(
+				requestEvent.getKey(), requestEvent.getSender(), ok, message,
+				errorCode, requestEvent.getTxId());
+		if (ok) {
+			InstrumentPoolHelper.updateExchangeAccount(instrumentPoolKeeper,
+					exchangeAccount, type);
+			
+			replyEvent.setExchangeAccount(exchangeAccount);
+			replyEvent.setOperationType(type);
+		}
+		eventManager.sendRemoteEvent(replyEvent);
 	}
 
 	public void injectExchangeAccounts(List<ExchangeAccount> exchangeAccounts) {

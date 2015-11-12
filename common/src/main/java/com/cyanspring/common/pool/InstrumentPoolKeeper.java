@@ -76,28 +76,20 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 				symbol);
 	}
 
-	public boolean add(ExchangeAccount exchangeAccount) {
-		if (exchAccMap.containsKey(exchangeAccount.getId())) {
-			return false;
-		}
-		exchAccMap.put(exchangeAccount.getId(), exchangeAccount);
-		return true;
+	public boolean ifExists(ExchangeAccount exchangeAccount) {
+		return exchAccMap.containsKey(exchangeAccount.getId());
 	}
 
-	public boolean delete(ExchangeAccount exchangeAccount) {
-		if (!exchAccMap.containsKey(exchangeAccount.getId())) {
-			return false;
-		}
+	public void add(ExchangeAccount exchangeAccount) {
+		exchAccMap.put(exchangeAccount.getId(), exchangeAccount);
+	}
+
+	public void delete(ExchangeAccount exchangeAccount) {
 		exchAccMap.remove(exchangeAccount.getId());
-		return true;
 	}
 
-	public boolean update(ExchangeAccount exchangeAccount) {
-		if (!exchAccMap.containsKey(exchangeAccount.getId())) {
-			return false;
-		}
+	public void update(ExchangeAccount exchangeAccount) {
 		exchAccMap.put(exchangeAccount.getId(), exchangeAccount);
-		return true;
 	}
 
 	/**
