@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
+import com.cyanspring.cstw.model.admin.InstrumentInfoModel;
 import com.cyanspring.cstw.model.admin.SubAccountModel;
 import com.cyanspring.cstw.service.common.BasicServiceImpl;
 import com.cyanspring.cstw.service.common.RefreshEventType;
@@ -56,6 +57,18 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl implements
 	protected RefreshEventType handleEvent(AsyncEvent event) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	/**
+	 * Mock
+	 */
+	@Override
+	public List<InstrumentInfoModel> getInstrumentInfoModelListByExchangeAccountName(
+			String name) {
+		List<InstrumentInfoModel> list = new ArrayList<InstrumentInfoModel>();
+		list.add(new InstrumentInfoModel.Builder().symbolId("AUDUSD").symbolName("AUDUSD").qty(10000).build());
+		list.add(new InstrumentInfoModel.Builder().symbolId("AUDCAD").symbolName("AUDCAD").qty(10000).build());
+		return list;
 	}
 
 }
