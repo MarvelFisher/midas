@@ -25,6 +25,9 @@ public class ErrorSchema {
 		createMsg(5, "CN", "操作失败，该对象不存在");
 		createMsg(5, "EN", "Operation failed, object doesn't exist");
 
+		createMsg(6, "CN", "操作失败，尚有与之关联的对象");
+		createMsg(6, "EN", "Operation failed, still has object related to it");
+
 		isBuilt = true;
 	}
 

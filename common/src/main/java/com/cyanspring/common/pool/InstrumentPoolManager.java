@@ -15,8 +15,14 @@ import com.cyanspring.common.event.pool.AccountInstrumentSnapshotReplyEvent;
 import com.cyanspring.common.event.pool.AccountInstrumentSnapshotRequestEvent;
 import com.cyanspring.common.event.pool.ExchangeAccountOperationReplyEvent;
 import com.cyanspring.common.event.pool.ExchangeAccountOperationRequestEvent;
+import com.cyanspring.common.event.pool.ExchangeSubAccountOperationReplyEvent;
+import com.cyanspring.common.event.pool.ExchangeSubAccountOperationRequestEvent;
+import com.cyanspring.common.event.pool.PmExchangeAccountDeleteEvent;
 import com.cyanspring.common.event.pool.PmExchangeAccountInsertEvent;
 import com.cyanspring.common.event.pool.PmExchangeAccountUpdateEvent;
+import com.cyanspring.common.event.pool.PmExchangeSubAccountDeleteEvent;
+import com.cyanspring.common.event.pool.PmExchangeSubAccountInsertEvent;
+import com.cyanspring.common.event.pool.PmExchangeSubAccountUpdateEvent;
 
 /**
  * @author GuoWei
@@ -41,6 +47,8 @@ public class InstrumentPoolManager implements IPlugin {
 		public void subscribeToEvents() {
 			subscribeToEvent(AccountInstrumentSnapshotRequestEvent.class, null);
 			subscribeToEvent(ExchangeAccountOperationRequestEvent.class, null);
+			subscribeToEvent(ExchangeSubAccountOperationRequestEvent.class,
+					null);
 		}
 
 		@Override
@@ -84,7 +92,8 @@ public class InstrumentPoolManager implements IPlugin {
 		log.info("Received ExchangeAccountOperationRequestEvent: "
 				+ exchangeAccount + ", " + type);
 
-		if (type == OperationType.CREATE) {
+		switch (type) {
+		case CREATE:
 			if (!instrumentPoolKeeper.ifExists(exchangeAccount)) {
 				PmExchangeAccountInsertEvent insertEvent = new PmExchangeAccountInsertEvent(
 						exchangeAccount);
@@ -94,7 +103,8 @@ public class InstrumentPoolManager implements IPlugin {
 				errorCode = 4;
 				message = exchangeAccount.getId();
 			}
-		} else if (type == OperationType.UPDATE) {
+			break;
+		case UPDATE:
 			if (instrumentPoolKeeper.ifExists(exchangeAccount)) {
 				PmExchangeAccountUpdateEvent updateEvent = new PmExchangeAccountUpdateEvent(
 						exchangeAccount);
@@ -104,14 +114,26 @@ public class InstrumentPoolManager implements IPlugin {
 				errorCode = 5;
 				message = exchangeAccount.getId();
 			}
-		} else if (type == OperationType.DELETE) {
+			break;
+		case DELETE:
 			if (instrumentPoolKeeper.ifExists(exchangeAccount)) {
-				//instrumentPoolKeeper.get,
+				List<ExchangeSubAccount> subAccounts = instrumentPoolKeeper
+						.getExchangeSubAccountList(exchangeAccount);
+				if (subAccounts != null && !subAccounts.isEmpty()) {
+					ok = false;
+					errorCode = 6;
+					message = "ExchangeSubAccount(s)";
+				} else {
+					PmExchangeAccountDeleteEvent deleteEvent = new PmExchangeAccountDeleteEvent(
+							exchangeAccount);
+					eventManager.sendEvent(deleteEvent);
+				}
 			} else {
 				ok = false;
 				errorCode = 5;
 				message = exchangeAccount.getId();
 			}
+			break;
 		}
 		ExchangeAccountOperationReplyEvent replyEvent = new ExchangeAccountOperationReplyEvent(
 				requestEvent.getKey(), requestEvent.getSender(), ok, message,
@@ -126,6 +148,66 @@ public class InstrumentPoolManager implements IPlugin {
 		eventManager.sendRemoteEvent(replyEvent);
 	}
 
+	public void processExchangeSubAccountOperationRequestEvent(
+			ExchangeSubAccountOperationRequestEvent event) throws Exception {
+		boolean ok = true;
+		int errorCode = -1;
+		String message = "";
+		ExchangeSubAccount exchangeSubAccount = event.getExchangeSubAccount();
+		OperationType type = event.getOperationType();
+		log.info("Received ExchangeSubAccountOperationRequestEvent: "
+				+ exchangeSubAccount + ", " + type);
+
+		switch (type) {
+		case CREATE:
+			if (!instrumentPoolKeeper.ifExists(exchangeSubAccount)) {
+				PmExchangeSubAccountInsertEvent insertEvent = new PmExchangeSubAccountInsertEvent(
+						exchangeSubAccount);
+				eventManager.sendEvent(insertEvent);
+			} else {
+				ok = false;
+				errorCode = 4;
+				message = exchangeSubAccount.getId();
+			}
+			break;
+		case UPDATE:
+			if (instrumentPoolKeeper.ifExists(exchangeSubAccount)) {
+				PmExchangeSubAccountUpdateEvent updateEvent = new PmExchangeSubAccountUpdateEvent(
+						exchangeSubAccount);
+				eventManager.sendEvent(updateEvent);
+			} else {
+				ok = false;
+				errorCode = 4;
+				message = exchangeSubAccount.getId();
+			}
+			break;
+		case DELETE:
+			if (instrumentPoolKeeper.ifExists(exchangeSubAccount)) {
+				PmExchangeSubAccountDeleteEvent deleteEvent = new PmExchangeSubAccountDeleteEvent(
+						exchangeSubAccount);
+				eventManager.sendEvent(deleteEvent);
+			} else {
+				ok = false;
+				errorCode = 5;
+				message = exchangeSubAccount.getId();
+			}
+			break;
+		}
+
+		ExchangeSubAccountOperationReplyEvent replyEvent = new ExchangeSubAccountOperationReplyEvent(
+				event.getKey(), event.getSender(), ok, message, errorCode,
+				event.getTxId());
+		if (ok) {
+			InstrumentPoolHelper.updateExchangeSubAccount(instrumentPoolKeeper,
+					exchangeSubAccount, type);
+			replyEvent.setExchangeSubAccount(exchangeSubAccount);
+			replyEvent.setOperationType(type);
+		}
+		eventManager.sendRemoteEvent(replyEvent);
+	}
+
+	
+	
 	public void injectExchangeAccounts(List<ExchangeAccount> exchangeAccounts) {
 		instrumentPoolKeeper.injectExchangeAccounts(exchangeAccounts);
 	}

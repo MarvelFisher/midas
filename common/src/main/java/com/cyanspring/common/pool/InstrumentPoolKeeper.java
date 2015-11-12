@@ -27,8 +27,21 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 	// k1=InstrumentPool id; k2=ExchangeSubAccount Id; v=InstrumentPool
 	private DualKeyMap<String, String, InstrumentPool> poolSubAccountMap = new DualKeyMap<String, String, InstrumentPool>();
 
+	// k1=InstrumentPoolRecord id; k2=InstrumentPool id; v=InstrumentPoolRecord
+	private DualKeyMap<String, String, InstrumentPoolRecord> instrumentPoolRecordMap = new DualKeyMap<String, String, InstrumentPoolRecord>();
+	
 	@Autowired
 	private AccountKeeper accountKeeper;
+
+	public List<ExchangeAccount> getExchangeAccountList() {
+		return new ArrayList<ExchangeAccount>(exchAccMap.values());
+	}
+
+	public List<ExchangeSubAccount> getExchangeSubAccountList(
+			ExchangeAccount exchangeAccount) {
+		return new ArrayList<ExchangeSubAccount>(subAccountMap.getMap(
+				exchangeAccount.getId()).values());
+	}
 
 	/**
 	 * 根据交易员账号和输入的股票，返回其对应的ExchangeSubAccountId和股票池信息List<InstrumentPoolRecord>
@@ -76,6 +89,17 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 				symbol);
 	}
 
+	/**
+	 * 更新股票池数量InstrumentPoolRecord
+	 * 
+	 * @param instrumentPoolRecord
+	 */
+	@Override
+	public void update(InstrumentPoolRecord instrumentPoolRecord) {
+		poolSubAccountMap.get(instrumentPoolRecord.getInstrumentPoolId())
+				.update(instrumentPoolRecord);
+	}
+
 	public boolean ifExists(ExchangeAccount exchangeAccount) {
 		return exchAccMap.containsKey(exchangeAccount.getId());
 	}
@@ -92,15 +116,23 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 		exchAccMap.put(exchangeAccount.getId(), exchangeAccount);
 	}
 
-	/**
-	 * 更新股票池数量InstrumentPoolRecord
-	 * 
-	 * @param instrumentPoolRecord
-	 */
-	@Override
-	public void update(InstrumentPoolRecord instrumentPoolRecord) {
-		poolSubAccountMap.get(instrumentPoolRecord.getInstrumentPoolId())
-				.update(instrumentPoolRecord);
+	public boolean ifExists(ExchangeSubAccount exchangeSubAccount) {
+		return subAccountMap.containsKey(exchangeSubAccount.getId());
+	}
+
+	public void add(ExchangeSubAccount exchangeSubAccount) {
+		subAccountMap.put(exchangeSubAccount.getId(),
+				exchangeSubAccount.getExchangeAccount(), exchangeSubAccount);
+	}
+
+	public void update(ExchangeSubAccount exchangeSubAccount) {
+		subAccountMap.put(exchangeSubAccount.getId(),
+				exchangeSubAccount.getExchangeAccount(), exchangeSubAccount);
+	}
+
+	public void delete(ExchangeSubAccount exchangeSubAccount) {
+		subAccountMap.remove(exchangeSubAccount.getId(),
+				exchangeSubAccount.getExchangeAccount());
 	}
 
 	public void injectExchangeAccounts(List<ExchangeAccount> exchangeAccounts) {

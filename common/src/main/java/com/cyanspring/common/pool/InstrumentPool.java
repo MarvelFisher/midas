@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class InstrumentPool {
 	String id;
+	String name;
 	String exchangeSubAccount;
 	// k=Account id
 	List<String> accounts;
@@ -27,6 +28,14 @@ public class InstrumentPool {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public void setExchangeSubAccount(String exchangeSubAccount) {

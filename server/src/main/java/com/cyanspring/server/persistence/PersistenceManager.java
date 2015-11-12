@@ -45,6 +45,12 @@ import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
+import com.cyanspring.common.event.pool.PmExchangeAccountDeleteEvent;
+import com.cyanspring.common.event.pool.PmExchangeAccountInsertEvent;
+import com.cyanspring.common.event.pool.PmExchangeAccountUpdateEvent;
+import com.cyanspring.common.event.pool.PmExchangeSubAccountDeleteEvent;
+import com.cyanspring.common.event.pool.PmExchangeSubAccountInsertEvent;
+import com.cyanspring.common.event.pool.PmExchangeSubAccountUpdateEvent;
 import com.cyanspring.common.event.signal.CancelSignalEvent;
 import com.cyanspring.common.event.signal.SignalEvent;
 import com.cyanspring.common.event.strategy.MultiInstrumentStrategyUpdateEvent;
@@ -129,6 +135,12 @@ public class PersistenceManager {
 			subscribeToEvent(PmDeleteGroupManagementEvent.class, null);
 			subscribeToEvent(PmAddCashEvent.class, null);
 			subscribeToEvent(PmUpdateCoinControlEvent.class, null);
+			subscribeToEvent(PmExchangeAccountInsertEvent.class, null);
+			subscribeToEvent(PmExchangeAccountUpdateEvent.class, null);
+			subscribeToEvent(PmExchangeAccountDeleteEvent.class, null);
+			subscribeToEvent(PmExchangeSubAccountInsertEvent.class, null);
+			subscribeToEvent(PmExchangeSubAccountUpdateEvent.class, null);
+			subscribeToEvent(PmExchangeSubAccountDeleteEvent.class, null);
 
 			if (persistSignal) {
 				subscribeToEvent(SignalEvent.class, null);
@@ -1341,6 +1353,120 @@ public class PersistenceManager {
 			for (GroupManagement group : groups) {
 				session.save(group);
 			}
+			tx.commit();
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			log.error(e.getMessage(), e);
+		} finally {
+			session.close();
+		}
+	}
+
+	public void processPmExchangeAccountInsertEvent(
+			PmExchangeAccountInsertEvent event) {
+		ExchangeAccount exchangeAccount = event.getExchangeAccount();
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			session.save(exchangeAccount);
+			tx.commit();
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			log.error(e.getMessage(), e);
+		} finally {
+			session.close();
+		}
+	}
+
+	public void processPmExchangeAccountUpdateEvent(
+			PmExchangeAccountUpdateEvent event) {
+		ExchangeAccount exchangeAccount = event.getExchangeAccount();
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			session.update(exchangeAccount);
+			tx.commit();
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			log.error(e.getMessage(), e);
+		} finally {
+			session.close();
+		}
+	}
+
+	public void processPmExchangeAccountDeleteEvent(
+			PmExchangeAccountDeleteEvent event) {
+		ExchangeAccount exchangeAccount = event.getExchangeAccount();
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			session.delete(exchangeAccount);
+			tx.commit();
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			log.error(e.getMessage(), e);
+		} finally {
+			session.close();
+		}
+	}
+
+	public void processPmExchangeSubAccountInsertEvent(
+			PmExchangeSubAccountInsertEvent event) {
+		ExchangeSubAccount exchangeSubAccount = event.getExchangeSubAccount();
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			session.save(exchangeSubAccount);
+			tx.commit();
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			log.error(e.getMessage(), e);
+		} finally {
+			session.close();
+		}
+	}
+
+	public void processPmExchangeSubAccountUpdateEvent(
+			PmExchangeSubAccountUpdateEvent event) {
+		ExchangeSubAccount exchangeSubAccount = event.getExchangeSubAccount();
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			session.update(exchangeSubAccount);
+			tx.commit();
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			log.error(e.getMessage(), e);
+		} finally {
+			session.close();
+		}
+	}
+
+	public void processPmExchangeSubAccountDeleteEvent(
+			PmExchangeSubAccountDeleteEvent event) {
+		ExchangeSubAccount exchangeSubAccount = event.getExchangeSubAccount();
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			session.delete(exchangeSubAccount);
 			tx.commit();
 		} catch (Exception e) {
 			if (tx != null) {

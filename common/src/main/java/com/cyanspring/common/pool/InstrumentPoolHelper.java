@@ -23,4 +23,20 @@ public class InstrumentPoolHelper {
 			break;
 		}
 	}
+
+	public static void updateExchangeSubAccount(
+			InstrumentPoolKeeper instrumentPoolKeeper,
+			ExchangeSubAccount exchangeSubAccount, OperationType type) {
+		switch (type) {
+		case CREATE:
+			instrumentPoolKeeper.add(exchangeSubAccount);
+			break;
+		case UPDATE:
+			instrumentPoolKeeper.update(exchangeSubAccount);
+			break;
+		case DELETE:
+			instrumentPoolKeeper.delete(exchangeSubAccount);
+			break;
+		}
+	}
 }
