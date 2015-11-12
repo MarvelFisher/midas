@@ -45,11 +45,16 @@ public class CreateUserDialog extends Dialog implements IAsyncEventListener {
 	private Button btnOk, btnCancel;
 	private String id = IdGenerator.getInstance().getNextID();
 	private Composite parent;
+	private boolean onlyTrader = false;
 	
 	public CreateUserDialog(Shell parentShell) {
 		super(parentShell);
 	}
 
+	public void onlyTraderUserRole(boolean only){
+		onlyTrader = only;
+	}
+	
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		this.parent = parent;
@@ -131,9 +136,14 @@ public class CreateUserDialog extends Dialog implements IAsyncEventListener {
 		Label lblUserRole = new Label(container, SWT.NONE);
 		lblUserRole.setText("User Role:");
 		cbUserRole = new Combo(container, SWT.BORDER);
-		for(UserRole userRole: UserRole.values()) {
-			cbUserRole.add(userRole.desc());
+		if(onlyTrader){
+			cbUserRole.add(UserRole.Trader.desc());
+		}else{
+			for(UserRole userRole: UserRole.values()) {				
+				cbUserRole.add(userRole.desc());
+			}
 		}
+		
 		cbUserRole.setText(UserRole.Trader.desc());
 		cbUserRole.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 1, 1));

@@ -259,10 +259,6 @@ public class RefData extends DataObject {
         this.set(numberatorDp, RefDataField.NUMERATOR_DP.value());
     }
 
-    public boolean getTradable() {
-        return (getInstrumentType() >> 9 & 0x01) != 0;
-    }
-
     public String getStrategy() {
         return this.get(String.class, RefDataField.STRATEGY.value());
     }
