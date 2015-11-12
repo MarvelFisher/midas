@@ -193,6 +193,7 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.TRADING_SUSPENSION, getBean(464, "Trading Suspenstion!"));
 			addAndCheck(ErrorMessage.ORDER_QTY_OVER_MAX_SETTING, getBean(465, "The order quantity is over maximum setting"));
 			addAndCheck(ErrorMessage.ORDER_QTY_NOT_MET_MINIMUM_SETTING, getBean(466, "The order quantity is not met minimum setting"));
+			addAndCheck(ErrorMessage.ORDER_OVER_ACCOUNT_VALUE_PERCENTAGE, getBean(467, "Order execeeds account value percentage"));
 
 			// user errors start with 500
 			addAndCheck(ErrorMessage.CREATE_USER_FAILED,getBean(500, "Create user failed"));
