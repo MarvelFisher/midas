@@ -726,7 +726,7 @@ public class AccountPositionManager implements IPlugin {
 					user.setUserType(UserType.NORMAL);
 				}
                 
-                if(user.getRole().isManagerLevel() || user.getRole().equals(UserRole.Admin)){
+                if(!user.getRole().equals(UserRole.Trader)){
                     eventManager.sendEvent(new PmCreateCSTWUserEvent(PersistenceManager.ID, null, user, event));
                 }else{
                     Account account = new Account(defaultAccountId, event.getUser().getId());
@@ -993,7 +993,6 @@ public class AccountPositionManager implements IPlugin {
     			accountList = new ArrayList<>();
     		
 	    	if(accountList.size() < limitUser){
-	    		log.info("get all Account:{}",accountList.size());
 	    		for(Account account:accountList){
 	    			if(account != null){
 	    				user2AccountMap.put(account.getId(), account);
@@ -1011,7 +1010,6 @@ public class AccountPositionManager implements IPlugin {
     		}
     		return;
 		}
-
 
     	try{
 	    	if (!StringUtils.hasText(id) || !StringUtils.hasText(pwd)) {
@@ -1034,15 +1032,21 @@ public class AccountPositionManager implements IPlugin {
 						ErrorMessage.CSTW_LOGIN_FAILED);
 			}
 
-	    	if (!StringUtils.hasText(message)) {
-				isOk =true;
-			}
-
 	    	userGroup = userKeeper.getUserGroup(id);
 	    	accountList = accountKeeper.getAccounts(id);
 	    	if ( null == userGroup ) {
 	    		userGroup = new UserGroup(id,user.getRole());
 	    	}
+	    	
+	    	if(!userGroup.getRole().allowLogin()){
+				throw new UserException("This user not allow to login",
+						ErrorMessage.CSTW_LOGIN_FAILED);
+	    	}
+	    	
+	    	if (!StringUtils.hasText(message)) {
+				isOk =true;
+			}
+	    	
 	    	user2AccountMap = new HashMap<>();
 	    	if(null != accountList && !accountList.isEmpty())
 	    		user2AccountMap.put(id, accountList.get(0));
@@ -1060,6 +1064,7 @@ public class AccountPositionManager implements IPlugin {
 			eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));
 
     	}catch(UserException e) {
+    		isOk = false;
     		message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
     		log.info("CSTW Login fail:{} - {}",id,message);
     	}

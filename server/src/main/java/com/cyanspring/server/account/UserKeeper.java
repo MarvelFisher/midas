@@ -137,7 +137,7 @@ public class UserKeeper {
 			throw new UserException("Manager:"+manager+" is a Trader who can't manage someone else",ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED);
 		}
 		
-		if(!managerInfo.getRole().isManagerLevel()){
+		if(!managerInfo.getRole().isManagerLevel() && !managerInfo.getRole().equals(UserRole.Group)){
 			throw new UserException("Manager:"+manager+" role:"+managerInfo.getRole()+" who can't manage someone else",ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED);
 		}
 		
