@@ -45,8 +45,8 @@ public class TradableValidator implements IOrderValidator{
 			log.warn("This symbol doesn't exist in refData :"+symbol);
 			return;
 		}
-
-		if(RefDataBitUtil.isTradable(refData.getInstrumentType())){
+		
+		if(!RefDataBitUtil.isTradable(refData.getInstrumentType())){
 			throw new OrderValidationException("Trade-related functions are not available for this contract."
 					,ErrorMessage.SYMBOL_NOT_TRADABLE);
 		}
