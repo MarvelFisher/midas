@@ -16,7 +16,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
-import org.omg.CORBA.PRIVATE_MEMBER;
 
 import com.cyanspring.cstw.model.admin.SubAccountModel;
 import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
@@ -33,8 +32,10 @@ public class SubAccountDetailsPage implements IDetailsPage {
 	private IManagedForm mform;
 	private Section dataSection1;
 	private Section dataSection2;
-	private Text txtName;
+	private Text txtName1;
+	private Text txtName2;
 	private InstrumentInfoTableComposite exTableComposite;
+	private InstrumentInfoTableComposite subTableComposite;
 	
 	public SubAccountDetailsPage(ISubAccountManagerService service) {
 		this.service = service;
@@ -64,18 +65,18 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		td1.grabHorizontal = true;
 		dataSection1.setLayoutData(td1);
 		
-		Composite client = toolkit.createComposite(dataSection1);
+		Composite client1 = toolkit.createComposite(dataSection1);
 		GridLayout glayout = new GridLayout();
 		glayout.marginWidth = glayout.marginHeight = 0;
 		glayout.numColumns = 2;
-		client.setLayout(glayout);
+		client1.setLayout(glayout);
 		
-		createSpacer(toolkit, client, 2);
+		createSpacer(toolkit, client1, 2);
 		
-		createComponent(toolkit, client);
+		createComponent1(toolkit, client1);
 		
 		toolkit.paintBordersFor(dataSection1);
-		dataSection1.setClient(client);
+		dataSection1.setClient(client1);
 		
 		dataSection2 = toolkit.createSection(parent,  Section.TITLE_BAR | Section.EXPANDED);
 		dataSection2.marginWidth = 10;
@@ -84,17 +85,27 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		td2.grabHorizontal = true;
 		dataSection2.setLayoutData(td2);
 		
+		Composite client2 = toolkit.createComposite(dataSection2);
+		GridLayout gLayout2 = new GridLayout();
+		gLayout2.marginWidth = gLayout2.marginHeight = 0;
+		gLayout2.numColumns = 2;
+		client2.setLayout(gLayout2);
+		
+		createSpacer(toolkit, client2, 2);
+		
+		createComponent2(toolkit, client2);
+		
 		toolkit.paintBordersFor(dataSection2);
-		//dataSection2.setClient(client);
+		dataSection2.setClient(client2);
 	}
 	
-	private void createComponent(FormToolkit toolkit, Composite client) {
+	private void createComponent1(FormToolkit toolkit, Composite client) {
 		toolkit.createLabel(client, "Name: ");
-		txtName = toolkit.createText(client, "", SWT.BORDER);
+		txtName1 = toolkit.createText(client, "", SWT.BORDER);
 		GridData gd1 = new GridData(GridData.FILL_HORIZONTAL|GridData.VERTICAL_ALIGN_BEGINNING);
-		txtName.setLayoutData(gd1);
-		txtName.setEditable(true);
-		txtName.setTextLimit(1023);
+		txtName1.setLayoutData(gd1);
+		txtName1.setEditable(true);
+		txtName1.setTextLimit(1023);
 		
 		createSpacer(toolkit, client, 2);
 		
@@ -107,6 +118,32 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		gd3.horizontalSpan = 2;
 		exTableComposite.setLayoutData(gd3);
 		toolkit.adapt(exTableComposite);
+		
+	}
+	
+	private void createComponent2(FormToolkit toolkit, Composite client) {
+		toolkit.createLabel(client, "Name: ");
+		txtName2 = toolkit.createText(client, "", SWT.BORDER);
+		GridData gd1 = new GridData(GridData.FILL_HORIZONTAL|GridData.VERTICAL_ALIGN_BEGINNING);
+		txtName2.setLayoutData(gd1);
+		txtName2.setEditable(true);
+		txtName2.setTextLimit(1023);
+		
+		createSpacer(toolkit, client, 2);
+		
+		GridData gd2 = new GridData(GridData.FILL_HORIZONTAL|GridData.VERTICAL_ALIGN_BEGINNING);
+		gd2.horizontalSpan = 2;
+		Label lblTable = toolkit.createLabel(client, "Summary of symbol: ");
+		lblTable.setLayoutData(gd2);
+		subTableComposite = new InstrumentInfoTableComposite(client, SWT.NONE);
+		GridData gd3 = new GridData();
+		gd3.horizontalSpan = 2;
+		subTableComposite.setLayoutData(gd3);
+		toolkit.adapt(subTableComposite);
+		
+		createSpacer(toolkit, client, 2);
+		
+		Label lblAssign = toolkit.createLabel(client, "Assign to RW / Group: ");
 		
 	}
 
@@ -173,9 +210,12 @@ public class SubAccountDetailsPage implements IDetailsPage {
 	
 	private void update() {
 		if ( input != null ) {
-			dataSection1.setText("Exchange Account Details: " + input.getName());
-			txtName.setText(input.getName());
-			exTableComposite.setInput(service.getInstrumentInfoModelListByExchangeAccountName(input.getName()));
+			dataSection1
+					.setText("Exchange Account Details: " + input.getName());
+			txtName1.setText(input.getExchangeAccountModel().getName());
+			exTableComposite.setInput(service
+					.getInstrumentInfoModelListByExchangeAccountName(input
+							.getExchangeAccountModel().getName()));
 		}
 	}
 	

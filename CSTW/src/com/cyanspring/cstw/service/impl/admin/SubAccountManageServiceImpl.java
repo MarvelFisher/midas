@@ -24,14 +24,25 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl implements
 
 	}
 	
+	// Mock
+	private ExchangeAccountModel ex1;
+	private ExchangeAccountModel ex2;
+	
+	// Mock
+	public SubAccountManageServiceImpl() {
+		ex1 = new ExchangeAccountModel.Builder().id("id1").name("ex1").build();
+		ex2 = new ExchangeAccountModel.Builder().id("id2").name("ex2").build();
+	}
+	
 	/*
 	 * Mock Code
 	 */
 	@Override
 	public List<ExchangeAccountModel> getExchangeAccountList() {
 		List<ExchangeAccountModel> list = new ArrayList<ExchangeAccountModel>();
-		list.add(new ExchangeAccountModel.Builder().id("id1").name("ex1").build());
-		list.add(new ExchangeAccountModel.Builder().id("id2").name("ex2").build());
+		
+		list.add(ex1);
+		list.add(ex2);
 		return list;
 	}
 	
@@ -41,10 +52,18 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl implements
 	@Override
 	public List<SubAccountModel> getSubAccountListByExchangeAccountName(
 			String name) {
-		List<SubAccountModel> list = new ArrayList<SubAccountModel>();
-		list.add(new SubAccountModel.Builder().id("sub1").name("account1").useableMoney(10000).commissionRate(0.01).build());
-		list.add(new SubAccountModel.Builder().id("sub2").name("account2").useableMoney(10000).commissionRate(0.01).build());
-		return list;
+		if ( name.equals("ex1") ) {
+			List<SubAccountModel> list = new ArrayList<SubAccountModel>();
+			list.add(new SubAccountModel.Builder().id("sub1").name("account1").exchangeAccount(ex1).useableMoney(10000).commissionRate(0.01).build());
+			list.add(new SubAccountModel.Builder().id("sub2").name("account2").exchangeAccount(ex1).useableMoney(10000).commissionRate(0.01).build());
+			return list;
+		} else {
+			List<SubAccountModel> list = new ArrayList<SubAccountModel>();
+			list.add(new SubAccountModel.Builder().id("sub1").name("account1").exchangeAccount(ex2).useableMoney(10000).commissionRate(0.01).build());
+			list.add(new SubAccountModel.Builder().id("sub2").name("account2").exchangeAccount(ex2).useableMoney(10000).commissionRate(0.01).build());
+			return list;
+		}
+		
 	}
 
 	@Override
