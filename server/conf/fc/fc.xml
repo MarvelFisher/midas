@@ -361,7 +361,7 @@
 		<property name="refDataTemplatePath">
 			<value>refdata/template/template_FC.xml</value>
 		</property>
-		<property name="refDataFile">
+		<property name="quoteFile">
 			<value>ticks/last.xml</value>
 		</property>
 	</bean>
