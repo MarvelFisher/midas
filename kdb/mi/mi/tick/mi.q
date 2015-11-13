@@ -94,7 +94,9 @@ getnew:{[funcs;TI;TPS;TPM;TPL;DATADAYS;TIBUFFER]
     / show select[3;<mi] from result;
     
     milasttime:select lasttime:(last time) by sym from get (`$("idx",string TI));
-    (`$("idx",string TI)) set (get (`$("idx",string TI))) , (select time,sym,ask,bid,vis,vil,rvi,minrvi,maxrvi,cvi,mincvi,maxcvi,mi,minmi,maxmi,umib,maxumib,umis,maxumis,cmfr,cmff,absfs,grvl,cr1,cr2,cr3,cf1,cf2,cf3 from aj[`sym;aj[`sym;result;milasttime];get (`$("minmax",string TI))] where time>lasttime);
+    new:(select time,sym,ask,bid,vis,vil,rvi,minrvi,maxrvi,cvi,mincvi,maxcvi,mi,minmi,maxmi,umib,maxumib,umis,maxumis,cmfr,cmff,absfs,grvl,cr1,cr2,cr3,cf1,cf2,cf3 from aj[`sym;aj[`sym;result;milasttime];get (`$("minmax",string TI))] where time>lasttime);
+    (`$("idx",string TI)) set (get (`$("idx",string TI))) , new;
+    .u.pub[(`$("idx",string TI)); new];
     
     if[(count select from (get (`$("idx",string TI))) where time.date=.z.D-1)>0; endday[TI]; (`$("data",string TI)) set dataL];
     }
