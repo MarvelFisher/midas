@@ -174,21 +174,6 @@ public class IMThread extends Thread{
 		json.put("data", data);
 		JSONObject responseJSON;
 		String responseCode;
-		if (attach && PD.getStrDeepLink().length() > 0)
-		{
-			log.info("Sending System Notification:" + PD.getStrUserId() + " " + PD.getStrMsgId());
-			responseJSON = 
-					new JSONObject(NEClient.sendAttachMsg(
-							serverAccount, 
-							PD.getStrUserId(), 
-							PD.getStrDeepLink(), 
-							"(IM) " + PD.getStrpushMessage(), 
-							PD.getStrDeepLink()));
-			responseCode = responseJSON.get("code").toString();
-			if (responseCode.equals("200") == false)
-				responseCode += ", " + responseJSON.get("desc");
-			log.info("Return code: " + responseCode);
-		}
 		
 		log.info("Sending Custom Message:" + PD.getStrUserId() + " " + PD.getStrMsgId());
 		responseJSON = 
@@ -197,6 +182,23 @@ public class IMThread extends Thread{
 		if (responseCode.equals("200") == false)
 			responseCode += ", " + responseJSON.get("desc");
 		log.info("Return code: " + responseCode);
+		if (attach && PD.getStrDeepLink().length() > 0)
+		{
+			log.info("Sending System Notification:" + PD.getStrUserId() + " " + PD.getStrMsgId());
+			JSONObject deeplink = new JSONObject();
+			deeplink.put("deeplink", PD.getStrDeepLink());
+			responseJSON = 
+					new JSONObject(NEClient.sendAttachMsg(
+							serverAccount, 
+							PD.getStrUserId(), 
+							deeplink.toString(), 
+							"(IM) " + PD.getStrpushMessage(), 
+							deeplink.toString()));
+			responseCode = responseJSON.get("code").toString();
+			if (responseCode.equals("200") == false)
+				responseCode += ", " + responseJSON.get("desc");
+			log.info("Return code: " + responseCode);
+		}
 	}
 	
 	public String getThreadId()
