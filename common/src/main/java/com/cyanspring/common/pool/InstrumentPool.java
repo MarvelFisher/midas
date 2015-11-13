@@ -1,16 +1,13 @@
 package com.cyanspring.common.pool;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public class InstrumentPool {
 	String id;
 	String name;
 	String exchangeSubAccount;
 	// k=Account id
-	List<String> accounts;
-	// k=Symbol; v=InstrumentPoolRecord
-	Map<String, InstrumentPoolRecord> instrumentPoolRecords;
+	Set<String> accounts;
 
 	public InstrumentPool(String id, String exchangeSubAccount) {
 		super();
@@ -42,38 +39,11 @@ public class InstrumentPool {
 		this.exchangeSubAccount = exchangeSubAccount;
 	}
 
-	public Map<String, InstrumentPoolRecord> getInstrumentPoolRecords() {
-		return instrumentPoolRecords;
-	}
-
-	public void setInstrumentPoolRecords(
-			Map<String, InstrumentPoolRecord> instrumentPoolRecords) {
-		this.instrumentPoolRecords = instrumentPoolRecords;
-	}
-
-	public InstrumentPoolRecord getInstrumentPoolRecord(String symbol) {
-		return instrumentPoolRecords.get(symbol);
-	}
-
-	public void update(InstrumentPoolRecord instrumentPoolRecord) {
-		instrumentPoolRecords.put(instrumentPoolRecord.getSymbol(),
-				instrumentPoolRecord);
-	}
-
-	public void add(InstrumentPoolRecord instrumentPoolRecord) {
-		instrumentPoolRecords.put(instrumentPoolRecord.getSymbol(),
-				instrumentPoolRecord);
-	}
-
-	public void delete(InstrumentPoolRecord instrumentPoolRecord) {
-		instrumentPoolRecords.remove(instrumentPoolRecord.getSymbol());
-	}
-
-	public List<String> getAccounts() {
+	public Set<String> getAccounts() {
 		return accounts;
 	}
 
-	public void setAccounts(List<String> accounts) {
+	public void setAccounts(Set<String> accounts) {
 		this.accounts = accounts;
 	}
 

@@ -45,12 +45,19 @@ import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.event.order.UpdateParentOrderEvent;
+import com.cyanspring.common.event.pool.PmAccountPoolsDeleteEvent;
+import com.cyanspring.common.event.pool.PmAccountPoolsInsertEvent;
 import com.cyanspring.common.event.pool.PmExchangeAccountDeleteEvent;
 import com.cyanspring.common.event.pool.PmExchangeAccountInsertEvent;
 import com.cyanspring.common.event.pool.PmExchangeAccountUpdateEvent;
 import com.cyanspring.common.event.pool.PmExchangeSubAccountDeleteEvent;
 import com.cyanspring.common.event.pool.PmExchangeSubAccountInsertEvent;
 import com.cyanspring.common.event.pool.PmExchangeSubAccountUpdateEvent;
+import com.cyanspring.common.event.pool.PmInstrumentPoolDeleteEvent;
+import com.cyanspring.common.event.pool.PmInstrumentPoolInsertEvent;
+import com.cyanspring.common.event.pool.PmInstrumentPoolRecordUpdateEvent;
+import com.cyanspring.common.event.pool.PmInstrumentPoolRecordsDeleteEvent;
+import com.cyanspring.common.event.pool.PmInstrumentPoolRecordsInsertEvent;
 import com.cyanspring.common.event.signal.CancelSignalEvent;
 import com.cyanspring.common.event.signal.SignalEvent;
 import com.cyanspring.common.event.strategy.MultiInstrumentStrategyUpdateEvent;
@@ -141,6 +148,13 @@ public class PersistenceManager {
 			subscribeToEvent(PmExchangeSubAccountInsertEvent.class, null);
 			subscribeToEvent(PmExchangeSubAccountUpdateEvent.class, null);
 			subscribeToEvent(PmExchangeSubAccountDeleteEvent.class, null);
+			subscribeToEvent(PmInstrumentPoolInsertEvent.class, null);
+			subscribeToEvent(PmInstrumentPoolDeleteEvent.class, null);
+			subscribeToEvent(PmInstrumentPoolRecordsInsertEvent.class, null);
+			subscribeToEvent(PmInstrumentPoolRecordsDeleteEvent.class, null);
+			subscribeToEvent(PmInstrumentPoolRecordUpdateEvent.class, null);
+			subscribeToEvent(PmAccountPoolsInsertEvent.class, null);
+			subscribeToEvent(PmAccountPoolsDeleteEvent.class, null);
 
 			if (persistSignal) {
 				subscribeToEvent(SignalEvent.class, null);
@@ -1468,6 +1482,153 @@ public class PersistenceManager {
 			tx = session.beginTransaction();
 			session.delete(exchangeSubAccount);
 			tx.commit();
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			log.error(e.getMessage(), e);
+		} finally {
+			session.close();
+		}
+	}
+
+	public void processPmInstrumentPoolInsertEvent(
+			PmInstrumentPoolInsertEvent event) {
+		InstrumentPool instrumentPool = event.getInstrumentPool();
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			session.save(instrumentPool);
+			tx.commit();
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			log.error(e.getMessage(), e);
+		} finally {
+			session.close();
+		}
+	}
+
+	public void processPmInstrumentPoolDeleteEvent(
+			PmInstrumentPoolDeleteEvent event) {
+		InstrumentPool instrumentPool = event.getInstrumentPool();
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			session.delete(instrumentPool);
+			tx.commit();
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			log.error(e.getMessage(), e);
+		} finally {
+			session.close();
+		}
+	}
+
+	public void processPmInstrumentPoolRecordsInsertEvent(
+			PmInstrumentPoolRecordsInsertEvent event) {
+		List<InstrumentPoolRecord> records = event.getInstrumentPoolRecords();
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try {
+			if (!records.isEmpty()) {
+				tx = session.beginTransaction();
+				for (InstrumentPoolRecord record : records) {
+					session.save(record);
+				}
+				tx.commit();
+			}
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			log.error(e.getMessage(), e);
+		} finally {
+			session.close();
+		}
+	}
+
+	public void processPmInstrumentPoolRecordsDeleteEvent(
+			PmInstrumentPoolRecordsDeleteEvent event) {
+		List<InstrumentPoolRecord> records = event.getInstrumentPoolRecords();
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try {
+			if (!records.isEmpty()) {
+				tx = session.beginTransaction();
+				for (InstrumentPoolRecord record : records) {
+					session.delete(record);
+				}
+				tx.commit();
+			}
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			log.error(e.getMessage(), e);
+		} finally {
+			session.close();
+		}
+	}
+
+	public void processPmInstrumentPoolRecordUpdateEvent(
+			PmInstrumentPoolRecordUpdateEvent event) {
+		InstrumentPoolRecord record = event.getInstrumentPoolRecord();
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			session.saveOrUpdate(record);
+			tx.commit();
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			log.error(e.getMessage(), e);
+		} finally {
+			session.close();
+		}
+	}
+
+	public void processPmAccountPoolsInsertEvent(PmAccountPoolsInsertEvent event) {
+		List<AccountPool> accountPools = event.getAccountPools();
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try {
+			if (!accountPools.isEmpty()) {
+				tx = session.beginTransaction();
+				for (AccountPool accountPool : accountPools) {
+					session.save(accountPool);
+				}
+				tx.commit();
+			}
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			log.error(e.getMessage(), e);
+		} finally {
+			session.close();
+		}
+	}
+
+	public void processPmAccountPoolsDeleteEvent(PmAccountPoolsDeleteEvent event) {
+		List<AccountPool> accountPools = event.getAccountPools();
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try {
+			if (!accountPools.isEmpty()) {
+				tx = session.beginTransaction();
+				for (AccountPool accountPool : accountPools) {
+					session.delete(accountPool);
+				}
+				tx.commit();
+			}
 		} catch (Exception e) {
 			if (tx != null) {
 				tx.rollback();

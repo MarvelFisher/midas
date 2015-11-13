@@ -1,6 +1,6 @@
 package com.cyanspring.common.account;
 
-import java.util.List;
+import java.util.Set;
 
 import com.cyanspring.common.pool.AccountPool;
 
@@ -8,7 +8,7 @@ public class Account extends BaseAccount implements Cloneable {
 	private double urLastPnL;
 
 	// InstrumentPool id
-	private List<String> instrumentPools;
+	private Set<String> instrumentPools;
 
 	protected Account() {
 		super();
@@ -31,11 +31,11 @@ public class Account extends BaseAccount implements Cloneable {
 		this.urLastPnL = urLastPnL;
 	}
 
-	public List<String> getInstrumentPools() {
+	public Set<String> getInstrumentPools() {
 		return instrumentPools;
 	}
 
-	public void setInstrumentPools(List<String> instrumentPools) {
+	public void setInstrumentPools(Set<String> instrumentPools) {
 		this.instrumentPools = instrumentPools;
 	}
 

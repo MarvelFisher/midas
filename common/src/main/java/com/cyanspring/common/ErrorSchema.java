@@ -28,6 +28,9 @@ public class ErrorSchema {
 		createMsg(6, "CN", "操作失败，尚有与之关联的对象");
 		createMsg(6, "EN", "Operation failed, still has object related to it");
 
+		createMsg(7, "CN", "操作失败，发送的对象为空");
+		createMsg(7, "EN", "Operation failed, can't accept null object");
+
 		isBuilt = true;
 	}
 

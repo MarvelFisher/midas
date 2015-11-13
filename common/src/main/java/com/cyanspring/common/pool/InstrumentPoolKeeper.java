@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,7 +15,7 @@ import com.cyanspring.common.util.DualKeyMap;
 
 /**
  * @author GuoWei
- * @since 09/11/2015
+ * @since 11/09/2015
  */
 public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 
@@ -27,21 +28,11 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 	// k1=InstrumentPool id; k2=ExchangeSubAccount Id; v=InstrumentPool
 	private DualKeyMap<String, String, InstrumentPool> poolSubAccountMap = new DualKeyMap<String, String, InstrumentPool>();
 
-	// k1=InstrumentPoolRecord id; k2=InstrumentPool id; v=InstrumentPoolRecord
-	private DualKeyMap<String, String, InstrumentPoolRecord> instrumentPoolRecordMap = new DualKeyMap<String, String, InstrumentPoolRecord>();
-	
+	// k1=InstrumentPool id; k2=symbol; v=InstrumentPoolRecord
+	private Map<String, Map<String, InstrumentPoolRecord>> instrumentPoolRecordMap = new ConcurrentHashMap<String, Map<String, InstrumentPoolRecord>>();
+
 	@Autowired
 	private AccountKeeper accountKeeper;
-
-	public List<ExchangeAccount> getExchangeAccountList() {
-		return new ArrayList<ExchangeAccount>(exchAccMap.values());
-	}
-
-	public List<ExchangeSubAccount> getExchangeSubAccountList(
-			ExchangeAccount exchangeAccount) {
-		return new ArrayList<ExchangeSubAccount>(subAccountMap.getMap(
-				exchangeAccount.getId()).values());
-	}
 
 	/**
 	 * 根据交易员账号和输入的股票，返回其对应的ExchangeSubAccountId和股票池信息List<InstrumentPoolRecord>
@@ -54,13 +45,14 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 	public Map<String, List<InstrumentPoolRecord>> getSubAccountInstrumentPoolRecordMap(
 			Account account, String symbol) {
 		InstrumentPool instrumentPool = null;
-		Map<String, InstrumentPoolRecord> instrumentPoolRecordMap = null;
+		Map<String, InstrumentPoolRecord> tempInstrumentPoolRecordMap = null;
 		Map<String, List<InstrumentPoolRecord>> subAccountInstrumentPoolRecordMap = new HashMap<String, List<InstrumentPoolRecord>>();
 		for (String instrumentPoolId : account.getInstrumentPools()) {
 			instrumentPool = poolSubAccountMap.get(instrumentPoolId);
-			instrumentPoolRecordMap = instrumentPool.getInstrumentPoolRecords();
-			if (!instrumentPoolRecordMap.isEmpty()
-					&& instrumentPoolRecordMap.containsKey(symbol)) {
+			tempInstrumentPoolRecordMap = instrumentPoolRecordMap
+					.get(instrumentPool.getId());
+			if (!tempInstrumentPoolRecordMap.isEmpty()
+					&& tempInstrumentPoolRecordMap.containsKey(symbol)) {
 				if (!subAccountInstrumentPoolRecordMap
 						.containsKey(instrumentPool.getExchangeSubAccount())) {
 					subAccountInstrumentPoolRecordMap.put(
@@ -69,10 +61,35 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 				}
 				subAccountInstrumentPoolRecordMap.get(
 						instrumentPool.getExchangeSubAccount()).add(
-						instrumentPoolRecordMap.get(symbol));
+						tempInstrumentPoolRecordMap.get(symbol));
 			}
 		}
 		return subAccountInstrumentPoolRecordMap;
+	}
+
+	public List<ExchangeAccount> getExchangeAccountList() {
+		return new ArrayList<ExchangeAccount>(exchAccMap.values());
+	}
+
+	public List<ExchangeSubAccount> getExchangeSubAccountList(
+			String exchangeAccount) {
+		return new ArrayList<ExchangeSubAccount>(subAccountMap.getMap(
+				exchangeAccount).values());
+	}
+
+	public List<InstrumentPool> getInstrumentPoolList(String exchangeSubAccount) {
+		return new ArrayList<InstrumentPool>(poolSubAccountMap.getMap(
+				exchangeSubAccount).values());
+	}
+
+	public InstrumentPool getInstrumentPool(String instrumentPool) {
+		return poolSubAccountMap.get(instrumentPool);
+	}
+
+	public List<InstrumentPoolRecord> getInstrumentPoolRecordList(
+			String instrumentPool) {
+		return new ArrayList<InstrumentPoolRecord>(instrumentPoolRecordMap.get(
+				instrumentPool).values());
 	}
 
 	/**
@@ -85,8 +102,7 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 	@Override
 	public InstrumentPoolRecord getInstrumentPoolRecord(
 			String instrumentPoolId, String symbol) {
-		return poolSubAccountMap.get(instrumentPoolId).getInstrumentPoolRecord(
-				symbol);
+		return instrumentPoolRecordMap.get(instrumentPoolId).get(symbol);
 	}
 
 	/**
@@ -96,8 +112,8 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 	 */
 	@Override
 	public void update(InstrumentPoolRecord instrumentPoolRecord) {
-		poolSubAccountMap.get(instrumentPoolRecord.getInstrumentPoolId())
-				.update(instrumentPoolRecord);
+		instrumentPoolRecordMap.get(instrumentPoolRecord.getInstrumentPoolId())
+				.put(instrumentPoolRecord.getSymbol(), instrumentPoolRecord);
 	}
 
 	public boolean ifExists(ExchangeAccount exchangeAccount) {
@@ -135,6 +151,64 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 				exchangeSubAccount.getExchangeAccount());
 	}
 
+	public boolean ifExists(InstrumentPool instrumentPool) {
+		for (InstrumentPool tempInstrumentPool : poolSubAccountMap.getMap(
+				instrumentPool.getExchangeSubAccount()).values()) {
+			if (tempInstrumentPool.getName().equals(instrumentPool.getName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void add(InstrumentPool instrumentPool) {
+		poolSubAccountMap.put(instrumentPool.getId(),
+				instrumentPool.getExchangeSubAccount(), instrumentPool);
+	}
+
+	public void delete(InstrumentPool instrumentPool) {
+		poolSubAccountMap.remove(instrumentPool.getId(),
+				instrumentPool.getExchangeSubAccount());
+		if (instrumentPoolRecordMap.containsKey(instrumentPool.getId())) {
+			instrumentPoolRecordMap.remove(instrumentPool.getId());
+		}
+	}
+
+	public void add(List<InstrumentPoolRecord> instrumentPoolRecords) {
+		for (InstrumentPoolRecord record : instrumentPoolRecords) {
+			if (!instrumentPoolRecordMap.containsKey(record
+					.getInstrumentPoolId())) {
+				instrumentPoolRecordMap.put(record.getInstrumentPoolId(),
+						new ConcurrentHashMap<String, InstrumentPoolRecord>());
+			}
+			instrumentPoolRecordMap.get(record.getInstrumentPoolId()).put(
+					record.getSymbol(), record);
+		}
+	}
+
+	public void delete(List<InstrumentPoolRecord> instrumentPoolRecords) {
+		for (InstrumentPoolRecord record : instrumentPoolRecords) {
+			instrumentPoolRecordMap.get(record.getInstrumentPoolId()).remove(
+					record.getSymbol());
+		}
+		if (!instrumentPoolRecords.isEmpty()
+				&& instrumentPoolRecordMap.get(
+						instrumentPoolRecords.get(0).getInstrumentPoolId())
+						.isEmpty()) {
+			instrumentPoolRecordMap.remove(instrumentPoolRecords.get(0)
+					.getInstrumentPoolId());
+		}
+	}
+
+	public boolean ifExists(InstrumentPoolRecord record) {
+		if (instrumentPoolRecordMap.containsKey(record.getInstrumentPoolId())
+				&& instrumentPoolRecordMap.get(record.getInstrumentPoolId())
+						.containsKey(record.getSymbol())) {
+			return true;
+		}
+		return false;
+	}
+
 	public void injectExchangeAccounts(List<ExchangeAccount> exchangeAccounts) {
 		for (ExchangeAccount exchangeAccount : exchangeAccounts) {
 			exchAccMap.put(exchangeAccount.getId(), exchangeAccount);
@@ -168,10 +242,13 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 	public void injectInstrumentPoolRecords(
 			List<InstrumentPoolRecord> instrumentPoolRecords) {
 		for (InstrumentPoolRecord record : instrumentPoolRecords) {
-			if (poolSubAccountMap.containsKey(record.getInstrumentPoolId())) {
-				poolSubAccountMap.get(record.getInstrumentPoolId()).add(record);
+			if (!instrumentPoolRecordMap.containsKey(record
+					.getInstrumentPoolId())) {
+				instrumentPoolRecordMap.put(record.getInstrumentPoolId(),
+						new ConcurrentHashMap<String, InstrumentPoolRecord>());
 			}
+			instrumentPoolRecordMap.get(record.getInstrumentPoolId()).put(
+					record.getSymbol(), record);
 		}
 	}
-
 }
