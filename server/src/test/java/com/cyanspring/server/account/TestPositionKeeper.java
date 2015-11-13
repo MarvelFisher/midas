@@ -371,5 +371,17 @@ public class TestPositionKeeper {
 			// TODO Auto-generated method stub
 			return false;
 		}
+
+		@Override
+		public void setQuoteFile(String quoteFile) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void saveRefDataToFile() {
+			// TODO Auto-generated method stub
+			
+		}
 	}
 }

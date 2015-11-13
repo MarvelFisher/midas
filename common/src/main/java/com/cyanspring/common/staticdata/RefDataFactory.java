@@ -1,6 +1,9 @@
 package com.cyanspring.common.staticdata;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,12 +33,13 @@ public class RefDataFactory extends RefDataService {
 	private List<RefData> refDataTemplateList;
 	private Map<String, Map<String, List<RefData>>> templateMap = new HashMap<>(); // exchange/category/refdatas
 	private Map<String, Quote> qMap;
+	private String quoteFile;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void init() throws Exception {
-		if (refDataFile != null) {
-			File quoteFile = new File (refDataFile);
+		if (this.quoteFile != null) {
+			File quoteFile = new File (this.quoteFile);
 			qMap = (Map<String, Quote>) xstream.fromXML(quoteFile);
 		}
 		log.info("initialising with " + refDataTemplatePath);
@@ -274,5 +278,25 @@ public class RefDataFactory extends RefDataService {
 
 	private SimpleDateFormat getSettlementDateFormat() {
 		return new SimpleDateFormat("yyyy-MM-dd") ;
+	}
+
+	public void setQuoteFile(String quoteFile) {
+		this.quoteFile = quoteFile;
+	}
+
+	@Override
+	public void saveRefDataToFile() {
+		if (refDataList != null && refDataList.size() > 0) {
+			if (refDataFile == null)
+				refDataFile = "refData_gen.xml";
+			File of = new File(refDataFile);
+			try(FileOutputStream ofs = new FileOutputStream(of)) {
+				xstream.toXML(refDataList, ofs);
+			} catch (FileNotFoundException e) {
+				log.error(e.getMessage(), e);
+			} catch (IOException e) {
+				log.error(e.getMessage(), e);
+			}
+		}
 	}
 }

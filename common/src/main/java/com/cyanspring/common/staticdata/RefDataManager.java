@@ -88,4 +88,16 @@ public class RefDataManager extends RefDataService {
 		}
 		return false;
 	}
+
+	@Override
+	public void setQuoteFile(String quoteFile) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void saveRefDataToFile() {
+		// TODO Auto-generated method stub
+		
+	}
 }
