@@ -247,7 +247,8 @@ public class InstrumentPoolManager implements IPlugin {
 		switch (type) {
 		case CREATE:
 			if (!ifExists) {
-				instrumentPool.setId(genNextInstrumentPoolId());
+				instrumentPool.setId(instrumentPoolKeeper
+						.genNextInstrumentPoolId());
 				PmInstrumentPoolInsertEvent insertEvent = new PmInstrumentPoolInsertEvent(
 						instrumentPool);
 				eventManager.sendEvent(insertEvent);
@@ -405,10 +406,6 @@ public class InstrumentPoolManager implements IPlugin {
 	public void injectInstrumentPoolRecords(
 			List<InstrumentPoolRecord> instrumentPoolRecords) {
 		instrumentPoolKeeper.injectInstrumentPoolRecords(instrumentPoolRecords);
-	}
-
-	public String genNextInstrumentPoolId() {
-		return "P" + IdGenerator.getInstance().getNextID();
 	}
 
 }
