@@ -24,7 +24,7 @@
 			</map>
 		</property>
         <property name="tradeDateManager"><ref bean="cfTradeDateManager"/></property>
-        <property name="index" value="CF"/>
+        <property name="index" value="Cotton"/>
 	</bean>
 	
 	<bean id="cfDefaultSession" class="com.cyanspring.common.marketsession.MarketSession">
