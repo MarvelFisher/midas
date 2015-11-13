@@ -187,7 +187,7 @@
                 <value>FT</value>               <!-- market -->
                 <value>NTD</value>              <!-- currency -->
                 <value>A</value>                <!-- accountPrefix -->
-                <value>100000</value>        <!-- accountCash -->
+                <value>5000000</value>        <!-- accountCash -->
                 <value>20</value>               <!-- marginTimes -->
                 <value>1.0</value>              <!-- marginCut -->
                 <value>0</value>                <!-- commission -->

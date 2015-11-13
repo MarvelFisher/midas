@@ -59,7 +59,8 @@ public class AvailablePositionValidator implements IOrderValidator {
             if (refData == null) {
             	log.warn("Can't find refData");
             } else {
-            	if (RefDataBitUtil.isForex(refData.getInstrumentType()))
+
+            	if (RefDataBitUtil.isFutures(refData.getInstrumentType()))
             		return;
             }
 
