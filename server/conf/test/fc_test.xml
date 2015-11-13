@@ -263,12 +263,8 @@
 	<bean id="positionKeeper" class="com.cyanspring.common.position.PositionKeeper">
 	</bean>
 
-	<bean id="instrumentPoolManager" class="com.cyanspring.common.pool.InstrumentPoolManager"></bean>
-
 	<bean id="instrumentPoolKeeper" class="com.cyanspring.common.pool.InstrumentPoolKeeper">
 	</bean>
-
-	<bean id="instrumentPoolKeeper" class="com.cyanspring.common.pool.InstrumentPoolKeeper"></bean>
 
 	<bean id="fxConverter" class="com.cyanspring.common.fx.FxConverter">
 	</bean>
@@ -307,11 +303,15 @@
 
 	<bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler">
 		<property name="eventManager" ref="eventManager" />
+		<property name="saveRefDataList" value="true"></property>
 	</bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
 		<property name="refDataTemplatePath">
 			<value>refdata/template/template_FC.xml</value>
+		</property>
+		<property name="quoteFile">
+			<value>ticks/last.xml</value>
 		</property>
 	</bean>
 
@@ -356,10 +356,6 @@
 	</bean>
 
 	<bean id="accountPoolRecoveryProcessor" class="com.cyanspring.server.AccountPoolRecoveryProcessor">
-	</bean>
-
-	<bean id="instrumentPoolRecordRecoveryProcessor"
-		class="com.cyanspring.server.InstrumentPoolRecordRecoveryProcessor">
 	</bean>
 
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
