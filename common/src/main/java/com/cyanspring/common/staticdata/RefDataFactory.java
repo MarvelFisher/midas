@@ -288,9 +288,11 @@ public class RefDataFactory extends RefDataService {
 	public void saveRefDataToFile() {
 		if (refDataList != null && refDataList.size() > 0) {
 			if (refDataFile == null)
-				refDataFile = "refData_gen.xml";
+				refDataFile = "refdata/refData_gen.xml";
+			
 			File of = new File(refDataFile);
 			try(FileOutputStream ofs = new FileOutputStream(of)) {
+				of.createNewFile();
 				xstream.toXML(refDataList, ofs);
 			} catch (FileNotFoundException e) {
 				log.error(e.getMessage(), e);

@@ -106,6 +106,8 @@ public class FileRefDataHandler implements IPlugin {
 					refDataManager.update(e.getKey(), data.getTradeDateByString());
 				}
 				eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
+				if (saveRefDataList)
+					refDataManager.saveRefDataToFile();
 			} else {
 				List<RefData> send = new ArrayList<>();
 				for (Entry<String, MarketSessionData> e : event.getDataMap().entrySet()) {
