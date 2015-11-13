@@ -43,6 +43,7 @@ public class FileRefDataHandler implements IPlugin {
 
 	private MarketSessionType currentType;
 	private Map<String, MarketSessionData> rawMap;
+	private boolean saveRefDataList;
 	private AsyncEventProcessor eventProcessor = new AsyncEventProcessor() {
 
 		@Override
@@ -87,6 +88,8 @@ public class FileRefDataHandler implements IPlugin {
 			if (refDataManager.updateAll(event.getTradeDate()).size() > 0) {
 				eventManager.sendGlobalEvent(new RefDataEvent(null, null, refDataManager.getRefDataList(), true));
 				log.info("Update refData size: {}", refDataManager.getRefDataList().size());
+				if (saveRefDataList)
+					refDataManager.saveRefDataToFile();
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -114,8 +117,11 @@ public class FileRefDataHandler implements IPlugin {
 					send.addAll(refDataManager.update(e.getKey(), data.getTradeDateByString()));
 				}
 
-				if (send.size() > 0)
+				if (send.size() > 0) {
 					eventManager.sendGlobalEvent(new RefDataEvent(null, null, send, true));
+					if (saveRefDataList)
+						refDataManager.saveRefDataToFile();
+				}
 			}
 		} catch (Exception err) {
 			log.error(err.getMessage(), err);
@@ -152,4 +158,9 @@ public class FileRefDataHandler implements IPlugin {
 	public void setEventManager(IRemoteEventManager eventManager) {
 		this.eventManager = eventManager;
 	}
+
+	public void setSaveRefDataList(boolean saveRefDataList) {
+		this.saveRefDataList = saveRefDataList;
+	}
+	
 }
