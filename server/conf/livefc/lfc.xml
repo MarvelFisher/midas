@@ -262,6 +262,7 @@
 
 	<bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler">
 		<property name="eventManager" ref="eventManager" />
+		<property name="saveRefDataList" value="true"></property>
 	</bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
