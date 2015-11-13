@@ -29,9 +29,25 @@ init:{[params]
     DATADAYS:params[`DATADAYS];
     TIBUFFER:params[`TIBUFFER];
     
-    (`$("idx",string TI)) set ([]time:`timestamp$(); sym:`g#`symbol$(); ask:`float$(); bid:`float$(); vis:`float$(); vil:`float$(); rvi:`float$(); cvi:`float$(); mi:`float$(); umib:`float$(); umis:`float$(); cmfr:`float$(); cmff:`float$(); absfs:`float$(); grvl:`float$(); cr1:`boolean$(); cr2:`boolean$(); cr3:`boolean$(); cf1:`boolean$(); cf2:`boolean$(); cf3:`boolean$());
+    (`$("idx",string TI)) set ([]time:`timestamp$(); sym:`g#`symbol$(); ask:`float$(); bid:`float$(); vis:`float$(); vil:`float$(); rvi:`float$(); minrvi:`float$(); maxrvi:`float$(); cvi:`float$(); mincvi:`float$(); maxcvi:`float$(); mi:`float$(); minmi:`float$(); maxmi:`float$(); umib:`float$(); maxumib:`float$(); umis:`float$(); maxumis:`float$(); cmfr:`float$(); cmff:`float$(); absfs:`float$(); grvl:`float$(); cr1:`boolean$(); cr2:`boolean$(); cr3:`boolean$(); cf1:`boolean$(); cf2:`boolean$(); cf3:`boolean$());
     (`$("data",string TI)) set (hdb "" sv ("select[<time] time, sym, ask, bid, sprice, eprice, hprice, lprice, v:(abs sprice-eprice) % sprice from select last time, last ask, last bid, sprice:first price, eprice:last price, hprice:max price, lprice:min price by sym, "; string TI; " xbar time.second from quote where time > .z.D-"; string DATADAYS));
     (`$("data",string TI)) set (get (`$("data",string TI))) , (rdb "" sv ("select from (select[<time] time, sym, ask, bid, sprice, eprice, hprice, lprice, v:(abs sprice-eprice) % sprice from select last time, last ask, last bid, sprice:first price, eprice:last price, hprice:max price, lprice:min price by sym, "; string TI; " xbar time.second from quote) where ({x in -1_x};i) fby sym"));
+    
+    if[() ~ (key hsym `$ "hdb/index",string TI);
+    (`$("hidx",string TI)) set ([]time:`timestamp$(); sym:`g#`symbol$(); ask:`float$(); bid:`float$(); vis:`float$(); vil:`float$(); rvi:`float$(); minrvi:`float$(); maxrvi:`float$(); cvi:`float$(); mincvi:`float$(); maxcvi:`float$(); mi:`float$(); minmi:`float$(); maxmi:`float$(); umib:`float$(); maxumib:`float$(); umis:`float$(); maxumis:`float$(); cmfr:`float$(); cmff:`float$(); absfs:`float$(); grvl:`float$(); cr1:`boolean$(); cr2:`boolean$(); cr3:`boolean$(); cf1:`boolean$(); cf2:`boolean$(); cf3:`boolean$());
+    (`$("minmax",string TI)) set ([]sym:`g#`symbol$(); minrvi:`float$(); maxrvi:`float$(); mincvi:`float$(); maxcvi:`float$(); minmi:`float$(); maxmi:`float$(); maxumib:`float$(); maxumis:`float$());
+    :0
+    ];
+    
+    system "l hdb/index",string TI;
+    
+    n::`int$(86400%TI); / must be global to be used in fby
+    tmph:select from get (`$("indexes",string TI)) where time.date>=.z.D-3;
+    (`$("hidx",string TI)) set (select from tmph where ({x in (neg n)#x};i) fby sym);
+    tmp:select avgrvi:avg rvi, sdevrvi:sdev rvi, avgcvi:avg cvi, sdevcvi:sdev cvi, avgmi:avg mi, sdevmi:sdev mi, maxumib:max umib, maxumis:max umis by sym from get (`$("hidx",string TI));
+    (`$("minmax",string TI)) set (select sym, minrvi:?[(avgrvi-(2*sdevrvi))<0;0f;avgrvi-(2*sdevrvi)], maxrvi:avgrvi+(2*sdevrvi), mincvi:?[(avgcvi-(2*sdevcvi))<0;0f;avgcvi-(2*sdevcvi)], maxcvi:avgcvi+(2*sdevcvi), minmi:avgmi-(2*sdevmi), maxmi:avgmi+(2*sdevmi), maxumib, maxumis from tmp);
+    
+    system "cd ../../";
     }
 
 getnew:{[funcs;TI;TPS;TPM;TPL;DATADAYS;TIBUFFER]
@@ -78,15 +94,22 @@ getnew:{[funcs;TI;TPS;TPM;TPL;DATADAYS;TIBUFFER]
     / show select[3;<mi] from result;
     
     milasttime:select lasttime:(last time) by sym from get (`$("idx",string TI));
-    (`$("idx",string TI)) set (get (`$("idx",string TI))) , (select time,sym,ask,bid,vis,vil,rvi,cvi,mi,umib,umis,cmfr,cmff,absfs,grvl,cr1,cr2,cr3,cf1,cf2,cf3 from aj[`sym;result;milasttime] where time>lasttime);
+    (`$("idx",string TI)) set (get (`$("idx",string TI))) , (select time,sym,ask,bid,vis,vil,rvi,minrvi,maxrvi,cvi,mincvi,maxcvi,mi,minmi,maxmi,umib,maxumib,umis,maxumis,cmfr,cmff,absfs,grvl,cr1,cr2,cr3,cf1,cf2,cf3 from aj[`sym;aj[`sym;result;milasttime];get (`$("minmax",string TI))] where time>lasttime);
     
     if[(count select from (get (`$("idx",string TI))) where time.date=.z.D-1)>0; endday[TI]; (`$("data",string TI)) set dataL];
     }
 
 endday:{[TI]
-    (`$("indexes",string TI)) set (select from (get (`$("idx",string TI))) where time.date=.z.d-1);
-    .Q.dpft[`$":hdb/index",string TI;.z.d-1;`sym;(`$("indexes",string TI))];
-    (`$("idx",string TI)) set (select from (get (`$("idx",string TI))) where time.date=.z.d);
+
+    n::`int$(86400%TI); / must be global to be used in fby
+    (`$("hidx",string TI)) set (get (`$("hidx",string TI))) , (select from (get (`$("idx",string TI))) where time.date=.z.D-1);
+    (`$("hidx",string TI)) set (select from (get (`$("hidx",string TI))) where ({x in (neg n)#x};i) fby sym);
+    tmp:select avgrvi:avg rvi, sdevrvi:sdev rvi, avgcvi:avg cvi, sdevcvi:sdev cvi, avgmi:avg mi, sdevmi:sdev mi, maxumib:max umib, maxumis:max umis by sym from get (`$("hidx",string TI));
+    (`$("minmax",string TI)) set (select sym, minrvi:?[(avgrvi-(2*sdevrvi))<0;0f;avgrvi-(2*sdevrvi)], maxrvi:avgrvi+(2*sdevrvi), mincvi:?[(avgcvi-(2*sdevcvi))<0;0f;avgcvi-(2*sdevcvi)], maxcvi:avgcvi+(2*sdevcvi), minmi:avgmi-(2*sdevmi), maxmi:avgmi+(2*sdevmi), maxumib, maxumis from tmp);
+
+    (`$("indexes",string TI)) set (select from (get (`$("idx",string TI))) where time.date=.z.D-1);
+    .Q.dpft[`$":hdb/index",string TI;.z.D-1;`sym;(`$("indexes",string TI))];
+    (`$("idx",string TI)) set (select from (get (`$("idx",string TI))) where time.date=.z.D);
     }
 
 / 15*4*1000000000=60000000000
@@ -98,6 +121,9 @@ funcs1:({x in (neg params1[`TPS])#x}; {x in (neg params1[`TPM])#x}; {x in (neg p
 params2:`TI`TPS`TPM`TPL`DATADAYS`TIBUFFER!60 4 30 7200 7 240000000000
 init[params2]
 funcs2:({x in (neg params2[`TPS])#x}; {x in (neg params2[`TPM])#x}; {x in (neg params2[`TPL])#x})
+
+\l u.q
+.u.init[]
 
 .z.ts:{
     if[0=(floor (`int$.z.T)%1000) mod 15; getnew[funcs1;params1[`TI];params1[`TPS];params1[`TPM];params1[`TPL];params1[`DATADAYS];params1[`TIBUFFER]]];
