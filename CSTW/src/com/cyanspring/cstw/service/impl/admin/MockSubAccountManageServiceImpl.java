@@ -50,6 +50,9 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 		sub1list.add(new SubAccountModel.Builder().id("sub1.2")
 				.name("account1.2").exchangeAccount(ex1).useableMoney(10000)
 				.commissionRate(0.01).build());
+		sub1list.add(new SubAccountModel.Builder().id("sub1.3")
+				.name("account1.3").exchangeAccount(ex1).useableMoney(10000)
+				.commissionRate(0.01).build());
 
 		sub2list = new ArrayList<SubAccountModel>();
 		sub2list.add(new SubAccountModel.Builder().id("sub2.1")
@@ -114,6 +117,17 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 				.symbolName("AUDCAD").qty(10000).build());
 		return list;
 	}
+	
+	/**
+	 * Mock
+	 */
+	@Override
+	public List<InstrumentInfoModel> getInstrumentInfoModelListBySubAccountId(
+			String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 	@Override
 	public void createNewExchangeAccount() {
@@ -147,11 +161,55 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 		sub2list.remove(subAccount);
 	}
 
+	
 	@Override
-	public List<InstrumentInfoModel> getInstrumentInfoModelListBySubAccountId(
-			String id) {
-		// TODO Auto-generated method stub
-		return null;
+	public void moveUpExchangeAccount(ExchangeAccountModel exchange) {
+		int index = exlist.indexOf(exchange);
+		if (index > 0) {
+			exlist.remove(exchange);
+			exlist.add(index-1, exchange);
+		}
+	}
+
+	@Override
+	public void moveDownExchangeAccount(ExchangeAccountModel exchange) {
+		int index = exlist.indexOf(exchange);
+		if (index >= 0 && index < exlist.size()) {
+			exlist.remove(exchange);
+			exlist.add(index+1, exchange);
+		}
+	}
+
+	@Override
+	public void moveUpSubAccount(SubAccountModel subAccount) {
+		int index = sub1list.indexOf(subAccount);
+		if (index > 0) {
+			sub1list.remove(subAccount);
+			sub1list.add(index-1, subAccount);
+		}
+		
+		int index2 = sub2list.indexOf(subAccount);
+		if (index2 > 0) {
+			sub2list.remove(subAccount);
+			sub2list.add(index2-1, subAccount);
+		}
+		
+	}
+
+	@Override
+	public void moveDownSubAccount(SubAccountModel subAccount) {
+		int index1 = sub1list.indexOf(subAccount);
+		if (index1 >= 0 && index1 < sub1list.size()) {
+			sub1list.remove(subAccount);
+			sub1list.add(index1+1, subAccount);
+		}
+		
+		int index2 = sub2list.indexOf(subAccount);
+		if (index2 >= 0 && index2 < sub2list.size()) {
+			sub2list.remove(subAccount);
+			sub2list.add(index2+1, subAccount);
+		}
+		
 	}
 
 }
