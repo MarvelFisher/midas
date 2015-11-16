@@ -206,6 +206,7 @@
 	<class name="com.cyanspring.common.pool.ExchangeSubAccount"
 		table="ANYONE.EXCHANGE_SUB_ACCOUNT">
 		<id column="EXCHANGE_SUB_ACCOUNT_ID" name="id" type="java.lang.String" />
+		<property column="NAME" name="name" type="java.lang.String" />
 		<property column="EXCHANGE_ACCOUNT_ID" name="exchangeAccount"
 			type="java.lang.String" />
 		<property column="DESCRIPTION" name="desc" type="java.lang.String" />
@@ -213,6 +214,7 @@
 
 	<class name="com.cyanspring.common.pool.InstrumentPool" table="ANYONE.INSTRUMENT_POOL">
 		<id column="INSTRUMENT_POOL_ID" name="id" type="java.lang.String" />
+		<property column="NAME" name="name" type="java.lang.String" />
 		<property column="EXCHANGE_SUB_ACCOUNT_ID" name="exchangeSubAccount"
 			type="java.lang.String" />
 	</class>

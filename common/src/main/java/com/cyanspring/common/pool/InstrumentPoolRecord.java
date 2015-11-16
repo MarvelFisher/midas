@@ -1,11 +1,14 @@
 package com.cyanspring.common.pool;
 
-public class InstrumentPoolRecord {
-	String instrumentPoolId;
-	String symbol;
-	double qty;
-	double buyHeld;
-	double sellHeld;
+import java.io.Serializable;
+
+public class InstrumentPoolRecord implements Serializable {
+	private static final long serialVersionUID = 1L;
+	private String instrumentPoolId;
+	private String symbol;
+	private double qty;
+	private double buyHeld;
+	private double sellHeld;
 
 	public String getInstrumentPoolId() {
 		return instrumentPoolId;

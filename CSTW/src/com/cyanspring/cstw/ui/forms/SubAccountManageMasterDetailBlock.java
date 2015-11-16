@@ -100,8 +100,8 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 
 	@Override
 	protected void registerPages(DetailsPart detailsPart) {
-		detailsPart.registerPage(ExchangeAccountModel.class, new ExchangeAccountDetailsPage());
-		detailsPart.registerPage(SubAccountModel.class, new SubAccountDetailsPage());
+		detailsPart.registerPage(ExchangeAccountModel.class, new ExchangeAccountDetailsPage(service));
+		detailsPart.registerPage(SubAccountModel.class, new SubAccountDetailsPage(service));
 	}
 
 	@Override

@@ -6,12 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cyanspring.common.account.Account;
-import com.cyanspring.common.account.AccountKeeper;
 import com.cyanspring.common.client.IInstrumentPoolKeeper;
 import com.cyanspring.common.util.DualKeyMap;
+import com.cyanspring.common.util.IdGenerator;
 
 /**
  * @author GuoWei
@@ -30,9 +28,6 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 
 	// k1=InstrumentPool id; k2=symbol; v=InstrumentPoolRecord
 	private Map<String, Map<String, InstrumentPoolRecord>> instrumentPoolRecordMap = new ConcurrentHashMap<String, Map<String, InstrumentPoolRecord>>();
-
-	@Autowired
-	private AccountKeeper accountKeeper;
 
 	/**
 	 * 根据交易员账号和输入的股票，返回其对应的ExchangeSubAccountId和股票池信息List<InstrumentPoolRecord>
@@ -137,7 +132,12 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 	}
 
 	public boolean ifExists(ExchangeSubAccount exchangeSubAccount) {
-		return subAccountMap.containsKey(exchangeSubAccount.getId());
+		for (ExchangeSubAccount tempSubAccount : subAccountMap.values()) {
+			if (tempSubAccount.getName().equals(exchangeSubAccount.getName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void add(ExchangeSubAccount exchangeSubAccount) {
@@ -254,5 +254,9 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 			instrumentPoolRecordMap.get(record.getInstrumentPoolId()).put(
 					record.getSymbol(), record);
 		}
+	}
+
+	public String genNextInstrumentPoolId() {
+		return "P" + IdGenerator.getInstance().getNextID();
 	}
 }

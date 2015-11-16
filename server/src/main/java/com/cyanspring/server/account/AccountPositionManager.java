@@ -43,6 +43,7 @@ import com.cyanspring.common.business.GroupManagement;
 import com.cyanspring.common.business.OrderException;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.AsyncEventMultiProcessor;
 import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.common.event.AsyncTimerEvent;
@@ -1416,14 +1417,21 @@ public class AccountPositionManager implements IPlugin {
 	}
 
 	public void processQuoteExtEvent(QuoteExtEvent event) {
-		if (event.getQuoteExt().fieldExists(
-				QuoteExtDataField.SETTLEPRICE.value())) {
-			settlePrices.put(
-					event.getSymbol(),
-					event.getQuoteExt().get(Double.class,
-							QuoteExtDataField.SETTLEPRICE.value()));
-		}
-	}
+        DataObject qExt = event.getQuoteExt();
+		String symbol = event.getSymbol();
+		if (qExt.fieldExists(QuoteExtDataField.SETTLEPRICE.value())) {
+			if (PriceUtils.GreaterThan(qExt.get(Double.class, QuoteExtDataField.SETTLEPRICE.value()), 0))
+				settlePrices.put(symbol, qExt.get(Double.class, QuoteExtDataField.SETTLEPRICE.value()));
+        } else if (qExt.fieldExists(QuoteExtDataField.PRECLOSE.value())){
+        	Double preSettlePrice = settlePrices.get(symbol);
+        	if (preSettlePrice != null && PriceUtils.GreaterThan(preSettlePrice, 0))
+        		return;
+        	if (PriceUtils.GreaterThan(qExt.get(Double.class, QuoteExtDataField.PRECLOSE.value()), 0)){
+        		log.info("No settle price temporary use preclose price, symbol: " + symbol);        		
+        		settlePrices.put(symbol, qExt.get(Double.class, QuoteExtDataField.PRECLOSE.value()));
+        	}
+        }
+    }
 
 	public void processAccountSnapshotRequestEvent(
 			AccountSnapshotRequestEvent event) {
@@ -1448,9 +1456,7 @@ public class AccountPositionManager implements IPlugin {
 						.getId());
 			} catch (AccountException e) {
 				log.error(e.getMessage(), e);
-			}
-
-			reply = new AccountSnapshotReplyEvent(event.getKey(),
+			}		reply = new AccountSnapshotReplyEvent(event.getKey(),
 					event.getSender(), account, accountSetting, openPositions,
 					closedPosition, executions, event.getTxId(),
 					getUserLiveTradingTime(accountSetting));
@@ -1462,7 +1468,7 @@ public class AccountPositionManager implements IPlugin {
 			log.error(e.getMessage(), e);
 		}
 	}
-
+	
 	public void processAllPositionSnapshotRequestEvent(
 			AllPositionSnapshotRequestEvent event) {
 		if (null == accountKeeper || null == positionKeeper) {

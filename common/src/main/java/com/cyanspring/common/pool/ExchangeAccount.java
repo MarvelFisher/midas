@@ -1,6 +1,10 @@
 package com.cyanspring.common.pool;
 
-public class ExchangeAccount {
+import java.io.Serializable;
+
+public class ExchangeAccount implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String id;
 

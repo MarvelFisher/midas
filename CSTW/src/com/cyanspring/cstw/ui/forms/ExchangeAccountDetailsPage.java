@@ -1,11 +1,14 @@
 package com.cyanspring.cstw.ui.forms;
 
+
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IDetailsPage;
 import org.eclipse.ui.forms.IFormPart;
 import org.eclipse.ui.forms.IManagedForm;
@@ -15,6 +18,7 @@ import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 
 import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
+import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
 
 /**
  * @author Junfeng
@@ -23,10 +27,17 @@ import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
 public class ExchangeAccountDetailsPage implements IDetailsPage {
 
 	private ExchangeAccountModel input;
+	private ISubAccountManagerService service;
 	
 	private IManagedForm mform;
 	private Section dataSection;
+	private Text txtName;
+	private InstrumentInfoTableComposite tableComposite;
 	
+	public ExchangeAccountDetailsPage(ISubAccountManagerService service) {
+		this.service = service;
+	}
+
 	@Override
 	public void initialize(IManagedForm form) {
 		this.mform = form;
@@ -59,10 +70,34 @@ public class ExchangeAccountDetailsPage implements IDetailsPage {
 		
 		createSpacer(toolkit, client, 2);
 		
+		createComponent(toolkit, client);
+		
 		toolkit.paintBordersFor(dataSection);
 		dataSection.setClient(client);
 	}
 	
+	private void createComponent(FormToolkit toolkit, Composite client) {
+		toolkit.createLabel(client, "Name: ");
+		txtName = toolkit.createText(client, "", SWT.BORDER);
+		GridData gd1 = new GridData(GridData.FILL_HORIZONTAL|GridData.VERTICAL_ALIGN_BEGINNING);
+		txtName.setLayoutData(gd1);
+		txtName.setEditable(true);
+		txtName.setTextLimit(1023);
+		
+		createSpacer(toolkit, client, 2);
+		
+		GridData gd2 = new GridData(GridData.FILL_HORIZONTAL|GridData.VERTICAL_ALIGN_BEGINNING);
+		gd2.horizontalSpan = 2;
+		Label lblTable = toolkit.createLabel(client, "Summary of symbol: ");
+		lblTable.setLayoutData(gd2);
+		tableComposite = new InstrumentInfoTableComposite(client, SWT.NONE);
+		GridData gd3 = new GridData();
+		gd3.horizontalSpan = 2;
+		tableComposite.setLayoutData(gd3);
+		toolkit.adapt(tableComposite);
+		
+	}
+
 	private void createSpacer(FormToolkit toolkit, Composite parent, int span) {
 		Label spacer = toolkit.createLabel(parent, "");
 		GridData gd = new GridData();
@@ -120,6 +155,8 @@ public class ExchangeAccountDetailsPage implements IDetailsPage {
 	private void update() {
 		if ( input != null ) {
 			dataSection.setText("Exchange Account Details: " + input.getName());
+			txtName.setText(input.getName());
+			tableComposite.setInput(service.getInstrumentInfoModelListByExchangeAccountName(input.getName()));
 		}
 	}
 

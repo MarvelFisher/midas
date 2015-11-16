@@ -306,13 +306,14 @@
 
 	<bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler">
 		<property name="eventManager" ref="eventManager" />
+		<property name="saveRefDataList" value="true"></property>
 	</bean>
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
 		<property name="refDataTemplatePath">
 			<value>refdata/template/template_FT.xml</value>
 		</property>
-		<property name="refDataFile">
+		<property name="quoteFile">
 			<value>ticks/last.xml</value>
 		</property>
 	</bean>

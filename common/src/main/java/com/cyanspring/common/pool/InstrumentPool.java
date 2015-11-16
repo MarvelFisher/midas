@@ -1,13 +1,15 @@
 package com.cyanspring.common.pool;
 
+import java.io.Serializable;
 import java.util.Set;
 
-public class InstrumentPool {
-	String id;
-	String name;
-	String exchangeSubAccount;
+public class InstrumentPool implements Serializable {
+	private static final long serialVersionUID = 1L;
+	private String id;
+	private String name;
+	private String exchangeSubAccount;
 	// k=Account id
-	Set<String> accounts;
+	private Set<String> accounts;
 
 	public InstrumentPool(String id, String exchangeSubAccount) {
 		super();

@@ -1,7 +1,11 @@
 package com.cyanspring.common.pool;
 
-public class ExchangeSubAccount {
+import java.io.Serializable;
+
+public class ExchangeSubAccount implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private String id;
+	private String name;
 	private String desc;
 	private String exchangeAccount;
 
@@ -14,6 +18,14 @@ public class ExchangeSubAccount {
 
 	public String getId() {
 		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getDesc() {

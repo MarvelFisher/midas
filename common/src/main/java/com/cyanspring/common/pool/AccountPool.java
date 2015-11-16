@@ -1,8 +1,13 @@
 package com.cyanspring.common.pool;
 
-public class AccountPool {
-	String account;
-	String instrumentPool;
+import java.io.Serializable;
+
+public class AccountPool implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	private String account;
+	private String instrumentPool;
 
 	public AccountPool(String account, String instrumentPool) {
 		super();
