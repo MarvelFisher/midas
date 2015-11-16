@@ -17,16 +17,19 @@ public class MarketIntelligence implements Serializable {
 
     private MarketIntelligenceIndex momentum;
 
-    private MarketIntelligenceIndex ultimateMomentum;
+    private MarketIntelligenceIndex ultimateMomentumBuy;
 
-    public MarketIntelligence(int timeIntervalSeconds, String symbol, Date time, MarketIntelligenceIndex relativeVolatility, MarketIntelligenceIndex currentVolatility, MarketIntelligenceIndex momentum, MarketIntelligenceIndex ultimateMomentum) {
+    private MarketIntelligenceIndex ultimateMomentumSell;
+
+    public MarketIntelligence(int timeIntervalSeconds, String symbol, Date time, MarketIntelligenceIndex relativeVolatility, MarketIntelligenceIndex currentVolatility, MarketIntelligenceIndex momentum, MarketIntelligenceIndex ultimateMomentumBuy, MarketIntelligenceIndex ultimateMomentumSell) {
         this.timeIntervalSeconds = timeIntervalSeconds;
         this.symbol = symbol;
         this.time = time;
         this.relativeVolatility = relativeVolatility;
         this.currentVolatility = currentVolatility;
         this.momentum = momentum;
-        this.ultimateMomentum = ultimateMomentum;
+        this.ultimateMomentumBuy = ultimateMomentumBuy;
+        this.ultimateMomentumSell = ultimateMomentumSell;
     }
 
     public int getTimeIntervalSeconds() {
@@ -53,8 +56,12 @@ public class MarketIntelligence implements Serializable {
         return momentum;
     }
 
-    public MarketIntelligenceIndex getUltimateMomentum() {
-        return ultimateMomentum;
+    public MarketIntelligenceIndex getUltimateMomentumBuy() {
+        return ultimateMomentumBuy;
+    }
+
+    public MarketIntelligenceIndex getUltimateMomentumSell() {
+        return ultimateMomentumSell;
     }
 
     @Override
@@ -66,7 +73,8 @@ public class MarketIntelligence implements Serializable {
                 ", relativeVolatility=" + relativeVolatility +
                 ", currentVolatility=" + currentVolatility +
                 ", momentum=" + momentum +
-                ", ultimateMomentum=" + ultimateMomentum +
+                ", ultimateMomentumBuy=" + ultimateMomentumBuy +
+                ", ultimateMomentumSell=" + ultimateMomentumSell +
                 '}';
     }
 }

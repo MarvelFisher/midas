@@ -813,13 +813,22 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 			showAccount();
 		} else if (event instanceof OpenPositionUpdateEvent) {
 			OpenPositionUpdateEvent evt = (OpenPositionUpdateEvent) event;
+			if(!evt.getPosition().getAccount().equals(this.currentAccount))
+				return;
+			
 			processOpenPosition(evt.getPosition());
 		} else if (event instanceof OpenPositionDynamicUpdateEvent) {
 			OpenPositionDynamicUpdateEvent evt = (OpenPositionDynamicUpdateEvent) event;
+			if(!evt.getPosition().getAccount().equals(this.currentAccount))
+				return;
+			
 			processOpenPosition(evt.getPosition());
 		} else if (event instanceof ClosedPositionUpdateEvent) {
 			ClosedPositionUpdateEvent evt = (ClosedPositionUpdateEvent) event;
 			if (null == closedPositions)
+				return;
+			
+			if(!evt.getPosition().getAccount().equals(this.currentAccount))
 				return;
 
 			synchronized (closedPositions) {
