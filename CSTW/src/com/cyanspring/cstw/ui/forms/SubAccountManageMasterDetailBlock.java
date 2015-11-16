@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.forms.DetailsPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.MasterDetailsBlock;
@@ -99,8 +100,8 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 		btnComposite.setLayout(btnLayout);
 		
 		btnData = new GridData(SWT.CENTER, SWT.FILL, false, false);
-		btnAdd = toolkit.createButton(parent, "Add", SWT.NONE);
-		btnDelete = toolkit.createButton(parent, "Delete", SWT.NONE);
+		btnAdd = toolkit.createButton(btnComposite, "Add", SWT.NONE);
+		btnDelete = toolkit.createButton(btnComposite, "Delete", SWT.NONE);
 		btnAdd.setEnabled(false);
 		btnDelete.setEnabled(false);
 		btnAdd.setLayoutData(btnData);
@@ -181,6 +182,17 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 			btnAdd.setEnabled(true);
 			btnDelete.setEnabled(true);
 			Object object = selected.getFirstElement();
+			if (object instanceof ExchangeAccountModel) {
+				int index = service.getExchangeAccountList().indexOf(object);
+				setArrowButtonsFlag(index, 0, service.getExchangeAccountList().size()-1);
+			} else if (object instanceof SubAccountModel) {
+				TreeItem treeItem = editTree.getTree().getSelection()[0];
+				TreeItem parent = treeItem.getParentItem();
+				if (parent != null) {
+					TreeItem[] children = parent.getItems();
+					setArrowButtonsFlag(parent.indexOf(treeItem), 0, children.length-1);
+				}
+			}
 			
 		} else {
 			btnAdd.setEnabled(false);
@@ -188,6 +200,32 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 			btnUp.setEnabled(false);
 			btnDown.setEnabled(false);
 		}
+	}
+
+	private void setArrowButtonsFlag(int index, int begin, int end) {
+		if (begin < end) {
+			// not found
+			if (index == -1) {
+				btnUp.setEnabled(false);
+				btnDown.setEnabled(false);
+			}
+			else if (index == begin) {
+				btnUp.setEnabled(false);
+				btnDown.setEnabled(true);
+			}
+			else if (index == end) {
+				btnUp.setEnabled(true);
+				btnDown.setEnabled(false);
+			}
+			else {
+				btnUp.setEnabled(true);
+				btnDown.setEnabled(true);
+			}
+		} else {
+			btnUp.setEnabled(false);
+			btnDown.setEnabled(false);
+		}
+		
 	}
 
 	@Override
