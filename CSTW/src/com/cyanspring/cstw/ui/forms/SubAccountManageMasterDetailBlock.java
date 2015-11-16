@@ -7,6 +7,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -38,7 +39,8 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 	private TreeViewer editTree;
 	private SectionPart spart;
 	
-	private Button btnAdd;
+	private Button btnAddExch;
+	private Button btnAddSub;
 	private Button btnDelete;
 	private Button btnUp;
 	private Button btnDown;
@@ -80,9 +82,9 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 		spart = new SectionPart(dataSection);
 		managedForm.addPart(spart);
 		
-		GridData data = new GridData(SWT.LEFT, SWT.FILL, false, false);
+		GridData data = null;
 		Tree memberTree = toolkit.createTree(sectionClient, SWT.NONE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.BORDER );
-		data = new GridData(SWT.FILL, SWT.FILL, true, true);
+		data = new GridData(SWT.FILL, SWT.FILL, false, true);
 		data.heightHint = 200;
 		data.widthHint = 200;
 		memberTree.setLayoutData(data);
@@ -94,17 +96,21 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 		
 		// create buttons
 		Composite btnComposite = toolkit.createComposite(sectionClient, SWT.NONE);
-		GridData btnData = new GridData(SWT.LEFT, SWT.TOP, false, false);
+		GridData btnData = new GridData(SWT.FILL, SWT.FILL, false, true);
+		btnData.widthHint = 100;
 		btnComposite.setLayoutData(btnData);
 		GridLayout btnLayout = new GridLayout();
 		btnComposite.setLayout(btnLayout);
 		
-		btnData = new GridData(SWT.CENTER, SWT.FILL, false, false);
-		btnAdd = toolkit.createButton(btnComposite, "Add", SWT.NONE);
+		btnData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		btnAddExch = toolkit.createButton(btnComposite, "Add Exchange", SWT.NONE);
+		btnAddSub = toolkit.createButton(btnComposite, "Add Sub", SWT.NONE);
 		btnDelete = toolkit.createButton(btnComposite, "Delete", SWT.NONE);
-		btnAdd.setEnabled(false);
+		btnAddExch.setEnabled(false);
+		btnAddSub.setEnabled(false);
 		btnDelete.setEnabled(false);
-		btnAdd.setLayoutData(btnData);
+		btnAddExch.setLayoutData(btnData);
+		btnAddSub.setLayoutData(btnData);
 		btnDelete.setLayoutData(btnData);
 		
 		toolkit.createLabel(btnComposite, "");
@@ -136,7 +142,14 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 			}
 		});
 		
-		btnAdd.addSelectionListener(new SelectionAdapter() {
+		btnAddExch.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				addAction.run();
+			}
+		});
+		
+		btnAddSub.addSelectionListener(new SelectionAdapter() {
 		});
 		
 		btnDelete.addSelectionListener(new SelectionAdapter() {
@@ -156,12 +169,16 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 			public void run() {
 				Object obj = ((IStructuredSelection)editTree.getSelection()).getFirstElement();
 				if (obj instanceof ExchangeAccountModel) {
-//					service
+					service.createNewExchangeAccount();
 				} else if (obj instanceof SubAccountModel) {
-					
+					SubAccountModel subAccountModel = (SubAccountModel) obj;
+					service.createNewSubAccount(subAccountModel.getExchangeAccountModel().getName());
 				}
+				refreshTree();
 			}
 		};
+		
+		
 		
 	}
 
@@ -174,18 +191,22 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 	private void changeUiElementState() {
 		IStructuredSelection selected = ((IStructuredSelection) editTree.getSelection());
 		if (selected.isEmpty()) {
-			btnAdd.setEnabled(false);
+			btnAddExch.setEnabled(false);
+			btnAddSub.setEnabled(false);
 			btnDelete.setEnabled(false);
 			btnUp.setEnabled(false);
 			btnDown.setEnabled(false);
 		} else if (selected.size() == 1) {
-			btnAdd.setEnabled(true);
 			btnDelete.setEnabled(true);
 			Object object = selected.getFirstElement();
 			if (object instanceof ExchangeAccountModel) {
+				btnAddExch.setEnabled(true);
+				btnAddSub.setEnabled(true);
 				int index = service.getExchangeAccountList().indexOf(object);
 				setArrowButtonsFlag(index, 0, service.getExchangeAccountList().size()-1);
 			} else if (object instanceof SubAccountModel) {
+				btnAddExch.setEnabled(false);
+				btnAddSub.setEnabled(true);
 				TreeItem treeItem = editTree.getTree().getSelection()[0];
 				TreeItem parent = treeItem.getParentItem();
 				if (parent != null) {
@@ -195,7 +216,7 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 			}
 			
 		} else {
-			btnAdd.setEnabled(false);
+			btnAddExch.setEnabled(false);
 			btnDelete.setEnabled(true);
 			btnUp.setEnabled(false);
 			btnDown.setEnabled(false);
