@@ -18,8 +18,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,9 +40,12 @@ public class RefDataUtil {
 
 	private static Calendar truncateDate(Calendar cal) {
 		cal.set(Calendar.DATE, cal.getMinimum(Calendar.DATE));
+		cal.set(Calendar.HOUR,cal.getMaximum(Calendar.HOUR));
+		cal.set(Calendar.MINUTE,cal.getMaximum(Calendar.MINUTE));
+		cal.set(Calendar.SECOND,cal.getMaximum(Calendar.SECOND));
 		return cal;
 	}
-
+	
 	public static ITradeDate getTradeManager(String category) {
 		if (!StringUtils.hasText(category)) {
 			return null;
@@ -242,6 +243,7 @@ public class RefDataUtil {
 	}
 
 	public static void main(String args[]) {
+		
 		XStream xstream = new XStream(new DomDriver());
 		ArrayList<RefData> list;
 
