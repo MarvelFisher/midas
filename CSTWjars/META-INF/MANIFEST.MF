@@ -64,6 +64,7 @@ Export-Package: com.cyanspring.common;uses:="com.cyanspring.common.business.util
  com.cyanspring.common.marketdata,
  com.cyanspring.common.marketsession;uses:="com.cyanspring.common,com.cyanspring.common.event",
  com.cyanspring.common.message,
+ com.cyanspring.common.pool,
  com.cyanspring.common.server.event;uses:="com.cyanspring.common.event",
  com.cyanspring.common.signal,
  com.cyanspring.common.staticdata,
