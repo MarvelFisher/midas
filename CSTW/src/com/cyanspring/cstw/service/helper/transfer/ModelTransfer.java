@@ -8,16 +8,18 @@ import java.util.Map.Entry;
 
 import com.cyanspring.common.account.OverallPosition;
 import com.cyanspring.common.business.ParentOrder;
+import com.cyanspring.common.pool.ExchangeAccount;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.util.PriceUtils;
+import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
 import com.cyanspring.cstw.model.riskmgr.RCInstrumentModel;
 import com.cyanspring.cstw.model.riskmgr.RCOpenPositionModel;
-import com.cyanspring.cstw.model.riskmgr.RCOrderRecordModel;
-import com.cyanspring.cstw.model.riskmgr.RCTradeRecordModel;
-import com.cyanspring.cstw.model.riskmgr.RCUserStatisticsModel;
 import com.cyanspring.cstw.model.riskmgr.RCOpenPositionModel.RCPositionDirection;
 import com.cyanspring.cstw.model.riskmgr.RCOpenPositionModel.RCPositionType;
+import com.cyanspring.cstw.model.riskmgr.RCOrderRecordModel;
 import com.cyanspring.cstw.model.riskmgr.RCOrderRecordModel.Builder;
+import com.cyanspring.cstw.model.riskmgr.RCTradeRecordModel;
+import com.cyanspring.cstw.model.riskmgr.RCUserStatisticsModel;
 
 /**
  * 
@@ -90,7 +92,8 @@ public final class ModelTransfer {
 		}
 		RCInstrumentModel model = new RCInstrumentModel.Builder()
 				.account(position.getExchangeSubAccount())
-				.symbol(position.getSymbol()).realizedProfit(position.getRealizedPnL())
+				.symbol(position.getSymbol())
+				.realizedProfit(position.getRealizedPnL())
 				.trades(position.getExecCount()).volume(position.getTotalQty())
 				.turnover(position.getTurnover())
 				.commission(position.getCommission())
@@ -204,11 +207,11 @@ public final class ModelTransfer {
 				double commission = 0.0;
 				symbol = symbolEntry.getKey();
 				for (OverallPosition position : symbolEntry.getValue()) {
-					pnl += position.getRealizedPnL();
-					tradeCount += position.getExecCount();
-					volume += position.getTotalQty();
-					totalTurnOver += position.getTurnover();
-					commission += position.getCommission();
+					pnl = pnl + position.getRealizedPnL();
+					tradeCount = tradeCount + position.getExecCount();
+					volume = volume + position.getTotalQty();
+					totalTurnOver = totalTurnOver + position.getTurnover();
+					commission = commission + position.getCommission();
 				}
 				stockRecord = new RCInstrumentModel.Builder()
 						.account(subAccountEntry.getKey()).symbol(symbol)
@@ -218,6 +221,14 @@ public final class ModelTransfer {
 			}
 		}
 		return stockRecordList;
+	}
+
+	public static ExchangeAccountModel parseExchangeAccountModel(
+			ExchangeAccount exchangeAccount) {
+		ExchangeAccountModel model = new ExchangeAccountModel.Builder()
+				.id(exchangeAccount.getId()).name(exchangeAccount.getName())
+				.build();
+		return model;
 	}
 
 }
