@@ -22,4 +22,6 @@ public interface ISubAccountManagerService extends IBasicService {
 	List<InstrumentInfoModel> getInstrumentInfoModelListByExchangeAccountName(String name);
 	
 	void createNewExchangeAccount();
+	
+	void createNewSubAccount(String exchange);
 }

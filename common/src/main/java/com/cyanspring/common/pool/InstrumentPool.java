@@ -11,6 +11,9 @@ public class InstrumentPool implements Serializable {
 	// k=Account id
 	private Set<String> accounts;
 
+	public InstrumentPool() {
+	}
+
 	public InstrumentPool(String id, String exchangeSubAccount) {
 		super();
 		this.id = id;

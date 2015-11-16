@@ -9,6 +9,9 @@ public class ExchangeSubAccount implements Serializable {
 	private String desc;
 	private String exchangeAccount;
 
+	public ExchangeSubAccount() {
+	}
+
 	public ExchangeSubAccount(String id, String desc, String exchangeAccount) {
 		super();
 		this.id = id;

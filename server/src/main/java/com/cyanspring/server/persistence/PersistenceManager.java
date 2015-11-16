@@ -1784,7 +1784,7 @@ public class PersistenceManager {
 		Session session = sessionFactory.openSession();
 		List<InstrumentPool> result = new ArrayList<InstrumentPool>();
 		try {
-			result = session.createCriteria(ExchangeSubAccount.class).list();
+			result = session.createCriteria(InstrumentPool.class).list();
 		} catch (HibernateException e) {
 			log.error(e.getMessage(), e);
 			throw e;
