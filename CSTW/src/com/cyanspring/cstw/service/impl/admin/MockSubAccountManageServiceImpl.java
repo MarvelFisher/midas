@@ -29,6 +29,7 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 	// Mock
 	private ExchangeAccountModel ex1;
 	private ExchangeAccountModel ex2;
+	
 	private List<ExchangeAccountModel> exlist;
 	private List<SubAccountModel> sub1list;
 	private List<SubAccountModel> sub2list;
@@ -133,6 +134,24 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 					.useableMoney(10000).commissionRate(0.01).build());
 
 		}
+	}
+
+	@Override
+	public void removeExchangeAccount(ExchangeAccountModel exchange) {
+		exlist.remove(exchange);
+	}
+
+	@Override
+	public void removeSubAccount(SubAccountModel subAccount) {
+		sub1list.remove(subAccount);
+		sub2list.remove(subAccount);
+	}
+
+	@Override
+	public List<InstrumentInfoModel> getInstrumentInfoModelListBySubAccountId(
+			String id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

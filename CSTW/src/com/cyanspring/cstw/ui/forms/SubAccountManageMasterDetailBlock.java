@@ -45,7 +45,8 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 	private Button btnUp;
 	private Button btnDown;
 	
-	private Action addAction;
+	private Action addExchAction;
+	private Action addSubAction;
 	private Action delAction;
 	private Action upAction;
 	private Action downAction;
@@ -106,7 +107,7 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 		btnAddExch = toolkit.createButton(btnComposite, "Add Exchange", SWT.NONE);
 		btnAddSub = toolkit.createButton(btnComposite, "Add Sub", SWT.NONE);
 		btnDelete = toolkit.createButton(btnComposite, "Delete", SWT.NONE);
-		btnAddExch.setEnabled(false);
+		btnAddExch.setEnabled(true);
 		btnAddSub.setEnabled(false);
 		btnDelete.setEnabled(false);
 		btnAddExch.setLayoutData(btnData);
@@ -145,40 +146,93 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 		btnAddExch.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				addAction.run();
+				addExchAction.run();
 			}
 		});
 		
 		btnAddSub.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				addSubAction.run();
+			}
 		});
 		
 		btnDelete.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				delAction.run();
+			}
 		});
 		
 		btnUp.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				
+			}
 		});
 		
 		btnDown.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				
+			}
 		});
 		
 	}
 	
 	private void initAction() {
-		addAction = new Action() {
+		addExchAction = new Action() {
 			@Override
 			public void run() {
 				Object obj = ((IStructuredSelection)editTree.getSelection()).getFirstElement();
 				if (obj instanceof ExchangeAccountModel) {
 					service.createNewExchangeAccount();
-				} else if (obj instanceof SubAccountModel) {
-					SubAccountModel subAccountModel = (SubAccountModel) obj;
-					service.createNewSubAccount(subAccountModel.getExchangeAccountModel().getName());
 				}
 				refreshTree();
 			}
 		};
 		
+		addSubAction = new Action() {
+			@Override
+			public void run() {
+				Object obj = ((IStructuredSelection) editTree.getSelection())
+						.getFirstElement();
+				if (obj instanceof SubAccountModel) {
+					SubAccountModel subAccountModel = (SubAccountModel) obj;
+					service.createNewSubAccount(subAccountModel
+							.getExchangeAccountModel().getName());
+				}
+				refreshTree();
+			}
+		};
 		
+		delAction = new Action() {
+			@Override
+			public void run() {
+				Object obj = ((IStructuredSelection) editTree.getSelection())
+						.getFirstElement();
+				if (obj instanceof ExchangeAccountModel) {
+					service.removeExchangeAccount((ExchangeAccountModel) obj);
+				} else if (obj instanceof SubAccountModel) {
+					service.removeSubAccount((SubAccountModel) obj);
+				}
+			}
+		};
+		
+		upAction = new Action() {
+			@Override
+			public void run() {
+				Object obj = ((IStructuredSelection) editTree.getSelection())
+						.getFirstElement();
+			}
+		};
+		
+		downAction = new Action() {
+			@Override
+			public void run() {
+				
+			}
+		};
 		
 	}
 
@@ -191,7 +245,7 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 	private void changeUiElementState() {
 		IStructuredSelection selected = ((IStructuredSelection) editTree.getSelection());
 		if (selected.isEmpty()) {
-			btnAddExch.setEnabled(false);
+			btnAddExch.setEnabled(true);
 			btnAddSub.setEnabled(false);
 			btnDelete.setEnabled(false);
 			btnUp.setEnabled(false);
@@ -216,8 +270,8 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 			}
 			
 		} else {
-			btnAddExch.setEnabled(false);
-			btnDelete.setEnabled(true);
+			btnAddExch.setEnabled(true);
+			btnDelete.setEnabled(false);
 			btnUp.setEnabled(false);
 			btnDown.setEnabled(false);
 		}
