@@ -63,6 +63,11 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 	}
 
 	@Override
+	public ExchangeAccount getExchangeAccount(String exchangeAccountId) {
+		return exchAccMap.get(exchangeAccountId);
+	}
+
+	@Override
 	public List<ExchangeAccount> getExchangeAccountList() {
 		return new ArrayList<ExchangeAccount>(exchAccMap.values());
 	}

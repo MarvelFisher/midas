@@ -20,6 +20,13 @@ public interface IInstrumentPoolKeeper {
 	 * 
 	 * @return
 	 */
+	ExchangeAccount getExchangeAccount(String exchangeAccountId);
+
+	/**
+	 * 获取所有的券商账号列表
+	 * 
+	 * @return
+	 */
 	List<ExchangeAccount> getExchangeAccountList();
 
 	/**

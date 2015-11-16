@@ -20,7 +20,7 @@ import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
  * @author Junfeng
  * @create 11 Nov 2015
  */
-public class SubAccountManageServiceImpl extends BasicServiceImpl implements
+public abstract class SubAccountManageServiceImpl extends BasicServiceImpl implements
 		ISubAccountManagerService {
 
 	private IInstrumentPoolKeeper instrumentPoolKeeper;
@@ -96,6 +96,18 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl implements
 	@Override
 	public void createNewSubAccount(String exchange) {
 
+	}
+
+	@Override
+	public void removeExchangeAccount(ExchangeAccountModel exchange) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeSubAccount(SubAccountModel subAccount) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
