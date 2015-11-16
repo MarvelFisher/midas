@@ -30,6 +30,7 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl implements
 	// Mock
 	private ExchangeAccountModel ex1;
 	private ExchangeAccountModel ex2;
+	private List<ExchangeAccountModel> exlist;
 
 	// Mock
 	public SubAccountManageServiceImpl() {
@@ -42,11 +43,11 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl implements
 	 */
 	@Override
 	public List<ExchangeAccountModel> getExchangeAccountList() {
-		List<ExchangeAccountModel> list = new ArrayList<ExchangeAccountModel>();
+		exlist = new ArrayList<ExchangeAccountModel>();
 
-		list.add(ex1);
-		list.add(ex2);
-		return list;
+		exlist.add(ex1);
+		exlist.add(ex2);
+		return exlist;
 	}
 
 	/*
@@ -101,6 +102,11 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl implements
 		list.add(new InstrumentInfoModel.Builder().symbolId("AUDCAD")
 				.symbolName("AUDCAD").qty(10000).build());
 		return list;
+	}
+
+	@Override
+	public void createNewExchangeAccount() {
+		exlist.add(new ExchangeAccountModel.Builder().id("id3").name("ex3").build());
 	}
 
 }

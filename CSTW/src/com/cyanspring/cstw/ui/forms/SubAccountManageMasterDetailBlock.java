@@ -1,11 +1,15 @@
 package com.cyanspring.cstw.ui.forms;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
@@ -31,6 +35,17 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 	
 	private FormToolkit toolkit;
 	private TreeViewer editTree;
+	private SectionPart spart;
+	
+	private Button btnAdd;
+	private Button btnDelete;
+	private Button btnUp;
+	private Button btnDown;
+	
+	private Action addAction;
+	private Action delAction;
+	private Action upAction;
+	private Action downAction;
 	
 	public SubAccountManageMasterDetailBlock(ISubAccountManagerService service) {
 		this.service = service;
@@ -39,6 +54,12 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 	@Override
 	protected void createMasterPart(final IManagedForm managedForm, Composite parent) {
 		toolkit = managedForm.getToolkit();
+		initComponent(managedForm, parent);
+		initListener(managedForm);
+		initAction();
+	}
+
+	private void initComponent(final IManagedForm managedForm, Composite parent) {
 		Section dataSection = toolkit.createSection(parent, Section.COMPACT | Section.TITLE_BAR | Section.EXPANDED);
 		TableWrapData td = new TableWrapData(TableWrapData.FILL_GRAB);
 		td.colspan = 1;
@@ -55,7 +76,7 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 		Label label = toolkit.createLabel(sectionClient, "");
 		label.setLayoutData(gd);
 		
-		final SectionPart spart = new SectionPart(dataSection);
+		spart = new SectionPart(dataSection);
 		managedForm.addPart(spart);
 		
 		GridData data = new GridData(SWT.LEFT, SWT.FILL, false, false);
@@ -67,24 +88,80 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 		editTree = new TreeViewer(memberTree);
 		editTree.setContentProvider(new EditTreeContentProvider(service));
 		editTree.setLabelProvider(new EditTreeLabelProvider());
-		// register SelectionListener 
+		
+		refreshTree();
+		
+		// create buttons
+		Composite btnComposite = toolkit.createComposite(sectionClient, SWT.NONE);
+		GridData btnData = new GridData(SWT.LEFT, SWT.TOP, false, false);
+		btnComposite.setLayoutData(btnData);
+		GridLayout btnLayout = new GridLayout();
+		btnComposite.setLayout(btnLayout);
+		
+		btnData = new GridData(SWT.CENTER, SWT.FILL, false, false);
+		btnAdd = toolkit.createButton(parent, "Add", SWT.NONE);
+		btnDelete = toolkit.createButton(parent, "Delete", SWT.NONE);
+		btnAdd.setEnabled(false);
+		btnDelete.setEnabled(false);
+		btnAdd.setLayoutData(btnData);
+		btnDelete.setLayoutData(btnData);
+		
+		toolkit.createLabel(btnComposite, "");
+		
+		btnUp = toolkit.createButton(btnComposite, "Up", SWT.NONE);
+		btnDown = toolkit.createButton(btnComposite, "Down", SWT.NONE);
+		btnUp.setEnabled(false);
+		btnDown.setEnabled(false);
+		btnUp.setLayoutData(btnData);
+		btnDown.setLayoutData(btnData);
+		
+		
+		dataSection.setClient(sectionClient);
+	}
+	
+	private void initListener(final IManagedForm managedForm) {
+		// register SelectionListener
 		editTree.addSelectionChangedListener(new ISelectionChangedListener() {
-			
+
 			public void selectionChanged(SelectionChangedEvent event) {
 				managedForm.fireSelectionChanged(spart, event.getSelection());
 			}
 		});
-		
+
 		editTree.addSelectionChangedListener(new ISelectionChangedListener() {
-			
+
 			public void selectionChanged(SelectionChangedEvent event) {
 				changeUiElementState();
-
 			}
 		});
-		refreshTree();
 		
-		dataSection.setClient(sectionClient);
+		btnAdd.addSelectionListener(new SelectionAdapter() {
+		});
+		
+		btnDelete.addSelectionListener(new SelectionAdapter() {
+		});
+		
+		btnUp.addSelectionListener(new SelectionAdapter() {
+		});
+		
+		btnDown.addSelectionListener(new SelectionAdapter() {
+		});
+		
+	}
+	
+	private void initAction() {
+		addAction = new Action() {
+			@Override
+			public void run() {
+				Object obj = ((IStructuredSelection)editTree.getSelection()).getFirstElement();
+				if (obj instanceof ExchangeAccountModel) {
+//					service
+				} else if (obj instanceof SubAccountModel) {
+					
+				}
+			}
+		};
+		
 	}
 
 	private void refreshTree() {
@@ -94,8 +171,23 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 	}
 
 	private void changeUiElementState() {
-		// TODO Auto-generated method stub
-		
+		IStructuredSelection selected = ((IStructuredSelection) editTree.getSelection());
+		if (selected.isEmpty()) {
+			btnAdd.setEnabled(false);
+			btnDelete.setEnabled(false);
+			btnUp.setEnabled(false);
+			btnDown.setEnabled(false);
+		} else if (selected.size() == 1) {
+			btnAdd.setEnabled(true);
+			btnDelete.setEnabled(true);
+			Object object = selected.getFirstElement();
+			
+		} else {
+			btnAdd.setEnabled(false);
+			btnDelete.setEnabled(true);
+			btnUp.setEnabled(false);
+			btnDown.setEnabled(false);
+		}
 	}
 
 	@Override
@@ -107,7 +199,6 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 	@Override
 	protected void createToolBarActions(IManagedForm managedForm) {
 		// Do Nothing
-		
 	}
 
 }

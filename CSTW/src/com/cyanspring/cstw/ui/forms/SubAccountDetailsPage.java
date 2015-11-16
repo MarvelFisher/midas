@@ -54,9 +54,9 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		layout.rightMargin = 2;
 		layout.bottomMargin = 2;
 		parent.setLayout(layout);
-		
-		//init head
 		FormToolkit toolkit = mform.getToolkit();
+		
+		//init Top Part
 		dataSection1 = toolkit.createSection(parent, Section.TITLE_BAR | Section.EXPANDED);
 		dataSection1.marginWidth = 10;
 		dataSection1.setText("Exchange Account Details: ");
@@ -70,14 +70,12 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		glayout.marginWidth = glayout.marginHeight = 0;
 		glayout.numColumns = 2;
 		client1.setLayout(glayout);
-		
 		createSpacer(toolkit, client1, 2);
-		
 		createComponent1(toolkit, client1);
-		
 		toolkit.paintBordersFor(dataSection1);
 		dataSection1.setClient(client1);
 		
+		// init Bottom Part
 		dataSection2 = toolkit.createSection(parent,  Section.TITLE_BAR | Section.EXPANDED);
 		dataSection2.marginWidth = 10;
 		dataSection2.setText("SubAccount Details: ");
@@ -90,12 +88,8 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		gLayout2.marginWidth = gLayout2.marginHeight = 0;
 		gLayout2.numColumns = 2;
 		client2.setLayout(gLayout2);
-		
 		createSpacer(toolkit, client2, 2);
-		
 		createComponent2(toolkit, client2);
-		
-		toolkit.paintBordersFor(dataSection2);
 		dataSection2.setClient(client2);
 	}
 	
