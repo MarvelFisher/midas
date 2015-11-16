@@ -69,7 +69,6 @@ public abstract class SubAccountManageServiceImpl extends BasicServiceImpl
 	public List<InstrumentInfoModel> getInstrumentInfoModelListByExchangeAccountName(
 			String id) {
 		Map<String, Double> symbolQtyMap = new HashMap<String, Double>();
-
 		List<InstrumentPoolRecord> recordList = instrumentPoolKeeper
 				.getInstrumentPoolRecordList(id, ModelType.EXCHANGE_ACCOUNT);
 		for (InstrumentPoolRecord record : recordList) {
@@ -78,9 +77,17 @@ public abstract class SubAccountManageServiceImpl extends BasicServiceImpl
 			}
 			Double qty = symbolQtyMap.get(record.getSymbol());
 			qty = Double.valueOf(qty.doubleValue() + record.getQty());
+			symbolQtyMap.put(record.getSymbol(), qty);
 		}
-		List<InstrumentInfoModel> list = new ArrayList<InstrumentInfoModel>();
-		return list;
+		List<InstrumentInfoModel> instrumentInfoModelList = new ArrayList<InstrumentInfoModel>();
+		for (Map.Entry<String, Double> entry : symbolQtyMap.entrySet()) {
+			InstrumentInfoModel infoModel = new InstrumentInfoModel.Builder()
+					.build();
+			infoModel.setSymbolName(entry.getKey());
+			infoModel.setStockQuanity(entry.getValue());
+			instrumentInfoModelList.add(infoModel);
+		}
+		return instrumentInfoModelList;
 	}
 
 	@Override
