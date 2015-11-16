@@ -13,6 +13,9 @@ public enum TableType {
 	// Super Admin
 	InstrumentInfo(new String[] { "Instrument", "Instrument Name", "Quantity" },
 			new int[] { 100, 100, 100 }, SWT.CENTER, false, false),
+			
+	AssignedInfo(new String[] { "No.", "User", "Role" },
+			new int[] { 100, 100, 100 }, SWT.CENTER, false, false),
 
 	// RW Order
 	RWPendingOrder(new String[] { "Order ID", "Instrument ID", "Trade Type",
