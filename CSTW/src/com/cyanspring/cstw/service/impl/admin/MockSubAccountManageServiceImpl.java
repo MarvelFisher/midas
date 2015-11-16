@@ -14,11 +14,10 @@ import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
 
 /**
  * @author Junfeng
- * @create 11 Nov 2015
+ * @create 16 Nov 2015
  */
-public class SubAccountManageServiceImpl extends BasicServiceImpl implements
+public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 		ISubAccountManagerService {
-
 	private IInstrumentPoolKeeper instrumentPoolKeeper;
 
 	@Override
@@ -35,30 +34,30 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl implements
 	private List<SubAccountModel> sub2list;
 
 	// Mock
-	public SubAccountManageServiceImpl() {
+	public MockSubAccountManageServiceImpl() {
 		ex1 = new ExchangeAccountModel.Builder().id("id1").name("ex1").build();
 		ex2 = new ExchangeAccountModel.Builder().id("id2").name("ex2").build();
-		
+
 		exlist = new ArrayList<ExchangeAccountModel>();
 		exlist.add(ex1);
 		exlist.add(ex2);
-		
+
 		sub1list = new ArrayList<SubAccountModel>();
-		sub1list.add(new SubAccountModel.Builder().id("sub1.1").name("account1.1")
-				.exchangeAccount(ex1).useableMoney(10000)
+		sub1list.add(new SubAccountModel.Builder().id("sub1.1")
+				.name("account1.1").exchangeAccount(ex1).useableMoney(10000)
 				.commissionRate(0.01).build());
-		sub1list.add(new SubAccountModel.Builder().id("sub1.2").name("account1.2")
-				.exchangeAccount(ex1).useableMoney(10000)
+		sub1list.add(new SubAccountModel.Builder().id("sub1.2")
+				.name("account1.2").exchangeAccount(ex1).useableMoney(10000)
 				.commissionRate(0.01).build());
-		
+
 		sub2list = new ArrayList<SubAccountModel>();
-		sub2list.add(new SubAccountModel.Builder().id("sub2.1").name("account2.1")
-				.exchangeAccount(ex2).useableMoney(10000)
+		sub2list.add(new SubAccountModel.Builder().id("sub2.1")
+				.name("account2.1").exchangeAccount(ex2).useableMoney(10000)
 				.commissionRate(0.01).build());
-		sub2list.add(new SubAccountModel.Builder().id("sub2.2").name("account2.2")
-				.exchangeAccount(ex2).useableMoney(10000)
+		sub2list.add(new SubAccountModel.Builder().id("sub2.2")
+				.name("account2.2").exchangeAccount(ex2).useableMoney(10000)
 				.commissionRate(0.01).build());
-		
+
 	}
 
 	/*
@@ -66,7 +65,7 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl implements
 	 */
 	@Override
 	public List<ExchangeAccountModel> getExchangeAccountList() {
-		
+
 		return exlist;
 	}
 
@@ -77,10 +76,10 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl implements
 	public List<SubAccountModel> getSubAccountListByExchangeAccountName(
 			String name) {
 		if (name.equals("ex1")) {
-			
+
 			return sub1list;
 		} else if (name.equals("ex2")) {
-			
+
 			return sub2list;
 		} else {
 			List<SubAccountModel> list = new ArrayList<SubAccountModel>();
@@ -117,22 +116,23 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl implements
 
 	@Override
 	public void createNewExchangeAccount() {
-		exlist.add(new ExchangeAccountModel.Builder().id("id3").name("ex3").build());
+		exlist.add(new ExchangeAccountModel.Builder().id("id3").name("ex3")
+				.build());
 	}
 
 	@Override
 	public void createNewSubAccount(String exchange) {
 		if (exchange.equals("ex1")) {
-			sub1list.add(new SubAccountModel.Builder().id("sub1.3").name("account1.3")
-					.exchangeAccount(ex1).useableMoney(10000)
-					.commissionRate(0.01).build());
-			
+			sub1list.add(new SubAccountModel.Builder().id("sub1.3")
+					.name("account1.3").exchangeAccount(ex1)
+					.useableMoney(10000).commissionRate(0.01).build());
+
 		} else if (exchange.equals("ex2")) {
-			sub2list.add(new SubAccountModel.Builder().id("sub2.3").name("account2.3")
-					.exchangeAccount(ex1).useableMoney(10000)
-					.commissionRate(0.01).build());
-			
-		} 
+			sub2list.add(new SubAccountModel.Builder().id("sub2.3")
+					.name("account2.3").exchangeAccount(ex1)
+					.useableMoney(10000).commissionRate(0.01).build());
+
+		}
 	}
 
 }
