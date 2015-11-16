@@ -16,7 +16,14 @@ import com.cyanspring.common.pool.InstrumentPoolRecord;
 public interface IInstrumentPoolKeeper {
 
 	/**
-	 * 获取所有的券商账号列表
+	 * 根据不同参数类型查询InstrumentPoolRecord List
+	 */
+	enum ModelType {
+		EXCHANGE_ACCOUNT, EXCHANGE_SUB_ACCOUNT, INSTRUMENT_POOL
+	}
+
+	/**
+	 * 根据券商账号ID获取券商账号
 	 * 
 	 * @return
 	 */
@@ -48,11 +55,13 @@ public interface IInstrumentPoolKeeper {
 	/**
 	 * 获取给定股票池对应的所有股票信息
 	 * 
-	 * @param instrumentPool
+	 * @param id
+	 *            - ExchangeAccountId/ExchangeSubAccountId/InstrumentPoolId
+	 * @param ModelType
 	 * @return
 	 */
-
-	List<InstrumentPoolRecord> getInstrumentPoolRecordList(String instrumentPool);
+	List<InstrumentPoolRecord> getInstrumentPoolRecordList(String id,
+			ModelType type);
 
 	/**
 	 * 根据交易员账号和输入的股票，返回其对应的ExchangeSubAccountId和股票池信息List<InstrumentPoolRecord>

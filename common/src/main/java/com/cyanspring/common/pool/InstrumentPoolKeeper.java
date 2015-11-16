@@ -90,10 +90,33 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 	}
 
 	@Override
-	public List<InstrumentPoolRecord> getInstrumentPoolRecordList(
-			String instrumentPool) {
-		return new ArrayList<InstrumentPoolRecord>(instrumentPoolRecordMap.get(
-				instrumentPool).values());
+	public List<InstrumentPoolRecord> getInstrumentPoolRecordList(String id,
+			ModelType type) {
+		List<InstrumentPoolRecord> instrumentPoolRecords = new ArrayList<InstrumentPoolRecord>();
+		switch (type) {
+		case EXCHANGE_ACCOUNT:
+			for (ExchangeSubAccount subAccount : subAccountMap.getMap(id)
+					.values()) {
+				for (InstrumentPool instrumentPool : poolSubAccountMap.getMap(
+						subAccount.getId()).values()) {
+					instrumentPoolRecords.addAll(instrumentPoolRecordMap.get(
+							instrumentPool.getId()).values());
+				}
+			}
+			break;
+		case EXCHANGE_SUB_ACCOUNT:
+			for (InstrumentPool instrumentPool : poolSubAccountMap.getMap(id)
+					.values()) {
+				instrumentPoolRecords.addAll(instrumentPoolRecordMap.get(
+						instrumentPool.getId()).values());
+			}
+			break;
+		case INSTRUMENT_POOL:
+			instrumentPoolRecords.addAll(instrumentPoolRecordMap.get(id)
+					.values());
+			break;
+		}
+		return instrumentPoolRecords;
 	}
 
 	/**
