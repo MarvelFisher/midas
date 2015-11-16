@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.account.AccountKeeper;
+import com.cyanspring.common.client.IInstrumentPoolKeeper.ModelType;
 import com.cyanspring.common.event.AsyncEventProcessor;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
@@ -39,7 +40,6 @@ import com.cyanspring.common.event.pool.PmInstrumentPoolInsertEvent;
 import com.cyanspring.common.event.pool.PmInstrumentPoolRecordUpdateEvent;
 import com.cyanspring.common.event.pool.PmInstrumentPoolRecordsDeleteEvent;
 import com.cyanspring.common.event.pool.PmInstrumentPoolRecordsInsertEvent;
-import com.cyanspring.common.util.IdGenerator;
 
 /**
  * @author GuoWei
@@ -261,7 +261,8 @@ public class InstrumentPoolManager implements IPlugin {
 		case DELETE:
 			if (ifExists) {
 				List<InstrumentPoolRecord> records = instrumentPoolKeeper
-						.getInstrumentPoolRecordList(instrumentPool.getId());
+						.getInstrumentPoolRecordList(instrumentPool.getId(),
+								ModelType.INSTRUMENT_POOL);
 				if (!records.isEmpty()) {
 					PmInstrumentPoolRecordsDeleteEvent deleteEvent = new PmInstrumentPoolRecordsDeleteEvent(
 							records);
