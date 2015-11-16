@@ -9,6 +9,9 @@ public class AccountPool implements Serializable {
 	private String account;
 	private String instrumentPool;
 
+	public AccountPool() {
+	}
+
 	public AccountPool(String account, String instrumentPool) {
 		super();
 		this.account = account;
