@@ -167,14 +167,14 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 		btnUp.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				
+				upAction.run();
 			}
 		});
 		
 		btnDown.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				
+				downAction.run();
 			}
 		});
 		
@@ -189,6 +189,7 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 					service.createNewExchangeAccount();
 				}
 				refreshTree();
+				changeUiElementState();
 			}
 		};
 		
@@ -201,8 +202,12 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 					SubAccountModel subAccountModel = (SubAccountModel) obj;
 					service.createNewSubAccount(subAccountModel
 							.getExchangeAccountModel().getName());
+				} else if (obj instanceof ExchangeAccountModel) {
+					ExchangeAccountModel exchangeAccountModel = (ExchangeAccountModel) obj;
+					service.createNewSubAccount(exchangeAccountModel.getName());
 				}
 				refreshTree();
+				changeUiElementState();
 			}
 		};
 		
@@ -216,6 +221,8 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 				} else if (obj instanceof SubAccountModel) {
 					service.removeSubAccount((SubAccountModel) obj);
 				}
+				refreshTree();
+				changeUiElementState();
 			}
 		};
 		
@@ -224,13 +231,28 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 			public void run() {
 				Object obj = ((IStructuredSelection) editTree.getSelection())
 						.getFirstElement();
+				if (obj instanceof ExchangeAccountModel) {
+					service.moveUpExchangeAccount((ExchangeAccountModel) obj);
+				} else if (obj instanceof SubAccountModel) {
+					service.moveUpSubAccount((SubAccountModel) obj);
+				}
+				refreshTree();
+				changeUiElementState();
 			}
 		};
 		
 		downAction = new Action() {
 			@Override
 			public void run() {
-				
+				Object obj = ((IStructuredSelection) editTree.getSelection())
+						.getFirstElement();
+				if (obj instanceof ExchangeAccountModel) {
+					service.moveDownExchangeAccount((ExchangeAccountModel) obj);
+				} else if (obj instanceof SubAccountModel) {
+					service.moveDownSubAccount((SubAccountModel) obj);
+				}
+				refreshTree();
+				changeUiElementState();
 			}
 		};
 		

@@ -30,4 +30,13 @@ public interface ISubAccountManagerService extends IBasicService {
 	void removeExchangeAccount(ExchangeAccountModel exchange);
 	
 	void removeSubAccount(SubAccountModel subAccount);
+	
+	void moveUpExchangeAccount(ExchangeAccountModel exchange);
+	
+	void moveDownExchangeAccount(ExchangeAccountModel exchange);
+	
+	void moveUpSubAccount(SubAccountModel subAccount);
+	
+	void moveDownSubAccount(SubAccountModel subAccount);
+	
 }
