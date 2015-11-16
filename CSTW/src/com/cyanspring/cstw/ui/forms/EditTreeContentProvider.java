@@ -56,7 +56,8 @@ public class EditTreeContentProvider implements ITreeContentProvider {
 	@Override
 	public boolean hasChildren(Object element) {
 		if (element instanceof ExchangeAccountModel) {
-			return true;
+			ExchangeAccountModel parent = (ExchangeAccountModel) element;
+			return !service.getSubAccountListByExchangeAccountName(parent.getName()).isEmpty();
 		}
 		return false;
 	}
