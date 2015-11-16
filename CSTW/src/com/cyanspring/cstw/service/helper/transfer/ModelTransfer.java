@@ -9,9 +9,13 @@ import java.util.Map.Entry;
 import com.cyanspring.common.account.OverallPosition;
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.pool.ExchangeAccount;
+import com.cyanspring.common.pool.ExchangeSubAccount;
+import com.cyanspring.common.pool.InstrumentPool;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
+import com.cyanspring.cstw.model.admin.InstrumentInfoModel;
+import com.cyanspring.cstw.model.admin.SubAccountModel;
 import com.cyanspring.cstw.model.riskmgr.RCInstrumentModel;
 import com.cyanspring.cstw.model.riskmgr.RCOpenPositionModel;
 import com.cyanspring.cstw.model.riskmgr.RCOpenPositionModel.RCPositionDirection;
@@ -229,6 +233,21 @@ public final class ModelTransfer {
 				.id(exchangeAccount.getId()).name(exchangeAccount.getName())
 				.build();
 		return model;
+	}
+
+	public static SubAccountModel parseSubAccountModel(
+			ExchangeSubAccount subAccount) {
+		SubAccountModel model = new SubAccountModel.Builder()
+				.id(subAccount.getId()).name(subAccount.getName()).build();
+		return model;
+	}
+
+	public static InstrumentInfoModel parseInstrumentInfoModel(
+			InstrumentPool pool) {
+		InstrumentInfoModel model = new InstrumentInfoModel.Builder()
+				.symbolId(pool.getId()).symbolName(pool.getName()).build();
+		return model;
+
 	}
 
 }
