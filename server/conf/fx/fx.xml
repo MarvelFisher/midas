@@ -43,6 +43,7 @@
 				<ref bean="systemSuspendValidator" />
 				<ref bean="coinManager" />
 				<ref bean="positionForwarder" />
+				<!--<ref bean="marketIntelligenceReceiver" />-->
 			</list>
 		</property>
 		<property name="readyMap">
@@ -548,6 +549,11 @@
 	<bean id="positionForwarder" class="com.cyanspring.server.PositionForwarder">
 		<property name="eventManager" ref="eventManager"></property>
 		<property name="globalEventManager" ref="globalEventManager"></property>
+	</bean>
+
+	<bean id="marketIntelligenceReceiver" class="com.cyanspring.common.kdb.MarketIntelligenceReceiver">
+		<property name="kdbHost" value="localhost" />
+		<property name="kdbPort" value="5013" />
 	</bean>
 
 </beans>
