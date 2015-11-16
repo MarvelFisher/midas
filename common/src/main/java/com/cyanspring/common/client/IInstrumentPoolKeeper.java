@@ -18,7 +18,7 @@ public interface IInstrumentPoolKeeper {
 	/**
 	 * 根据不同参数类型查询InstrumentPoolRecord List
 	 */
-	enum ModelType {
+	public enum ModelType {
 		EXCHANGE_ACCOUNT, EXCHANGE_SUB_ACCOUNT, INSTRUMENT_POOL
 	}
 

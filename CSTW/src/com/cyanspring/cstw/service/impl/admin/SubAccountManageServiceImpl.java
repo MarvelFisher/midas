@@ -1,13 +1,16 @@
 package com.cyanspring.cstw.service.impl.admin;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.cyanspring.common.client.IInstrumentPoolKeeper;
+import com.cyanspring.common.client.IInstrumentPoolKeeper.ModelType;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.pool.ExchangeAccount;
 import com.cyanspring.common.pool.ExchangeSubAccount;
-import com.cyanspring.common.pool.InstrumentPool;
+import com.cyanspring.common.pool.InstrumentPoolRecord;
 import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
 import com.cyanspring.cstw.model.admin.InstrumentInfoModel;
 import com.cyanspring.cstw.model.admin.SubAccountModel;
@@ -20,8 +23,8 @@ import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
  * @author Junfeng
  * @create 11 Nov 2015
  */
-public abstract class SubAccountManageServiceImpl extends BasicServiceImpl implements
-		ISubAccountManagerService {
+public abstract class SubAccountManageServiceImpl extends BasicServiceImpl
+		implements ISubAccountManagerService {
 
 	private IInstrumentPoolKeeper instrumentPoolKeeper;
 
@@ -65,14 +68,18 @@ public abstract class SubAccountManageServiceImpl extends BasicServiceImpl imple
 	@Override
 	public List<InstrumentInfoModel> getInstrumentInfoModelListByExchangeAccountName(
 			String id) {
-		List<InstrumentInfoModel> list = new ArrayList<InstrumentInfoModel>();
-		List<InstrumentPool> instrumentPoolList = instrumentPoolKeeper
-				.getInstrumentPoolList(id);
-		for (InstrumentPool pool : instrumentPoolList) {
-			InstrumentInfoModel model = ModelTransfer
-					.parseInstrumentInfoModel(pool);
-			list.add(model);
+		Map<String, Double> symbolQtyMap = new HashMap<String, Double>();
+
+		List<InstrumentPoolRecord> recordList = instrumentPoolKeeper
+				.getInstrumentPoolRecordList(id, ModelType.EXCHANGE_ACCOUNT);
+		for (InstrumentPoolRecord record : recordList) {
+			if (symbolQtyMap.get(record.getSymbol()) == null) {
+				symbolQtyMap.put(record.getSymbol(), new Double(0));
+			}
+			Double qty = symbolQtyMap.get(record.getSymbol());
+			qty = Double.valueOf(qty.doubleValue() + record.getQty());
 		}
+		List<InstrumentInfoModel> list = new ArrayList<InstrumentInfoModel>();
 		return list;
 	}
 
@@ -101,13 +108,13 @@ public abstract class SubAccountManageServiceImpl extends BasicServiceImpl imple
 	@Override
 	public void removeExchangeAccount(ExchangeAccountModel exchange) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void removeSubAccount(SubAccountModel subAccount) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
