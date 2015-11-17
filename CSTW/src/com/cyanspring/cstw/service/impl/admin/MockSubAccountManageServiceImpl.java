@@ -3,6 +3,8 @@ package com.cyanspring.cstw.service.impl.admin;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.omg.CORBA.PRIVATE_MEMBER;
+
 import com.cyanspring.common.client.IInstrumentPoolKeeper;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
@@ -33,6 +35,8 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 	private List<ExchangeAccountModel> exlist;
 	private List<SubAccountModel> sub1list;
 	private List<SubAccountModel> sub2list;
+	
+	private List<InstrumentInfoModel> instruList;
 
 	// Mock
 	public MockSubAccountManageServiceImpl() {
@@ -61,6 +65,12 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 		sub2list.add(new SubAccountModel.Builder().id("sub2.2")
 				.name("account2.2").exchangeAccount(ex2).useableMoney(10000)
 				.commissionRate(0.01).build());
+		
+		instruList = new ArrayList<InstrumentInfoModel>();
+		instruList.add(new InstrumentInfoModel.Builder().symbolId("AUDUSD")
+				.symbolName("AUDUSD").qty(10000).build());
+		instruList.add(new InstrumentInfoModel.Builder().symbolId("AUDCAD")
+				.symbolName("AUDCAD").qty(10000).build());
 
 	}
 
@@ -110,12 +120,8 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 	@Override
 	public List<InstrumentInfoModel> getInstrumentInfoModelListByExchangeAccountName(
 			String name) {
-		List<InstrumentInfoModel> list = new ArrayList<InstrumentInfoModel>();
-		list.add(new InstrumentInfoModel.Builder().symbolId("AUDUSD")
-				.symbolName("AUDUSD").qty(10000).build());
-		list.add(new InstrumentInfoModel.Builder().symbolId("AUDCAD")
-				.symbolName("AUDCAD").qty(10000).build());
-		return list;
+		
+		return instruList;
 	}
 	
 	/**
@@ -124,8 +130,7 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 	@Override
 	public List<InstrumentInfoModel> getInstrumentInfoModelListBySubAccountId(
 			String id) {
-		// TODO Auto-generated method stub
-		return null;
+		return instruList.subList(0, 1);
 	}
 
 

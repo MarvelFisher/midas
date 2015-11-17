@@ -36,6 +36,7 @@ public class SubAccountDetailsPage implements IDetailsPage {
 	private Text txtName2;
 	private InstrumentInfoTableComposite exTableComposite;
 	private InstrumentInfoTableComposite subTableComposite;
+	private AssignedTableComposite assTableComposite;
 	
 	public SubAccountDetailsPage(ISubAccountManagerService service) {
 		this.service = service;
@@ -90,13 +91,15 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		client2.setLayout(gLayout2);
 		createSpacer(toolkit, client2, 2);
 		createComponent2(toolkit, client2);
+		toolkit.paintBordersFor(dataSection2);
 		dataSection2.setClient(client2);
 	}
 	
 	private void createComponent1(FormToolkit toolkit, Composite client) {
 		toolkit.createLabel(client, "Name: ");
 		txtName1 = toolkit.createText(client, "", SWT.BORDER);
-		GridData gd1 = new GridData(GridData.FILL_HORIZONTAL|GridData.VERTICAL_ALIGN_BEGINNING);
+		GridData gd1 = new GridData();
+		gd1.widthHint = 120;
 		txtName1.setLayoutData(gd1);
 		txtName1.setEditable(true);
 		txtName1.setTextLimit(1023);
@@ -118,7 +121,8 @@ public class SubAccountDetailsPage implements IDetailsPage {
 	private void createComponent2(FormToolkit toolkit, Composite client) {
 		toolkit.createLabel(client, "Name: ");
 		txtName2 = toolkit.createText(client, "", SWT.BORDER);
-		GridData gd1 = new GridData(GridData.FILL_HORIZONTAL|GridData.VERTICAL_ALIGN_BEGINNING);
+		GridData gd1 = new GridData();
+		gd1.widthHint = 120;
 		txtName2.setLayoutData(gd1);
 		txtName2.setEditable(true);
 		txtName2.setTextLimit(1023);
@@ -130,7 +134,7 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		Label lblTable = toolkit.createLabel(client, "Summary of symbol: ");
 		lblTable.setLayoutData(gd2);
 		subTableComposite = new InstrumentInfoTableComposite(client, SWT.NONE);
-		GridData gd3 = new GridData();
+		GridData gd3 = new GridData(SWT.LEFT, SWT.FILL, false, true);
 		gd3.horizontalSpan = 2;
 		subTableComposite.setLayoutData(gd3);
 		toolkit.adapt(subTableComposite);
@@ -138,6 +142,10 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		createSpacer(toolkit, client, 2);
 		
 		Label lblAssign = toolkit.createLabel(client, "Assign to RW / Group: ");
+		lblAssign.setLayoutData(gd2);
+		assTableComposite = new AssignedTableComposite(client, SWT.NONE);
+		assTableComposite.setLayoutData(gd3);
+		toolkit.adapt(assTableComposite);
 		
 	}
 
@@ -150,44 +158,37 @@ public class SubAccountDetailsPage implements IDetailsPage {
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public boolean isDirty() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void commit(boolean onSave) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public boolean setFormInput(Object input) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void setFocus() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public boolean isStale() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void refresh() {
-		// TODO Auto-generated method stub
-
+		update();
 	}
 
 	@Override
@@ -204,12 +205,13 @@ public class SubAccountDetailsPage implements IDetailsPage {
 	
 	private void update() {
 		if ( input != null ) {
-			dataSection1
-					.setText("Exchange Account Details: " + input.getName());
+			dataSection1.setText("Exchange Account Details: " + input.getExchangeAccountModel().getName());
 			txtName1.setText(input.getExchangeAccountModel().getName());
-			exTableComposite.setInput(service
-					.getInstrumentInfoModelListByExchangeAccountName(input
-							.getExchangeAccountModel().getName()));
+			exTableComposite.setInput(service.getInstrumentInfoModelListByExchangeAccountName(input.getExchangeAccountModel().getName()));
+			
+			//dataSection2.setText("SubAccount Details: " + input.getName());
+			txtName2.setText(input.getName());
+			subTableComposite.setInput(service.getInstrumentInfoModelListBySubAccountId(input.getName()));
 		}
 	}
 	

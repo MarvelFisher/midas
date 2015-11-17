@@ -79,7 +79,8 @@ public class ExchangeAccountDetailsPage implements IDetailsPage {
 	private void createComponent(FormToolkit toolkit, Composite client) {
 		toolkit.createLabel(client, "Name: ");
 		txtName = toolkit.createText(client, "", SWT.BORDER);
-		GridData gd1 = new GridData(GridData.FILL_HORIZONTAL|GridData.VERTICAL_ALIGN_BEGINNING);
+		GridData gd1 = new GridData();
+		gd1.widthHint = 120;
 		txtName.setLayoutData(gd1);
 		txtName.setEditable(true);
 		txtName.setTextLimit(1023);
