@@ -49,6 +49,7 @@ Export-Package: com.cyanspring.common;uses:="com.cyanspring.common.business.util
    com.cyanspring.common.type,
    com.cyanspring.common.event,
    com.cyanspring.common.business",
+ com.cyanspring.common.event.pool,
  com.cyanspring.common.event.refdata,
  com.cyanspring.common.event.signal;uses:="com.cyanspring.common.data,com.cyanspring.common.event",
  com.cyanspring.common.event.statistic,
