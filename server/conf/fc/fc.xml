@@ -468,6 +468,7 @@
 				<ref bean="csSessionChecker" />
 				<ref bean="vSessionChecker" />
 				<ref bean="bbSessionChecker" />
+				<ref bean="aSessionChecker" />
 				<ref bean="bSessionChecker" />
 				<ref bean="fbSessionChecker" />
 				<ref bean="rsSessionChecker" />
