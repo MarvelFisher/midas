@@ -122,9 +122,11 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 			data.setSymbol(symbol);
 			data.setRefSymbol(refData.getRefSymbol().replace(SEQ_PATTERN, seq));
 			String code = refData.getCode();
-			if (code != null) {
+			if (code != null && code.length() > 0) {
 				code = code.replace(MONTH_PATTERN_YYYYMM, yyyymm);
 				data.setCode(code);
+			} else {
+				data.setCode(data.getRefSymbol());
 			}
 			String subscribeSymbol = refData.getSubscribeSymbol();
 			if (subscribeSymbol != null) {
