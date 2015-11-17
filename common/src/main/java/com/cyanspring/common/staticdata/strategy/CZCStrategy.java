@@ -59,9 +59,10 @@ public class CZCStrategy extends AbstractRefDataStrategy {
     }
 
     private void setSettlementDate(RefData refData, Calendar cal) {
-    	if(refData.getCategory().equals("TC")){//動力煤
+    	String category = refData.getCategory();
+    	if (category.equals("TC") || category.equals("ZC")) { //動力煤
 			refData.setSettlementDate(RefDataUtil.calSettlementDateByTradeDate(refData, cal,5));
-		}else{
+		} else {
 			refData.setSettlementDate(RefDataUtil.calSettlementDateByTradeDate(refData, cal,10));
 		}
     }

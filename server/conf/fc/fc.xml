@@ -476,6 +476,11 @@
 				<ref bean="lrSessionChecker" />
 				<ref bean="smSessionChecker" />
 				<ref bean="jrSessionChecker" />
+				<ref bean="whSessionChecker" />
+				<ref bean="pmSessionChecker" />
+				<ref bean="oiSessionChecker" />
+				<ref bean="tcSessionChecker" />
+				<ref bean="zcSessionChecker" />
 				<ref bean="indexSessionChecker" />
 			</list>
 		</constructor-arg>

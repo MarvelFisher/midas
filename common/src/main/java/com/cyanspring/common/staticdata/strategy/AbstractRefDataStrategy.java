@@ -145,6 +145,13 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 				}
 			}
 
+			// 動力煤 TC 合约文本运行至 TC604合约摘牌。
+			// 動力煤 ZC 合约文本自 ZC605 合约起执行。
+			// TODO 2016年5月起, 需將 TC 自 template_FC 移除, 改用 ZC 並拿掉此段 code
+			if (category.equals("TC") && Integer.parseInt(ymm) > 604) {
+				convertTC2ZC(data);
+			}
+
 			lstRefData.add(data);
 		}
 
@@ -272,5 +279,13 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		return contractPolicy;
 	}
 
+	private void convertTC2ZC(RefData data) {
+		data.setCategory("ZC");
+		data.setSymbol(data.getSymbol().replace("TC", "ZC"));
+		data.setRefSymbol(data.getRefSymbol().replace("TC", "ZC"));
+		data.setENDisplayName(data.getENDisplayName().replace("TC", "ZC"));
+		data.setCode(data.getCode().replace("TC", "ZC"));
+		data.setPricePerUnit(100);
+	}
 
 }
