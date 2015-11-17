@@ -26,7 +26,7 @@ public class AssignedModel {
 		this.roleType = roleType;
 	}
 	
-	public class Builder {
+	public static class Builder {
 		private String userId;
 		private String roleType;
 		

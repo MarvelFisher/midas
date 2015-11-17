@@ -26,6 +26,8 @@ import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
  */
 public class SubAccountDetailsPage implements IDetailsPage {
 	
+	private static final int TEXT_WIDTH_HINT = 150;
+	
 	private SubAccountModel input;
 	private ISubAccountManagerService service;
 	
@@ -99,7 +101,7 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		toolkit.createLabel(client, "Name: ");
 		txtName1 = toolkit.createText(client, "", SWT.BORDER);
 		GridData gd1 = new GridData();
-		gd1.widthHint = 120;
+		gd1.widthHint = TEXT_WIDTH_HINT;
 		txtName1.setLayoutData(gd1);
 		txtName1.setEditable(true);
 		txtName1.setTextLimit(1023);
@@ -122,7 +124,7 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		toolkit.createLabel(client, "Name: ");
 		txtName2 = toolkit.createText(client, "", SWT.BORDER);
 		GridData gd1 = new GridData();
-		gd1.widthHint = 120;
+		gd1.widthHint = TEXT_WIDTH_HINT;
 		txtName2.setLayoutData(gd1);
 		txtName2.setEditable(true);
 		txtName2.setTextLimit(1023);
@@ -204,14 +206,13 @@ public class SubAccountDetailsPage implements IDetailsPage {
 	}
 	
 	private void update() {
-		if ( input != null ) {
-			dataSection1.setText("Exchange Account Details: " + input.getExchangeAccountModel().getName());
+		if ( input != null ) {		
 			txtName1.setText(input.getExchangeAccountModel().getName());
-			exTableComposite.setInput(service.getInstrumentInfoModelListByExchangeAccountName(input.getExchangeAccountModel().getName()));
+			exTableComposite.setInput(service.getInstrumentInfoModelListByExchangeAccountName(input.getExchangeAccountModel().getId()));
 			
-			//dataSection2.setText("SubAccount Details: " + input.getName());
 			txtName2.setText(input.getName());
-			subTableComposite.setInput(service.getInstrumentInfoModelListBySubAccountId(input.getName()));
+			subTableComposite.setInput(service.getInstrumentInfoModelListBySubAccountId(input.getId()));
+			assTableComposite.setInput(service.getAssignedModelListBySubAccountId(input.getId()));
 		}
 	}
 	
