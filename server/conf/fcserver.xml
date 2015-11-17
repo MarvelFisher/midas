@@ -105,7 +105,6 @@
 			<list>
 				<value>SH</value>
 				<value>SZ</value>
-				<value>CF</value>
 			</list>
 		</property>
 	</bean>
@@ -126,6 +125,7 @@
 				<value>SHF</value>
 				<value>DCE</value>
 				<value>CZC</value>
+				<value>CF</value>
 			</list>
 		</property>
 	</bean>

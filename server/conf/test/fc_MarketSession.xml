@@ -29,9 +29,47 @@
 				<ref bean="agSessionChecker"/>
 				<ref bean="cuSessionChecker"/>
 				<ref bean="ifSessionChecker"/>
+				<ref bean="tcSessionChecker" />
+                <ref bean="zcSessionChecker" />
 			</list>
 		</constructor-arg>
 	</bean>
+	
+	<bean id="tcSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">
+        <property name="stateMap">
+            <map>
+                <entry key="DEFAULT">
+                    <ref bean="defaultSession"/>
+                </entry>
+                <entry key="FIRST_HOLIDAY">
+                    <ref bean="holidaySession"/>
+                </entry>
+                <entry key="HOLIDAY">
+                    <ref bean="holidaySession"/>
+                </entry>
+            </map>
+        </property>
+        <property name="tradeDateManager"><ref bean="tradeDateManager"/></property>
+        <property name="index" value="TC"/>
+    </bean>
+    
+    <bean id="zcSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">
+        <property name="stateMap">
+            <map>
+                <entry key="DEFAULT">
+                    <ref bean="defaultSession"/>
+                </entry>
+                <entry key="FIRST_HOLIDAY">
+                    <ref bean="holidaySession"/>
+                </entry>
+                <entry key="HOLIDAY">
+                    <ref bean="holidaySession"/>
+                </entry>
+            </map>
+        </property>
+        <property name="tradeDateManager"><ref bean="tradeDateManager"/></property>
+        <property name="index" value="ZC"/>
+    </bean>
 	
 	<bean id="cfSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">
 		<property name="stateMap">

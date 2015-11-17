@@ -21,8 +21,8 @@ public class AUContractPolicy extends DefaultContractPolicy {
 			lstContractMonth.add(ymSdf.format(contractMonth.getTime()));
 		}
 
-		// 最近11个月以内的双月合约
-		for (int i = 3; i < 11; i++) {
+		// 最近13个月以内的双月合约
+		for (int i = 3; i < 13; i++) {
 			Calendar contractMonth = (Calendar)firstContractMonth.clone();
 			contractMonth.add(Calendar.MONTH, i);
 			if (contractMonth.get(Calendar.MONTH) % 2 == 1) {
