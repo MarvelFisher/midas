@@ -31,6 +31,7 @@ import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.QuoteUtils;
 import com.cyanspring.common.message.ErrorMessage;
+import com.cyanspring.common.staticdata.IRefDataChecker;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.type.OrdStatus;
@@ -919,17 +920,63 @@ public class PositionKeeper {
 			return false;
 		}
 	}
+	
+	private double getPartialCreditByAccountAndRefDataChecker(Account account,
+			IRefDataChecker refDataChecker) {
+		
+		AccountSetting accountSetting;
+		try {
+			accountSetting = accountKeeper.getAccountSetting(account.getId());
+		} catch (AccountException e) {
+			log.error(e.getMessage(), e);
+			return 0.0;
+		}
 
-	public boolean checkPartialCreditByAccountAndSymbol(Account account,
-			String symbol, Quote quote, double extraQty, double ratio)
+		double totalValue = 0.0;
+		synchronized (getSyncAccount(account.getId())) {
+	
+			List<String> symbolList = getCombinedSymbolList(account.getId());
+			for (String symbol : symbolList) {
+				RefData refData = refDataManager.getRefData(symbol);
+				if(!refDataChecker.check(refData))
+					continue;
+				
+				Quote quote = quoteFeeder.getQuote(symbol);
+				if (null == quote) {
+					continue;
+				}
+	
+				double lev = leverageManager.getLeverage(refData,
+						accountSetting);
+				
+				totalValue += getMarginValueByAccountAndSymbol(account, symbol, quote, lev);
+			}
+		}
+		
+		return totalValue;
+	}
+
+	public boolean checkPartialCreditByAccountAndRefDataChecker(Account account,
+			String symbol, Quote quote, double extraQty, double ratio, IRefDataChecker refDataChecker)
 			throws AccountException {
-
+		double currentMarginQty = getMarginQtyByAccountAndSymbol(account,
+				symbol, 0);
 		double futureMarginQty = getMarginQtyByAccountAndSymbol(account,
 				symbol, extraQty);
+		if (Math.abs(currentMarginQty) >= Math.abs(futureMarginQty)) {
+			return true; // reducing qty, ok
+		}
 
-		double price = QuoteUtils.getMarketablePrice(quote, futureMarginQty);
-		if (!PriceUtils.validPrice(price))
+		double deltaQty = Math.abs(futureMarginQty)
+				- Math.abs(currentMarginQty);
+		if (futureMarginQty < 0) {
+			deltaQty = -deltaQty;
+		}
+
+		double price = QuoteUtils.getMarketablePrice(quote, deltaQty);
+		if (!PriceUtils.validPrice(price)) {
 			price = QuoteUtils.getValidPrice(quote);
+		}
 
 		if (!PriceUtils.validPrice(price)) {
 			log.error("Quote invalid: " + quote);
@@ -938,18 +985,23 @@ public class PositionKeeper {
 
 		double deltaValue = Math.abs(FxUtils.convertPositionToCurrency(
 				refDataManager, fxConverter, account.getCurrency(),
-				quote.getSymbol(), futureMarginQty, price));
+				quote.getSymbol(), deltaQty, price));
 
 		AccountSetting accountSetting = accountKeeper.getAccountSetting(account
 				.getId());
+
 		RefData refData = refDataManager.getRefData(symbol);
 		double leverage = leverageManager.getLeverage(refData, accountSetting);
+		deltaValue /= leverage;
 
-		if (account.getValue() * ratio - deltaValue / leverage >= 0) {
+		double partialCredit = getPartialCreditByAccountAndRefDataChecker(account, refDataChecker);
+		
+		if (account.getValue() * ratio - (deltaValue + partialCredit) >= 0) {
 			return true;
 		} else {
 			log.debug("Partial credit check fail: "
 					+ account.getCashAvailable() + ", " + deltaValue + ", "
+					+ partialCredit + ", "
 					+ leverage + ", " + quote);
 			return false;
 		}
