@@ -40,6 +40,8 @@ public class RefDataFactory extends RefDataService {
 	public void init() throws Exception {
 		if (this.quoteFile != null) {
 			File quoteFile = new File (this.quoteFile);
+			if (!quoteFile.exists())
+				throw new Exception("Miss quote file: " + this.quoteFile);
 			qMap = (Map<String, Quote>) xstream.fromXML(quoteFile);
 		}
 		log.info("initialising with " + refDataTemplatePath);

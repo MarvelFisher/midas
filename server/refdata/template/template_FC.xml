@@ -4343,7 +4343,7 @@
 			</entry>
 			<entry>
 				<string>Spot ENName</string>
-				<string>豆二</string>
+				<string>豆一</string>
 			</entry>
 			<entry>
 				<string>Lot CF</string>
@@ -4367,11 +4367,11 @@
 			</entry>
 			<entry>
 				<string>ENName</string>
-				<string>B${YYMM}</string>
+				<string>A${YYMM}</string>
 			</entry>
 			<entry>
 				<string>CNName</string>
-				<string>豆二${YYMM}</string>
+				<string>豆一${YYMM}</string>
 			</entry>
 			<entry>
 				<string>Numerator DP</string>
@@ -4395,11 +4395,11 @@
 			</entry>
 			<entry>
 				<string>Spot TWName</string>
-				<string>豆二</string>
+				<string>豆一</string>
 			</entry>
 			<entry>
 				<string>Spot CNName</string>
-				<string>豆二</string>
+				<string>豆一</string>
 			</entry>
 			<entry>
 				<string>Price per unit</string>
@@ -4415,7 +4415,7 @@
 			</entry>
 			<entry>
 				<string>Category</string>
-				<string>B</string>
+				<string>A</string>
 			</entry>
 			<entry>
 				<string>Contract policy</string>
@@ -4427,7 +4427,7 @@
 			</entry>
 			<entry>
 				<string>Symbol</string>
-				<string>B${YYMM}.DCE</string>
+				<string>A${YYMM}.DCE</string>
 			</entry>
 			<entry>
 				<string>ENTrading unit</string>
@@ -4435,11 +4435,11 @@
 			</entry>
 			<entry>
 				<string>TWName</string>
-				<string>豆二${YYMM}</string>
+				<string>豆一${YYMM}</string>
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>B${SEQ}</string>
+				<string>A${SEQ}</string>
 			</entry>
 			<entry>
 				<string>Instrument type</string>
@@ -4451,6 +4451,126 @@
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+        <fields>
+            <entry>
+                <string>TWTrading unit</string>
+                <string>噸/手</string>
+            </entry>
+            <entry>
+                <string>Price limit</string>
+                <double>4</double>
+            </entry>
+            <entry>
+                <string>Spot ENName</string>
+                <string>豆二</string>
+            </entry>
+            <entry>
+                <string>Lot CF</string>
+                <double>2.2</double>
+            </entry>
+            <entry>
+                <string>Lot size</string>
+                <int>1</int>
+            </entry>
+            <entry>
+                <string>Exchange</string>
+                <string>DCE</string>
+            </entry>
+            <entry>
+                <string>Market maximum lot</string>
+                <int>1000</int>
+            </entry>
+            <entry>
+                <string>Limit maximum lot</string>
+                <int>1000</int>
+            </entry>
+            <entry>
+                <string>ENName</string>
+                <string>B${YYMM}</string>
+            </entry>
+            <entry>
+                <string>CNName</string>
+                <string>豆二${YYMM}</string>
+            </entry>
+            <entry>
+                <string>Numerator DP</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Tick table</string>
+                <string>UNIT1</string>
+            </entry>
+            <entry>
+                <string>Decimal point</string>
+                <int>0</int>
+            </entry>
+            <entry>
+                <string>Minimal CF</string>
+                <double>1</double>
+            </entry>
+            <entry>
+                <string>CNTrading unit</string>
+                <string>吨/手</string>
+            </entry>
+            <entry>
+                <string>Spot TWName</string>
+                <string>豆二</string>
+            </entry>
+            <entry>
+                <string>Spot CNName</string>
+                <string>豆二</string>
+            </entry>
+            <entry>
+                <string>Price per unit</string>
+                <double>10</double>
+            </entry>
+            <entry>
+                <string>Strategy</string>
+                <string>DCE</string>
+            </entry>
+            <entry>
+                <string>Margin Rate</string>
+                <double>0.05</double>
+            </entry>
+            <entry>
+                <string>Category</string>
+                <string>B</string>
+            </entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Odds</string>
+            </entry>
+            <entry>
+                <string>Denominator</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Symbol</string>
+                <string>B${YYMM}.DCE</string>
+            </entry>
+            <entry>
+                <string>ENTrading unit</string>
+                <string>Tonne/Lot</string>
+            </entry>
+            <entry>
+                <string>TWName</string>
+                <string>豆二${YYMM}</string>
+            </entry>
+            <entry>
+                <string>Ref symbol</string>
+                <string>B${SEQ}</string>
+            </entry>
+            <entry>
+                <string>Instrument type</string>
+                <long>0x060A</long>
+            </entry>
+            <entry>
+                <string>Tradable days</string>
+                <int>0</int>
+            </entry>
+        </fields>
+    </com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
 			<entry>
@@ -4571,6 +4691,7 @@
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
+	<!-- 動力煤 TC, 该合约文本运行至 TC604合约摘牌。 -->
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
 			<entry>
@@ -4691,6 +4812,127 @@
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
+	<!-- 動力煤 ZC, 该合约文本自 ZC605 合约起执行。
+	<com.cyanspring.common.staticdata.RefData>
+        <fields>
+            <entry>
+                <string>TWTrading unit</string>
+                <string>噸/手</string>
+            </entry>
+            <entry>
+                <string>Price limit</string>
+                <double>4</double>
+            </entry>
+            <entry>
+                <string>Spot ENName</string>
+                <string>动力煤</string>
+            </entry>
+            <entry>
+                <string>Lot CF</string>
+                <double>8.8</double>
+            </entry>
+            <entry>
+                <string>Lot size</string>
+                <int>1</int>
+            </entry>
+            <entry>
+                <string>Exchange</string>
+                <string>CZC</string>
+            </entry>
+            <entry>
+                <string>Market maximum lot</string>
+                <int>200</int>
+            </entry>
+            <entry>
+                <string>ENName</string>
+                <string>ZC${YYMM}</string>
+            </entry>
+            <entry>
+                <string>CNName</string>
+                <string>动力煤${YYMM}</string>
+            </entry>
+            <entry>
+                <string>Numerator DP</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Tick table</string>
+                <string>IF</string>
+            </entry>
+            <entry>
+                <string>Decimal point</string>
+                <int>1</int>
+            </entry>
+            <entry>
+                <string>Minimal CF</string>
+                <double>1</double>
+            </entry>
+            <entry>
+                <string>CNTrading unit</string>
+                <string>吨/手</string>
+            </entry>
+            <entry>
+                <string>Spot TWName</string>
+                <string>動力煤</string>
+            </entry>
+            <entry>
+                <string>Spot CNName</string>
+                <string>动力煤</string>
+            </entry>
+            <entry>
+                <string>Price per unit</string>
+                <double>100</double>
+            </entry>
+            <entry>
+                <string>Strategy</string>
+                <string>CZC</string>
+            </entry>
+            <entry>
+                <string>Limit maximum lot</string>
+                <int>1000</int>
+            </entry>
+            <entry>
+                <string>Margin Rate</string>
+                <double>0.05</double>
+            </entry>
+            <entry>
+                <string>Category</string>
+                <string>ZC</string>
+            </entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Default</string>
+            </entry>
+            <entry>
+                <string>Denominator</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Symbol</string>
+                <string>ZC${YMM}.CZC</string>
+            </entry>
+            <entry>
+                <string>ENTrading unit</string>
+                <string>Tonne/Lot</string>
+            </entry>
+            <entry>
+                <string>TWName</string>
+                <string>動力煤${YYMM}</string>
+            </entry>
+            <entry>
+                <string>Ref symbol</string>
+                <string>ZC${SEQ}</string>
+            </entry>
+            <entry>
+                <string>Instrument type</string>
+                <long>0x060A</long>
+            </entry>
+            <entry>
+                <string>Tradable days</string>
+                <int>0</int>
+            </entry>
+        </fields>
+    </com.cyanspring.common.staticdata.RefData> -->
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
 			<entry>
@@ -5411,6 +5653,366 @@
 			</entry>
 		</fields>
 	</com.cyanspring.common.staticdata.RefData>
+	<com.cyanspring.common.staticdata.RefData>
+        <fields>
+            <entry>
+                <string>TWTrading unit</string>
+                <string>噸/手</string>
+            </entry>
+            <entry>
+                <string>Price limit</string>
+                <double>4</double>
+            </entry>
+            <entry>
+                <string>Spot ENName</string>
+                <string>強麥</string>
+            </entry>
+            <entry>
+                <string>Lot CF</string>
+                <double>3.3</double>
+            </entry>
+            <entry>
+                <string>Lot size</string>
+                <int>1</int>
+            </entry>
+            <entry>
+                <string>Exchange</string>
+                <string>CZC</string>
+            </entry>
+            <entry>
+                <string>Market maximum lot</string>
+                <int>200</int>
+            </entry>
+            <entry>
+                <string>ENName</string>
+                <string>WH${YYMM}</string>
+            </entry>
+            <entry>
+                <string>CNName</string>
+                <string>强麦${YYMM}</string>
+            </entry>
+            <entry>
+                <string>Numerator DP</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Tick table</string>
+                <string>UNIT1</string>
+            </entry>
+            <entry>
+                <string>Decimal point</string>
+                <int>0</int>
+            </entry>
+            <entry>
+                <string>Minimal CF</string>
+                <double>1</double>
+            </entry>
+            <entry>
+                <string>CNTrading unit</string>
+                <string>吨/手</string>
+            </entry>
+            <entry>
+                <string>Spot TWName</string>
+                <string>強麥</string>
+            </entry>
+            <entry>
+                <string>Spot CNName</string>
+                <string>强麦</string>
+            </entry>
+            <entry>
+                <string>Price per unit</string>
+                <double>20</double>
+            </entry>
+            <entry>
+                <string>Strategy</string>
+                <string>CZC</string>
+            </entry>
+            <entry>
+                <string>Limit maximum lot</string>
+                <int>1000</int>
+            </entry>
+            <entry>
+                <string>Margin Rate</string>
+                <double>0.05</double>
+            </entry>
+            <entry>
+                <string>Category</string>
+                <string>WH</string>
+            </entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Odds</string>
+            </entry>
+            <entry>
+                <string>Denominator</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Symbol</string>
+                <string>WH${YMM}.CZC</string>
+            </entry>
+            <entry>
+                <string>ENTrading unit</string>
+                <string>Tonne/Lot</string>
+            </entry>
+            <entry>
+                <string>TWName</string>
+                <string>强麦${YYMM}</string>
+            </entry>
+            <entry>
+                <string>Ref symbol</string>
+                <string>WH${SEQ}</string>
+            </entry>
+            <entry>
+                <string>Instrument type</string>
+                <long>0x060A</long>
+            </entry>
+            <entry>
+                <string>Tradable days</string>
+                <int>0</int>
+            </entry>
+        </fields>
+    </com.cyanspring.common.staticdata.RefData>
+    <com.cyanspring.common.staticdata.RefData>
+        <fields>
+            <entry>
+                <string>TWTrading unit</string>
+                <string>噸/手</string>
+            </entry>
+            <entry>
+                <string>Price limit</string>
+                <double>4</double>
+            </entry>
+            <entry>
+                <string>Spot ENName</string>
+                <string>普麥</string>
+            </entry>
+            <entry>
+                <string>Lot CF</string>
+                <double>3.3</double>
+            </entry>
+            <entry>
+                <string>Lot size</string>
+                <int>1</int>
+            </entry>
+            <entry>
+                <string>Exchange</string>
+                <string>CZC</string>
+            </entry>
+            <entry>
+                <string>Market maximum lot</string>
+                <int>200</int>
+            </entry>
+            <entry>
+                <string>ENName</string>
+                <string>PM${YYMM}</string>
+            </entry>
+            <entry>
+                <string>CNName</string>
+                <string>普麦${YYMM}</string>
+            </entry>
+            <entry>
+                <string>Numerator DP</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Tick table</string>
+                <string>UNIT1</string>
+            </entry>
+            <entry>
+                <string>Decimal point</string>
+                <int>0</int>
+            </entry>
+            <entry>
+                <string>Minimal CF</string>
+                <double>1</double>
+            </entry>
+            <entry>
+                <string>CNTrading unit</string>
+                <string>吨/手</string>
+            </entry>
+            <entry>
+                <string>Spot TWName</string>
+                <string>普麥</string>
+            </entry>
+            <entry>
+                <string>Spot CNName</string>
+                <string>普麦</string>
+            </entry>
+            <entry>
+                <string>Price per unit</string>
+                <double>50</double>
+            </entry>
+            <entry>
+                <string>Strategy</string>
+                <string>CZC</string>
+            </entry>
+            <entry>
+                <string>Limit maximum lot</string>
+                <int>1000</int>
+            </entry>
+            <entry>
+                <string>Margin Rate</string>
+                <double>0.05</double>
+            </entry>
+            <entry>
+                <string>Category</string>
+                <string>PM</string>
+            </entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Odds</string>
+            </entry>
+            <entry>
+                <string>Denominator</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Symbol</string>
+                <string>PM${YMM}.CZC</string>
+            </entry>
+            <entry>
+                <string>ENTrading unit</string>
+                <string>Tonne/Lot</string>
+            </entry>
+            <entry>
+                <string>TWName</string>
+                <string>普麥${YYMM}</string>
+            </entry>
+            <entry>
+                <string>Ref symbol</string>
+                <string>PM${SEQ}</string>
+            </entry>
+            <entry>
+                <string>Instrument type</string>
+                <long>0x060A</long>
+            </entry>
+            <entry>
+                <string>Tradable days</string>
+                <int>0</int>
+            </entry>
+        </fields>
+    </com.cyanspring.common.staticdata.RefData>
+    <com.cyanspring.common.staticdata.RefData>
+        <fields>
+            <entry>
+                <string>TWTrading unit</string>
+                <string>噸/手</string>
+            </entry>
+            <entry>
+                <string>Price limit</string>
+                <double>4</double>
+            </entry>
+            <entry>
+                <string>Spot ENName</string>
+                <string>菜油</string>
+            </entry>
+            <entry>
+                <string>Lot CF</string>
+                <double>3.3</double>
+            </entry>
+            <entry>
+                <string>Lot size</string>
+                <int>1</int>
+            </entry>
+            <entry>
+                <string>Exchange</string>
+                <string>CZC</string>
+            </entry>
+            <entry>
+                <string>Market maximum lot</string>
+                <int>200</int>
+            </entry>
+            <entry>
+                <string>ENName</string>
+                <string>OI${YYMM}</string>
+            </entry>
+            <entry>
+                <string>CNName</string>
+                <string>菜油${YYMM}</string>
+            </entry>
+            <entry>
+                <string>Numerator DP</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Tick table</string>
+                <string>UNIT2</string>
+            </entry>
+            <entry>
+                <string>Decimal point</string>
+                <int>0</int>
+            </entry>
+            <entry>
+                <string>Minimal CF</string>
+                <double>1</double>
+            </entry>
+            <entry>
+                <string>CNTrading unit</string>
+                <string>吨/手</string>
+            </entry>
+            <entry>
+                <string>Spot TWName</string>
+                <string>菜油</string>
+            </entry>
+            <entry>
+                <string>Spot CNName</string>
+                <string>菜油</string>
+            </entry>
+            <entry>
+                <string>Price per unit</string>
+                <double>50</double>
+            </entry>
+            <entry>
+                <string>Strategy</string>
+                <string>CZC</string>
+            </entry>
+            <entry>
+                <string>Limit maximum lot</string>
+                <int>1000</int>
+            </entry>
+            <entry>
+                <string>Margin Rate</string>
+                <double>0.05</double>
+            </entry>
+            <entry>
+                <string>Category</string>
+                <string>OI</string>
+            </entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>Odds</string>
+            </entry>
+            <entry>
+                <string>Denominator</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Symbol</string>
+                <string>OI${YMM}.CZC</string>
+            </entry>
+            <entry>
+                <string>ENTrading unit</string>
+                <string>Tonne/Lot</string>
+            </entry>
+            <entry>
+                <string>TWName</string>
+                <string>菜油${YYMM}</string>
+            </entry>
+            <entry>
+                <string>Ref symbol</string>
+                <string>OI${SEQ}</string>
+            </entry>
+            <entry>
+                <string>Instrument type</string>
+                <long>0x060A</long>
+            </entry>
+            <entry>
+                <string>Tradable days</string>
+                <int>0</int>
+            </entry>
+        </fields>
+    </com.cyanspring.common.staticdata.RefData>
 	<com.cyanspring.common.staticdata.RefData>
 		<fields>
 			<entry>

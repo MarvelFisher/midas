@@ -468,6 +468,7 @@
 				<ref bean="csSessionChecker" />
 				<ref bean="vSessionChecker" />
 				<ref bean="bbSessionChecker" />
+				<ref bean="aSessionChecker" />
 				<ref bean="bSessionChecker" />
 				<ref bean="fbSessionChecker" />
 				<ref bean="rsSessionChecker" />
@@ -476,6 +477,11 @@
 				<ref bean="lrSessionChecker" />
 				<ref bean="smSessionChecker" />
 				<ref bean="jrSessionChecker" />
+				<ref bean="whSessionChecker" />
+				<ref bean="pmSessionChecker" />
+				<ref bean="oiSessionChecker" />
+				<ref bean="tcSessionChecker" />
+				<ref bean="zcSessionChecker" />
 				<ref bean="indexSessionChecker" />
 			</list>
 		</constructor-arg>

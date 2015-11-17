@@ -64,8 +64,8 @@ public class CreditPartialValidator implements IOrderValidator {
 				Account account = accountKeeper.getAccount(accountId);
 				OrderSide side = (OrderSide)map.get(OrderField.SIDE.value());
 				double qty = (Double)map.get(OrderField.QUANTITY.value());
-				if(!positionKeeper.checkPartialCreditByAccountAndSymbol(account, symbol, quote, 
-						side.isBuy()?qty:-qty, ratio))
+				if(!positionKeeper.checkPartialCreditByAccountAndRefDataChecker(account, symbol, quote, 
+						side.isBuy()?qty:-qty, ratio, refDataChecker))
 					throw new OrderValidationException("Order execeeds account value percentage of " + ratio, ErrorMessage.ORDER_OVER_ACCOUNT_VALUE_PERCENTAGE);
 			} else { //amemnd order
 				RefData refData = refDataManager.getRefData(order.getSymbol());
@@ -93,8 +93,8 @@ public class CreditPartialValidator implements IOrderValidator {
 				
 				qty -= order.getQuantity();
 				
-				if(!positionKeeper.checkPartialCreditByAccountAndSymbol(account, order.getSymbol(), quote, 
-						order.getSide().isBuy()?qty:-qty, ratio))
+				if(!positionKeeper.checkPartialCreditByAccountAndRefDataChecker(account, order.getSymbol(), quote, 
+						order.getSide().isBuy()?qty:-qty, ratio, refDataChecker))
 					throw new OrderValidationException("Order execeeds account value percentage of " + ratio, ErrorMessage.ORDER_OVER_ACCOUNT_VALUE_PERCENTAGE);
 			}
 		} catch(OrderValidationException e) {

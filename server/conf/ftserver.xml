@@ -147,7 +147,7 @@
 
 	<!-- Live Trading -->
     <bean id="stopLiveTradingStartTime" class="java.lang.String">
-        <constructor-arg value="13:35:00" />
+        <constructor-arg value="13:40:00" />
     </bean>
     
     <bean id="stopLiveTradingEndTime" class="java.lang.String">
@@ -200,12 +200,12 @@
     			<ref bean="positionStopLossPercent"/> <!-- live trading : position stop loss -->
    				<ref bean="frozenStopLossPercent"/>   <!-- live trading : freeze stop loss -->
    				<ref bean="terminateStopLossPercent"/><!-- live trading : terminate stop loss -->
-                <value>true</value>             <!-- live trading : company live trading (trading Mode)-->
-                <value>true</value>             <!-- live trading : user live trading (stop loss)-->
+                <value>false</value>             <!-- live trading : company live trading (trading Mode)-->
+                <value>false</value>             <!-- live trading : user live trading (stop loss)-->
    				<ref bean="companyStopLossValue"/>    <!-- companyStopLossValue -->
    				<ref bean="frozenStopLossValue"/>     <!-- freezeValue -->
    				<ref bean="terminateStopLossValue"/>  <!-- terminateValue -->
-                <value>DEFAULT</value>          <!-- liveTradingType -->
+                <value>DAY_TRADING</value>          <!-- liveTradingType -->
             </list>
         </property>
     </bean>
