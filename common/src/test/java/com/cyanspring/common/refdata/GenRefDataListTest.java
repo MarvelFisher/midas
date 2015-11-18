@@ -1,4 +1,4 @@
-package com.cyanspring.common.staticdata.strategy;
+package com.cyanspring.common.refdata;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -24,10 +24,11 @@ import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataTplLoader;
 import com.cyanspring.common.staticdata.policy.AUContractPolicy;
 import com.cyanspring.common.staticdata.policy.DefaultContractPolicy;
+import com.cyanspring.common.staticdata.strategy.AbstractRefDataStrategy;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:META-INFO/spring/RefDataTplLoaderTest.xml" })
-public class RefDataStrategyTest {
+public class GenRefDataListTest {
 
 	class RefDataStrategy extends AbstractRefDataStrategy {
 	}
