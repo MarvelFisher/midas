@@ -1,8 +1,10 @@
-package com.cyanspring.common.kdb;
+package com.cyanspring.kdb;
 
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.kdb.MarketIntelligenceUpdateEvent;
+import com.cyanspring.common.kdb.MarketIntelligence;
+import com.cyanspring.common.kdb.MarketIntelligenceIndex;
 import com.exxeleron.qjava.QCallbackConnection;
 import com.exxeleron.qjava.QErrorMessage;
 import com.exxeleron.qjava.QMessage;
