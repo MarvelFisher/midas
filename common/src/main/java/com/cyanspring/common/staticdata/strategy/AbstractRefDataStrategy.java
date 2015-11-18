@@ -33,7 +33,16 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 	protected static final Logger log = LoggerFactory.getLogger(AbstractRefDataStrategy.class);
 	private MarketSessionUtil marketSessionUtil;
 	private Calendar cal;
-    private final String CONTRACT_POLICY_PACKAGE = "com.cyanspring.common.staticdata.policy";
+
+    public Calendar getCal() {
+		return cal;
+	}
+
+	public void setCal(Calendar cal) {
+		this.cal = cal;
+	}
+
+	private final String CONTRACT_POLICY_PACKAGE = "com.cyanspring.common.staticdata.policy";
     private final String MONTH_PATTERN_YYYYMM = "${YYYYMM}";
     private final String MONTH_PATTERN_YYMM = "${YYMM}";
     private final String MONTH_PATTERN_YMM = "${YMM}";
