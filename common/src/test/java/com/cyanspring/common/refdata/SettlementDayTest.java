@@ -1,4 +1,4 @@
-package refdata;
+package com.cyanspring.common.refdata;
 
 import static org.junit.Assert.*;
 
@@ -34,9 +34,6 @@ public class SettlementDayTest {
 	private HashMap<String, String> settlementDayMap;
 	
 	@Autowired
-	private RefDataFactory refDataFactory;
-	
-	@Autowired
 	private MarketSessionUtil marketSessionUtil;
 	
 	private String strategyPack = "com.cyanspring.common.staticdata.strategy.";
@@ -46,7 +43,6 @@ public class SettlementDayTest {
 	@Before
 	public void setUp() throws Exception {
 		marketSessionUtil.init();
-		refDataFactory.init();
 		
 		if (settlementDayMap == null)
 			throw new Exception("settlementDayMap not set");
@@ -77,7 +73,7 @@ public class SettlementDayTest {
 			simRefData.setCNDisplayName("*");
 			List<RefData> refDataList = strategy.updateRefData(simRefData); 
 			RefData refData = refDataList.get(0);			
-			assert(refData.getSettlementDate().equals(e.getValue()));
+			assertTrue(refData.getSettlementDate().equals(e.getValue()));
 		}
 	}
 
