@@ -25,6 +25,7 @@
 		<module>info</module>
 		<module>apievent</module>
 		<module>CSTWparent</module>
+		<module>kdb</module>
 	</modules>
 	
 	<repositories>
