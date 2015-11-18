@@ -50,7 +50,11 @@ import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.account.AccountClosedPositionSnapshotReplyEvent;
+import com.cyanspring.common.event.account.AccountClosedPositionSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AccountDynamicUpdateEvent;
+import com.cyanspring.common.event.account.AccountExecutionSnapshotReplyEvent;
+import com.cyanspring.common.event.account.AccountExecutionSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AccountSettingSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AccountSettingSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AccountSnapshotReplyEvent;
@@ -284,9 +288,9 @@ public class AccountPositionManager implements IPlugin {
 			subscribeToEvent(AccountSnapshotRequestEvent.class, null);
 			subscribeToEvent(MarketDataReadyEvent.class, null);
 			subscribeToEvent(AccountSettingSnapshotRequestEvent.class, null);
+			subscribeToEvent(AccountClosedPositionSnapshotRequestEvent.class, null);
+			subscribeToEvent(AccountExecutionSnapshotRequestEvent.class, null);
 			subscribeToEvent(ChangeAccountSettingRequestEvent.class, null);
-			subscribeToEvent(AllAccountSnapshotRequestEvent.class, null);
-			subscribeToEvent(AllPositionSnapshotRequestEvent.class, null);
 			subscribeToEvent(OnUserCreatedEvent.class, null);
 			subscribeToEvent(TradeDateEvent.class, null);
 			subscribeToEvent(IndexSessionEvent.class, null);
@@ -296,14 +300,12 @@ public class AccountPositionManager implements IPlugin {
 			subscribeToEvent(CreateGroupManagementEvent.class, null);
 			subscribeToEvent(DeleteGroupManagementEvent.class, null);
 			subscribeToEvent(GroupManageeRequestEvent.class, null);
-			subscribeToEvent(CSTWUserLoginEvent.class, null);
-			subscribeToEvent(AllUserSnapshotRequestEvent.class, null);
+			subscribeToEvent(CSTWUserLoginEvent.class, null);			
 			subscribeToEvent(ChangeUserRoleEvent.class, null);
 			subscribeToEvent(AddCashEvent.class, null);
 			subscribeToEvent(ChangeAccountStateRequestEvent.class, null);
 			subscribeToEvent(ManualClosePositionRequestEvent.class, null);
-			subscribeToEvent(UpdateOpenPositionPriceEvent.class, null);
-			subscribeToEvent(OverAllPositionRequestEvent.class, null);
+			subscribeToEvent(UpdateOpenPositionPriceEvent.class, null);			
 			subscribeToEvent(RateConverterRequestEvent.class, null);
 		}
 
@@ -320,6 +322,10 @@ public class AccountPositionManager implements IPlugin {
 		public void subscribeToEvents() {
 			subscribeToEvent(UpdateParentOrderEvent.class, null);
 			subscribeToEvent(UpdateChildOrderEvent.class, null);
+			subscribeToEvent(OverAllPositionRequestEvent.class, null);
+			subscribeToEvent(AllUserSnapshotRequestEvent.class, null);
+			subscribeToEvent(AllAccountSnapshotRequestEvent.class, null);
+			subscribeToEvent(AllPositionSnapshotRequestEvent.class, null);
 		}
 
 		@Override
@@ -560,7 +566,37 @@ public class AccountPositionManager implements IPlugin {
 		timerProcessor.uninit();
 		eventMultiProcessor.uninit();
 	}
+	
+	public void processAccountExecutionSnapshotRequestEvent(AccountExecutionSnapshotRequestEvent event){
 
+	    List<Execution> executions =  positionKeeper.getExecutions(event.getAccountId());
+
+	    AccountExecutionSnapshotReplyEvent reply = new AccountExecutionSnapshotReplyEvent(
+				event.getKey(), event.getSender(),event.getAccountId(),
+				event.getTxId(), executions);
+
+		try {
+			eventManager.sendRemoteEvent(reply);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+	
+	public void processAccountClosedPositionSnapshotRequestEvent(AccountClosedPositionSnapshotRequestEvent event){
+	    
+		List<ClosedPosition> closedPositions = positionKeeper.getClosedPositions(event.getAccountId());
+
+		AccountClosedPositionSnapshotReplyEvent reply = new AccountClosedPositionSnapshotReplyEvent(
+				event.getKey(), event.getSender(),event.getAccountId(),
+				event.getTxId(), closedPositions);
+
+		try {
+			eventManager.sendRemoteEvent(reply);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+	
 	public void processRateConverterRequestEvent(RateConverterRequestEvent event) {
 		try {
 			RateConverterReplyEvent reply = new RateConverterReplyEvent(
