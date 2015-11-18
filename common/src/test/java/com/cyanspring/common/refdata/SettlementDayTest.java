@@ -1,4 +1,4 @@
-package refdata;
+package com.cyanspring.common.refdata;
 
 import static org.junit.Assert.*;
 
