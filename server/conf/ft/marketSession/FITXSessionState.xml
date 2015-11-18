@@ -122,11 +122,6 @@
                 <bean class="com.cyanspring.common.marketsession.MarketSessionData">
                     <constructor-arg><value>OPEN</value></constructor-arg>
                     <constructor-arg><value>08:45:00</value></constructor-arg>
-                    <constructor-arg><value>13:25:00</value></constructor-arg>
-                </bean>
-                <bean class="com.cyanspring.common.marketsession.MarketSessionData">
-                    <constructor-arg><value>PRECLOSE</value></constructor-arg>
-                    <constructor-arg><value>13:25:00</value></constructor-arg>
                     <constructor-arg><value>13:30:00</value></constructor-arg>
                 </bean>
                 <bean class="com.cyanspring.common.marketsession.MarketSessionData">
