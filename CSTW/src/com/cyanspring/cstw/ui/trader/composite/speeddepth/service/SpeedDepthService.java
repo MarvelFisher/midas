@@ -1,12 +1,8 @@
 package com.cyanspring.cstw.ui.trader.composite.speeddepth.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.cstw.tick.Ticker;
 import com.cyanspring.common.event.order.CancelParentOrderEvent;
-import com.cyanspring.common.event.order.EnterParentOrderEvent;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.staticdata.ITickTable;
 import com.cyanspring.common.type.OrdStatus;
@@ -212,42 +207,6 @@ public final class SpeedDepthService {
 					}
 				}
 			}
-		}
-	}
-
-	private void logOrder(Map<String, Object> fields) {
-		StringBuffer sb = new StringBuffer();
-		Set<Entry<String, Object>> entrys = fields.entrySet();
-		Iterator<Entry<String, Object>> ite = entrys.iterator();
-		while (ite.hasNext()) {
-			Entry<String, Object> entry = ite.next();
-			sb.append(entry.getValue() + " - " + entry.getValue() + "\n");
-		}
-		log.info("SpeedDepthOrder : " + sb.toString());
-	}
-
-	public void quickEnterOrder(SpeedDepthModel model, String side,
-			String quantity, String receiverId) {
-		HashMap<String, Object> fields = new HashMap<String, Object>();
-
-		fields.put(OrderField.SYMBOL.value(), model.getSymbol());
-		fields.put(OrderField.SIDE.value(), side);
-		fields.put(OrderField.TYPE.value(), "Limit");
-		fields.put(OrderField.QUANTITY.value(), quantity);
-		fields.put(OrderField.PRICE.value(), model.getPrice());
-		fields.put(OrderField.STRATEGY.value(), "SDMA");
-		fields.put(OrderField.USER.value(), Business.getInstance().getUser());
-		fields.put(OrderField.ACCOUNT.value(), Business.getInstance()
-				.getAccount());
-
-		logOrder(fields);
-		EnterParentOrderEvent event = new EnterParentOrderEvent(Business
-				.getInstance().getInbox(), Business.getInstance()
-				.getFirstServer(), fields, receiverId, false);
-		try {
-			Business.getInstance().getEventManager().sendRemoteEvent(event);
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
 		}
 	}
 

@@ -87,6 +87,7 @@ import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeThrottler;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.common.CustomOrderType;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.event.AccountSelectionEvent;
 import com.cyanspring.cstw.event.GuiSingleOrderStrategyUpdateEvent;
@@ -206,10 +207,6 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 	private enum StrategyAction {
 		Pause, Stop, Start, ClearAlert, MultiAmend, Create, Cancel, ForceCancel, Save
-	};
-
-	private enum CustomOrderType {
-		Limit, Market, Stop
 	};
 
 	private enum LogType {

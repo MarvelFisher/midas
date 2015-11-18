@@ -16,7 +16,7 @@ public final class ParentOrderModel {
 
 	private String quantity;
 
-	private String price;
+	private double price;
 
 	private String receiverId;
 
@@ -52,11 +52,11 @@ public final class ParentOrderModel {
 		this.quantity = quantity;
 	}
 
-	public String getPrice() {
+	public double getPrice() {
 		return price;
 	}
 
-	public void setPrice(String price) {
+	public void setPrice(double price) {
 		this.price = price;
 	}
 

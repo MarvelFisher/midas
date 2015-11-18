@@ -24,6 +24,9 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.cstw.model.trader.ParentOrderModel;
+import com.cyanspring.cstw.service.iservice.ServiceFactory;
+import com.cyanspring.cstw.service.iservice.trader.IParentOrderService;
 import com.cyanspring.cstw.ui.trader.composite.speeddepth.model.SpeedDepthModel;
 import com.cyanspring.cstw.ui.trader.composite.speeddepth.provider.SpeedDepthContentProvider;
 import com.cyanspring.cstw.ui.trader.composite.speeddepth.provider.SpeedDepthLabelProvider;
@@ -36,6 +39,8 @@ import com.cyanspring.cstw.ui.trader.composite.speeddepth.service.SpeedDepthServ
  *
  */
 public final class SpeedDepthTableComposite extends Composite {
+
+	private IParentOrderService parentOrderService;
 
 	private SpeedDepthService speedDepthService;
 
@@ -70,6 +75,7 @@ public final class SpeedDepthTableComposite extends Composite {
 	public SpeedDepthTableComposite(Composite composite, String receiverId,
 			int style) {
 		super(composite, style);
+		parentOrderService = ServiceFactory.createParentOrderService();
 		speedDepthService = new SpeedDepthService();
 		this.receiverId = receiverId;
 		initComponent();
@@ -169,17 +175,23 @@ public final class SpeedDepthTableComposite extends Composite {
 					int columnIndex = cell.getColumnIndex();
 					SpeedDepthMainComposite mainComposite = (SpeedDepthMainComposite) SpeedDepthTableComposite.this
 							.getParent();
+
+					ParentOrderModel parentOrderModel = new ParentOrderModel();
+					parentOrderModel.setSymbol(model.getSymbol());
+					parentOrderModel.setReceiverId(receiverId);
+					parentOrderModel.setQuantity(mainComposite
+							.getDefaultQuantityText().getText());
+					parentOrderModel.setPrice(model.getPrice());
+
 					// ask
 					if (columnIndex == 1) {
-						speedDepthService.quickEnterOrder(model, "Buy",
-								mainComposite.getDefaultQuantityText()
-										.getText(), receiverId);
+						parentOrderModel.setSide("Buy");
+						parentOrderService.quickEnterOrder(parentOrderModel);
 					}
 					// bids
 					else if (columnIndex == 3) {
-						speedDepthService.quickEnterOrder(model, "Sell",
-								mainComposite.getDefaultQuantityText()
-										.getText(), receiverId);
+						parentOrderModel.setSide("Sell");
+						parentOrderService.quickEnterOrder(parentOrderModel);
 					} else if (columnIndex == 0 || columnIndex == 4) {
 						speedDepthService.cancelOrder(model.getSymbol(),
 								Double.valueOf(model.getPrice()));
@@ -205,6 +217,9 @@ public final class SpeedDepthTableComposite extends Composite {
 			@Override
 			public void mouseMove(MouseEvent e) {
 				TableItem item = table.getItem(new Point(e.x, e.y));
+				if (item == null) {
+					return;
+				}
 				changeItemColor(item, SWT.COLOR_BLACK);
 				if (currentMouseSelectedItem != null
 						&& !currentMouseSelectedItem.isDisposed()
@@ -255,10 +270,10 @@ public final class SpeedDepthTableComposite extends Composite {
 		List<SpeedDepthModel> list = speedDepthService.getSpeedDepthList(
 				currentQuote, isLock);
 		tableViewer.setInput(list);
-		
-		//每次刷新后key选择失效
-		currentKeySelectedItem=null;
-		
+
+		// 每次刷新后key选择失效
+		currentKeySelectedItem = null;
+
 	}
 
 	/**
