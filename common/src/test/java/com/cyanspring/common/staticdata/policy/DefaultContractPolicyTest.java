@@ -23,6 +23,7 @@ public class DefaultContractPolicyTest {
 		cal = Calendar.getInstance();
 		cal.set(Calendar.DATE, 1);
 	}
+
 	@Test
 	public void test() {
 		DefaultContractPolicy policy = new DefaultContractPolicy() {
@@ -60,7 +61,5 @@ public class DefaultContractPolicyTest {
 		lstExpectedContractMonth.removeAll(lstContractMonth);
 		assertTrue(lstExpectedContractMonth.size() == 0);
 	}
-
-
 
 }
