@@ -69,7 +69,7 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 						Date now = Clock.getInstance().now();
 						if (TimeUtil.getTimePass(now, updated) >= checkIntrval && state) {
 							log.info("Connection is timeout, id: " + id + ", exchangeAccount: " + exchangeAccount);
-							state = false;
+							setState(false);
 						}
 					}					
 				} catch (Exception e) {

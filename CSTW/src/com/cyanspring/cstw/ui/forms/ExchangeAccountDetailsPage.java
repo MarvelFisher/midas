@@ -26,6 +26,8 @@ import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
  */
 public class ExchangeAccountDetailsPage implements IDetailsPage {
 
+	private static final int TEXT_WIDTH_HINT = 150;
+	
 	private ExchangeAccountModel input;
 	private ISubAccountManagerService service;
 	
@@ -80,7 +82,7 @@ public class ExchangeAccountDetailsPage implements IDetailsPage {
 		toolkit.createLabel(client, "Name: ");
 		txtName = toolkit.createText(client, "", SWT.BORDER);
 		GridData gd1 = new GridData();
-		gd1.widthHint = 120;
+		gd1.widthHint = TEXT_WIDTH_HINT;
 		txtName.setLayoutData(gd1);
 		txtName.setEditable(true);
 		txtName.setTextLimit(1023);

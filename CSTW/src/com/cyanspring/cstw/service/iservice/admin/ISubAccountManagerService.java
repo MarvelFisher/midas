@@ -2,6 +2,7 @@ package com.cyanspring.cstw.service.iservice.admin;
 
 import java.util.List;
 
+import com.cyanspring.cstw.model.admin.AssignedModel;
 import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
 import com.cyanspring.cstw.model.admin.InstrumentInfoModel;
 import com.cyanspring.cstw.model.admin.SubAccountModel;
@@ -22,6 +23,8 @@ public interface ISubAccountManagerService extends IBasicService {
 	List<InstrumentInfoModel> getInstrumentInfoModelListByExchangeAccountName(String name);
 	
 	List<InstrumentInfoModel> getInstrumentInfoModelListBySubAccountId(String id);
+	
+	List<AssignedModel> getAssignedModelListBySubAccountId(String id);
 	
 	void createNewExchangeAccount();
 	

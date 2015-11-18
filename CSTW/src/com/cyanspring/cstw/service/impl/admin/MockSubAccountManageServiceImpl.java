@@ -7,6 +7,7 @@ import org.omg.CORBA.PRIVATE_MEMBER;
 
 import com.cyanspring.common.client.IInstrumentPoolKeeper;
 import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.cstw.model.admin.AssignedModel;
 import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
 import com.cyanspring.cstw.model.admin.InstrumentInfoModel;
 import com.cyanspring.cstw.model.admin.SubAccountModel;
@@ -37,6 +38,7 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 	private List<SubAccountModel> sub2list;
 	
 	private List<InstrumentInfoModel> instruList;
+	private List<AssignedModel> assList;
 
 	// Mock
 	public MockSubAccountManageServiceImpl() {
@@ -71,7 +73,16 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 				.symbolName("AUDUSD").qty(10000).build());
 		instruList.add(new InstrumentInfoModel.Builder().symbolId("AUDCAD")
 				.symbolName("AUDCAD").qty(10000).build());
-
+		instruList.add(new InstrumentInfoModel.Builder().symbolId("AUDCAD")
+				.symbolName("AUDCAD").qty(10000).build());
+		instruList.add(new InstrumentInfoModel.Builder().symbolId("AUDCAD")
+				.symbolName("AUDCAD").qty(10000).build());
+		
+		assList = new ArrayList<AssignedModel>();
+		assList.add(new AssignedModel.Builder().userId("front_risk1").roleType("FrontRiskManager").build());
+		assList.add(new AssignedModel.Builder().userId("group1").roleType("Group").build());
+		assList.add(new AssignedModel.Builder().userId("front_risk2").roleType("FrontRiskManager").build());
+		
 	}
 
 	/*
@@ -131,6 +142,12 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 	public List<InstrumentInfoModel> getInstrumentInfoModelListBySubAccountId(
 			String id) {
 		return instruList.subList(0, 1);
+	}
+	
+	@Override
+	public List<AssignedModel> getAssignedModelListBySubAccountId(String id) {
+		
+		return assList;
 	}
 
 
@@ -216,5 +233,7 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 		}
 		
 	}
+
+	
 
 }

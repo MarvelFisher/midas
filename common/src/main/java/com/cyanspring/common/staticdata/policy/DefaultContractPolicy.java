@@ -11,8 +11,8 @@ import com.cyanspring.common.staticdata.RefData;
 
 public class DefaultContractPolicy {
 
-	public SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-	public SimpleDateFormat ymSdf = new SimpleDateFormat("yyyyMM");
+	public final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	public final SimpleDateFormat ymSdf = new SimpleDateFormat("yyyyMM");
 
 	private List<Integer> contractMonths;
 

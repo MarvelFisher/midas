@@ -12,7 +12,11 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.forms.DetailsPart;
@@ -38,6 +42,7 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 	private FormToolkit toolkit;
 	private TreeViewer editTree;
 	private SectionPart spart;
+	private Menu treeMenu;
 	
 	private Button btnAddExch;
 	private Button btnAddSub;
@@ -85,14 +90,14 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 		
 		GridData data = null;
 		Tree memberTree = toolkit.createTree(sectionClient, SWT.NONE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.BORDER );
-		data = new GridData(SWT.FILL, SWT.FILL, false, true);
+		data = new GridData(SWT.FILL, SWT.FILL, true, true);
 		data.heightHint = 200;
 		data.widthHint = 200;
 		memberTree.setLayoutData(data);
 		editTree = new TreeViewer(memberTree);
 		editTree.setContentProvider(new EditTreeContentProvider(service));
 		editTree.setLabelProvider(new EditTreeLabelProvider());
-		
+		initTreeMenu(sectionClient);
 		refreshTree();
 		
 		// create buttons
@@ -127,6 +132,46 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 		dataSection.setClient(sectionClient);
 	}
 	
+	private void initTreeMenu(final Composite sectionClient) {
+		treeMenu = new Menu(sectionClient.getShell(), SWT.POP_UP);
+		final MenuItem item1 = new MenuItem(treeMenu, SWT.PUSH);
+		item1.setText("Add Exchange Account");
+		item1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				addExchAction.run();
+			}
+		});
+		final MenuItem item2 = new MenuItem(treeMenu, SWT.PUSH);
+		item2.setText("Add SubAccount");
+		item2.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				addSubAction.run();
+			}
+		});
+		final MenuItem item3 = new MenuItem(treeMenu, SWT.PUSH);
+		item3.setText("Delete");
+		item3.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				delAction.run();
+			}
+		});
+		
+		editTree.getTree().setMenu(treeMenu);
+		
+		editTree.getTree().addListener(SWT.MenuDetect, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				if ( editTree.getSelection() == null ) {
+					
+				}
+				
+			}}
+		);
+	}
+
 	private void initListener(final IManagedForm managedForm) {
 		// register SelectionListener
 		editTree.addSelectionChangedListener(new ISelectionChangedListener() {
