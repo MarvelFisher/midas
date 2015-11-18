@@ -17,9 +17,7 @@ public class TWFStrategy extends AbstractRefDataStrategy {
 
 	private int weekOfMonth = 3;
 	private int dayOfWeek = Calendar.WEDNESDAY;
-	// The value must be aligned with the CLOSE time
-	// of SettlementSession in FITXSessionState.xml/FIMTXSessionState.xml
-	private String settlementTime = "13:30:00";
+	private String settlementTime = "23:59:59";
 	Calendar currMonthSettleCalendar = null;
 	int gracePeriod = 0;
 
@@ -76,7 +74,7 @@ public class TWFStrategy extends AbstractRefDataStrategy {
 	}
 
 	private String getRefSymbol(RefData refData) throws ParseException {
-		Calendar currCalendar = Calendar.getInstance();
+		Calendar currCalendar = super.getCalendar();
 		int currMon = currCalendar.get(Calendar.MONTH);
 		int currYear = currCalendar.get(Calendar.YEAR);
 
