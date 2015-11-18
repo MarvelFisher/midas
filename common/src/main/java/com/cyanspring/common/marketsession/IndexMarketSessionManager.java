@@ -301,7 +301,7 @@ public class IndexMarketSessionManager implements IPlugin {
 	
 	private void scheduleNextCheck(){
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.SECOND, 1);
+		cal.add(Calendar.MILLISECOND, 100);
 		scheduleManager.scheduleTimerEvent(cal.getTime(), eventProcessor, timerEvent);
 	}
 
