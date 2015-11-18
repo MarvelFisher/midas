@@ -101,6 +101,8 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 			};
 		}
 
+		policy.init(this.cal);
+
 		List<RefData> lstRefData = new ArrayList<>();
 		List<String> lstContractMonth = policy.getContractMonths(refData);
 		int num = 0;

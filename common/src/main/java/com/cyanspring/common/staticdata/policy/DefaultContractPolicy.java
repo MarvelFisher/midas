@@ -13,6 +13,10 @@ public class DefaultContractPolicy {
 
 	public SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	public SimpleDateFormat ymSdf = new SimpleDateFormat("yyyyMM");
+	Calendar cal;
+	public void init(Calendar cal) {
+		this.cal = cal;
+	}
 
 	private List<Integer> contractMonths;
 
@@ -47,7 +51,7 @@ public class DefaultContractPolicy {
 		} catch (ParseException e) {
 		}
 
-		Calendar cal = Calendar.getInstance();
+		Calendar cal = (Calendar) this.cal.clone();
 		Date today = cal.getTime();
 		if (today.after(settlementDate)) {
 			cal.add(Calendar.MONTH, 1);
