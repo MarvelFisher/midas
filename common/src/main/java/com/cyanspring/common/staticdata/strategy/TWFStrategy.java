@@ -21,7 +21,6 @@ public class TWFStrategy extends AbstractRefDataStrategy {
 	private int dayOfWeek = Calendar.WEDNESDAY;
 	// The value must be aligned with the CLOSE time
 	// of SettlementSession in FITXSessionState.xml/FIMTXSessionState.xml
-	private String settlementTime = "13:30:00";
 	Calendar currMonthSettleCalendar = null;
 	int gracePeriod = 0;
 
@@ -39,14 +38,6 @@ public class TWFStrategy extends AbstractRefDataStrategy {
 
 	public void setDayOfWeek(int dayOfWeek) {
 		this.dayOfWeek = dayOfWeek;
-	}
-
-	public String getSettlementTime() {
-		return settlementTime;
-	}
-
-	public void setSettlementTime(String settlementTime) {
-		this.settlementTime = settlementTime;
 	}
 
 	@Override
