@@ -551,7 +551,7 @@
 		<property name="globalEventManager" ref="globalEventManager"></property>
 	</bean>
 
-	<bean id="marketIntelligenceReceiver" class="com.cyanspring.common.kdb.MarketIntelligenceReceiver">
+	<bean id="marketIntelligenceReceiver" class="com.cyanspring.kdb.MarketIntelligenceReceiver">
 		<property name="kdbHost" value="localhost" />
 		<property name="kdbPort" value="5013" />
 	</bean>
