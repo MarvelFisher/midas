@@ -411,11 +411,6 @@
 		<property name="dayOfWeek">
 			<value>4</value><!-- Calendar.WEDNESDAY -->
 		</property>
-		<property name="settlementTime">
-			<!-- The value must be aligned with the CLOSE time of SettlementSession 
-				in FITXSessionState.xml/FIMTXSessionState.xml -->
-			<value>13:30:00</value><!-- HH:mm:ss -->
-		</property>
 	</bean>
 
 </beans>
