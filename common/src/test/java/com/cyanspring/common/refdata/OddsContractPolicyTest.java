@@ -1,4 +1,4 @@
-package com.cyanspring.common.staticdata.policy;
+package com.cyanspring.common.refdata;
 
 import static org.junit.Assert.assertTrue;
 
@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.policy.OddsContractPolicy;
 
 public class OddsContractPolicyTest {
 

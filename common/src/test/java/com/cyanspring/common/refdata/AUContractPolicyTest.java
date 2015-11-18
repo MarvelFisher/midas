@@ -1,4 +1,4 @@
-package com.cyanspring.common.staticdata.policy;
+package com.cyanspring.common.refdata;
 
 import static org.junit.Assert.assertTrue;
 
@@ -12,8 +12,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.policy.AUContractPolicy;
 
-public class TXContractPolicyTest {
+public class AUContractPolicyTest {
 
 	RefData data;
 	Calendar cal;
@@ -29,7 +30,7 @@ public class TXContractPolicyTest {
 
 	@Test
 	public void test() {
-		TXContractPolicy policy = new TXContractPolicy() {
+		AUContractPolicy policy = new AUContractPolicy() {
 			@Mock
 			public Calendar getFirstContractMonth(RefData refData) {
 				return cal;
@@ -40,8 +41,11 @@ public class TXContractPolicyTest {
 			add("201601");
 			add("201602");
 			add("201603");
+			add("201604");
 			add("201606");
-			add("201609");
+			add("201608");
+			add("201610");
+			add("201612");
 		}};
 
 		List<String> lstContractMonth = policy.getContractMonths(data);

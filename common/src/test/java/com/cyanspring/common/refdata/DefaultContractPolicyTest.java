@@ -1,4 +1,4 @@
-package com.cyanspring.common.staticdata.policy;
+package com.cyanspring.common.refdata;
 
 import static org.junit.Assert.assertTrue;
 
@@ -7,10 +7,12 @@ import java.util.Calendar;
 import java.util.List;
 
 import mockit.Mock;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.policy.DefaultContractPolicy;
 
 public class DefaultContractPolicyTest {
 
