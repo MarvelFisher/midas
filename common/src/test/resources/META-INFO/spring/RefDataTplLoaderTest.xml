@@ -15,4 +15,10 @@
 		</property>
 	</bean>
 	
+	<bean id="refDataTplLoaderFT" class="com.cyanspring.common.staticdata.RefDataTplLoader">
+        <property name="tplPath">
+            <value>src/test/resources/META-INFO/spring/template_FT.xml</value>
+        </property>
+    </bean>
+	
 </beans>
