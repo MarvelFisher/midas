@@ -569,8 +569,12 @@ public class AccountPositionManager implements IPlugin {
 	
 	public void processAccountExecutionSnapshotRequestEvent(AccountExecutionSnapshotRequestEvent event){
 
-	    List<Execution> executions =  positionKeeper.getExecutions(event.getAccountId());
-
+	    List<Execution> executions =  null;
+	    log.info("ExecutionSnapshotRequestEvent txid:{} , accountId:{}",event.getTxId(),event.getAccountId());
+		if(StringUtils.hasText(event.getAccountId())){
+			executions = positionKeeper.getExecutions(event.getAccountId());
+		}
+	    
 	    AccountExecutionSnapshotReplyEvent reply = new AccountExecutionSnapshotReplyEvent(
 				event.getKey(), event.getSender(),event.getAccountId(),
 				event.getTxId(), executions);
@@ -584,8 +588,12 @@ public class AccountPositionManager implements IPlugin {
 	
 	public void processAccountClosedPositionSnapshotRequestEvent(AccountClosedPositionSnapshotRequestEvent event){
 	    
-		List<ClosedPosition> closedPositions = positionKeeper.getClosedPositions(event.getAccountId());
-
+		List<ClosedPosition> closedPositions = null;
+	    log.info("ClosedPositionSnapshotRequestEvent txid:{} , accountId:{}",event.getTxId(),event.getAccountId());
+		if(StringUtils.hasText(event.getAccountId())){
+			 closedPositions = positionKeeper.getClosedPositions(event.getAccountId());
+		}
+		
 		AccountClosedPositionSnapshotReplyEvent reply = new AccountClosedPositionSnapshotReplyEvent(
 				event.getKey(), event.getSender(),event.getAccountId(),
 				event.getTxId(), closedPositions);
