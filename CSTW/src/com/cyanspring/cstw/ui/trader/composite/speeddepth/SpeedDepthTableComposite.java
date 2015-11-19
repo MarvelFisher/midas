@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.cyanspring.common.marketdata.Quote;
+import com.cyanspring.cstw.common.CustomOrderType;
 import com.cyanspring.cstw.model.trader.ParentOrderModel;
 import com.cyanspring.cstw.service.iservice.ServiceFactory;
 import com.cyanspring.cstw.service.iservice.trader.IParentOrderService;
@@ -183,15 +184,24 @@ public final class SpeedDepthTableComposite extends Composite {
 							.getDefaultQuantityText().getText());
 					parentOrderModel.setPrice(model.getPrice());
 
+					CustomOrderType orderType;
+					if (e.button == 1) {
+						orderType = CustomOrderType.Limit;
+					} else {
+						orderType = CustomOrderType.Stop;
+					}
+
 					// ask
 					if (columnIndex == 1) {
 						parentOrderModel.setSide("Buy");
-						parentOrderService.quickEnterOrder(parentOrderModel);
+						parentOrderService.quickEnterOrder(parentOrderModel,
+								orderType);
 					}
 					// bids
 					else if (columnIndex == 3) {
 						parentOrderModel.setSide("Sell");
-						parentOrderService.quickEnterOrder(parentOrderModel);
+						parentOrderService.quickEnterOrder(parentOrderModel,
+								orderType);
 					} else if (columnIndex == 0 || columnIndex == 4) {
 						speedDepthService.cancelOrder(model.getSymbol(),
 								Double.valueOf(model.getPrice()));

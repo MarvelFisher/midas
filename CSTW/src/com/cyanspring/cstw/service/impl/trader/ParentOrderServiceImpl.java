@@ -13,6 +13,7 @@ import com.cyanspring.common.event.order.EnterParentOrderEvent;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.common.CustomOrderType;
 import com.cyanspring.cstw.model.trader.ParentOrderModel;
 import com.cyanspring.cstw.service.iservice.trader.IParentOrderService;
 
@@ -30,17 +31,23 @@ public class ParentOrderServiceImpl implements IParentOrderService {
 	private double delta = 0.000001;
 
 	@Override
-	public void quickEnterOrder(ParentOrderModel model) {
+	public void quickEnterOrder(ParentOrderModel model, CustomOrderType type) {
 		HashMap<String, Object> fields = new HashMap<String, Object>();
-		fields.put(OrderField.SYMBOL.value(), model.getSymbol());
-		fields.put(OrderField.SIDE.value(), model.getSide());
-		fields.put(OrderField.QUANTITY.value(), model.getQuantity());
-		fields.put(OrderField.PRICE.value(), model.getPrice());
-		fields.put(OrderField.TYPE.value(), "Limit");
-		fields.put(OrderField.STRATEGY.value(), "SDMA");
 		fields.put(OrderField.USER.value(), Business.getInstance().getUser());
 		fields.put(OrderField.ACCOUNT.value(), Business.getInstance()
 				.getAccount());
+		fields.put(OrderField.SYMBOL.value(), model.getSymbol());
+		fields.put(OrderField.SIDE.value(), model.getSide());
+		fields.put(OrderField.QUANTITY.value(), model.getQuantity());
+		if (type == CustomOrderType.Stop) {
+			fields.put(OrderField.STRATEGY.value(), "STOP");
+			fields.put(OrderField.STOP_LOSS_PRICE.value(), model.getPrice());
+			fields.put(OrderField.TYPE.value(), CustomOrderType.Market.name());
+		} else {
+			fields.put(OrderField.STRATEGY.value(), "SDMA");
+			fields.put(OrderField.PRICE.value(), model.getPrice());
+			fields.put(OrderField.TYPE.value(), type.name());
+		}
 		EnterParentOrderEvent event = new EnterParentOrderEvent(Business
 				.getInstance().getInbox(), Business.getInstance()
 				.getFirstServer(), fields, model.getReceiverId(), false);
@@ -49,6 +56,7 @@ public class ParentOrderServiceImpl implements IParentOrderService {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
+
 	}
 
 	public void cancelOrder(String currentSymbol) {
@@ -91,4 +99,5 @@ public class ParentOrderServiceImpl implements IParentOrderService {
 			}
 		}
 	}
+
 }

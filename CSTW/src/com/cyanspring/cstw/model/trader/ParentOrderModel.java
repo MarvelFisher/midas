@@ -12,8 +12,6 @@ public final class ParentOrderModel {
 
 	private String side;
 
-	private String type;
-
 	private String quantity;
 
 	private double price;
@@ -34,14 +32,6 @@ public final class ParentOrderModel {
 
 	public void setSide(String side) {
 		this.side = side;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
 	}
 
 	public String getQuantity() {

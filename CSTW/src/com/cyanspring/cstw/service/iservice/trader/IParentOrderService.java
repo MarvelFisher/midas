@@ -1,5 +1,6 @@
 package com.cyanspring.cstw.service.iservice.trader;
 
+import com.cyanspring.cstw.common.CustomOrderType;
 import com.cyanspring.cstw.model.trader.ParentOrderModel;
 
 /**
@@ -10,6 +11,6 @@ import com.cyanspring.cstw.model.trader.ParentOrderModel;
  */
 public interface IParentOrderService {
 
-	void quickEnterOrder(ParentOrderModel model);
+	void quickEnterOrder(ParentOrderModel model, CustomOrderType type);
 
 }
