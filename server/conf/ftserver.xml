@@ -37,6 +37,22 @@
 		</property>
 	</bean>
 	
+	<bean id="globalMQInfo" class="com.cyanspring.common.SystemInfo">
+		<property name="env">
+			<value>GLOBAL</value>
+		</property>
+		<property name="category">
+			<value>FT-MQ</value>
+		</property>
+		<property name="id">
+			<value>S1</value>
+		</property>
+	</bean>
+	
+	<bean id="globalTransportService" class="com.cyanspring.transport.ActiveMQObjectService">
+		<property name="url" value="failover:(nio://10.0.0.51:60006)?initialReconnectDelay=2000&amp;maxReconnectDelay=5000&amp;maxReconnectAttempts=100"></property>
+	</bean>
+	
 	<bean id="csPubTopic" class="java.lang.String">
 		<constructor-arg value="Test.EB.DownStream.channel" />
 	</bean>
