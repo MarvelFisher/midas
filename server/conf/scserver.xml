@@ -194,6 +194,7 @@
    				<ref bean="frozenStopLossValue"/>     <!-- freezeValue -->
    				<ref bean="terminateStopLossValue"/>  <!-- terminateValue -->
 				<value>DAY_TRADING</value>
+				<value>0.2</value>
             </list>
        </property>
     </bean>
