@@ -33,6 +33,7 @@ public class Default {
 	private static boolean liveTrading = false;
 	private static boolean userLiveTrading = false;
 	private static LiveTradingType liveTradingType = LiveTradingType.DEFAULT;
+	private static double creditPartial = 0.0;
 	
 	protected static void setValues(
 		String user,  
@@ -58,7 +59,8 @@ public class Default {
 		double companyStopLossValue,
 		double freezeValue,
 		double terminateValue,
-		LiveTradingType liveTradingType) {
+		LiveTradingType liveTradingType,
+		double creditPartial) {
 		
 		Default.user = user;
 		Default.account = account;
@@ -84,6 +86,7 @@ public class Default {
 		Default.freezeValue = freezeValue;
 		Default.terminateValue = terminateValue;
 		Default.liveTradingType = liveTradingType;
+		Default.creditPartial = creditPartial;
 		
 	}
 	
@@ -193,5 +196,9 @@ public class Default {
 	
 	public static LiveTradingType getLiveTradingType() {
 		return liveTradingType;
+	}
+	
+	public static double getCreditPartial() {
+		return creditPartial;
 	}
 }
