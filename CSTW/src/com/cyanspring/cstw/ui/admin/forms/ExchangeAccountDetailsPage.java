@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.ui.forms;
+package com.cyanspring.cstw.ui.admin.forms;
 
 
 import org.eclipse.jface.viewers.ISelection;
