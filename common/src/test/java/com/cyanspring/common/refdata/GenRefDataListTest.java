@@ -22,7 +22,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataTplLoader;
-import com.cyanspring.common.staticdata.policy.AUContractPolicy;
 import com.cyanspring.common.staticdata.policy.DefaultContractPolicy;
 import com.cyanspring.common.staticdata.strategy.AbstractRefDataStrategy;
 
@@ -31,10 +30,6 @@ import com.cyanspring.common.staticdata.strategy.AbstractRefDataStrategy;
 public class GenRefDataListTest {
 
 	class RefDataStrategy extends AbstractRefDataStrategy {
-	}
-
-	public final class MockDefaultContractPolicy extends MockUp<AUContractPolicy> {
-
 	}
 
 	@Autowired
@@ -366,6 +361,8 @@ public class GenRefDataListTest {
 				assertTrue(d.getENDisplayName().contains(yymm));
 				assertTrue(d.getCNDisplayName().contains(yymm));
 				assertTrue(d.getTWDisplayName().contains(yymm));
+				assertTrue(d.getCode().contains(yymm));
+				assertTrue(d.getSubscribeSymbol().contains(yymm));
 			}
 		}
 	}
