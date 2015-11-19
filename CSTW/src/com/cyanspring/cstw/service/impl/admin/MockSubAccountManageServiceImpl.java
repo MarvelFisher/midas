@@ -3,8 +3,11 @@ package com.cyanspring.cstw.service.impl.admin;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.omg.CORBA.PRIVATE_MEMBER;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.account.UserGroup;
+import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.client.IInstrumentPoolKeeper;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.cstw.model.admin.AssignedModel;
@@ -21,6 +24,8 @@ import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
  */
 public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 		ISubAccountManagerService {
+	private static final Logger log = LoggerFactory.getLogger(MockSubAccountManageServiceImpl.class);
+	
 	private IInstrumentPoolKeeper instrumentPoolKeeper;
 
 	@Override
@@ -232,6 +237,27 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 			sub2list.add(index2+1, subAccount);
 		}
 		
+	}
+
+	@Override
+	public void createNewAssignedModel(SubAccountModel subAccount,
+			AssignedModel assigned, int index) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeAssignedUser(SubAccountModel subAccount, AssignedModel assign) {
+		log.info("removeAssignedUser: " + subAccount.getName() + ", " + assign.getUserId());
+		
+	}
+
+	@Override
+	public List<UserGroup> getAvailableAssigneeList(SubAccountModel subAccount) {
+		List<UserGroup> usrGroups = new ArrayList<UserGroup>();
+		usrGroups.add(new UserGroup("front_risk8", UserRole.RiskManager));
+		usrGroups.add(new UserGroup("group7", UserRole.Group));
+		return usrGroups;
 	}
 
 	
