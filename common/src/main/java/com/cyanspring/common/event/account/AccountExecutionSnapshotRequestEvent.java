@@ -9,7 +9,8 @@ public class AccountExecutionSnapshotRequestEvent extends RemoteAsyncEvent{
 	
 	public AccountExecutionSnapshotRequestEvent(String key, String receiver,String accountId,String txId) {
 		super(key, receiver);
-		
+		this.accountId = accountId;
+		this.txId = txId;
 	}
 
 	public String getAccountId() {
