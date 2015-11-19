@@ -569,8 +569,12 @@ public class AccountPositionManager implements IPlugin {
 	
 	public void processAccountExecutionSnapshotRequestEvent(AccountExecutionSnapshotRequestEvent event){
 
-	    List<Execution> executions =  positionKeeper.getExecutions(event.getAccountId());
-
+	    List<Execution> executions =  null;
+	    log.info("ExecutionSnapshotRequestEvent txid:{} , accountId:{}",event.getTxId(),event.getAccountId());
+		if(StringUtils.hasText(event.getAccountId())){
+			executions = positionKeeper.getExecutions(event.getAccountId());
+		}
+	    
 	    AccountExecutionSnapshotReplyEvent reply = new AccountExecutionSnapshotReplyEvent(
 				event.getKey(), event.getSender(),event.getAccountId(),
 				event.getTxId(), executions);
@@ -584,8 +588,12 @@ public class AccountPositionManager implements IPlugin {
 	
 	public void processAccountClosedPositionSnapshotRequestEvent(AccountClosedPositionSnapshotRequestEvent event){
 	    
-		List<ClosedPosition> closedPositions = positionKeeper.getClosedPositions(event.getAccountId());
-
+		List<ClosedPosition> closedPositions = null;
+	    log.info("ClosedPositionSnapshotRequestEvent txid:{} , accountId:{}",event.getTxId(),event.getAccountId());
+		if(StringUtils.hasText(event.getAccountId())){
+			 closedPositions = positionKeeper.getClosedPositions(event.getAccountId());
+		}
+		
 		AccountClosedPositionSnapshotReplyEvent reply = new AccountClosedPositionSnapshotReplyEvent(
 				event.getKey(), event.getSender(),event.getAccountId(),
 				event.getTxId(), closedPositions);
@@ -1128,7 +1136,7 @@ public class AccountPositionManager implements IPlugin {
 	}
 
 	public void processCSTWUserLoginEvent(CSTWUserLoginEvent event) {
-    	String id = event.getId();
+		String id = event.getId();
     	String pwd = event.getPassword();
     	boolean isOk = false;
     	String message = "";
@@ -1151,7 +1159,6 @@ public class AccountPositionManager implements IPlugin {
     			accountList = new ArrayList<>();
     		
 	    	if(accountList.size() < limitUser){
-	    		log.info("get all Account:{}",accountList.size());
 	    		for(Account account:accountList){
 	    			if(account != null){
 	    				user2AccountMap.put(account.getId(), account);
@@ -1169,7 +1176,6 @@ public class AccountPositionManager implements IPlugin {
     		}
     		return;
 		}
-
 
     	try{
 	    	if (!StringUtils.hasText(id) || !StringUtils.hasText(pwd)) {
@@ -1192,26 +1198,39 @@ public class AccountPositionManager implements IPlugin {
 						ErrorMessage.CSTW_LOGIN_FAILED);
 			}
 
-	    	if (!StringUtils.hasText(message)) {
-				isOk =true;
-			}
-
 	    	userGroup = userKeeper.getUserGroup(id);
 	    	accountList = accountKeeper.getAccounts(id);
 	    	if ( null == userGroup ) {
 	    		userGroup = new UserGroup(id,user.getRole());
 	    	}
+	    	
+	    	if(!userGroup.getRole().allowLogin()){
+				throw new UserException("This user not allow to login",
+						ErrorMessage.CSTW_LOGIN_FAILED);
+	    	}
+	    	
+	    	if (!StringUtils.hasText(message)) {
+				isOk =true;
+			}
+	    	
 	    	user2AccountMap = new HashMap<>();
-	    	user2AccountMap.put(id, accountList.get(0));
+	    	if(null != accountList && !accountList.isEmpty())
+	    		user2AccountMap.put(id, accountList.get(0));
+	    	
 			for (UserGroup ug : userGroup.getManageeSet()) {
+				List <Account>tempList = accountKeeper.getAccounts(ug.getUser());
+				if( null == tempList || tempList.isEmpty())
+					continue;
+				
 				user2AccountMap.put(ug.getUser(),
-						accountKeeper.getAccounts(ug.getUser()).get(0));
+						tempList.get(0));
 			}
 	    	log.info("CSTW Login success:{} - {}",id,userGroup.getRole());
 			user.setLastLogin(Clock.getInstance().now());
 			eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));
 
     	}catch(UserException e) {
+    		isOk = false;
     		message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
     		log.info("CSTW Login fail:{} - {}",id,message);
     	}
