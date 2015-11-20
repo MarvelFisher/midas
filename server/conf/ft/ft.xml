@@ -39,6 +39,7 @@
 				<ref bean="validationDataProvider" />
 				<ref bean="statisticManager" />
 				<ref bean="systemSuspendValidator" />
+				<ref bean="coinManager" />
 				<ref bean="liveTradingSession" />
 			</list>
 		</property>
@@ -86,6 +87,13 @@
 				<ref bean="apiBridgeManager" />
 			</list>
 		</property>
+	</bean>
+
+	<bean id="globalEventManager" class="com.cyanspring.event.RemoteEventManager">
+		<constructor-arg>
+			<ref bean="globalTransportService" />
+		</constructor-arg>
+		<property name="embedBroker" value="false"/>
 	</bean>
 
 	<bean id="apiBridgeManager" class="com.cyanspring.server.api.ApiBridgeManager">
@@ -409,6 +417,17 @@
 		<property name="dayOfWeek">
 			<value>4</value><!-- Calendar.WEDNESDAY -->
 		</property>
+	</bean>
+	
+		<!-- coin control -->
+	<bean id="coinManager" class="com.cyanspring.server.account.CoinManager">
+		<property name="activePositionCoinControl" value="true"></property>
+		<property name="activeDailyCoinControl" value="true"></property>
+		<property name="activeTrailingStopCoinControl" value="true"></property>
+		<property name="activeDayTradingModeCoinControl" value="true"></property>
+	</bean>
+	
+	<bean id="coinControlRecoveryProcessor" class="com.cyanspring.server.CoinControlRecoveryProcessor">
 	</bean>
 	
 </beans>
