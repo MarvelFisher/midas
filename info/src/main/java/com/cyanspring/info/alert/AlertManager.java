@@ -578,7 +578,7 @@ public class AlertManager extends Compute {
 				for (int i = list.size(); i > 0; i--) {
 					alert = list.get(i - 1);
 					if (ComparePriceQuoto(alert, quotes.get(quote.getSymbol()),
-							quote)) {
+							quote, refdata.getExchange().equals("FX"))) {
 						if (!checkSendFlag(alert))
 						{
 							continue;
@@ -646,10 +646,11 @@ public class AlertManager extends Compute {
 	}
 
 	private boolean ComparePriceQuoto(BasePriceAlert alert,
-			Quote Previousquoto, Quote quote) {
+			Quote Previousquoto, Quote quote, 
+			boolean useMid) {
 		double alertPrice = alert.getPrice();
-		double PreviousPrice = getAlertPrice(Previousquoto);
-		double currentPrice = getAlertPrice(quote);
+		double PreviousPrice = getAlertPrice(Previousquoto, useMid);
+		double currentPrice = getAlertPrice(quote, useMid);
 		if (PriceUtils.GreaterThan(alertPrice, PreviousPrice)) {
 			if (PriceUtils.GreaterThan(alertPrice, currentPrice)) {
 				return false;
@@ -1213,8 +1214,11 @@ public class AlertManager extends Compute {
 		}
 	}
 
-	private double getAlertPrice(Quote quote) {
-		return (quote.getBid() + quote.getAsk()) / 2;
+	private double getAlertPrice(Quote quote, boolean useMid) {
+		if (useMid)
+			return (quote.getBid() + quote.getAsk()) / 2;
+		else
+			return quote.getLast();
 	}
 
 	public ParseData PackPriceAlert(BasePriceAlert priceAlert) {
