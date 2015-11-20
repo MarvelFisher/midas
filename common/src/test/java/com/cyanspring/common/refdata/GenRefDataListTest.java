@@ -22,7 +22,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.staticdata.RefDataTplLoader;
-import com.cyanspring.common.staticdata.policy.AUContractPolicy;
 import com.cyanspring.common.staticdata.policy.DefaultContractPolicy;
 import com.cyanspring.common.staticdata.strategy.AbstractRefDataStrategy;
 
@@ -30,18 +29,14 @@ import com.cyanspring.common.staticdata.strategy.AbstractRefDataStrategy;
 @ContextConfiguration(locations = { "classpath:META-INFO/spring/RefDataTplLoaderTest.xml" })
 public class GenRefDataListTest {
 
-	class RefDataStrategy extends AbstractRefDataStrategy {
-	}
-
-	public final class MockDefaultContractPolicy extends MockUp<AUContractPolicy> {
-
-	}
-
 	@Autowired
 	RefDataTplLoader refDataTplLoader;
 
 	@Autowired
 	RefDataTplLoader refDataTplLoaderFT;
+
+	AbstractRefDataStrategy strategy = new AbstractRefDataStrategy() {
+	};
 
 	List<RefData> lstRefData;
 
@@ -103,8 +98,6 @@ public class GenRefDataListTest {
 			add("610");
 			add("612");
 		}};
-
-		RefDataStrategy strategy = new RefDataStrategy();
 
 		for (RefData data : lstAUTemplate) {
 			List<RefData> lstAURefData = strategy.updateRefData(data);
@@ -174,8 +167,6 @@ public class GenRefDataListTest {
 			add("712");
 		}};
 
-		RefDataStrategy strategy = new RefDataStrategy();
-
 		for (RefData data : lstBUTemplate) {
 			List<RefData> lstBURefData = strategy.updateRefData(data);
 			assertNotNull(lstBURefData);
@@ -227,8 +218,6 @@ public class GenRefDataListTest {
 			add("603");
 			add("606");
 		}};
-
-		RefDataStrategy strategy = new RefDataStrategy();
 
 		for (RefData data : lstIndexTemplate) {
 			List<RefData> lstIndexRefData = strategy.updateRefData(data);
@@ -285,8 +274,6 @@ public class GenRefDataListTest {
 			add("609");
 			add("611");
 		}};
-
-		RefDataStrategy strategy = new RefDataStrategy();
 
 		for (RefData data : lstOddsTemplate) {
 			List<RefData> lstOddsRefData = strategy.updateRefData(data);
@@ -348,8 +335,6 @@ public class GenRefDataListTest {
 			add("I6");
 		}};
 
-		RefDataStrategy strategy = new RefDataStrategy();
-
 		for (RefData data : lstTXTemplate) {
 			List<RefData> lstTXRefData = strategy.updateRefData(data);
 			assertNotNull(lstTXRefData);
@@ -366,6 +351,8 @@ public class GenRefDataListTest {
 				assertTrue(d.getENDisplayName().contains(yymm));
 				assertTrue(d.getCNDisplayName().contains(yymm));
 				assertTrue(d.getTWDisplayName().contains(yymm));
+				assertTrue(d.getCode().contains(yymm));
+				assertTrue(d.getSubscribeSymbol().contains(yymm));
 			}
 		}
 	}
@@ -425,8 +412,6 @@ public class GenRefDataListTest {
 			add("612");
 		}};
 
-		RefDataStrategy strategy = new RefDataStrategy();
-
 		for (RefData data : lstDefaultTemplate) {
 			List<RefData> lstDefaultRefData = strategy.updateRefData(data);
 			assertNotNull(lstDefaultRefData);
@@ -480,7 +465,6 @@ public class GenRefDataListTest {
 			add("1612");
 		}};
 
-		RefDataStrategy strategy = new RefDataStrategy();
 		List<RefData> lstDefaultRefData = strategy.updateRefData(data);
 		assertNotNull(lstDefaultRefData);
 		int size = lstDefaultRefData.size();
@@ -525,7 +509,6 @@ public class GenRefDataListTest {
 			add("1612");
 		}};
 
-		RefDataStrategy strategy = new RefDataStrategy();
 		List<RefData> lstDefaultRefData = strategy.updateRefData(data);
 		assertNotNull(lstDefaultRefData);
 		int size = lstDefaultRefData.size();
@@ -569,7 +552,6 @@ public class GenRefDataListTest {
 			add("611");
 		}};
 
-		RefDataStrategy strategy = new RefDataStrategy();
 		List<RefData> lstDefaultRefData = strategy.updateRefData(data);
 		assertNotNull(lstDefaultRefData);
 		int size = lstDefaultRefData.size();
@@ -610,7 +592,6 @@ public class GenRefDataListTest {
 			add("611");
 		}};
 
-		RefDataStrategy strategy = new RefDataStrategy();
 		List<RefData> lstDefaultRefData = strategy.updateRefData(data);
 		assertNotNull(lstDefaultRefData);
 		int size = lstDefaultRefData.size();
@@ -657,7 +638,6 @@ public class GenRefDataListTest {
 			add("1611");
 		}};
 
-		RefDataStrategy strategy = new RefDataStrategy();
 		List<RefData> lstDefaultRefData = strategy.updateRefData(data);
 		assertNotNull(lstDefaultRefData);
 		int size = lstDefaultRefData.size();
@@ -705,7 +685,6 @@ public class GenRefDataListTest {
 			add("1612");
 		}};
 
-		RefDataStrategy strategy = new RefDataStrategy();
 		List<RefData> lstDefaultRefData = strategy.updateRefData(data);
 		assertNotNull(lstDefaultRefData);
 		int size = lstDefaultRefData.size();

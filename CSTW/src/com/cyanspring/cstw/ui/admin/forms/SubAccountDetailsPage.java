@@ -1,4 +1,4 @@
-package com.cyanspring.cstw.ui.forms;
+package com.cyanspring.cstw.ui.admin.forms;
 
 
 import org.eclipse.jface.viewers.ISelection;
@@ -145,7 +145,7 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		
 		Label lblAssign = toolkit.createLabel(client, "Assign to RW / Group: ");
 		lblAssign.setLayoutData(gd2);
-		assTableComposite = new AssignedTableComposite(client, SWT.NONE);
+		assTableComposite = new AssignedTableComposite(client, service, SWT.NONE);
 		assTableComposite.setLayoutData(gd3);
 		toolkit.adapt(assTableComposite);
 		
@@ -212,6 +212,7 @@ public class SubAccountDetailsPage implements IDetailsPage {
 			
 			txtName2.setText(input.getName());
 			subTableComposite.setInput(service.getInstrumentInfoModelListBySubAccountId(input.getId()));
+			assTableComposite.setSubAccountModel(input);
 			assTableComposite.setInput(service.getAssignedModelListBySubAccountId(input.getId()));
 		}
 	}
