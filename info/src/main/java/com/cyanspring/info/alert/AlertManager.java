@@ -709,6 +709,7 @@ public class AlertManager extends Compute {
 				UserPriceList.remove(alert);
 			}
 		}
+		log.debug("Alert " + alert.toString() + " process completed");
 	}
 
 	private boolean ComparePriceQuoto(BasePriceAlert alert,
@@ -1436,6 +1437,7 @@ class AlertProcessThread extends Thread
 	{
 		try
 		{
+			log.info("Put " + alert.toString());
 			m_q.put(alert);
 		}
 		catch (InterruptedException e)
@@ -1447,6 +1449,7 @@ class AlertProcessThread extends Thread
 	@Override
 	public void run()
 	{
+		log.info("Alert-Processor-thread start");
 		long lTimeOut = 50;
 		BasePriceAlert alert;
 		while (true)
