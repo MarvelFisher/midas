@@ -1424,7 +1424,6 @@ class AlertProcessThread extends Thread
 	
 	private LinkedBlockingQueue<BasePriceAlert> m_q = new LinkedBlockingQueue<BasePriceAlert>();
 	private AlertManager manager;
-	private boolean suspended = true;
 	private int m_queueMaxSize = 0;
 	
 	public AlertProcessThread(AlertManager manager)
@@ -1454,18 +1453,6 @@ class AlertProcessThread extends Thread
 		BasePriceAlert alert;
 		while (true)
 		{
-			if (isSuspended())
-			{
-				try
-				{
-					Thread.sleep(lTimeOut);
-					continue;
-				}
-				catch (InterruptedException e)
-				{
-					log.error(e.getMessage(), e);
-				}
-			}
 			try
 			{
 				alert = m_q.poll(lTimeOut, TimeUnit.MILLISECONDS);
@@ -1486,15 +1473,5 @@ class AlertProcessThread extends Thread
 				manager.processAlert(alert);
 			}
 		}
-	}
-
-	public boolean isSuspended()
-	{
-		return suspended;
-	}
-
-	public void setSuspended(boolean suspended)
-	{
-		this.suspended = suspended;
 	}
 }
