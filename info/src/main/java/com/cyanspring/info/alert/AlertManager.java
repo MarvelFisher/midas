@@ -1208,6 +1208,7 @@ public class AlertManager extends Compute {
 	public <T> void SQLSave(T object) {
 		Session session = null;
 		try {
+			log.debug("SQLSave " + object.toString());
 			session = sessionFactory.openSession();			
 			Transaction tx = session.beginTransaction();
 			tx.setTimeout(3);
@@ -1228,6 +1229,7 @@ public class AlertManager extends Compute {
 	private <T> void SQLUpdate(T object) {
 		Session session = null;
 		try {
+			log.debug("SQLUpdate " + object.toString());
 			session = sessionFactory.openSession();
 			Transaction tx = session.beginTransaction();
 			session.update(object);
@@ -1244,6 +1246,7 @@ public class AlertManager extends Compute {
 	private <T> void SQLDelete(T object) {
 		Session session = null;
 		try {
+			log.debug("SQLDelete " + object.toString());
 			session = sessionFactory.openSession();
 			Transaction tx = session.beginTransaction();
 			session.delete(object);
