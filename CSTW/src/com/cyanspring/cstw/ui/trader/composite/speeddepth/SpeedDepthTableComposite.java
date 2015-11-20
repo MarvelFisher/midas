@@ -162,7 +162,7 @@ public final class SpeedDepthTableComposite extends Composite {
 				if (currentQuote == null) {
 					return;
 				}
-				speedDepthService.cancelOrder(currentQuote.getSymbol());
+				parentOrderService.cancelAllOrder(currentQuote.getSymbol());
 			}
 		});
 
@@ -203,8 +203,8 @@ public final class SpeedDepthTableComposite extends Composite {
 						parentOrderService.quickEnterOrder(parentOrderModel,
 								orderType);
 					} else if (columnIndex == 0 || columnIndex == 4) {
-						speedDepthService.cancelOrder(model.getSymbol(),
-								Double.valueOf(model.getPrice()));
+						parentOrderService.cancelOrder(model.getSymbol(),
+								Double.valueOf(model.getPrice()), orderType);
 					}
 				}
 			}

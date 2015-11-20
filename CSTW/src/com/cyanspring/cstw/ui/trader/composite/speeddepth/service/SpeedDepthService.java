@@ -4,12 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.cstw.tick.Ticker;
-import com.cyanspring.common.event.order.CancelParentOrderEvent;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.staticdata.ITickTable;
 import com.cyanspring.common.type.OrdStatus;
@@ -26,9 +21,6 @@ import com.cyanspring.cstw.ui.trader.composite.speeddepth.model.SpeedDepthModel;
  *
  */
 public final class SpeedDepthService {
-
-	private static final Logger log = LoggerFactory
-			.getLogger(SpeedDepthService.class);
 
 	private List<SpeedDepthModel> currentList;
 
@@ -226,47 +218,6 @@ public final class SpeedDepthService {
 				model.setStopAskQty(model.getStopAskQty() + cumQty);
 			} else if (side.isSell()) {
 				model.setStopBidQty(model.getStopBidQty() + cumQty);
-			}
-		}
-	}
-
-	public void cancelOrder(String currentSymbol) {
-		cancelOrder(currentSymbol, null);
-	}
-
-	public void cancelOrder(String currentSymbol, Double price) {
-		List<Map<String, Object>> orders = Business.getInstance()
-				.getOrderManager().getParentOrders();
-		for (Map<String, Object> map : orders) {
-			String symbol = (String) map.get(OrderField.SYMBOL.value());
-			String id = (String) map.get(OrderField.ID.value());
-
-			OrdStatus status = (OrdStatus) map
-					.get(OrderField.ORDSTATUS.value());
-			boolean isPriceEqual;
-			if (price == null) {
-				isPriceEqual = true;
-			} else {
-				Double orderPrice = (Double) map.get(OrderField.PRICE.value());
-				if (null == orderPrice)
-					continue;
-
-				isPriceEqual = PriceUtils.Equal(orderPrice, price, delta);
-			}
-			if (!status.isCompleted() && symbol.equals(currentSymbol)
-					&& isPriceEqual) {
-				if (null != symbol && id != null)
-					log.info("SpeedDepth cancelOrder:{},{}", symbol, id);
-
-				CancelParentOrderEvent event = new CancelParentOrderEvent(id,
-						Business.getInstance().getFirstServer(), id, false,
-						null, true);
-				try {
-					Business.getInstance().getEventManager()
-							.sendRemoteEvent(event);
-				} catch (Exception e) {
-					log.error(e.getMessage(), e);
-				}
 			}
 		}
 	}

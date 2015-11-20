@@ -13,4 +13,9 @@ public interface IParentOrderService {
 
 	void quickEnterOrder(ParentOrderModel model, CustomOrderType type);
 
+	void cancelAllOrder(String currentSymbol);
+
+	void cancelOrder(String currentSymbol, Double cancelPrice,
+			CustomOrderType type);
+
 }

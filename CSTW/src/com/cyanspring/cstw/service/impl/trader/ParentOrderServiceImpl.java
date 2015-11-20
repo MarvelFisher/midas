@@ -23,7 +23,7 @@ import com.cyanspring.cstw.service.iservice.trader.IParentOrderService;
  * @create date 2015/11/17
  *
  */
-public class ParentOrderServiceImpl implements IParentOrderService {
+public final class ParentOrderServiceImpl implements IParentOrderService {
 
 	private static final Logger log = LoggerFactory
 			.getLogger(ParentOrderServiceImpl.class);
@@ -59,34 +59,54 @@ public class ParentOrderServiceImpl implements IParentOrderService {
 
 	}
 
-	public void cancelOrder(String currentSymbol) {
-		cancelOrder(currentSymbol, null);
-	}
-
-	public void cancelOrder(String currentSymbol, Double price) {
+	public void cancelAllOrder(String currentSymbol) {
 		List<Map<String, Object>> orders = Business.getInstance()
 				.getOrderManager().getParentOrders();
 		for (Map<String, Object> map : orders) {
 			String symbol = (String) map.get(OrderField.SYMBOL.value());
 			String id = (String) map.get(OrderField.ID.value());
+			OrdStatus status = (OrdStatus) map
+					.get(OrderField.ORDSTATUS.value());
+			if (!status.isCompleted() && symbol.equals(currentSymbol)) {
+				CancelParentOrderEvent event = new CancelParentOrderEvent(id,
+						Business.getInstance().getFirstServer(), id, false,
+						null, true);
+				try {
+					Business.getInstance().getEventManager()
+							.sendRemoteEvent(event);
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+				}
+			}
+		}
+	}
 
+	public void cancelOrder(String currentSymbol, Double cancelPrice,
+			CustomOrderType type) {
+		List<Map<String, Object>> orders = Business.getInstance()
+				.getOrderManager().getParentOrders();
+		for (Map<String, Object> map : orders) {
+			String symbol = (String) map.get(OrderField.SYMBOL.value());
+			String id = (String) map.get(OrderField.ID.value());
 			OrdStatus status = (OrdStatus) map
 					.get(OrderField.ORDSTATUS.value());
 			boolean isPriceEqual;
-			if (price == null) {
+			Double orderPrice;
+			if (type == CustomOrderType.Stop) {
+				orderPrice = (Double) map.get(OrderField.STOP_LOSS_PRICE
+						.value());
+			} else {
+				orderPrice = (Double) map.get(OrderField.PRICE.value());
+			}
+			if (orderPrice == null) {
+				isPriceEqual = false;
+			} else if (cancelPrice == null) {
 				isPriceEqual = true;
 			} else {
-				Double orderPrice = (Double) map.get(OrderField.PRICE.value());
-				if (null == orderPrice)
-					continue;
-
-				isPriceEqual = PriceUtils.Equal(orderPrice, price, delta);
+				isPriceEqual = PriceUtils.Equal(orderPrice, cancelPrice, delta);
 			}
 			if (!status.isCompleted() && symbol.equals(currentSymbol)
 					&& isPriceEqual) {
-				if (null != symbol && id != null) {
-					log.info("ParentOrderService cancelOrder:{},{}", symbol, id);
-				}
 				CancelParentOrderEvent event = new CancelParentOrderEvent(id,
 						Business.getInstance().getFirstServer(), id, false,
 						null, true);
