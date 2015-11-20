@@ -55,16 +55,16 @@ public final class SpeedDepthTableComposite extends Composite {
 
 	private TableColumn tblclmnAskVol;
 	private TableColumn tblBidsVol;
-	private Composite composite;
+
+	private TableItem currentMouseSelectedItem;
+	private TableItem currentKeySelectedItem;
+
+	private Composite buttonBarComposite;
+
 	private Button cancelButton;
 	private Button lockButton;
 
 	private boolean isLock = false;
-
-	private TableItem currentMouseSelectedItem;
-
-	private TableItem currentKeySelectedItem;
-
 	private String receiverId;
 
 	/**
@@ -98,15 +98,15 @@ public final class SpeedDepthTableComposite extends Composite {
 
 		toolBar.setVisible(false);
 
-		composite = new Composite(this, SWT.NONE);
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false,
-				1, 1));
-		composite.setLayout(new GridLayout(2, false));
+		buttonBarComposite = new Composite(this, SWT.NONE);
+		buttonBarComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+				false, 1, 1));
+		buttonBarComposite.setLayout(new GridLayout(2, false));
 
-		lockButton = new Button(composite, SWT.CHECK);
+		lockButton = new Button(buttonBarComposite, SWT.CHECK);
 		lockButton.setText("LOCK");
 
-		cancelButton = new Button(composite, SWT.NONE);
+		cancelButton = new Button(buttonBarComposite, SWT.NONE);
 		cancelButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true,
 				true, 1, 1));
 		cancelButton.setText("Cancel ALL");

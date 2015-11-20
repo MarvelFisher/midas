@@ -178,6 +178,8 @@ public final class SpeedDepthService {
 			}
 			currentModel.setAskQty(0);
 			currentModel.setBidQty(0);
+			currentModel.setStopAskQty(0);
+			currentModel.setStopBidQty(0);
 			currentModel.setIndex(i++);
 		}
 		List<Map<String, Object>> orders = Business.getInstance()
@@ -186,26 +188,44 @@ public final class SpeedDepthService {
 			OrdStatus status = (OrdStatus) map.get("Status");
 			if (!status.isCompleted()) {
 				for (SpeedDepthModel currentModel : currentList) {
-					String symbol = (String) map.get("Symbol");
-					if (null == map.get("Price"))
-						continue;
-
-					double price = (Double) map.get("Price");
-
-					if (currentModel.getSymbol().equals(symbol)
-							&& PriceUtils.Equal(price, currentModel.getPrice(),
-									delta)) {
-						OrderSide side = (OrderSide) map.get("Side");
-						double cumQty = (Double) map.get("Qty");
-						if (side.isBuy()) {
-							currentModel.setAskQty(currentModel.getAskQty()
-									+ cumQty);
-						} else if (side.isSell()) {
-							currentModel.setBidQty(currentModel.getBidQty()
-									+ cumQty);
-						}
+					if (map.get("Price") != null) {
+						caculateQtyByPrice(currentModel, map);
+					} else if (map.get("Stop Loss") != null) {
+						caculateQtyByStopLoss(currentModel, map);
 					}
 				}
+			}
+		}
+	}
+
+	private void caculateQtyByPrice(SpeedDepthModel model,
+			Map<String, Object> map) {
+		String symbol = (String) map.get("Symbol");
+		double price = (Double) map.get("Price");
+		if (model.getSymbol().equals(symbol)
+				&& PriceUtils.Equal(price, model.getPrice(), delta)) {
+			OrderSide side = (OrderSide) map.get("Side");
+			double cumQty = (Double) map.get("Qty");
+			if (side.isBuy()) {
+				model.setAskQty(model.getAskQty() + cumQty);
+			} else if (side.isSell()) {
+				model.setBidQty(model.getBidQty() + cumQty);
+			}
+		}
+	}
+
+	private void caculateQtyByStopLoss(SpeedDepthModel model,
+			Map<String, Object> map) {
+		String symbol = (String) map.get("Symbol");
+		double price = (Double) map.get("Stop Loss");
+		if (model.getSymbol().equals(symbol)
+				&& PriceUtils.Equal(price, model.getPrice(), delta)) {
+			OrderSide side = (OrderSide) map.get("Side");
+			double cumQty = (Double) map.get("Qty");
+			if (side.isBuy()) {
+				model.setStopAskQty(model.getStopAskQty() + cumQty);
+			} else if (side.isSell()) {
+				model.setStopBidQty(model.getStopBidQty() + cumQty);
 			}
 		}
 	}
