@@ -765,8 +765,11 @@ public class PositionKeeper {
 		}
 	}
 
+	// OrderSide.Buy to only get buy side margin Qty
+	// OrderSide.Sell to get only sell side margin Qty
+	// null to get the maximum of two sides
 	private double getMarginQtyByAccountAndSymbol(Account account,
-			String symbol, double extraQty) {
+			String symbol, double extraQty, Boolean isBuy) { 
 		double buyQty = 0;
 		double sellQty = 0;
 
@@ -805,8 +808,13 @@ public class PositionKeeper {
 			sellQty -= extraQty;
 		}
 
-		// take the maximum one
-		return buyQty > sellQty ? buyQty : -sellQty;
+		if(isBuy == null) {
+			return buyQty > sellQty ? buyQty : -sellQty;
+		} else if(isBuy) {
+			return buyQty;
+		} else {
+			return -sellQty;
+		}
 	}
 
 	private double getMarginValueByAccountAndSymbol(Account account,
@@ -872,9 +880,9 @@ public class PositionKeeper {
 			String symbol, Quote quote, double extraQty)
 			throws AccountException {
 		double currentMarginQty = getMarginQtyByAccountAndSymbol(account,
-				symbol, 0);
+				symbol, 0, null);
 		double futureMarginQty = getMarginQtyByAccountAndSymbol(account,
-				symbol, extraQty);
+				symbol, extraQty, null);
 		if (Math.abs(currentMarginQty) >= Math.abs(futureMarginQty)) {
 			return true; // reducing qty, ok
 		}
@@ -954,9 +962,9 @@ public class PositionKeeper {
 			String symbol, Quote quote, double extraQty, double ratio, IRefDataChecker refDataChecker)
 			throws AccountException {
 		double currentMarginQty = getMarginQtyByAccountAndSymbol(account,
-				symbol, 0);
+				symbol, 0, null);
 		double futureMarginQty = getMarginQtyByAccountAndSymbol(account,
-				symbol, extraQty);
+				symbol, extraQty, null);
 		if (Math.abs(currentMarginQty) >= Math.abs(futureMarginQty)) {
 			return true; // reducing qty, ok
 		}
@@ -1008,18 +1016,32 @@ public class PositionKeeper {
 			price = QuoteUtils.getValidPrice(quote);
 		}
 
+		AccountSetting accountSetting = null;
+		try {
+			accountSetting = accountKeeper.getAccountSetting(account.getId());
+		} catch (AccountException e) {
+			log.error(e.getMessage(), e);
+		}
+
 		double allowedQty = FxUtils.calculateQtyFromValue(refDataManager, fxConverter, account.getCurrency(), 
 				refData.getSymbol(), account.getCashAvailable() * Default.getMarginCall(), price);
 				
-		double existingMarginQty = getMarginQtyByAccountAndSymbol(account, refData.getSymbol(), 0);
-		if(existingMarginQty > 0 && !orderSide.isBuy() ||
-				existingMarginQty < 0 && orderSide.isSell())
-			allowedQty += existingMarginQty;
+		double lev = leverageManager.getLeverage(refData,
+				accountSetting);
+		allowedQty *= lev;
+
+		double existingMarginQty = Math.abs(getMarginQtyByAccountAndSymbol(account, refData.getSymbol(), 0, orderSide.isBuy()));
+		double oppositeMarginQty = Math.abs(getMarginQtyByAccountAndSymbol(account, refData.getSymbol(), 0, !orderSide.isBuy()));
+		
+		if(oppositeMarginQty > existingMarginQty)
+			allowedQty += oppositeMarginQty - existingMarginQty;
 		
 		long lot =	Math.max(refData.getLotSize(), 1);
-		long rounded = ((long) allowedQty) / lot;
+		long rounded = ((long) allowedQty) / lot * lot;
 		
-		log.info("getMaxOrderQtyAllowed: " + account.getId() + ", " + refData.getSymbol() + "," + allowedQty + ", " + rounded);
+		log.info("getMaxOrderQtyAllowed: " + account.getId() + ", " + refData.getSymbol() + 
+				", " + refData.getMarginRate() + ", " + accountSetting.getLeverageRate() +
+				", " + allowedQty + ", " + rounded);
 		return rounded;
 	}
 

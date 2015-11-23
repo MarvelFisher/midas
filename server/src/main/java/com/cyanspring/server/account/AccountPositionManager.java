@@ -2362,6 +2362,7 @@ public class AccountPositionManager implements IPlugin {
 	}
 
 	public void processMaxOrderQtyAllowedRequestEvent(MaxOrderQtyAllowedRequestEvent event) {
+		log.info("Received " + event);
 		boolean ok = true;
 		String message = null;
 		double allowedQty = 0.0;
