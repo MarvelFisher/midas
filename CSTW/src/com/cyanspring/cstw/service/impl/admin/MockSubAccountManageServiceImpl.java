@@ -59,21 +59,21 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 
 		sub1list = new ArrayList<SubAccountModel>();
 		sub1list.add(new SubAccountModel.Builder().id("sub1.1")
-				.name("account1.1").exchangeAccount(ex1).useableMoney(10000)
+				.name("account1.1").exchangeAccount("ex1").useableMoney(10000)
 				.commissionRate(0.01).build());
 		sub1list.add(new SubAccountModel.Builder().id("sub1.2")
-				.name("account1.2").exchangeAccount(ex1).useableMoney(10000)
+				.name("account1.2").exchangeAccount("ex1").useableMoney(10000)
 				.commissionRate(0.01).build());
 		sub1list.add(new SubAccountModel.Builder().id("sub1.3")
-				.name("account1.3").exchangeAccount(ex1).useableMoney(10000)
+				.name("account1.3").exchangeAccount("ex1").useableMoney(10000)
 				.commissionRate(0.01).build());
 
 		sub2list = new ArrayList<SubAccountModel>();
 		sub2list.add(new SubAccountModel.Builder().id("sub2.1")
-				.name("account2.1").exchangeAccount(ex2).useableMoney(10000)
+				.name("account2.1").exchangeAccount("ex2").useableMoney(10000)
 				.commissionRate(0.01).build());
 		sub2list.add(new SubAccountModel.Builder().id("sub2.2")
-				.name("account2.2").exchangeAccount(ex2).useableMoney(10000)
+				.name("account2.2").exchangeAccount("ex2").useableMoney(10000)
 				.commissionRate(0.01).build());
 		
 		instruList = new ArrayList<InstrumentInfoModel>();
@@ -98,7 +98,8 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 	 */
 	@Override
 	public List<ExchangeAccountModel> getExchangeAccountList() {
-
+		
+		
 		return exlist;
 	}
 
@@ -170,12 +171,12 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 	public void createNewSubAccount(String exchange) {
 		if (exchange.equals("id1")) {
 			sub1list.add(new SubAccountModel.Builder().id("sub1.3")
-					.name("account1.3").exchangeAccount(ex1)
+					.name("account1.3").exchangeAccount("ex1")
 					.useableMoney(10000).commissionRate(0.01).build());
 
 		} else if (exchange.equals("id2")) {
 			sub2list.add(new SubAccountModel.Builder().id("sub2.3")
-					.name("account2.3").exchangeAccount(ex1)
+					.name("account2.3").exchangeAccount("ex1")
 					.useableMoney(10000).commissionRate(0.01).build());
 
 		}

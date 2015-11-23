@@ -238,7 +238,8 @@ public final class ModelTransfer {
 	public static SubAccountModel parseSubAccountModel(
 			ExchangeSubAccount subAccount) {
 		SubAccountModel model = new SubAccountModel.Builder()
-				.id(subAccount.getId()).name(subAccount.getName()).build();
+				.id(subAccount.getId()).name(subAccount.getName())
+				.exchangeAccount(subAccount.getExchangeAccount()).build();
 		return model;
 	}
 

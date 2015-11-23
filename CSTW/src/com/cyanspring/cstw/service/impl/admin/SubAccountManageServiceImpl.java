@@ -5,12 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.cyanspring.common.account.UserGroup;
 import com.cyanspring.common.client.IInstrumentPoolKeeper;
 import com.cyanspring.common.client.IInstrumentPoolKeeper.ModelType;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.pool.ExchangeAccount;
 import com.cyanspring.common.pool.ExchangeSubAccount;
 import com.cyanspring.common.pool.InstrumentPoolRecord;
+import com.cyanspring.cstw.keepermanager.InstrumentPoolKeeperManager;
+import com.cyanspring.cstw.localevent.InstrumentPoolUpdateLocalEvent;
+import com.cyanspring.cstw.model.admin.AssignedModel;
 import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
 import com.cyanspring.cstw.model.admin.InstrumentInfoModel;
 import com.cyanspring.cstw.model.admin.SubAccountModel;
@@ -23,7 +27,7 @@ import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
  * @author Junfeng
  * @create 11 Nov 2015
  */
-public abstract class SubAccountManageServiceImpl extends BasicServiceImpl
+public class SubAccountManageServiceImpl extends BasicServiceImpl
 		implements ISubAccountManagerService {
 
 	private IInstrumentPoolKeeper instrumentPoolKeeper;
@@ -35,7 +39,7 @@ public abstract class SubAccountManageServiceImpl extends BasicServiceImpl
 	}
 
 	public SubAccountManageServiceImpl() {
-
+		instrumentPoolKeeper = InstrumentPoolKeeperManager.getInstance().getInstrumentPoolKeeper();
 	}
 
 	@Override
@@ -92,8 +96,9 @@ public abstract class SubAccountManageServiceImpl extends BasicServiceImpl
 
 	@Override
 	protected List<Class<? extends AsyncEvent>> getReplyEventList() {
-
-		return null;
+		List<Class<? extends AsyncEvent>> list = new ArrayList<Class<? extends AsyncEvent>>();
+		list.add(InstrumentPoolUpdateLocalEvent.class);
+		return list;
 	}
 
 	@Override
@@ -122,6 +127,63 @@ public abstract class SubAccountManageServiceImpl extends BasicServiceImpl
 	public void removeSubAccount(SubAccountModel subAccount) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public List<InstrumentInfoModel> getInstrumentInfoModelListBySubAccountId(
+			String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<AssignedModel> getAssignedModelListBySubAccountId(String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<UserGroup> getAvailableAssigneeList(SubAccountModel subAccount) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void createNewAssignedModel(SubAccountModel subAccount,
+			AssignedModel assigned, int index) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeAssignedUser(SubAccountModel subAccount,
+			AssignedModel assign) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void moveUpExchangeAccount(ExchangeAccountModel exchange) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void moveDownExchangeAccount(ExchangeAccountModel exchange) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void moveUpSubAccount(SubAccountModel subAccount) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void moveDownSubAccount(SubAccountModel subAccount) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

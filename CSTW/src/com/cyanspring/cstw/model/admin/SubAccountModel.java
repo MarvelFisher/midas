@@ -15,7 +15,7 @@ public final class SubAccountModel extends BasicModel{
 
 	private String name;
 
-	private ExchangeAccountModel exchangeAccountModel;
+	private String exchangeAccount;
 
 	private double useableMoney;
 
@@ -29,13 +29,13 @@ public final class SubAccountModel extends BasicModel{
 		this.id = id;
 	}
 
-	public ExchangeAccountModel getExchangeAccountModel() {
-		return exchangeAccountModel;
+	public String getExchangeAccount() {
+		return exchangeAccount;
 	}
 
-	public void setExchangeAccountModel(
-			ExchangeAccountModel exchangeAccountModel) {
-		this.exchangeAccountModel = exchangeAccountModel;
+	public void setExchangeAccount(
+			String exchangeAccount) {
+		this.exchangeAccount = exchangeAccount;
 	}
 
 	public double getUseableMoney() {
@@ -65,7 +65,7 @@ public final class SubAccountModel extends BasicModel{
 	public static class Builder {
 		private String id;
 		private String name;
-		private ExchangeAccountModel exchangeAccountModel;
+		private String exchangeAccount;
 		private double useableMoney;
 		private double commissionRate;
 		
@@ -77,8 +77,8 @@ public final class SubAccountModel extends BasicModel{
 			name = val;		return this;
 		}
 		
-		public Builder exchangeAccount(ExchangeAccountModel val) {
-			exchangeAccountModel = val;		return this;
+		public Builder exchangeAccount(String val) {
+			exchangeAccount = val;		return this;
 		}
 		
 		public Builder useableMoney(double val) {
@@ -97,7 +97,7 @@ public final class SubAccountModel extends BasicModel{
 	private SubAccountModel(Builder builder) {
 		id = builder.id;
 		name = builder.name;
-		exchangeAccountModel = builder.exchangeAccountModel;
+		exchangeAccount = builder.exchangeAccount;
 		useableMoney = builder.useableMoney;
 		commissionRate = builder.commissionRate;
 	}
