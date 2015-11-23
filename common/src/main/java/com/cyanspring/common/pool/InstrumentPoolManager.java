@@ -457,4 +457,9 @@ public class InstrumentPoolManager implements IPlugin {
 		instrumentPoolKeeper.injectInstrumentPoolRecords(instrumentPoolRecords);
 	}
 
+	public void injectUserExchangeSubAccounts(
+			List<UserExchangeSubAccount> userExchangeSubAccounts) {
+		instrumentPoolKeeper
+				.injectUserExchangeSubAccounts(userExchangeSubAccounts);
+	}
 }

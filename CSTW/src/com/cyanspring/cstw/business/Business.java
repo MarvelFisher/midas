@@ -569,7 +569,11 @@ public class Business {
 						.getFirstServer(), IdGenerator.getInstance()
 						.getNextID());
 
-		this.getEventManager().sendEvent(request);
+		try {
+			this.getEventManager().sendRemoteEvent(request);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return true;
 	}
 

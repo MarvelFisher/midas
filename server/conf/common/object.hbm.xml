@@ -192,9 +192,11 @@
 	</class>
 
 	<class name="com.cyanspring.common.pool.AccountPool" table="ANYONE.ACCOUNT_POOL">
-		<id column="ACCOUNT" name="account" type="java.lang.String" />
-		<property column="INSTRUMENT_POOL_ID" name="instrumentPool"
-			type="java.lang.String" />
+		<composite-id>
+			<key-property column="ACCOUNT" name="account" type="java.lang.String" />
+			<key-property column="INSTRUMENT_POOL_ID" name="instrumentPool"
+				type="java.lang.String" />
+		</composite-id>
 	</class>
 
 	<class name="com.cyanspring.common.pool.ExchangeAccount" table="ANYONE.EXCHANGE_ACCOUNT">
@@ -321,6 +323,15 @@
 		<composite-id>
 			<key-property column="MANAGER" name="manager" type="java.lang.String" />
 			<key-property column="MANAGED" name="managed" type="java.lang.String" />
+		</composite-id>
+	</class>
+
+	<class name="com.cyanspring.common.pool.UserExchangeSubAccount"
+		table="ANYONE.USER_EXCHANGE_ACCOUNT_MAPPING">
+		<composite-id>
+			<key-property column="ACCOUNT" name="account" type="java.lang.String" />
+			<key-property column="EXCHANGE_SUB_ACCOUNT_ID" name="exchangeSubAccount"
+				type="java.lang.String" />
 		</composite-id>
 	</class>
 

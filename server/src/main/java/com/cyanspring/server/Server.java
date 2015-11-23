@@ -65,6 +65,7 @@ import com.cyanspring.common.pool.ExchangeSubAccount;
 import com.cyanspring.common.pool.InstrumentPool;
 import com.cyanspring.common.pool.InstrumentPoolManager;
 import com.cyanspring.common.pool.InstrumentPoolRecord;
+import com.cyanspring.common.pool.UserExchangeSubAccount;
 import com.cyanspring.common.server.event.DownStreamReadyEvent;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.server.event.ServerReadyEvent;
@@ -156,6 +157,10 @@ public class Server implements ApplicationContextAware {
 	@Autowired(required = false)
 	@Qualifier("instrumentPoolRecordRecoveryProcessor")
 	IRecoveryProcessor<InstrumentPoolRecord> instrumentPoolRecordRecoveryProcessor;
+
+	@Autowired(required = false)
+	@Qualifier("userExchangeSubAccountRecoveryProcessor")
+	IRecoveryProcessor<UserExchangeSubAccount> userExchangeSubAccountRecoveryProcessor;
 
 	@Autowired(required = false)
 	AccountPositionManager accountPositionManager;
@@ -400,6 +405,13 @@ public class Server implements ApplicationContextAware {
 					.recover();
 			log.info("InstrumentPoolRecords loaded: " + list.size());
 			instrumentPoolManager.injectInstrumentPoolRecords(list);
+		}
+
+		if (null != userExchangeSubAccountRecoveryProcessor) {
+			List<UserExchangeSubAccount> list = userExchangeSubAccountRecoveryProcessor
+					.recover();
+			log.info("UserExchangeSubAccounts loaded: " + list.size());
+			instrumentPoolManager.injectUserExchangeSubAccounts(list);
 		}
 
 		accountPositionManager.endAcountPositionRecovery();
