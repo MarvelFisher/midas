@@ -35,6 +35,7 @@ import com.cyanspring.common.staticdata.IRefDataChecker;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.type.OrdStatus;
+import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.PriceUtils;
@@ -820,18 +821,11 @@ public class PositionKeeper {
 				Map<String, ParentOrder> symbolMap = accountMap.get(symbol);
 				if (null != symbolMap) {
 					for (ParentOrder order : symbolMap.values()) {
-						double price;
-						double orderPrice = order.getPrice();
-						if (order.getOrderType().equals(OrderType.Limit)
-								&& PriceUtils.validPrice(orderPrice)) {
-							price = orderPrice;
-						} else {
-							price = QuoteUtils.getMarketablePrice(quote, order
-									.getSide().isBuy() ? 1 : -1);
-							if (!PriceUtils.validPrice(price)) {
-								price = QuoteUtils.getValidPrice(quote);
-							}
+						double price = QuoteUtils.getMarketablePrice(quote, order.getSide());
+						if (!PriceUtils.validPrice(price)) {
+							price = QuoteUtils.getValidPrice(quote);
 						}
+
 						if (!order.getOrdStatus().isCompleted()) {
 							double value = Math.abs(FxUtils
 									.convertPositionToCurrency(refDataManager,
@@ -1005,6 +999,28 @@ public class PositionKeeper {
 					+ leverage + ", " + quote);
 			return false;
 		}
+	}
+	
+	public double getMaxOrderQtyAllowed(Account account, RefData refData, OrderSide orderSide, 
+			OrderType orderType, double orderPrice, Quote quote) {
+		double price = QuoteUtils.getMarketablePrice(quote, orderSide);
+		if (!PriceUtils.validPrice(price)) {
+			price = QuoteUtils.getValidPrice(quote);
+		}
+
+		double allowedQty = FxUtils.calculateQtyFromValue(refDataManager, fxConverter, account.getCurrency(), 
+				refData.getSymbol(), account.getCashAvailable() * Default.getMarginCall(), price);
+				
+		double existingMarginQty = getMarginQtyByAccountAndSymbol(account, refData.getSymbol(), 0);
+		if(existingMarginQty > 0 && !orderSide.isBuy() ||
+				existingMarginQty < 0 && orderSide.isSell())
+			allowedQty += existingMarginQty;
+		
+		long lot =	Math.max(refData.getLotSize(), 1);
+		long rounded = ((long) allowedQty) / lot;
+		
+		log.info("getMaxOrderQtyAllowed: " + account.getId() + ", " + refData.getSymbol() + "," + allowedQty + ", " + rounded);
+		return rounded;
 	}
 
 	public List<Execution> getExecutions(String account) {

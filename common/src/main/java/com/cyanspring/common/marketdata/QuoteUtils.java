@@ -1,6 +1,7 @@
 package com.cyanspring.common.marketdata;
 
 import com.cyanspring.common.type.OrderSide;
+import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.util.PriceUtils;
 
 public class QuoteUtils {
@@ -84,6 +85,19 @@ public class QuoteUtils {
 			return price;
 		} else {
 			return getMarketablePrice(quote, qty);
+		}
+	}
+	
+	public static double getRiskPrice(OrderType orderType, OrderSide orderSide, double orderPrice, Quote quote) {
+		if (orderType.equals(OrderType.Limit)
+				&& PriceUtils.validPrice(orderPrice)) {
+			return orderPrice;
+		} else {
+			double price = QuoteUtils.getMarketablePrice(quote, orderSide.isBuy() ? 1 : -1);
+			if (!PriceUtils.validPrice(price)) {
+				price = QuoteUtils.getValidPrice(quote);
+			}
+			return price;
 		}
 	}
 }

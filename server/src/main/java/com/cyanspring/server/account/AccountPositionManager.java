@@ -91,6 +91,8 @@ import com.cyanspring.common.event.account.ExecutionUpdateEvent;
 import com.cyanspring.common.event.account.GroupManageeReplyEvent;
 import com.cyanspring.common.event.account.GroupManageeRequestEvent;
 import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
+import com.cyanspring.common.event.account.MaxOrderQtyAllowedReplyEvent;
+import com.cyanspring.common.event.account.MaxOrderQtyAllowedRequestEvent;
 import com.cyanspring.common.event.account.OnUserCreatedEvent;
 import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
@@ -154,6 +156,7 @@ import com.cyanspring.common.staticdata.AccountSaver;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.type.OrderSide;
+import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PerfDurationCounter;
 import com.cyanspring.common.util.PerfFrequencyCounter;
@@ -326,6 +329,7 @@ public class AccountPositionManager implements IPlugin {
 			subscribeToEvent(AllUserSnapshotRequestEvent.class, null);
 			subscribeToEvent(AllAccountSnapshotRequestEvent.class, null);
 			subscribeToEvent(AllPositionSnapshotRequestEvent.class, null);
+			subscribeToEvent(MaxOrderQtyAllowedRequestEvent.class, null);
 		}
 
 		@Override
@@ -2357,6 +2361,42 @@ public class AccountPositionManager implements IPlugin {
 		}
 	}
 
+	public void processMaxOrderQtyAllowedRequestEvent(MaxOrderQtyAllowedRequestEvent event) {
+		boolean ok = true;
+		String message = null;
+		double allowedQty = 0.0;
+		double cashAvailable = 0.0;
+		try {
+			Account account = accountKeeper.getAccount(event.getAccount());
+			if(null == account) {
+					message = MessageLookup.buildEventMessage(
+							ErrorMessage.ACCOUNT_NOT_EXIST, "Account not exist");
+				throw new AccountException(message, ErrorMessage.ACCOUNT_NOT_EXIST);
+			}
+			
+			cashAvailable = account.getCashAvailable();
+			RefData refData = refDataManager.getRefData(event.getSymbol());
+			Quote quote = marketData.get(event.getSymbol());
+			
+			allowedQty = positionKeeper.getMaxOrderQtyAllowed(account, refData, event.getOrderSide(), 
+					event.getOrderType(), event.getPrice(), quote);
+			
+		} catch (Exception e) {
+			ok = false;
+			log.warn(e.getMessage(), e);
+		}
+		
+		MaxOrderQtyAllowedReplyEvent reply = new MaxOrderQtyAllowedReplyEvent(event.getKey(), event.getSender(),
+							ok, event.getTxId(), message, event.getAccount(), event.getSymbol(),
+							allowedQty, cashAvailable);
+		
+		try {
+			eventManager.sendRemoteEvent(reply);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+	
 	private String generateAccountId() {
 		return Default.getAccountPrefix()
 				+ IdGenerator.getInstance().getNextSimpleId();
