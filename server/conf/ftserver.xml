@@ -37,6 +37,22 @@
 		</property>
 	</bean>
 	
+	<bean id="globalMQInfo" class="com.cyanspring.common.SystemInfo">
+		<property name="env">
+			<value>GLOBAL</value>
+		</property>
+		<property name="category">
+			<value>FT-MQ</value>
+		</property>
+		<property name="id">
+			<value>S1</value>
+		</property>
+	</bean>
+	
+	<bean id="globalTransportService" class="com.cyanspring.transport.ActiveMQObjectService">
+		<property name="url" value="failover:(nio://10.0.0.51:60006)?initialReconnectDelay=2000&amp;maxReconnectDelay=5000&amp;maxReconnectAttempts=100"></property>
+	</bean>
+	
 	<bean id="csPubTopic" class="java.lang.String">
 		<constructor-arg value="Test.EB.DownStream.channel" />
 	</bean>
@@ -58,7 +74,7 @@
 		<constructor-arg value="tqt001" />
 	</bean>
 
-	<bean id="dailyExec" class="java.lang.String">
+	<bean id="dailyExec" class="java.lang.String"> <!-- Make sure dailyExec after settlement event -->
 		<constructor-arg value="14:00:00" />
 	</bean>
 
@@ -76,13 +92,6 @@
 		<property name="quoteExtendSegmentSize" value="300"/>
 		<property name="preSubscriptionList">
 			<ref bean="preSubscriptionList" />
-		</property>
-		<property name="sessionMonitor">
-			<map>
-				<entry key="OPEN" value="10000" />   <!-- Unit: msec -->
-				<entry key="PREMARKET" value="0" />
-				<entry key="CLOSE" value="0" />
-			</map>
 		</property>
 		<property name="eventListeners">
 			<list>
@@ -147,7 +156,7 @@
 
 	<!-- Live Trading -->
     <bean id="stopLiveTradingStartTime" class="java.lang.String">
-        <constructor-arg value="13:35:00" />
+        <constructor-arg value="13:45:00" />
     </bean>
     
     <bean id="stopLiveTradingEndTime" class="java.lang.String">
@@ -200,12 +209,13 @@
     			<ref bean="positionStopLossPercent"/> <!-- live trading : position stop loss -->
    				<ref bean="frozenStopLossPercent"/>   <!-- live trading : freeze stop loss -->
    				<ref bean="terminateStopLossPercent"/><!-- live trading : terminate stop loss -->
-                <value>true</value>             <!-- live trading : company live trading (trading Mode)-->
-                <value>true</value>             <!-- live trading : user live trading (stop loss)-->
+                <value>false</value>             <!-- live trading : company live trading (trading Mode)-->
+                <value>false</value>             <!-- live trading : user live trading (stop loss)-->
    				<ref bean="companyStopLossValue"/>    <!-- companyStopLossValue -->
    				<ref bean="frozenStopLossValue"/>     <!-- freezeValue -->
    				<ref bean="terminateStopLossValue"/>  <!-- terminateValue -->
-                <value>DEFAULT</value>          <!-- liveTradingType -->
+                <value>DAY_TRADING</value>          <!-- liveTradingType -->
+                <value>0.0</value>
             </list>
         </property>
     </bean>

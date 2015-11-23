@@ -4,6 +4,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.type.ExecType;
@@ -68,6 +70,8 @@ public class AlertManager extends Compute {
 
 	private Map<String, Quote> quotes = new HashMap<String, Quote>();
 	private Map<String, Object> userLocks = new ConcurrentHashMap<String, Object>();
+	
+	private AlertProcessThread alertProcessor;
 
 	@Override
 	public void SubscirbetoEvents() {
@@ -90,6 +94,8 @@ public class AlertManager extends Compute {
 	public void init() {
 		// TODO Auto-generated method stub
 		loadSQLdata();
+		alertProcessor = new AlertProcessThread(this);
+		alertProcessor.start();
         Calendar cal = Calendar.getInstance();
         LastHeartbeat = cal.getTime();
         setThreadName("AlertManager");
@@ -582,20 +588,20 @@ public class AlertManager extends Compute {
 			return;
 		}
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-		log.debug(String.format("Quote: %s - %s [%.1f@%.2f,%.1f@%.2f,%.1f@%.2f,%s,%s]", 
-				quote.getId(), quote.getSymbol(), quote.getBidVol(), quote.getBid(),
-				quote.getAskVol(), quote.getAsk(), quote.getLastVol(), quote.getLast(), 
-				sdf.format(quote.getTimeStamp()), sdf.format(quote.getTimeSent())));
 		ArrayList<BasePriceAlert> list = symbolPriceAlerts.get(quote
 				.getSymbol());
 		ArrayList<BasePriceAlert> UserPriceList;
 		if (null != list && checkAlertstart) {
 			BasePriceAlert alert;
+			log.debug(String.format("Quote: %s - %s [%.1f@%.2f,%.1f@%.2f,%.1f@%.2f,%s,%s]", 
+					quote.getId(), quote.getSymbol(), quote.getBidVol(), quote.getBid(),
+					quote.getAskVol(), quote.getAsk(), quote.getLastVol(), quote.getLast(), 
+					sdf.format(quote.getTimeStamp()), sdf.format(quote.getTimeSent())));
 			synchronized (list) {
 				for (int i = list.size(); i > 0; i--) {
 					alert = list.get(i - 1);
 					if (ComparePriceQuoto(alert, quotes.get(quote.getSymbol()),
-							quote)) {
+							quote, refdata.getExchange().equals("FX"))) {
 						if (!checkSendFlag(alert))
 						{
 							continue;
@@ -605,70 +611,55 @@ public class AlertManager extends Compute {
 						SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
 								null, null, "txId", PackPriceAlert(alert));
 						SendEvent(sendNotificationRequestEvent);
-						// Add Alert to PastSQL
-						PastPriceAlert pastPriceAlert = new PastPriceAlert(
-								alert.getUserId(), alert.getSymbol(),
-								alert.getPrice(), alert.getDateTime(),
-								alert.getContent());
-						pastPriceAlert.setId(alert.getId());
-			            if (RefDataBitUtil.isForex(refdata.getInstrumentType())) {
-			            	pastPriceAlert.setCommodity("F");
-			            }
-			            else if (RefDataBitUtil.isIndex(refdata.getInstrumentType())) {
-			            	pastPriceAlert.setCommodity("I");
-			            }
-			            else if (RefDataBitUtil.isStock(refdata.getInstrumentType())) {
-			            	pastPriceAlert.setCommodity("S");
-			            }
-						SQLSave(pastPriceAlert);
-						// Add Alert to pastUserPriceAlertList
-						UserPriceList = userPastPriceAlerts.get(alert.getUserId());
-						if (null == UserPriceList) {
-							loadPastPriceAlert(alert.getUserId());
-							UserPriceList = userPastPriceAlerts.get(alert
-									.getUserId());
-							synchronized (UserPriceList) {
-								if (UserPriceList.size() >= 20) {
-									UserPriceList.remove(19);
-									UserPriceList.add(0, pastPriceAlert);
-								} else {
-									UserPriceList.add(0, pastPriceAlert);
-								}
-							}
-						} else {
-							synchronized (UserPriceList) {
-								if (UserPriceList.size() >= 20) {
-									UserPriceList.remove(19);
-									UserPriceList.add(0, pastPriceAlert);
-								} else {
-									UserPriceList.add(0, pastPriceAlert);
-								}
-							}
-						}
-						// Delete Alert from CurSQL
-						CurPriceAlert curPriceAlert = new CurPriceAlert(
-								alert.getUserId(), alert.getSymbol(),
-								alert.getPrice(), setDateTime, alert.getContent());
-						curPriceAlert.setId(alert.getId());
-			            if (RefDataBitUtil.isForex(refdata.getInstrumentType())) {
-			            	curPriceAlert.setCommodity("F");
-			            }
-			            else if (RefDataBitUtil.isIndex(refdata.getInstrumentType())) {
-			            	curPriceAlert.setCommodity("I");
-			            }
-			            else if (RefDataBitUtil.isStock(refdata.getInstrumentType())) {
-			            	curPriceAlert.setCommodity("S");
-			            }
-						SQLDelete(curPriceAlert);
-						// Delete Alert from CurUserPriceAlertList
-						UserPriceList = userPriceAlerts.get(alert.getUserId());
-						if (null == UserPriceList) {
-							log.warn("[processQuoteEvent] : userPriceAlerts data didnt match with SQL");
-						} else {
-							synchronized (UserPriceList) {
-								UserPriceList.remove(alert);
-							}
-						}
+						alertProcessor.putAlert(alert);
+//						// Add Alert to PastSQL
+//						PastPriceAlert pastPriceAlert = new PastPriceAlert(
+//								alert.getUserId(), alert.getSymbol(),
+//								alert.getPrice(), alert.getDateTime(),
+//								alert.getContent());
+//						pastPriceAlert.setId(alert.getId());
+//						pastPriceAlert.setCommodity(refdata.getCommodity());
+//						SQLSave(pastPriceAlert);
+//						// Add Alert to pastUserPriceAlertList
+//						UserPriceList = userPastPriceAlerts.get(alert.getUserId());
+//						if (null == UserPriceList) {
+//							loadPastPriceAlert(alert.getUserId());
+//							UserPriceList = userPastPriceAlerts.get(alert
+//									.getUserId());
+//							synchronized (UserPriceList) {
+//								if (UserPriceList.size() >= 20) {
+//									UserPriceList.remove(19);
+//									UserPriceList.add(0, pastPriceAlert);
+//								} else {
+//									UserPriceList.add(0, pastPriceAlert);
+//								}
+//							}
+//						} else {
+//							synchronized (UserPriceList) {
+//								if (UserPriceList.size() >= 20) {
+//									UserPriceList.remove(19);
+//									UserPriceList.add(0, pastPriceAlert);
+//								} else {
+//									UserPriceList.add(0, pastPriceAlert);
+//								}
+//							}
+//						}
+//						// Delete Alert from CurSQL
+//						CurPriceAlert curPriceAlert = new CurPriceAlert(
+//								alert.getUserId(), alert.getSymbol(),
+//								alert.getPrice(), setDateTime, alert.getContent());
+//						curPriceAlert.setId(alert.getId());
+//						curPriceAlert.setCommodity(refdata.getCommodity());
+//						SQLDelete(curPriceAlert);
+//						// Delete Alert from CurUserPriceAlertList
+//						UserPriceList = userPriceAlerts.get(alert.getUserId());
+//						if (null == UserPriceList) {
+//							log.warn("[processQuoteEvent] : userPriceAlerts data didnt match with SQL");
+//						} else {
+//							synchronized (UserPriceList) {
+//								UserPriceList.remove(alert);
+//							}
+//						}
 						// Delete Alert from List
 						list.remove(alert);
 					}
@@ -677,12 +668,93 @@ public class AlertManager extends Compute {
 		}
 		quotes.put(quote.getSymbol(), quote);
 	}
+	
+	public void processAlert(BasePriceAlert alert)
+	{
+		RefData refdata = getGateway().getRefData(alert.getSymbol());
+		if (refdata == null)
+		{
+			return;
+		}
+		String setDateTime = alert.getDateTime();
+		ArrayList<BasePriceAlert> UserPriceList;
+		// Add Alert to PastSQL
+		PastPriceAlert pastPriceAlert = new PastPriceAlert(
+				alert.getUserId(), alert.getSymbol(),
+				alert.getPrice(), alert.getDateTime(),
+				alert.getContent());
+		pastPriceAlert.setId(alert.getId());
+        if (RefDataBitUtil.isForex(refdata.getInstrumentType())) {
+        	pastPriceAlert.setCommodity("F");
+        }
+        else if (RefDataBitUtil.isIndex(refdata.getInstrumentType())) {
+        	pastPriceAlert.setCommodity("I");
+        }
+        else if (RefDataBitUtil.isStock(refdata.getInstrumentType())) {
+        	pastPriceAlert.setCommodity("S");
+        }
+		SQLSave(pastPriceAlert);
+		// Add Alert to pastUserPriceAlertList
+		UserPriceList = userPastPriceAlerts.get(alert.getUserId());
+		if (null == UserPriceList) {
+			loadPastPriceAlert(alert.getUserId());
+			UserPriceList = userPastPriceAlerts.get(alert
+					.getUserId());
+			synchronized (UserPriceList) {
+				if (UserPriceList.size() >= 20) {
+					UserPriceList.remove(19);
+					UserPriceList.add(0, pastPriceAlert);
+				} else {
+					UserPriceList.add(0, pastPriceAlert);
+				}
+			}
+		} else {
+			synchronized (UserPriceList) {
+				if (UserPriceList.size() >= 20) {
+					UserPriceList.remove(19);
+					UserPriceList.add(0, pastPriceAlert);
+				} else {
+					UserPriceList.add(0, pastPriceAlert);
+				}
+			}
+		}
+		// Delete Alert from CurSQL
+		CurPriceAlert curPriceAlert = new CurPriceAlert(
+				alert.getUserId(), alert.getSymbol(),
+				alert.getPrice(), setDateTime, alert.getContent());
+		curPriceAlert.setId(alert.getId());
+        if (RefDataBitUtil.isForex(refdata.getInstrumentType())) {
+        	curPriceAlert.setCommodity("F");
+        }
+        else if (RefDataBitUtil.isIndex(refdata.getInstrumentType())) {
+        	curPriceAlert.setCommodity("I");
+        }
+        else if (RefDataBitUtil.isStock(refdata.getInstrumentType())) {
+        	curPriceAlert.setCommodity("S");
+        }
+		SQLDelete(curPriceAlert);
+		// Delete Alert from CurUserPriceAlertList
+		UserPriceList = userPriceAlerts.get(alert.getUserId());
+		if (null == UserPriceList) {
+			log.warn("[processQuoteEvent] : userPriceAlerts data didnt match with SQL");
+		} else {
+			synchronized (UserPriceList) {
+				UserPriceList.remove(alert);
+			}
+		}
+		log.debug("Alert " + alert.toString() + " process completed");
+	}
 
 	private boolean ComparePriceQuoto(BasePriceAlert alert,
-			Quote Previousquoto, Quote quote) {
+			Quote Previousquoto, Quote quote, 
+			boolean useMid) {
 		double alertPrice = alert.getPrice();
-		double PreviousPrice = getAlertPrice(Previousquoto);
-		double currentPrice = getAlertPrice(quote);
+		double PreviousPrice = getAlertPrice(Previousquoto, useMid);
+		double currentPrice = getAlertPrice(quote, useMid);
+		if (PriceUtils.isZero(PreviousPrice) || PriceUtils.isZero(currentPrice))
+		{
+			return false;
+		}
 		if (PriceUtils.GreaterThan(alertPrice, PreviousPrice)) {
 			if (PriceUtils.GreaterThan(alertPrice, currentPrice)) {
 				return false;
@@ -1194,6 +1266,7 @@ public class AlertManager extends Compute {
 	public <T> void SQLSave(T object) {
 		Session session = null;
 		try {
+			log.debug("SQLSave " + object.toString());
 			session = sessionFactory.openSession();			
 			Transaction tx = session.beginTransaction();
 			tx.setTimeout(3);
@@ -1214,6 +1287,7 @@ public class AlertManager extends Compute {
 	private <T> void SQLUpdate(T object) {
 		Session session = null;
 		try {
+			log.debug("SQLUpdate " + object.toString());
 			session = sessionFactory.openSession();
 			Transaction tx = session.beginTransaction();
 			session.update(object);
@@ -1230,6 +1304,7 @@ public class AlertManager extends Compute {
 	private <T> void SQLDelete(T object) {
 		Session session = null;
 		try {
+			log.debug("SQLDelete " + object.toString());
 			session = sessionFactory.openSession();
 			Transaction tx = session.beginTransaction();
 			session.delete(object);
@@ -1270,8 +1345,11 @@ public class AlertManager extends Compute {
 		}
 	}
 
-	private double getAlertPrice(Quote quote) {
-		return (quote.getBid() + quote.getAsk()) / 2;
+	private double getAlertPrice(Quote quote, boolean useMid) {
+		if (useMid)
+			return (quote.getBid() + quote.getAsk()) / 2;
+		else
+			return quote.getLast();
 	}
 
 	public ParseData PackPriceAlert(BasePriceAlert priceAlert) {
@@ -1395,4 +1473,63 @@ public class AlertManager extends Compute {
     	return userLocks.get(userID);
     }
 
+}
+
+class AlertProcessThread extends Thread
+{
+	private static final Logger log = LoggerFactory
+			.getLogger(AlertManager.class);
+	
+	private LinkedBlockingQueue<BasePriceAlert> m_q = new LinkedBlockingQueue<BasePriceAlert>();
+	private AlertManager manager;
+	private int m_queueMaxSize = 0;
+	
+	public AlertProcessThread(AlertManager manager)
+	{
+		this.setName("Alert-Processor-thread");
+		this.manager = manager;
+	}
+	
+	public void putAlert(BasePriceAlert alert)
+	{
+		try
+		{
+			log.info("Put " + alert.toString());
+			m_q.put(alert);
+		}
+		catch (InterruptedException e)
+		{
+			log.error(e.getMessage(), e);
+		}
+	}
+	
+	@Override
+	public void run()
+	{
+		log.info("Alert-Processor-thread start");
+		long lTimeOut = 50;
+		BasePriceAlert alert;
+		while (true)
+		{
+			try
+			{
+				alert = m_q.poll(lTimeOut, TimeUnit.MILLISECONDS);
+			}
+			catch (InterruptedException e)
+			{
+				alert = null;
+				log.error(e.getMessage(), e);
+			}
+			// log max queue size
+			if (m_queueMaxSize < m_q.size())
+			{
+				m_queueMaxSize = m_q.size();
+				log.info("Alert-Processor-thread QueueMaxSize=[" + m_queueMaxSize + "]");
+			}
+			if (alert != null)
+			{
+				manager.processAlert(alert);
+			}
+		}
+	}
 }

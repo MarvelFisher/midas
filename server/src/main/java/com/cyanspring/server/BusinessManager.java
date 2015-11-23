@@ -18,13 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.cyanspring.common.event.account.*;
-import com.cyanspring.common.order.RiskOrderController;
-import com.cyanspring.common.position.PositionKeeper;
-import com.cyanspring.common.staticdata.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -33,6 +29,7 @@ import org.springframework.context.ApplicationContextAware;
 import webcurve.util.PriceUtils;
 
 import com.cyanspring.common.Clock;
+import com.cyanspring.common.Default;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountException;
 import com.cyanspring.common.account.AccountKeeper;
@@ -40,6 +37,7 @@ import com.cyanspring.common.account.AccountSetting;
 import com.cyanspring.common.account.OpenPosition;
 import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.business.FieldDef;
+import com.cyanspring.common.business.GlobalSetting;
 import com.cyanspring.common.business.MultiInstrumentStrategyDisplayConfig;
 import com.cyanspring.common.business.OrderException;
 import com.cyanspring.common.business.OrderField;
@@ -54,6 +52,12 @@ import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
+import com.cyanspring.common.event.account.ResetAccountReplyEvent;
+import com.cyanspring.common.event.account.ResetAccountReplyType;
+import com.cyanspring.common.event.account.ResetAccountRequestEvent;
+import com.cyanspring.common.event.info.GlobalSettingReplyEvent;
+import com.cyanspring.common.event.info.GlobalSettingRequestEvent;
 import com.cyanspring.common.event.livetrading.LiveTradingEndEvent;
 import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.marketsession.MarketSessionEvent;
@@ -86,6 +90,12 @@ import com.cyanspring.common.marketsession.MarketSessionType;
 import com.cyanspring.common.marketsession.WeekDay;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
+import com.cyanspring.common.order.RiskOrderController;
+import com.cyanspring.common.position.PositionKeeper;
+import com.cyanspring.common.staticdata.AbstractTickTable;
+import com.cyanspring.common.staticdata.IRefDataManager;
+import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.common.staticdata.TickTableManager;
 import com.cyanspring.common.strategy.GlobalStrategySettings;
 import com.cyanspring.common.strategy.IStrategy;
 import com.cyanspring.common.strategy.IStrategyContainer;
@@ -110,6 +120,7 @@ import com.cyanspring.server.validation.ParentOrderValidator;
 import com.cyanspring.strategy.multiinstrument.MultiInstrumentStrategy;
 import com.cyanspring.strategy.singleinstrument.SingleInstrumentStrategy;
 import com.cyanspring.strategy.singleorder.SingleOrderStrategy;
+import com.mchange.v2.codegen.bean.BeangenUtils;
 
 public class BusinessManager implements ApplicationContextAware {
 	private static final Logger log = LoggerFactory
@@ -202,7 +213,7 @@ public class BusinessManager implements ApplicationContextAware {
 			subscribeToEvent(CancelPendingOrderEvent.class, null);
 			subscribeToEvent(IndexSessionEvent.class, null);
 			subscribeToEvent(TickTableRequestEvent.class, null);
-
+			subscribeToEvent(GlobalSettingRequestEvent.class, null);
 		}
 
 		@Override
@@ -610,39 +621,47 @@ public class BusinessManager implements ApplicationContextAware {
 		boolean ok = true;
 		String message = null;
 		ErrorMessage clientMessage = null;
-		try {
-			transactionValidator.checkClosePosition(event, event.getAccount());
+		String eventAccount = event.getAccount();
+		String eventSymbol = event.getSymbol();
+		String eventSender = event.getSender();
+		String eventKey = event.getKey();
+		String eventTxId = event.getTxId();
+		OrderReason eventReason = event.getReason();
+		double eventQty = event.getQty();
 
-			Account account = accountKeeper.getAccount(event.getAccount());
+		try {
+			transactionValidator.checkClosePosition(event, eventAccount);
+
+			Account account = accountKeeper.getAccount(eventAccount);
 			if (null == account) {
 				clientMessage = ErrorMessage.ACCOUNT_NOT_EXIST;
-				throw new Exception("Cant find this account: " + account);
+				throw new Exception("Cant find this account: " + eventAccount);
 			}
 
-			String symbol = event.getSymbol();
-			RefData refData = refDataManager.getRefData(symbol);
+
+			RefData refData = refDataManager.getRefData(eventSymbol);
 			if (null == refData) {
 				clientMessage = ErrorMessage.SYMBOL_NOT_FOUND;
-				throw new Exception("Can't find this symbol: " + symbol);
+				throw new Exception("Can't find this symbol: " + eventSymbol);
 			}
-			checkClosePositionPending(event.getAccount(), event.getSymbol());
+			checkClosePositionPending(eventAccount, eventSymbol);
 
 			OpenPosition position = positionKeeper.getOverallPosition(account,
-					symbol);
+					eventSymbol);
 			double qty = Math.abs(position.getAvailableQty());
 
 			if (PriceUtils.isZero(qty)) {
 				clientMessage = ErrorMessage.POSITION_NOT_FOUND;
 				throw new Exception(
-						"Account doesn't have a position at this symbol");
+						"Account " + eventAccount + " doesn't have a position at symbol " + eventSymbol);
 
 			}
 
-			if (!PriceUtils.isZero(event.getQty())) {
-				qty = Math.min(qty, event.getQty());
+			if (!PriceUtils.isZero(eventQty)) {
+				qty = Math.min(qty, eventQty);
 			}
 
-            processClosePosition(event.getSender(), event.getTxId(), event.getKey(), event.getReason(),
+            processClosePosition(eventSender, eventTxId, eventKey, eventReason,
                     account, position.getSymbol(), position.getQty() > 0 ? OrderSide.Sell: OrderSide.Buy, qty);
 
 		} catch (AccountException ae) {
@@ -663,8 +682,8 @@ public class BusinessManager implements ApplicationContextAware {
 
 		try {
 			eventManager.sendLocalOrRemoteEvent(new ClosePositionReplyEvent(
-					event.getKey(), event.getSender(), event.getAccount(),
-					event.getSymbol(), event.getTxId(), ok, message));
+					eventKey, eventSender, eventAccount,
+					eventSymbol, eventTxId, ok, message));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -1200,6 +1219,45 @@ public class BusinessManager implements ApplicationContextAware {
 		log.info("Schedule cancel pending order event at {}", cal.getTime());
 	}
 
+	public void processGlobalSettingRequestEvent(GlobalSettingRequestEvent event){
+		
+		GlobalSetting setting = new GlobalSetting();
+		
+		setting.setAccount(Default.getAccount());
+		setting.setAccountCash(Default.getAccountCash());
+		setting.setAccountPrefix(Default.getAccountPrefix());
+		setting.setCommission(Default.getCommission());
+		setting.setCommissionMin(Default.getCommissionMin());
+		setting.setCompanyStopLossValue(Default.getCompanyStopLossValue());
+		setting.setCreditPartial(Default.getCreditPartial());
+		setting.setCurrency(Default.getCurrency());
+		setting.setFreezePercent(Default.getFreezePercent());
+		setting.setFreezeValue(Default.getFreezeValue());
+		setting.setLiveTrading(Default.isLiveTrading());
+		setting.setLiveTradingType(Default.getLiveTradingType());
+		setting.setMarginCall(Default.getMarginCall());
+		setting.setMarginCut(Default.getMarginCut());
+		setting.setMarginTimes(Default.getMarginTimes());
+		setting.setMarket(Default.getMarket());
+		setting.setOrderQuantity(Default.getOrderQuantity());
+		setting.setPositionStopLoss(Default.getPositionStopLoss());
+		setting.setSettlementDays(Default.getSettlementDays());
+		setting.setStopLossPercent(Default.getStopLossPercent());
+		setting.setTerminatePecent(Default.getTerminatePecent());
+		setting.setTerminateValue(Default.getTerminateValue());
+		setting.setTimeZone(Default.getTimeZone());
+		setting.setUser(Default.getUser());
+		setting.setUserLiveTrading(Default.isUserLiveTrading());
+			
+		GlobalSettingReplyEvent reply = 
+				new GlobalSettingReplyEvent(event.getKey(),event.getSender(),setting);
+		try {
+			eventManager.sendRemoteEvent(reply);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+	
 	public void processTickTableRequestEvent(TickTableRequestEvent event) {
 		try {
 			String symbol = event.getSymbol();

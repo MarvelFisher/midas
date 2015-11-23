@@ -33,7 +33,7 @@ public class SHFStrategy extends AbstractRefDataStrategy {
 	@Override
     public List<RefData> updateRefData(RefData refData) {
 		// Get settlement date in current month for contract policy use
-    	Calendar cal = Calendar.getInstance();
+    	Calendar cal = super.getCal();
     	setSettlementDate(refData, cal);
 		List<RefData> lstRefData = super.updateRefData(refData);
 

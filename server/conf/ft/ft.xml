@@ -27,6 +27,7 @@
 		</property>
 		<property name="plugins">
 			<list>
+				<ref bean="genericAsyncEventProcessor"/>
 				<ref bean="marketSessionUtil" />
 				<ref bean="apiBridgeManager" />
 				<ref bean="indexMarketSessionManager" />
@@ -38,6 +39,7 @@
 				<ref bean="validationDataProvider" />
 				<ref bean="statisticManager" />
 				<ref bean="systemSuspendValidator" />
+				<ref bean="coinManager" />
 				<ref bean="liveTradingSession" />
 			</list>
 		</property>
@@ -48,6 +50,10 @@
 				<entry key="RefData" value="false" />
 			</map>
 		</property>
+	</bean>
+	
+	<bean id="genericAsyncEventProcessor" class="com.cyanspring.common.event.GenericAsyncEventProcessor">
+		<property name="eventManager" ref="eventManager"></property>
 	</bean>
 
 	<bean id="transactionValidator"
@@ -81,6 +87,13 @@
 				<ref bean="apiBridgeManager" />
 			</list>
 		</property>
+	</bean>
+
+	<bean id="globalEventManager" class="com.cyanspring.event.RemoteEventManager">
+		<constructor-arg>
+			<ref bean="globalTransportService" />
+		</constructor-arg>
+		<property name="embedBroker" value="false"/>
 	</bean>
 
 	<bean id="apiBridgeManager" class="com.cyanspring.server.api.ApiBridgeManager">
@@ -171,8 +184,8 @@
 		<property name="todayOnly" value="false" />
 		<property name="checkEmailUnique" value="onlyExist" />
 		<property name="checkPhoneUnique" value="noCheck" />
-		<property name="syncCentralDb" value="false" />
-		<property name="useLtsGateway" value="true" />
+		<property name="syncCentralDb" value="true" />
+		<property name="useLtsGateway" value="false" />
 	</bean>
 
 	<bean id="positionRecoveryProcessor" class="com.cyanspring.server.PositionRecoveryProcessor">
@@ -289,7 +302,7 @@
 	<bean id="instrumentPoolKeeper" class="com.cyanspring.common.pool.InstrumentPoolKeeper">
 	</bean>
 
-	<bean id="fxConverter" class="com.cyanspring.server.fx.FxConverter">
+	<bean id="fxConverter" class="com.cyanspring.common.fx.FxConverter">
 	</bean>
 
 	<bean id="leverageManager" class="com.cyanspring.server.account.LeverageManager">
@@ -344,6 +357,7 @@
 		</constructor-arg>
 		<constructor-arg>
 			<list>
+				<ref bean="avroAdaptor" />
 			</list>
 		</constructor-arg>
 	</bean>
@@ -355,6 +369,26 @@
 		<property name="checkSingleSide" value="true" />
 	</bean>
 
+	<bean id="avroAdaptor" class="com.cyanspring.adaptor.avro.AvroAdaptor">
+		<property name="connections">
+			<list>
+				<ref bean="avroDownStreamConnection"/>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="avroDownStreamConnection" class="com.cyanspring.adaptor.avro.AvroDownStreamConnection">
+		<property name="downStreamEventSender" ref="avroEventSender"></property>
+		<property name="id" value="avro01"></property>
+		<property name="exchangeAccount" value="YF01"></property>
+	</bean>
+	
+	<bean id="avroEventSender" class="com.cyanspring.adaptor.avro.AvroEventSender">	
+		<constructor-arg>
+			<ref bean="transportService"/>
+		</constructor-arg>
+	</bean>
+
 	<bean id="quoteCleaner" class="com.cyanspring.common.marketdata.WindQuoteCleaner" />
 	<bean id="quoteExtendCleaner" class="com.cyanspring.common.marketdata.QuoteExtendCleaner" />
 
@@ -362,28 +396,6 @@
 		<property name="tplPath">
 			<value>refdata/template/template_FT.xml</value>
 		</property>
-	</bean>
-
-	<bean id="categoryFilter" class="com.cyanspring.common.filter.CategoryFilter">
-		<property name="refDataTplLoader" ref="refDataTplLoader"></property>
-	</bean>
-
-	<bean id="itypeFilter" class="com.cyanspring.common.filter.ITypeFilter">
-		<property name="types">
-			<list>
-				<value>FUTURES_FT</value>
-				<value>EXCHANGE_INDEX</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="refDataFilter" class="com.cyanspring.common.filter.RefDataFilter">
-		<constructor-arg>
-			<list>
-				<ref bean="categoryFilter" />
-				<ref bean="itypeFilter" />
-			</list>
-		</constructor-arg>
 	</bean>
 
 	<bean id="indexMarketSessionManager"
@@ -404,18 +416,24 @@
 		</constructor-arg>
 	</bean>
 
-	<bean id="twfStrategy" class="com.cyanspring.common.staticdata.fu.TWFStrategy">
+	<bean id="twfStrategy" class="com.cyanspring.common.staticdata.strategy.TWFStrategy">
 		<property name="weekOfMonth">
 			<value>3</value>
 		</property>
 		<property name="dayOfWeek">
 			<value>4</value><!-- Calendar.WEDNESDAY -->
 		</property>
-		<property name="settlementTime">
-			<!-- The value must be aligned with the CLOSE time of SettlementSession 
-				in FITXSessionState.xml/FIMTXSessionState.xml -->
-			<value>13:30:00</value><!-- HH:mm:ss -->
-		</property>
+	</bean>
+	
+		<!-- coin control -->
+	<bean id="coinManager" class="com.cyanspring.server.account.CoinManager">
+		<property name="activePositionCoinControl" value="true"></property>
+		<property name="activeDailyCoinControl" value="true"></property>
+		<property name="activeTrailingStopCoinControl" value="true"></property>
+		<property name="activeDayTradingModeCoinControl" value="true"></property>
+	</bean>
+	
+	<bean id="coinControlRecoveryProcessor" class="com.cyanspring.server.CoinControlRecoveryProcessor">
 	</bean>
 
 </beans>

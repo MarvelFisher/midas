@@ -50,7 +50,11 @@ import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.ScheduleManager;
+import com.cyanspring.common.event.account.AccountClosedPositionSnapshotReplyEvent;
+import com.cyanspring.common.event.account.AccountClosedPositionSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AccountDynamicUpdateEvent;
+import com.cyanspring.common.event.account.AccountExecutionSnapshotReplyEvent;
+import com.cyanspring.common.event.account.AccountExecutionSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AccountSettingSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AccountSettingSnapshotRequestEvent;
 import com.cyanspring.common.event.account.AccountSnapshotReplyEvent;
@@ -87,6 +91,8 @@ import com.cyanspring.common.event.account.ExecutionUpdateEvent;
 import com.cyanspring.common.event.account.GroupManageeReplyEvent;
 import com.cyanspring.common.event.account.GroupManageeRequestEvent;
 import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
+import com.cyanspring.common.event.account.MaxOrderQtyAllowedReplyEvent;
+import com.cyanspring.common.event.account.MaxOrderQtyAllowedRequestEvent;
 import com.cyanspring.common.event.account.OnUserCreatedEvent;
 import com.cyanspring.common.event.account.OpenPositionDynamicUpdateEvent;
 import com.cyanspring.common.event.account.OpenPositionUpdateEvent;
@@ -150,6 +156,7 @@ import com.cyanspring.common.staticdata.AccountSaver;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.type.OrderSide;
+import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PerfDurationCounter;
 import com.cyanspring.common.util.PerfFrequencyCounter;
@@ -284,9 +291,9 @@ public class AccountPositionManager implements IPlugin {
 			subscribeToEvent(AccountSnapshotRequestEvent.class, null);
 			subscribeToEvent(MarketDataReadyEvent.class, null);
 			subscribeToEvent(AccountSettingSnapshotRequestEvent.class, null);
+			subscribeToEvent(AccountClosedPositionSnapshotRequestEvent.class, null);
+			subscribeToEvent(AccountExecutionSnapshotRequestEvent.class, null);
 			subscribeToEvent(ChangeAccountSettingRequestEvent.class, null);
-			subscribeToEvent(AllAccountSnapshotRequestEvent.class, null);
-			subscribeToEvent(AllPositionSnapshotRequestEvent.class, null);
 			subscribeToEvent(OnUserCreatedEvent.class, null);
 			subscribeToEvent(TradeDateEvent.class, null);
 			subscribeToEvent(IndexSessionEvent.class, null);
@@ -296,14 +303,12 @@ public class AccountPositionManager implements IPlugin {
 			subscribeToEvent(CreateGroupManagementEvent.class, null);
 			subscribeToEvent(DeleteGroupManagementEvent.class, null);
 			subscribeToEvent(GroupManageeRequestEvent.class, null);
-			subscribeToEvent(CSTWUserLoginEvent.class, null);
-			subscribeToEvent(AllUserSnapshotRequestEvent.class, null);
+			subscribeToEvent(CSTWUserLoginEvent.class, null);			
 			subscribeToEvent(ChangeUserRoleEvent.class, null);
 			subscribeToEvent(AddCashEvent.class, null);
 			subscribeToEvent(ChangeAccountStateRequestEvent.class, null);
 			subscribeToEvent(ManualClosePositionRequestEvent.class, null);
-			subscribeToEvent(UpdateOpenPositionPriceEvent.class, null);
-			subscribeToEvent(OverAllPositionRequestEvent.class, null);
+			subscribeToEvent(UpdateOpenPositionPriceEvent.class, null);			
 			subscribeToEvent(RateConverterRequestEvent.class, null);
 		}
 
@@ -320,6 +325,11 @@ public class AccountPositionManager implements IPlugin {
 		public void subscribeToEvents() {
 			subscribeToEvent(UpdateParentOrderEvent.class, null);
 			subscribeToEvent(UpdateChildOrderEvent.class, null);
+			subscribeToEvent(OverAllPositionRequestEvent.class, null);
+			subscribeToEvent(AllUserSnapshotRequestEvent.class, null);
+			subscribeToEvent(AllAccountSnapshotRequestEvent.class, null);
+			subscribeToEvent(AllPositionSnapshotRequestEvent.class, null);
+			subscribeToEvent(MaxOrderQtyAllowedRequestEvent.class, null);
 		}
 
 		@Override
@@ -560,7 +570,45 @@ public class AccountPositionManager implements IPlugin {
 		timerProcessor.uninit();
 		eventMultiProcessor.uninit();
 	}
+	
+	public void processAccountExecutionSnapshotRequestEvent(AccountExecutionSnapshotRequestEvent event){
 
+	    List<Execution> executions =  null;
+	    log.info("ExecutionSnapshotRequestEvent txid:{} , accountId:{}",event.getTxId(),event.getAccountId());
+		if(StringUtils.hasText(event.getAccountId())){
+			executions = positionKeeper.getExecutions(event.getAccountId());
+		}
+	    
+	    AccountExecutionSnapshotReplyEvent reply = new AccountExecutionSnapshotReplyEvent(
+				event.getKey(), event.getSender(),event.getAccountId(),
+				event.getTxId(), executions);
+
+		try {
+			eventManager.sendRemoteEvent(reply);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+	
+	public void processAccountClosedPositionSnapshotRequestEvent(AccountClosedPositionSnapshotRequestEvent event){
+	    
+		List<ClosedPosition> closedPositions = null;
+	    log.info("ClosedPositionSnapshotRequestEvent txid:{} , accountId:{}",event.getTxId(),event.getAccountId());
+		if(StringUtils.hasText(event.getAccountId())){
+			 closedPositions = positionKeeper.getClosedPositions(event.getAccountId());
+		}
+		
+		AccountClosedPositionSnapshotReplyEvent reply = new AccountClosedPositionSnapshotReplyEvent(
+				event.getKey(), event.getSender(),event.getAccountId(),
+				event.getTxId(), closedPositions);
+
+		try {
+			eventManager.sendRemoteEvent(reply);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+	
 	public void processRateConverterRequestEvent(RateConverterRequestEvent event) {
 		try {
 			RateConverterReplyEvent reply = new RateConverterReplyEvent(
@@ -1092,7 +1140,7 @@ public class AccountPositionManager implements IPlugin {
 	}
 
 	public void processCSTWUserLoginEvent(CSTWUserLoginEvent event) {
-    	String id = event.getId();
+		String id = event.getId();
     	String pwd = event.getPassword();
     	boolean isOk = false;
     	String message = "";
@@ -1115,7 +1163,6 @@ public class AccountPositionManager implements IPlugin {
     			accountList = new ArrayList<>();
     		
 	    	if(accountList.size() < limitUser){
-	    		log.info("get all Account:{}",accountList.size());
 	    		for(Account account:accountList){
 	    			if(account != null){
 	    				user2AccountMap.put(account.getId(), account);
@@ -1133,7 +1180,6 @@ public class AccountPositionManager implements IPlugin {
     		}
     		return;
 		}
-
 
     	try{
 	    	if (!StringUtils.hasText(id) || !StringUtils.hasText(pwd)) {
@@ -1156,26 +1202,39 @@ public class AccountPositionManager implements IPlugin {
 						ErrorMessage.CSTW_LOGIN_FAILED);
 			}
 
-	    	if (!StringUtils.hasText(message)) {
-				isOk =true;
-			}
-
 	    	userGroup = userKeeper.getUserGroup(id);
 	    	accountList = accountKeeper.getAccounts(id);
 	    	if ( null == userGroup ) {
 	    		userGroup = new UserGroup(id,user.getRole());
 	    	}
+	    	
+	    	if(!userGroup.getRole().allowLogin()){
+				throw new UserException("This user not allow to login",
+						ErrorMessage.CSTW_LOGIN_FAILED);
+	    	}
+	    	
+	    	if (!StringUtils.hasText(message)) {
+				isOk =true;
+			}
+	    	
 	    	user2AccountMap = new HashMap<>();
-	    	user2AccountMap.put(id, accountList.get(0));
+	    	if(null != accountList && !accountList.isEmpty())
+	    		user2AccountMap.put(id, accountList.get(0));
+	    	
 			for (UserGroup ug : userGroup.getManageeSet()) {
+				List <Account>tempList = accountKeeper.getAccounts(ug.getUser());
+				if( null == tempList || tempList.isEmpty())
+					continue;
+				
 				user2AccountMap.put(ug.getUser(),
-						accountKeeper.getAccounts(ug.getUser()).get(0));
+						tempList.get(0));
 			}
 	    	log.info("CSTW Login success:{} - {}",id,userGroup.getRole());
 			user.setLastLogin(Clock.getInstance().now());
 			eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));
 
     	}catch(UserException e) {
+    		isOk = false;
     		message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
     		log.info("CSTW Login fail:{} - {}",id,message);
     	}
@@ -2302,6 +2361,43 @@ public class AccountPositionManager implements IPlugin {
 		}
 	}
 
+	public void processMaxOrderQtyAllowedRequestEvent(MaxOrderQtyAllowedRequestEvent event) {
+		log.info("Received " + event);
+		boolean ok = true;
+		String message = null;
+		double allowedQty = 0.0;
+		double cashAvailable = 0.0;
+		try {
+			Account account = accountKeeper.getAccount(event.getAccount());
+			if(null == account) {
+					message = MessageLookup.buildEventMessage(
+							ErrorMessage.ACCOUNT_NOT_EXIST, "Account not exist");
+				throw new AccountException(message, ErrorMessage.ACCOUNT_NOT_EXIST);
+			}
+			
+			cashAvailable = account.getCashAvailable();
+			RefData refData = refDataManager.getRefData(event.getSymbol());
+			Quote quote = marketData.get(event.getSymbol());
+			
+			allowedQty = positionKeeper.getMaxOrderQtyAllowed(account, refData, event.getOrderSide(), 
+					event.getOrderType(), event.getPrice(), quote);
+			
+		} catch (Exception e) {
+			ok = false;
+			log.warn(e.getMessage(), e);
+		}
+		
+		MaxOrderQtyAllowedReplyEvent reply = new MaxOrderQtyAllowedReplyEvent(event.getKey(), event.getSender(),
+							ok, event.getTxId(), message, event.getAccount(), event.getSymbol(),
+							allowedQty, cashAvailable);
+		
+		try {
+			eventManager.sendRemoteEvent(reply);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+	
 	private String generateAccountId() {
 		return Default.getAccountPrefix()
 				+ IdGenerator.getInstance().getNextSimpleId();

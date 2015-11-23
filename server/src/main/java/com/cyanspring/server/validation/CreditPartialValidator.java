@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import webcurve.util.PriceUtils;
 
+import com.cyanspring.common.Default;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountKeeper;
 import com.cyanspring.common.business.OrderField;
@@ -36,11 +37,11 @@ public class CreditPartialValidator implements IOrderValidator {
 	IRefDataManager refDataManager;
 
 	private IRefDataChecker refDataChecker;
-	private double ratio = 0.2;
 	
 	@Override
 	public void validate(Map<String, Object> map, ParentOrder order)
 			throws OrderValidationException {
+		
 		if(null == accountKeeper || null == positionKeeper)
 			return;
 
@@ -64,9 +65,11 @@ public class CreditPartialValidator implements IOrderValidator {
 				Account account = accountKeeper.getAccount(accountId);
 				OrderSide side = (OrderSide)map.get(OrderField.SIDE.value());
 				double qty = (Double)map.get(OrderField.QUANTITY.value());
-				if(!positionKeeper.checkPartialCreditByAccountAndSymbol(account, symbol, quote, 
-						side.isBuy()?qty:-qty, ratio))
-					throw new OrderValidationException("Order execeeds account value percentage of " + ratio, ErrorMessage.ORDER_OVER_ACCOUNT_VALUE_PERCENTAGE);
+
+				if(!positionKeeper.checkPartialCreditByAccountAndRefDataChecker(account, symbol, quote, 
+						side.isBuy()?qty:-qty, Default.getCreditPartial(), refDataChecker))
+					throw new OrderValidationException("Order execeeds account value percentage of " + Default.getCreditPartial(), ErrorMessage.ORDER_OVER_ACCOUNT_VALUE_PERCENTAGE);
+
 			} else { //amemnd order
 				RefData refData = refDataManager.getRefData(order.getSymbol());
 				if (refData == null)
@@ -93,9 +96,10 @@ public class CreditPartialValidator implements IOrderValidator {
 				
 				qty -= order.getQuantity();
 				
-				if(!positionKeeper.checkPartialCreditByAccountAndSymbol(account, order.getSymbol(), quote, 
-						order.getSide().isBuy()?qty:-qty, ratio))
-					throw new OrderValidationException("Order execeeds account value percentage of " + ratio, ErrorMessage.ORDER_OVER_ACCOUNT_VALUE_PERCENTAGE);
+				if(!positionKeeper.checkPartialCreditByAccountAndRefDataChecker(account, order.getSymbol(), quote, 
+						order.getSide().isBuy()?qty:-qty, Default.getCreditPartial(), refDataChecker))
+					throw new OrderValidationException("Order execeeds account value percentage of " + Default.getCreditPartial(), ErrorMessage.ORDER_OVER_ACCOUNT_VALUE_PERCENTAGE);
+
 			}
 		} catch(OrderValidationException e) {
 			throw e;
@@ -111,14 +115,4 @@ public class CreditPartialValidator implements IOrderValidator {
 	public void setRefDataChecker(IRefDataChecker refDataChecker) {
 		this.refDataChecker = refDataChecker;
 	}
-
-	public double getRatio() {
-		return ratio;
-	}
-
-	public void setRatio(double ratio) {
-		this.ratio = ratio;
-	}
-
-	
 }

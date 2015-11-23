@@ -33,7 +33,16 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 	protected static final Logger log = LoggerFactory.getLogger(AbstractRefDataStrategy.class);
 	private MarketSessionUtil marketSessionUtil;
 	private Calendar cal;
-    private final String CONTRACT_POLICY_PACKAGE = "com.cyanspring.common.staticdata.policy";
+
+    public Calendar getCal() {
+		return cal;
+	}
+
+	public void setCal(Calendar cal) {
+		this.cal = cal;
+	}
+
+	private final String CONTRACT_POLICY_PACKAGE = "com.cyanspring.common.staticdata.policy";
     private final String MONTH_PATTERN_YYYYMM = "${YYYYMM}";
     private final String MONTH_PATTERN_YYMM = "${YYMM}";
     private final String MONTH_PATTERN_YMM = "${YMM}";
@@ -92,6 +101,8 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 			};
 		}
 
+		policy.init(this.cal);
+
 		List<RefData> lstRefData = new ArrayList<>();
 		List<String> lstContractMonth = policy.getContractMonths(refData);
 		int num = 0;
@@ -122,12 +133,14 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 			data.setSymbol(symbol);
 			data.setRefSymbol(refData.getRefSymbol().replace(SEQ_PATTERN, seq));
 			String code = refData.getCode();
-			if (code != null) {
+			if (code != null && code.length() > 0) {
 				code = code.replace(MONTH_PATTERN_YYYYMM, yyyymm);
 				data.setCode(code);
+			} else {
+				data.setCode(data.getRefSymbol());
 			}
 			String subscribeSymbol = refData.getSubscribeSymbol();
-			if (subscribeSymbol != null) {
+			if (subscribeSymbol != null && subscribeSymbol.length() > 0) {
 				subscribeSymbol = subscribeSymbol.replace(MONTH_PATTERN_YYYYMM, yyyymm);
 				data.setSubscribeSymbol(subscribeSymbol);
 			}
@@ -141,6 +154,13 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 						hotOne = data;
 					}
 				}
+			}
+
+			// 動力煤 TC 合约文本运行至 TC604合约摘牌。
+			// 動力煤 ZC 合约文本自 ZC605 合约起执行。
+			// TODO 2016年5月起, 需將 TC 自 template_FC 移除, 改用 ZC 並拿掉此段 code
+			if (category.equals("TC") && Integer.parseInt(ymm) > 604) {
+				convertTC2ZC(data);
 			}
 
 			lstRefData.add(data);
@@ -270,5 +290,13 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 		return contractPolicy;
 	}
 
+	private void convertTC2ZC(RefData data) {
+		data.setCategory("ZC");
+		data.setSymbol(data.getSymbol().replace("TC", "ZC"));
+		data.setRefSymbol(data.getRefSymbol().replace("TC", "ZC"));
+		data.setENDisplayName(data.getENDisplayName().replace("TC", "ZC"));
+		data.setCode(data.getCode().replace("TC", "ZC"));
+		data.setPricePerUnit(100);
+	}
 
 }

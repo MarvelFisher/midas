@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  	<parent>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
 		<groupId>com.cyanspring.algo</groupId>
 		<artifactId>algo</artifactId>
 		<version>2.56</version>
@@ -11,59 +11,59 @@
 	<packaging>jar</packaging>
 	<name>cyanspring-common</name>
 	<url>http://www.cyanspring.com</url>
-  
-  	<build>
-  		<resources>
-  			<resource>
-  				<directory>${basedir}</directory>
-  				<includes>
-  					<include>conf/*</include>
-  				</includes>
-  			</resource>
-  		</resources>
-  		<plugins>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>${basedir}</directory>
+				<includes>
+					<include>conf/*</include>
+				</includes>
+			</resource>
+		</resources>
+		<plugins>
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>2.6</version>
 				<executions>
-				  <execution>
-				    <id>copy-resources2client</id>
-				    <phase>install</phase>
-				    <goals>
-				      <goal>copy-resources</goal>
-				    </goals>
-				    <configuration>
-				      <outputDirectory>${basedir}/../client/lib</outputDirectory>
-				      <resources>          
-					<resource>
-					  <directory>${basedir}/target</directory>
-					  <filtering>false</filtering>
-					  <includes>
-					    <include>*.jar</include>
-					  </includes>
-					</resource>
-				      </resources>              
-				    </configuration>            
-				  </execution>
-				  <execution>
-				    <id>copy-resources2CSTWjars</id>
-				    <phase>install</phase>
-				    <goals>
-				      <goal>copy-resources</goal>
-				    </goals>
-				    <configuration>
-				      <outputDirectory>${basedir}/../CSTWjars</outputDirectory>
-				      <resources>          
-					<resource>
-					  <directory>${basedir}/target</directory>
-					  <filtering>false</filtering>
-					  <includes>
-					    <include>*.jar</include>
-					  </includes>
-					</resource>
-				      </resources>              
-				    </configuration>            
-				  </execution>
+					<execution>
+						<id>copy-resources2client</id>
+						<phase>install</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/../client/lib</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}/target</directory>
+									<filtering>false</filtering>
+									<includes>
+										<include>*.jar</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-resources2CSTWjars</id>
+						<phase>install</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/../CSTWjars</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}/target</directory>
+									<filtering>false</filtering>
+									<includes>
+										<include>*.jar</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>
@@ -71,9 +71,10 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>exxeleron</groupId>
-			<artifactId>qJava</artifactId>
-			<version>2.2.1-SNAPSHOT</version>
+			<groupId>org.jmockit</groupId>
+			<artifactId>jmockit</artifactId>
+			<version>1.20</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

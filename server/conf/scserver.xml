@@ -58,7 +58,7 @@
 		<constructor-arg value="tqt001" />
 	</bean>
 
-	<bean id="dailyExec" class="java.lang.String">
+	<bean id="dailyExec" class="java.lang.String"> <!-- Make sure dailyExec after settlement event -->
 		<constructor-arg value="16:45:00" />
 	</bean>
 
@@ -187,6 +187,7 @@
    				<ref bean="frozenStopLossValue"/>     <!-- freezeValue -->
    				<ref bean="terminateStopLossValue"/>  <!-- terminateValue -->
 				<value>DAY_TRADING</value>
+				<value>0.2</value>
             </list>
        </property>
     </bean>
