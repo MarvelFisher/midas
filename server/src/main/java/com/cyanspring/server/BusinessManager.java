@@ -621,39 +621,47 @@ public class BusinessManager implements ApplicationContextAware {
 		boolean ok = true;
 		String message = null;
 		ErrorMessage clientMessage = null;
-		try {
-			transactionValidator.checkClosePosition(event, event.getAccount());
+		String eventAccount = event.getAccount();
+		String eventSymbol = event.getSymbol();
+		String eventSender = event.getSender();
+		String eventKey = event.getKey();
+		String eventTxId = event.getTxId();
+		OrderReason eventReason = event.getReason();
+		double eventQty = event.getQty();
 
-			Account account = accountKeeper.getAccount(event.getAccount());
+		try {
+			transactionValidator.checkClosePosition(event, eventAccount);
+
+			Account account = accountKeeper.getAccount(eventAccount);
 			if (null == account) {
 				clientMessage = ErrorMessage.ACCOUNT_NOT_EXIST;
-				throw new Exception("Cant find this account: " + account);
+				throw new Exception("Cant find this account: " + eventAccount);
 			}
 
-			String symbol = event.getSymbol();
-			RefData refData = refDataManager.getRefData(symbol);
+
+			RefData refData = refDataManager.getRefData(eventSymbol);
 			if (null == refData) {
 				clientMessage = ErrorMessage.SYMBOL_NOT_FOUND;
-				throw new Exception("Can't find this symbol: " + symbol);
+				throw new Exception("Can't find this symbol: " + eventSymbol);
 			}
-			checkClosePositionPending(event.getAccount(), event.getSymbol());
+			checkClosePositionPending(eventAccount, eventSymbol);
 
 			OpenPosition position = positionKeeper.getOverallPosition(account,
-					symbol);
+					eventSymbol);
 			double qty = Math.abs(position.getAvailableQty());
 
 			if (PriceUtils.isZero(qty)) {
 				clientMessage = ErrorMessage.POSITION_NOT_FOUND;
 				throw new Exception(
-						"Account doesn't have a position at this symbol");
+						"Account " + eventAccount + " doesn't have a position at symbol " + eventSymbol);
 
 			}
 
-			if (!PriceUtils.isZero(event.getQty())) {
-				qty = Math.min(qty, event.getQty());
+			if (!PriceUtils.isZero(eventQty)) {
+				qty = Math.min(qty, eventQty);
 			}
 
-            processClosePosition(event.getSender(), event.getTxId(), event.getKey(), event.getReason(),
+            processClosePosition(eventSender, eventTxId, eventKey, eventReason,
                     account, position.getSymbol(), position.getQty() > 0 ? OrderSide.Sell: OrderSide.Buy, qty);
 
 		} catch (AccountException ae) {
@@ -674,8 +682,8 @@ public class BusinessManager implements ApplicationContextAware {
 
 		try {
 			eventManager.sendLocalOrRemoteEvent(new ClosePositionReplyEvent(
-					event.getKey(), event.getSender(), event.getAccount(),
-					event.getSymbol(), event.getTxId(), ok, message));
+					eventKey, eventSender, eventAccount,
+					eventSymbol, eventTxId, ok, message));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
