@@ -17,11 +17,15 @@ public interface ISubAccountManagerService extends IBasicService {
 	
 	void query();
 	
+	/**
+	 * 
+	 * @return
+	 */
 	List<ExchangeAccountModel> getExchangeAccountList();
 	
-	List<SubAccountModel> getSubAccountListByExchangeAccountName(String name);
+	List<SubAccountModel> getSubAccountListByExchangeAccountId(String id);
 	
-	List<InstrumentInfoModel> getInstrumentInfoModelListByExchangeAccountName(String name);
+	List<InstrumentInfoModel> getInstrumentInfoModelListByExchangeAccountId(String id);
 	
 	List<InstrumentInfoModel> getInstrumentInfoModelListBySubAccountId(String id);
 	

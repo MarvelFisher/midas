@@ -52,7 +52,7 @@ public abstract class SubAccountManageServiceImpl extends BasicServiceImpl
 	}
 
 	@Override
-	public List<SubAccountModel> getSubAccountListByExchangeAccountName(
+	public List<SubAccountModel> getSubAccountListByExchangeAccountId(
 			String id) {
 		List<SubAccountModel> sublist = new ArrayList<SubAccountModel>();
 		List<ExchangeSubAccount> exchangeSubAccountList = instrumentPoolKeeper
@@ -66,7 +66,7 @@ public abstract class SubAccountManageServiceImpl extends BasicServiceImpl
 	}
 
 	@Override
-	public List<InstrumentInfoModel> getInstrumentInfoModelListByExchangeAccountName(
+	public List<InstrumentInfoModel> getInstrumentInfoModelListByExchangeAccountId(
 			String id) {
 		Map<String, Double> symbolQtyMap = new HashMap<String, Double>();
 		List<InstrumentPoolRecord> recordList = instrumentPoolKeeper

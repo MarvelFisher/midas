@@ -159,7 +159,7 @@ public class ExchangeAccountDetailsPage implements IDetailsPage {
 		if ( input != null ) {
 			dataSection.setText("Exchange Account Details: " + input.getName());
 			txtName.setText(input.getName());
-			tableComposite.setInput(service.getInstrumentInfoModelListByExchangeAccountName(input.getName()));
+			tableComposite.setInput(service.getInstrumentInfoModelListByExchangeAccountId(input.getId()));
 		}
 	}
 

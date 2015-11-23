@@ -103,12 +103,12 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 	 * Mock Code
 	 */
 	@Override
-	public List<SubAccountModel> getSubAccountListByExchangeAccountName(
+	public List<SubAccountModel> getSubAccountListByExchangeAccountId(
 			String name) {
-		if (name.equals("ex1")) {
+		if (name.equals("id1")) {
 
 			return sub1list;
-		} else if (name.equals("ex2")) {
+		} else if (name.equals("id2")) {
 
 			return sub2list;
 		} else {
@@ -134,7 +134,7 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 	 * Mock
 	 */
 	@Override
-	public List<InstrumentInfoModel> getInstrumentInfoModelListByExchangeAccountName(
+	public List<InstrumentInfoModel> getInstrumentInfoModelListByExchangeAccountId(
 			String name) {
 		
 		return instruList;
@@ -164,12 +164,12 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 
 	@Override
 	public void createNewSubAccount(String exchange) {
-		if (exchange.equals("ex1")) {
+		if (exchange.equals("id1")) {
 			sub1list.add(new SubAccountModel.Builder().id("sub1.3")
 					.name("account1.3").exchangeAccount(ex1)
 					.useableMoney(10000).commissionRate(0.01).build());
 
-		} else if (exchange.equals("ex2")) {
+		} else if (exchange.equals("id2")) {
 			sub2list.add(new SubAccountModel.Builder().id("sub2.3")
 					.name("account2.3").exchangeAccount(ex1)
 					.useableMoney(10000).commissionRate(0.01).build());

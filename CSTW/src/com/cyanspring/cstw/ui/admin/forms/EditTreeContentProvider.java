@@ -43,7 +43,7 @@ public class EditTreeContentProvider implements ITreeContentProvider {
 	public Object[] getChildren(Object parentElement) {
 		if (parentElement instanceof ExchangeAccountModel) {
 			ExchangeAccountModel parent = (ExchangeAccountModel) parentElement;
-			return service.getSubAccountListByExchangeAccountName(parent.getName()).toArray();
+			return service.getSubAccountListByExchangeAccountId(parent.getId()).toArray();
 		}
 		return null;
 	}
@@ -57,7 +57,7 @@ public class EditTreeContentProvider implements ITreeContentProvider {
 	public boolean hasChildren(Object element) {
 		if (element instanceof ExchangeAccountModel) {
 			ExchangeAccountModel parent = (ExchangeAccountModel) element;
-			return !service.getSubAccountListByExchangeAccountName(parent.getName()).isEmpty();
+			return !service.getSubAccountListByExchangeAccountId(parent.getId()).isEmpty();
 		}
 		return false;
 	}
