@@ -14,7 +14,7 @@ public final class InstrumentPoolModel extends BasicModel {
 
 	private String name;
 
-	private SubAccountModel relativeAccount;
+	private String relativeAccount;
 
 	public String getId() {
 		return id;
@@ -32,18 +32,18 @@ public final class InstrumentPoolModel extends BasicModel {
 		this.name = name;
 	}
 
-	public SubAccountModel getRelativeAccount() {
+	public String getRelativeAccount() {
 		return relativeAccount;
 	}
 
-	public void setRelativeAccount(SubAccountModel relativeAccount) {
+	public void setRelativeAccount(String relativeAccount) {
 		this.relativeAccount = relativeAccount;
 	}
 	
 	public static class Builder {
 		private String id;
 		private String name;
-		private SubAccountModel relativeAccount;
+		private String relativeAccount;
 		
 		public Builder id(String val) {
 			id = val;		return this;
@@ -53,7 +53,7 @@ public final class InstrumentPoolModel extends BasicModel {
 			name = val;		return this;
 		}
 		
-		public Builder relativeAccount(SubAccountModel val) {
+		public Builder relativeAccount(String val) {
 			relativeAccount = val;		return this;
 		}
 		

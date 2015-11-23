@@ -157,7 +157,6 @@ public class ExchangeAccountDetailsPage implements IDetailsPage {
 	
 	private void update() {
 		if ( input != null ) {
-			dataSection.setText("Exchange Account Details: " + input.getName());
 			txtName.setText(input.getName());
 			tableComposite.setInput(service.getInstrumentInfoModelListByExchangeAccountId(input.getId()));
 		}
