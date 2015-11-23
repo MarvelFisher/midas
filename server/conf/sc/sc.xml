@@ -233,7 +233,7 @@
 			<list>
 			</list>
 		</property>
-		<property name="checkMargincut" value="true"/>
+		<property name="checkMargincut" value="false"/>
 		<property name="dailyExecTime" ref="dailyExec" /> <!-- format=[HH:mm:ss] 24hr -->
 	</bean>
 
