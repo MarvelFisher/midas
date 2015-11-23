@@ -12,7 +12,9 @@ import com.cyanspring.common.event.pool.InstrumentPoolRecordsUpdateEvent;
 import com.cyanspring.common.event.pool.InstrumentPoolUpdateEvent;
 import com.cyanspring.common.pool.InstrumentPoolHelper;
 import com.cyanspring.common.pool.InstrumentPoolKeeper;
+import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.CSTWEventManager;
+import com.cyanspring.cstw.localevent.InstrumentPoolUpdateLocalEvent;
 
 /**
  * 
@@ -72,33 +74,39 @@ public final class InstrumentPoolKeeperManager {
 			ExchangeAccountUpdateEvent event) {
 		InstrumentPoolHelper.updateExchangeAccount(instrumentPoolKeeper,
 				event.getExchangeAccount(), event.getOperationType());
+		sendUpdateEvent();
 	}
 
 	public void processExchangeSubAccountUpdateEvent(
 			ExchangeSubAccountUpdateEvent event) {
 		InstrumentPoolHelper.updateExchangeSubAccount(instrumentPoolKeeper,
 				event.getExchangeSubAccount(), event.getOperationType());
+		sendUpdateEvent();
 	}
 
 	public void processInstrumentPoolUpdateEvent(InstrumentPoolUpdateEvent event) {
 		InstrumentPoolHelper.updateInstrumentPool(instrumentPoolKeeper,
 				event.getInstrumentPool(), event.getOperationType());
+		sendUpdateEvent();
 	}
 
 	public void processInstrumentPoolRecordsUpdateEvent(
 			InstrumentPoolRecordsUpdateEvent event) {
 		InstrumentPoolHelper.updateInstrumentPoolRecords(instrumentPoolKeeper,
 				event.getInstrumentPoolRecords(), event.getOperationType());
+		sendUpdateEvent();
 	}
 
 	public void processInstrumentPoolRecordUpdateEvent(
 			InstrumentPoolRecordUpdateEvent event) {
 		instrumentPoolKeeper.update(event.getInstrumentPoolRecord());
+		sendUpdateEvent();
 	}
 
 	public void processAccountPoolsUpdateEvent(AccountPoolsUpdateEvent event) {
 		InstrumentPoolHelper.updateAccountPools(null, instrumentPoolKeeper,
 				event.getAccountPools(), event.getOperationType());
+		sendUpdateEvent();
 	}
 
 	public AccountKeeper getAccountKeeper() {
@@ -116,6 +124,13 @@ public final class InstrumentPoolKeeperManager {
 	public void setInstrumentPoolKeeper(
 			InstrumentPoolKeeper instrumentPoolKeeper) {
 		this.instrumentPoolKeeper = instrumentPoolKeeper;
+	}
+
+	private void sendUpdateEvent() {
+		InstrumentPoolUpdateLocalEvent event = new InstrumentPoolUpdateLocalEvent(
+				IdGenerator.getInstance().getNextID());
+		CSTWEventManager.sendEvent(event);
+
 	}
 
 }
