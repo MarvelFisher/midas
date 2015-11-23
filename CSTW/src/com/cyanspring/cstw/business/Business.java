@@ -46,6 +46,8 @@ import com.cyanspring.common.event.info.RateConverterReplyEvent;
 import com.cyanspring.common.event.info.RateConverterRequestEvent;
 import com.cyanspring.common.event.order.InitClientEvent;
 import com.cyanspring.common.event.order.InitClientRequestEvent;
+import com.cyanspring.common.event.pool.AccountInstrumentSnapshotReplyEvent;
+import com.cyanspring.common.event.pool.AccountInstrumentSnapshotRequestEvent;
 import com.cyanspring.common.event.strategy.MultiInstrumentStrategyFieldDefUpdateEvent;
 import com.cyanspring.common.event.strategy.SingleInstrumentStrategyFieldDefUpdateEvent;
 import com.cyanspring.common.event.strategy.SingleOrderStrategyFieldDefUpdateEvent;
@@ -209,6 +211,8 @@ public class Business {
 		eventManager
 				.subscribe(AccountSettingSnapshotReplyEvent.class, listener);
 		eventManager.subscribe(RateConverterReplyEvent.class, listener);
+		eventManager.subscribe(AccountInstrumentSnapshotReplyEvent.class,
+				listener);
 		// schedule timer
 		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval, listener,
 				timerEvent);
@@ -307,7 +311,11 @@ public class Business {
 				processAsyncTimerEvent((AsyncTimerEvent) event);
 			} else if (event instanceof SelectUserAccountEvent) {
 				processSelectUserAccountEvent((SelectUserAccountEvent) event);
-			} else if (event instanceof RateConverterReplyEvent) {
+			} else if (event instanceof AccountInstrumentSnapshotReplyEvent) {
+				processAccountInstrumentSnapshotReplyEvent((AccountInstrumentSnapshotReplyEvent) event);
+			}
+
+			else if (event instanceof RateConverterReplyEvent) {
 				RateConverterReplyEvent e = (RateConverterReplyEvent) event;
 				rateConverter = e.getConverter();
 			} else {
@@ -506,7 +514,7 @@ public class Business {
 		}
 	}
 
-	public boolean processCSTWUserLoginReplyEvent(CSTWUserLoginReplyEvent event) {
+	private boolean processCSTWUserLoginReplyEvent(CSTWUserLoginReplyEvent event) {
 		if (!event.isOk())
 			return false;
 
@@ -537,7 +545,6 @@ public class Business {
 		log.info("login user:{},{}", userId, userGroup.getRole());
 
 		QuoteCachingManager.getInstance().init();
-		InstrumentPoolKeeperManager.getInstance().init();
 		if (this.userGroup.getRole() == UserRole.RiskManager
 				|| this.userGroup.getRole() == UserRole.BackEndRiskManager) {
 			allPositionManager.init(eventManager, getFirstServer(),
@@ -557,7 +564,20 @@ public class Business {
 			RCOrderEventController.getInstance().init();
 		}
 
+		AccountInstrumentSnapshotRequestEvent request = new AccountInstrumentSnapshotRequestEvent(
+				IdGenerator.getInstance().getNextID(), Business.getInstance()
+						.getFirstServer(), IdGenerator.getInstance()
+						.getNextID());
+		
+
 		return true;
+	}
+
+	private void processAccountInstrumentSnapshotReplyEvent(
+			AccountInstrumentSnapshotReplyEvent replyEvent) {
+		InstrumentPoolKeeperManager.getInstance().init();
+		InstrumentPoolKeeperManager.getInstance().setInstrumentPoolKeeper(
+				replyEvent.getInstrumentPoolKeeper());
 	}
 
 	private void sendAccountSettingRequestEvent(String accountId) {
