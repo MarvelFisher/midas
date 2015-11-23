@@ -31,7 +31,7 @@ public final class InstrumentPoolKeeperManager {
 
 	private IAsyncEventListener listener;
 
-	public InstrumentPoolKeeperManager getInstance() {
+	public static InstrumentPoolKeeperManager getInstance() {
 		if (instance == null) {
 			instance = new InstrumentPoolKeeperManager();
 		}

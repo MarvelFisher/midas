@@ -10,6 +10,7 @@ import com.cyanspring.common.account.UserGroup;
 import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.client.IInstrumentPoolKeeper;
 import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.cstw.keepermanager.InstrumentPoolKeeperManager;
 import com.cyanspring.cstw.model.admin.AssignedModel;
 import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
 import com.cyanspring.cstw.model.admin.InstrumentInfoModel;
@@ -47,6 +48,8 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 
 	// Mock
 	public MockSubAccountManageServiceImpl() {
+		instrumentPoolKeeper = InstrumentPoolKeeperManager.getInstance().getInstrumentPoolKeeper();
+		
 		ex1 = new ExchangeAccountModel.Builder().id("id1").name("ex1").build();
 		ex2 = new ExchangeAccountModel.Builder().id("id2").name("ex2").build();
 
@@ -120,7 +123,8 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 
 	@Override
 	protected List<Class<? extends AsyncEvent>> getReplyEventList() {
-		// TODO Auto-generated method stub
+		List<Class<? extends AsyncEvent>> list = new ArrayList<Class<? extends AsyncEvent>>();
+		
 		return null;
 	}
 
