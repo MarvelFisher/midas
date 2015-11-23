@@ -568,8 +568,8 @@ public class Business {
 				IdGenerator.getInstance().getNextID(), Business.getInstance()
 						.getFirstServer(), IdGenerator.getInstance()
 						.getNextID());
-		
 
+		this.getEventManager().sendEvent(request);
 		return true;
 	}
 
