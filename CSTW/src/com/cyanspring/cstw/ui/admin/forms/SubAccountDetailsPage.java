@@ -136,7 +136,7 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		Label lblTable = toolkit.createLabel(client, "Summary of symbol: ");
 		lblTable.setLayoutData(gd2);
 		subTableComposite = new InstrumentInfoTableComposite(client, SWT.NONE);
-		GridData gd3 = new GridData(SWT.LEFT, SWT.FILL, false, true);
+		GridData gd3 = new GridData(); //SWT.LEFT, SWT.FILL, false, true
 		gd3.horizontalSpan = 2;
 		subTableComposite.setLayoutData(gd3);
 		toolkit.adapt(subTableComposite);
@@ -146,7 +146,9 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		Label lblAssign = toolkit.createLabel(client, "Assign to RW / Group: ");
 		lblAssign.setLayoutData(gd2);
 		assTableComposite = new AssignedTableComposite(client, service, SWT.NONE);
-		assTableComposite.setLayoutData(gd3);
+		GridData gd4 = new GridData(); //SWT.LEFT, SWT.FILL, false, true
+		gd4.horizontalSpan = 2;
+		assTableComposite.setLayoutData(gd4);
 		toolkit.adapt(assTableComposite);
 		
 	}
@@ -212,6 +214,7 @@ public class SubAccountDetailsPage implements IDetailsPage {
 			
 			txtName2.setText(input.getName());
 			subTableComposite.setInput(service.getInstrumentInfoModelListBySubAccountId(input.getId()));
+			
 			assTableComposite.setSubAccountModel(input);
 			assTableComposite.setInput(service.getAssignedModelListBySubAccountId(input.getId()));
 		}
