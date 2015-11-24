@@ -668,7 +668,6 @@ public class AlertManager extends Compute {
 				alert.getContent());
 		pastPriceAlert.setId(alert.getId());
 		pastPriceAlert.setCommodity(refdata.getCommodity());
-		SQLSave(pastPriceAlert);
 		// Add Alert to pastUserPriceAlertList
 		UserPriceList = userPastPriceAlerts.get(alert.getUserId());
 		if (null == UserPriceList) {
@@ -693,6 +692,7 @@ public class AlertManager extends Compute {
 				}
 			}
 		}
+		SQLSave(pastPriceAlert);
 		// Delete Alert from CurSQL
 		CurPriceAlert curPriceAlert = new CurPriceAlert(
 				alert.getUserId(), alert.getSymbol(),
