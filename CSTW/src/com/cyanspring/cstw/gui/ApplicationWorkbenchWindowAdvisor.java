@@ -31,10 +31,10 @@ import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.cstw.business.Business;
-import com.cyanspring.cstw.event.SelectUserAccountEvent;
 import com.cyanspring.cstw.gui.command.auth.AuthProvider;
 import com.cyanspring.cstw.gui.command.auth.ViewAuthListener;
 import com.cyanspring.cstw.gui.command.auth.WorkbenchActionProvider;
+import com.cyanspring.cstw.localevent.SelectUserAccountLocalEvent;
 import com.cyanspring.cstw.ui.views.LoginDialog;
 
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
@@ -67,7 +67,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 		configurer.setShowStatusLine(true);
 		configurer.setTitle(title);
 		Business.getInstance().getEventManager()
-				.subscribe(SelectUserAccountEvent.class, this);
+				.subscribe(SelectUserAccountLocalEvent.class, this);
 	}
 
 	@Override
@@ -188,9 +188,9 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 
 	@Override
 	public void onEvent(AsyncEvent event) {
-		if (event instanceof SelectUserAccountEvent) {
-			setUserAccount(((SelectUserAccountEvent) event).getUser(),
-					((SelectUserAccountEvent) event).getAccount());
+		if (event instanceof SelectUserAccountLocalEvent) {
+			setUserAccount(((SelectUserAccountLocalEvent) event).getUser(),
+					((SelectUserAccountLocalEvent) event).getAccount());
 		}
 	}
 

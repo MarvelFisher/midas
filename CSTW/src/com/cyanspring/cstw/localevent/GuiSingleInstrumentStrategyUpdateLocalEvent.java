@@ -1,12 +1,12 @@
-package com.cyanspring.cstw.event;
+package com.cyanspring.cstw.localevent;
 
 import com.cyanspring.common.business.Instrument;
 import com.cyanspring.common.event.AsyncEvent;
 
-public class GuiSingleInstrumentStrategyUpdateEvent extends AsyncEvent {
+public class GuiSingleInstrumentStrategyUpdateLocalEvent extends AsyncEvent {
 	Instrument instrument;
 
-	public GuiSingleInstrumentStrategyUpdateEvent(Instrument instrument) {
+	public GuiSingleInstrumentStrategyUpdateLocalEvent(Instrument instrument) {
 		super();
 		this.instrument = instrument;
 	}

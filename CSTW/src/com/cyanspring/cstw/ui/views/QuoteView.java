@@ -44,12 +44,12 @@ import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.cachingmanager.quote.IQuoteChangeListener;
 import com.cyanspring.cstw.cachingmanager.quote.QuoteCachingManager;
 import com.cyanspring.cstw.common.ImageID;
-import com.cyanspring.cstw.event.QuoteSymbolSelectEvent;
 import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.command.auth.AuthMenuManager;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
+import com.cyanspring.cstw.localevent.QuoteSymbolSelectLocalEvent;
 import com.cyanspring.cstw.preference.PreferenceStoreManager;
 import com.cyanspring.cstw.session.GuiSession;
 import com.cyanspring.cstw.ui.trader.helper.QuoteHelper;
@@ -189,7 +189,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 		if (!StringUtils.hasText(symbol))
 			return;
 		GuiSession.getInstance().setSymbol(symbol);
-		QuoteSymbolSelectEvent event = new QuoteSymbolSelectEvent(symbol);
+		QuoteSymbolSelectLocalEvent event = new QuoteSymbolSelectLocalEvent(symbol);
 		Business.getInstance().getEventManager().sendEvent(event);
 	}
 

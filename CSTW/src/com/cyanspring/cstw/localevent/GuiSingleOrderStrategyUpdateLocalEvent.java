@@ -8,14 +8,21 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
-package com.cyanspring.cstw.event;
+package com.cyanspring.cstw.localevent;
 
+import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.event.AsyncEvent;
 
-public class GuiMultiInstrumentStrategyUpdateEvent extends AsyncEvent {
+public class GuiSingleOrderStrategyUpdateLocalEvent extends AsyncEvent {
+	private ParentOrder order;
 
-	public GuiMultiInstrumentStrategyUpdateEvent(String key) {
-		super(key);
+	public GuiSingleOrderStrategyUpdateLocalEvent(ParentOrder order) {
+		super();
+		this.order = order;
 	}
 
+	public ParentOrder getOrder() {
+		return order;
+	}
+	
 }

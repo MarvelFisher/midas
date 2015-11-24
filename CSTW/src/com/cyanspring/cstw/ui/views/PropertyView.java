@@ -47,14 +47,14 @@ import com.cyanspring.common.type.KeyValue;
 import com.cyanspring.common.type.LogType;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
-import com.cyanspring.cstw.event.InstrumentSelectionEvent;
-import com.cyanspring.cstw.event.MultiInstrumentStrategySelectionEvent;
-import com.cyanspring.cstw.event.ObjectSelectionEvent;
-import com.cyanspring.cstw.event.SignalSelectionEvent;
-import com.cyanspring.cstw.event.SingleInstrumentStrategySelectionEvent;
-import com.cyanspring.cstw.event.SingleOrderStrategySelectionEvent;
 import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.PropertyTableViewer;
+import com.cyanspring.cstw.localevent.InstrumentSelectionLocalEvent;
+import com.cyanspring.cstw.localevent.MultiInstrumentStrategySelectionLocalEvent;
+import com.cyanspring.cstw.localevent.ObjectSelectionLocalEvent;
+import com.cyanspring.cstw.localevent.SignalSelectionLocalEvent;
+import com.cyanspring.cstw.localevent.SingleInstrumentStrategySelectionLocalEvent;
+import com.cyanspring.cstw.localevent.SingleOrderStrategySelectionLocalEvent;
 
 public class PropertyView extends ViewPart implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory.getLogger(PropertyView.class);
@@ -99,27 +99,27 @@ public class PropertyView extends ViewPart implements IAsyncEventListener {
 		bars.getToolBarManager().add(editAction);
 
 		// subscribe to business event
-		Business.getInstance().getEventManager().subscribe(SingleOrderStrategySelectionEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(SingleInstrumentStrategySelectionEvent.class, this);
+		Business.getInstance().getEventManager().subscribe(SingleOrderStrategySelectionLocalEvent.class, this);
+		Business.getInstance().getEventManager().subscribe(SingleInstrumentStrategySelectionLocalEvent.class, this);
 		Business.getInstance().getEventManager().subscribe(AmendParentOrderReplyEvent.class, this);
 		Business.getInstance().getEventManager().subscribe(ParentOrderUpdateEvent.class, this);
 		Business.getInstance().getEventManager().subscribe(MultiInstrumentStrategyUpdateEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(MultiInstrumentStrategySelectionEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(InstrumentSelectionEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(SignalSelectionEvent.class, this);
+		Business.getInstance().getEventManager().subscribe(MultiInstrumentStrategySelectionLocalEvent.class, this);
+		Business.getInstance().getEventManager().subscribe(InstrumentSelectionLocalEvent.class, this);
+		Business.getInstance().getEventManager().subscribe(SignalSelectionLocalEvent.class, this);
 		Business.getInstance().getEventManager().subscribe(SignalEvent.class, this);
 	}
 	
 	@Override
 	public void dispose() {
-		Business.getInstance().getEventManager().unsubscribe(SingleOrderStrategySelectionEvent.class, this);
-		Business.getInstance().getEventManager().unsubscribe(SingleInstrumentStrategySelectionEvent.class, this);
+		Business.getInstance().getEventManager().unsubscribe(SingleOrderStrategySelectionLocalEvent.class, this);
+		Business.getInstance().getEventManager().unsubscribe(SingleInstrumentStrategySelectionLocalEvent.class, this);
 		Business.getInstance().getEventManager().unsubscribe(AmendParentOrderReplyEvent.class, this);
 		Business.getInstance().getEventManager().unsubscribe(ParentOrderUpdateEvent.class, this);
 		Business.getInstance().getEventManager().unsubscribe(MultiInstrumentStrategyUpdateEvent.class, this);
-		Business.getInstance().getEventManager().unsubscribe(MultiInstrumentStrategySelectionEvent.class, this);
-		Business.getInstance().getEventManager().unsubscribe(InstrumentSelectionEvent.class, this);
-		Business.getInstance().getEventManager().unsubscribe(SignalSelectionEvent.class, this);
+		Business.getInstance().getEventManager().unsubscribe(MultiInstrumentStrategySelectionLocalEvent.class, this);
+		Business.getInstance().getEventManager().unsubscribe(InstrumentSelectionLocalEvent.class, this);
+		Business.getInstance().getEventManager().unsubscribe(SignalSelectionLocalEvent.class, this);
 		Business.getInstance().getEventManager().unsubscribe(SignalEvent.class, this);
 		super.dispose();
 	}
@@ -150,17 +150,17 @@ public class PropertyView extends ViewPart implements IAsyncEventListener {
 			}
 			changes.put(OrderField.ID.value(), id);
 			RemoteAsyncEvent event;
-			if(clazz.equals(SingleOrderStrategySelectionEvent.class)) {
+			if(clazz.equals(SingleOrderStrategySelectionLocalEvent.class)) {
 				event = new AmendParentOrderEvent(id, server, id, changes, null);
-			} else if (clazz.equals(MultiInstrumentStrategySelectionEvent.class)) {
+			} else if (clazz.equals(MultiInstrumentStrategySelectionLocalEvent.class)) {
 				event = new AmendMultiInstrumentStrategyEvent(id, server, changes, null, null);
-			} else if (clazz.equals(InstrumentSelectionEvent.class)) {
+			} else if (clazz.equals(InstrumentSelectionLocalEvent.class)) {
 				String strategyId = (String)oldFields.get(OrderField.STRATEGY_ID.value());
 				changes.put(OrderField.ID.value(), id);
 				List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 				list.add(changes);
 				event = new AmendMultiInstrumentStrategyEvent(strategyId, server, null, list, null);
-			} else if (clazz.equals(SignalSelectionEvent.class)) {
+			} else if (clazz.equals(SignalSelectionLocalEvent.class)) {
 				Map<String, Class> types = new HashMap<String, Class>();
 				for(Entry<String, Object> entry: changes.entrySet()) {
 					Object obj = oldFields.get(entry.getKey());
@@ -223,10 +223,10 @@ public class PropertyView extends ViewPart implements IAsyncEventListener {
 	
 	@Override
 	public void onEvent(final AsyncEvent event) {
-		if (event instanceof ObjectSelectionEvent) {
+		if (event instanceof ObjectSelectionLocalEvent) {
 			if (editMode)
 				return;
-			ObjectSelectionEvent selectionEvent = (ObjectSelectionEvent)event;
+			ObjectSelectionLocalEvent selectionEvent = (ObjectSelectionLocalEvent)event;
 			objectId = (String)selectionEvent.getData().get(OrderField.ID.value());
 			clazz = event.getClass();
 			editableFields = selectionEvent.getEditableFields();
@@ -248,13 +248,13 @@ public class PropertyView extends ViewPart implements IAsyncEventListener {
 			if(null == clazz)
 				return;
 			MultiInstrumentStrategyUpdateEvent update = (MultiInstrumentStrategyUpdateEvent)event;
-			if (clazz.equals(MultiInstrumentStrategySelectionEvent.class)) {
+			if (clazz.equals(MultiInstrumentStrategySelectionLocalEvent.class)) {
 				if(!update.getStrategyData().getId().equals(objectId))
 					return;
 				Map<String, Object> map = update.getStrategyData().getFields();
 //				map.put(OrderField.SERVER.value(), update.getSender());
 				displayObject(map);
-			} else if (clazz.equals(InstrumentSelectionEvent.class)) {
+			} else if (clazz.equals(InstrumentSelectionLocalEvent.class)) {
 				Instrument instr = update.getStrategyData().getInstrumentData().get(objectId);
 				if(null == instr)
 					return;

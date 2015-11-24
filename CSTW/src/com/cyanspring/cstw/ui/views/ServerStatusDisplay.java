@@ -21,8 +21,8 @@ import org.slf4j.LoggerFactory;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.cstw.business.Business;
-import com.cyanspring.cstw.event.ServerStatusEvent;
 import com.cyanspring.cstw.gui.common.CsStatusLineContributionItem;
+import com.cyanspring.cstw.localevent.ServerStatusLocalEvent;
 
 public class ServerStatusDisplay implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -50,20 +50,20 @@ public class ServerStatusDisplay implements IAsyncEventListener {
 	}
 
 	public void init() {
-		Business.getInstance().getEventManager().subscribe(ServerStatusEvent.class, this);
+		Business.getInstance().getEventManager().subscribe(ServerStatusLocalEvent.class, this);
 	}
 	
 	@Override
 	public void onEvent(AsyncEvent event) {
-        if(event instanceof ServerStatusEvent) {
-        	processServerStatusEvent((ServerStatusEvent)event);
+        if(event instanceof ServerStatusLocalEvent) {
+        	processServerStatusEvent((ServerStatusLocalEvent)event);
         } else {
         	log.error("Unhandled event: " + event);
         }
         
 	}
 	
-	private void processServerStatusEvent(ServerStatusEvent event) {
+	private void processServerStatusEvent(ServerStatusLocalEvent event) {
 		CsStatusLineContributionItem item = servers.get(event.getServer());
 		if(null == item) {
 			item = new CsStatusLineContributionItem(event.getServer());

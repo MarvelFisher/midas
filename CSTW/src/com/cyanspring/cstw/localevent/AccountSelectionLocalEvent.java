@@ -1,11 +1,11 @@
-package com.cyanspring.cstw.event;
+package com.cyanspring.cstw.localevent;
 
 import com.cyanspring.common.event.AsyncEvent;
 
-public class AccountSelectionEvent extends AsyncEvent {
+public class AccountSelectionLocalEvent extends AsyncEvent {
 	private String account;
 
-	public AccountSelectionEvent(String account) {
+	public AccountSelectionLocalEvent(String account) {
 		this.account = account;
 	}
 

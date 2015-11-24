@@ -58,14 +58,14 @@ import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
-import com.cyanspring.cstw.event.InstrumentSelectionEvent;
-import com.cyanspring.cstw.event.MultiInstrumentStrategySelectionEvent;
-import com.cyanspring.cstw.event.ObjectSelectionEvent;
-import com.cyanspring.cstw.event.SingleInstrumentStrategySelectionEvent;
-import com.cyanspring.cstw.event.SingleOrderStrategySelectionEvent;
 import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
+import com.cyanspring.cstw.localevent.InstrumentSelectionLocalEvent;
+import com.cyanspring.cstw.localevent.MultiInstrumentStrategySelectionLocalEvent;
+import com.cyanspring.cstw.localevent.ObjectSelectionLocalEvent;
+import com.cyanspring.cstw.localevent.SingleInstrumentStrategySelectionLocalEvent;
+import com.cyanspring.cstw.localevent.SingleOrderStrategySelectionLocalEvent;
 import com.cyanspring.cstw.session.CSTWSession;
 
 public class ChildOrderView extends ViewPart implements IAsyncEventListener {
@@ -135,9 +135,9 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 
 		// subscribe to business event
 		Business.getInstance().getEventManager()
-				.subscribe(SingleOrderStrategySelectionEvent.class, this);
+				.subscribe(SingleOrderStrategySelectionLocalEvent.class, this);
 		Business.getInstance().getEventManager()
-				.subscribe(SingleInstrumentStrategySelectionEvent.class, this);
+				.subscribe(SingleInstrumentStrategySelectionLocalEvent.class, this);
 		Business.getInstance().getEventManager()
 				.subscribe(ChildOrderSnapshotEvent.class, this);
 		Business.getInstance().getEventManager()
@@ -145,18 +145,18 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 		Business.getInstance().getEventManager()
 				.subscribe(ManualActionReplyEvent.class, this);
 		Business.getInstance().getEventManager()
-				.subscribe(MultiInstrumentStrategySelectionEvent.class, this);
+				.subscribe(MultiInstrumentStrategySelectionLocalEvent.class, this);
 		Business.getInstance().getEventManager()
-				.subscribe(InstrumentSelectionEvent.class, this);
+				.subscribe(InstrumentSelectionLocalEvent.class, this);
 	}
 
 	@Override
 	public void dispose() {
 		Business.getInstance().getEventManager()
-				.unsubscribe(SingleOrderStrategySelectionEvent.class, this);
+				.unsubscribe(SingleOrderStrategySelectionLocalEvent.class, this);
 		Business.getInstance()
 				.getEventManager()
-				.unsubscribe(SingleInstrumentStrategySelectionEvent.class, this);
+				.unsubscribe(SingleInstrumentStrategySelectionLocalEvent.class, this);
 		Business.getInstance().getEventManager()
 				.unsubscribe(ChildOrderSnapshotEvent.class, this);
 		Business.getInstance().getEventManager()
@@ -164,9 +164,9 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 		Business.getInstance().getEventManager()
 				.unsubscribe(ManualActionReplyEvent.class, this);
 		Business.getInstance().getEventManager()
-				.unsubscribe(MultiInstrumentStrategySelectionEvent.class, this);
+				.unsubscribe(MultiInstrumentStrategySelectionLocalEvent.class, this);
 		Business.getInstance().getEventManager()
-				.unsubscribe(InstrumentSelectionEvent.class, this);
+				.unsubscribe(InstrumentSelectionLocalEvent.class, this);
 		super.dispose();
 	}
 
@@ -585,25 +585,25 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 
 	@Override
 	public void onEvent(final AsyncEvent e) {
-		if (e instanceof ObjectSelectionEvent) {
-			ObjectSelectionEvent event = (ObjectSelectionEvent) e;
+		if (e instanceof ObjectSelectionLocalEvent) {
+			ObjectSelectionLocalEvent event = (ObjectSelectionLocalEvent) e;
 			Map<String, Object> map = event.getData();
 			objectId = (String) map.get(OrderField.ID.value());
 			String server = (String) map.get(OrderField.SERVER_ID.value());
-			if (e instanceof InstrumentSelectionEvent) {
+			if (e instanceof InstrumentSelectionLocalEvent) {
 				objectId = (String) map.get(OrderField.STRATEGY_ID.value());
 				currentParentId = (String) map.get(OrderField.ID.value());
 				currentSymbol = (String) map.get(OrderField.SYMBOL.value());
 				isSingleOrderStrategy = false;
-			} else if (e instanceof MultiInstrumentStrategySelectionEvent) {
+			} else if (e instanceof MultiInstrumentStrategySelectionLocalEvent) {
 				currentParentId = null;
 				currentSymbol = null;
 				isSingleOrderStrategy = false;
-			} else if (e instanceof SingleOrderStrategySelectionEvent) {
+			} else if (e instanceof SingleOrderStrategySelectionLocalEvent) {
 				currentSymbol = (String) map.get(OrderField.SYMBOL.value());
 				currentParentId = null;
 				isSingleOrderStrategy = true;
-			} else if (e instanceof SingleInstrumentStrategySelectionEvent) {
+			} else if (e instanceof SingleInstrumentStrategySelectionLocalEvent) {
 				currentSymbol = (String) map.get(OrderField.SYMBOL.value());
 				currentParentId = null;
 				isSingleOrderStrategy = false;

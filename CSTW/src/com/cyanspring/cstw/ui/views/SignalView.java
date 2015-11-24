@@ -41,11 +41,11 @@ import com.cyanspring.common.util.ArrayMap;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
-import com.cyanspring.cstw.event.OrderCacheReadyEvent;
-import com.cyanspring.cstw.event.SignalSelectionEvent;
 import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
+import com.cyanspring.cstw.localevent.OrderCacheReadyLocalEvent;
+import com.cyanspring.cstw.localevent.SignalSelectionLocalEvent;
 
 public class SignalView extends ViewPart implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory.getLogger(SignalView.class);
@@ -255,14 +255,14 @@ public class SignalView extends ViewPart implements IAsyncEventListener {
 					Business.getInstance()
 							.getEventManager()
 							.sendEvent(
-									new SignalSelectionEvent(map,
+									new SignalSelectionLocalEvent(map,
 											editableFields));
 				}
 			}
 		});
 
 		Business.getInstance().getEventManager()
-				.subscribe(OrderCacheReadyEvent.class, this);
+				.subscribe(OrderCacheReadyLocalEvent.class, this);
 		Business.getInstance().getEventManager()
 				.subscribe(SignalEvent.class, this);
 	}
@@ -270,7 +270,7 @@ public class SignalView extends ViewPart implements IAsyncEventListener {
 	@Override
 	public void dispose() {
 		Business.getInstance().getEventManager()
-				.unsubscribe(OrderCacheReadyEvent.class, this);
+				.unsubscribe(OrderCacheReadyLocalEvent.class, this);
 		Business.getInstance().getEventManager()
 				.unsubscribe(SignalEvent.class, this);
 		super.dispose();
@@ -389,7 +389,7 @@ public class SignalView extends ViewPart implements IAsyncEventListener {
 
 	@Override
 	public void onEvent(AsyncEvent event) {
-		if (event instanceof OrderCacheReadyEvent) {
+		if (event instanceof OrderCacheReadyLocalEvent) {
 			String server = Business.getInstance().getFirstServer();
 			if (null == server)
 				return;

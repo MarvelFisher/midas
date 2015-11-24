@@ -60,14 +60,14 @@ import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
-import com.cyanspring.cstw.event.GuiMultiInstrumentStrategyUpdateEvent;
-import com.cyanspring.cstw.event.InstrumentSelectionEvent;
-import com.cyanspring.cstw.event.MultiInstrumentStrategySelectionEvent;
-import com.cyanspring.cstw.event.OrderCacheReadyEvent;
 import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.command.LoadStrategyCommand;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
+import com.cyanspring.cstw.localevent.GuiMultiInstrumentStrategyUpdateLocalEvent;
+import com.cyanspring.cstw.localevent.InstrumentSelectionLocalEvent;
+import com.cyanspring.cstw.localevent.MultiInstrumentStrategySelectionLocalEvent;
+import com.cyanspring.cstw.localevent.OrderCacheReadyLocalEvent;
 import com.cyanspring.cstw.session.CSTWSession;
 
 public class MultiInstrumentStrategyView extends ViewPart implements
@@ -202,7 +202,7 @@ public class MultiInstrumentStrategyView extends ViewPart implements
 					Business.getInstance()
 							.getEventManager()
 							.sendEvent(
-									new MultiInstrumentStrategySelectionEvent(
+									new MultiInstrumentStrategySelectionLocalEvent(
 											map, editableFields));
 				}
 			}
@@ -225,7 +225,7 @@ public class MultiInstrumentStrategyView extends ViewPart implements
 					Business.getInstance()
 							.getEventManager()
 							.sendEvent(
-									new InstrumentSelectionEvent(map,
+									new InstrumentSelectionLocalEvent(map,
 											editableFields));
 				}
 			}
@@ -235,18 +235,18 @@ public class MultiInstrumentStrategyView extends ViewPart implements
 
 		// business logic goes here
 		Business.getInstance().getEventManager()
-				.subscribe(OrderCacheReadyEvent.class, this);
+				.subscribe(OrderCacheReadyLocalEvent.class, this);
 		Business.getInstance().getEventManager()
-				.subscribe(GuiMultiInstrumentStrategyUpdateEvent.class, this);
+				.subscribe(GuiMultiInstrumentStrategyUpdateLocalEvent.class, this);
 		showOrders();
 	}
 
 	@Override
 	public void dispose() {
 		Business.getInstance().getEventManager()
-				.unsubscribe(OrderCacheReadyEvent.class, this);
+				.unsubscribe(OrderCacheReadyLocalEvent.class, this);
 		Business.getInstance().getEventManager()
-				.unsubscribe(GuiMultiInstrumentStrategyUpdateEvent.class, this);
+				.unsubscribe(GuiMultiInstrumentStrategyUpdateLocalEvent.class, this);
 		super.dispose();
 	}
 
@@ -686,9 +686,9 @@ public class MultiInstrumentStrategyView extends ViewPart implements
 	@Override
 	public void onEvent(AsyncEvent event) {
 		log.debug("Recieved event: " + event);
-		if (event instanceof OrderCacheReadyEvent) {
+		if (event instanceof OrderCacheReadyLocalEvent) {
 			smartShowOrders();
-		} else if (event instanceof GuiMultiInstrumentStrategyUpdateEvent) {
+		} else if (event instanceof GuiMultiInstrumentStrategyUpdateLocalEvent) {
 			smartShowOrders();
 		} else if (event instanceof AsyncTimerEvent) {
 			Business.getInstance().getScheduleManager()

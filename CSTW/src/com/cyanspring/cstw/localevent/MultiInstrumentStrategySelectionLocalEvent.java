@@ -8,26 +8,15 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
-package com.cyanspring.cstw.event;
+package com.cyanspring.cstw.localevent;
 
-import com.cyanspring.common.event.AsyncEvent;
+import java.util.List;
+import java.util.Map;
 
-public class ServerStatusEvent extends AsyncEvent {
-	String server;
-	boolean up;
+public final class MultiInstrumentStrategySelectionLocalEvent extends ObjectSelectionLocalEvent {
 
-	public String getServer() {
-		return server;
+	public MultiInstrumentStrategySelectionLocalEvent(Map<String, Object> data,
+			List<String> editableFields) {
+		super(data, editableFields);
 	}
-
-	public ServerStatusEvent(String server, boolean up) {
-		super();
-		this.server = server;
-		this.up = up;
-	}
-
-	public boolean isUp() {
-		return up;
-	}
-	
 }

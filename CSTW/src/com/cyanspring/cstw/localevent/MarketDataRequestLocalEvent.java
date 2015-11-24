@@ -1,12 +1,12 @@
-package com.cyanspring.cstw.event;
+package com.cyanspring.cstw.localevent;
 
 import com.cyanspring.common.event.AsyncEvent;
 
-public class MarketDataRequestEvent extends AsyncEvent{	
+public class MarketDataRequestLocalEvent extends AsyncEvent{	
 	private static final long serialVersionUID = 1L;
 	private String symbol;
 	
-	public MarketDataRequestEvent(String symbol) {
+	public MarketDataRequestLocalEvent(String symbol) {
 		this.symbol = symbol;
 	}
 

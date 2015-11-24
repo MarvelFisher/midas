@@ -70,9 +70,9 @@ import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCInstrume
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCInstrumentSummaryEventController;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCOrderEventController;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCTradeEventController;
-import com.cyanspring.cstw.event.SelectUserAccountEvent;
-import com.cyanspring.cstw.event.ServerStatusEvent;
 import com.cyanspring.cstw.keepermanager.InstrumentPoolKeeperManager;
+import com.cyanspring.cstw.localevent.SelectUserAccountLocalEvent;
+import com.cyanspring.cstw.localevent.ServerStatusLocalEvent;
 import com.cyanspring.cstw.session.CSTWSession;
 import com.cyanspring.cstw.ui.views.ServerStatusDisplay;
 
@@ -199,7 +199,7 @@ public final class Business {
 		eventManager.subscribe(NodeInfoEvent.class, listener);
 		eventManager.subscribe(InitClientEvent.class, listener);
 		eventManager.subscribe(UserLoginReplyEvent.class, listener);
-		eventManager.subscribe(SelectUserAccountEvent.class, listener);
+		eventManager.subscribe(SelectUserAccountLocalEvent.class, listener);
 		eventManager.subscribe(ServerHeartBeatEvent.class, listener);
 		eventManager.subscribe(ServerReadyEvent.class, listener);
 		eventManager.subscribe(SingleOrderStrategyFieldDefUpdateEvent.class,
@@ -308,8 +308,8 @@ public final class Business {
 				processingMultiInstrumentStrategyFieldDefUpdateEvent((MultiInstrumentStrategyFieldDefUpdateEvent) event);
 			} else if (event instanceof AsyncTimerEvent) {
 				processAsyncTimerEvent((AsyncTimerEvent) event);
-			} else if (event instanceof SelectUserAccountEvent) {
-				processSelectUserAccountEvent((SelectUserAccountEvent) event);
+			} else if (event instanceof SelectUserAccountLocalEvent) {
+				processSelectUserAccountEvent((SelectUserAccountLocalEvent) event);
 			} else if (event instanceof AccountInstrumentSnapshotReplyEvent) {
 				processAccountInstrumentSnapshotReplyEvent((AccountInstrumentSnapshotReplyEvent) event);
 			} else if (event instanceof RateConverterReplyEvent) {
@@ -332,7 +332,7 @@ public final class Business {
 		}
 	}
 
-	private void processSelectUserAccountEvent(SelectUserAccountEvent event) {
+	private void processSelectUserAccountEvent(SelectUserAccountLocalEvent event) {
 		log.info("Setting current user/account to: " + this.userId + "/"
 				+ this.accountId);
 		this.userId = event.getUser();
@@ -342,7 +342,7 @@ public final class Business {
 	private void requestStrategyInfo(String server) {
 		try {
 			orderManager.init();
-			eventManager.sendEvent(new ServerStatusEvent(server, true));
+			eventManager.sendEvent(new ServerStatusLocalEvent(server, true));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			e.printStackTrace();
@@ -380,14 +380,14 @@ public final class Business {
 			if (TimeUtil.getTimePass(entry.getValue()) > heartBeatInterval) {
 				log.debug("Sending server down event: " + entry.getKey());
 				servers.put(entry.getKey(), false);
-				eventManager.sendEvent(new ServerStatusEvent(entry.getKey(),
+				eventManager.sendEvent(new ServerStatusLocalEvent(entry.getKey(),
 						false));
 			} else { // server heart beat can go back up
 				Boolean up = servers.get(entry.getKey());
 				if (null != up && !up) {
 					log.debug("Sending server up event: " + entry.getKey());
 					servers.put(entry.getKey(), true);
-					eventManager.sendEvent(new ServerStatusEvent(
+					eventManager.sendEvent(new ServerStatusLocalEvent(
 							entry.getKey(), true));
 				}
 			}

@@ -8,15 +8,14 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
-package com.cyanspring.cstw.event;
+package com.cyanspring.cstw.localevent;
 
-import java.util.List;
-import java.util.Map;
+import com.cyanspring.common.event.AsyncEvent;
 
-public final class MultiInstrumentStrategySelectionEvent extends ObjectSelectionEvent {
-
-	public MultiInstrumentStrategySelectionEvent(Map<String, Object> data,
-			List<String> editableFields) {
-		super(data, editableFields);
+public class OrderCacheReadyLocalEvent extends AsyncEvent {
+	public OrderCacheReadyLocalEvent(String key) {
+		super(key);
 	}
+
+	
 }

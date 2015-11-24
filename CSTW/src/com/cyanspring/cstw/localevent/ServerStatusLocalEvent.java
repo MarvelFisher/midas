@@ -8,21 +8,26 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
-package com.cyanspring.cstw.event;
+package com.cyanspring.cstw.localevent;
 
-import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.event.AsyncEvent;
 
-public class GuiSingleOrderStrategyUpdateEvent extends AsyncEvent {
-	private ParentOrder order;
+public class ServerStatusLocalEvent extends AsyncEvent {
+	String server;
+	boolean up;
 
-	public GuiSingleOrderStrategyUpdateEvent(ParentOrder order) {
-		super();
-		this.order = order;
+	public String getServer() {
+		return server;
 	}
 
-	public ParentOrder getOrder() {
-		return order;
+	public ServerStatusLocalEvent(String server, boolean up) {
+		super();
+		this.server = server;
+		this.up = up;
+	}
+
+	public boolean isUp() {
+		return up;
 	}
 	
 }

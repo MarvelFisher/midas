@@ -8,18 +8,18 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
-package com.cyanspring.cstw.event;
+package com.cyanspring.cstw.localevent;
 
 import java.util.List;
 import java.util.Map;
 
 import com.cyanspring.common.event.AsyncEvent;
 
-public abstract class ObjectSelectionEvent extends AsyncEvent {
+public abstract class ObjectSelectionLocalEvent extends AsyncEvent {
 	Map<String, Object> data;
 	List<String> editableFields;
 	
-	public ObjectSelectionEvent(Map<String, Object> data,
+	public ObjectSelectionLocalEvent(Map<String, Object> data,
 			List<String> editableFields) {
 		super();
 		this.data = data;

@@ -8,14 +8,14 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
-package com.cyanspring.cstw.event;
+package com.cyanspring.cstw.localevent;
 
 import com.cyanspring.common.event.AsyncEvent;
 
-public class OrderCacheReadyEvent extends AsyncEvent {
-	public OrderCacheReadyEvent(String key) {
+public class GuiMultiInstrumentStrategyUpdateLocalEvent extends AsyncEvent {
+
+	public GuiMultiInstrumentStrategyUpdateLocalEvent(String key) {
 		super(key);
 	}
 
-	
 }
