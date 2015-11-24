@@ -5,6 +5,8 @@ import java.util.List;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -151,7 +153,9 @@ public final class SpeedDepthTableComposite extends Composite {
 				isLock = lockButton.getSelection();
 				if (currentQuote != null) {
 					labelProvider.setKeyselectIndex(-1);
+					labelProvider.setMouseselectIndex(-1);
 					currentKeySelectedItem = null;
+					currentMouseSelectedItem = null;
 					tableViewer.setInput(speedDepthService.getSpeedDepthList(
 							currentQuote, isLock));
 				}
@@ -245,22 +249,37 @@ public final class SpeedDepthTableComposite extends Composite {
 			}
 		});
 
-		table.addSelectionListener(new SelectionAdapter() {
+		table.addKeyListener(new KeyAdapter() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				TableItem item = table.getItem(table.getSelectionIndex());
-				changeItemColor(item, SWT.COLOR_BLACK);
-				if (currentKeySelectedItem != null
-						&& !currentKeySelectedItem.isDisposed()
-						&& currentKeySelectedItem != item
-						&& currentKeySelectedItem != currentMouseSelectedItem) {
-					changeItemColor(currentKeySelectedItem, SWT.COLOR_WHITE);
+			public void keyReleased(KeyEvent e) {
+				if (e.keyCode == SWT.ARROW_DOWN || e.keyCode == SWT.ARROW_UP) {
+					TableItem item = table.getItem(table.getSelectionIndex());
+					if (item == null) {
+						return;
+					}
+					if (item != currentMouseSelectedItem) {
+						changeItemColor(item, SWT.COLOR_BLACK);
+					}
+					if (currentKeySelectedItem != null
+							&& !currentKeySelectedItem.isDisposed()
+							&& currentKeySelectedItem != item
+							&& currentKeySelectedItem != currentMouseSelectedItem) {
+						changeItemColor(currentKeySelectedItem, SWT.COLOR_WHITE);
+					}
+					currentKeySelectedItem = item;
+					SpeedDepthModel model = (SpeedDepthModel) item.getData();
+					labelProvider.setKeyselectIndex(model.getIndex());
 				}
-				currentKeySelectedItem = item;
-				SpeedDepthModel model = (SpeedDepthModel) item.getData();
-				labelProvider.setKeyselectIndex(model.getIndex());
 			}
 		});
+
+		/*
+		 * table.addSelectionListener(new SelectionAdapter() {
+		 * 
+		 * @Override public void widgetSelected(SelectionEvent e) { TableItem
+		 * item = table.getItem(table.getSelectionIndex()); currentSelectedItem
+		 * = item; } });
+		 */
 	}
 
 	private void changeItemColor(TableItem item, int color) {
