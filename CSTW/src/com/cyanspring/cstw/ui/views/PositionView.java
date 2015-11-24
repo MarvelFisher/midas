@@ -271,63 +271,63 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		layout.verticalSpacing = 10;
 		parent.setLayout(layout);
 
-		Label lb1 = new Label(parent, SWT.LEFT);
+		Label lb1 = new Label(parent, SWT.RIGHT);
 		lb1.setText("Account Value: ");
 		lb1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		lbValue = new Label(parent, SWT.LEFT);
+		lbValue = new Label(parent, SWT.RIGHT);
 		lbValue.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		Label lb8 = new Label(parent, SWT.LEFT);
+		Label lb8 = new Label(parent, SWT.RIGHT);
 		lb8.setText("Account Cash: ");
 		lb8.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		lbCashDeduct = new Label(parent, SWT.LEFT);
+		lbCashDeduct = new Label(parent, SWT.RIGHT);
 		lbCashDeduct
 				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		Label lb7 = new Label(parent, SWT.LEFT);
+		Label lb7 = new Label(parent, SWT.RIGHT);
 		lb7.setText("Cash Available: ");
 		lb7.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		lbCashAvailable = new Label(parent, SWT.LEFT);
+		lbCashAvailable = new Label(parent, SWT.RIGHT);
 		lbCashAvailable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
 				true));
 
-		Label lb10 = new Label(parent, SWT.LEFT);
+		Label lb10 = new Label(parent, SWT.RIGHT);
 		lb10.setText("Status : ");
 		lb10.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		lbstatus = new Label(parent, SWT.LEFT);
+		lbstatus = new Label(parent, SWT.RIGHT);
 		lbstatus.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		Label lb5 = new Label(parent, SWT.LEFT);
+		Label lb5 = new Label(parent, SWT.RIGHT);
 		lb5.setText("P&&L: ");
 		lb5.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		lbPnL = new Label(parent, SWT.LEFT);
+		lbPnL = new Label(parent, SWT.RIGHT);
 		lbPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		Label lb6 = new Label(parent, SWT.LEFT);
+		Label lb6 = new Label(parent, SWT.RIGHT);
 		lb6.setText("Unrealized P&&L: ");
 		lb6.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		lbUrPnL = new Label(parent, SWT.LEFT);
+		lbUrPnL = new Label(parent, SWT.RIGHT);
 		lbUrPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		Label lb9 = new Label(parent, SWT.LEFT);
+		Label lb9 = new Label(parent, SWT.RIGHT);
 		lb9.setText("Unrealized Last P&&L: ");
 		lb9.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		lblastUrPnL = new Label(parent, SWT.LEFT);
+		lblastUrPnL = new Label(parent, SWT.RIGHT);
 		lblastUrPnL
 				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		Label lb4 = new Label(parent, SWT.LEFT);
+		Label lb4 = new Label(parent, SWT.RIGHT);
 		lb4.setText("Daily P&&L: ");
 		lb4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		lbDailyPnL = new Label(parent, SWT.LEFT);
+		lbDailyPnL = new Label(parent, SWT.RIGHT);
 		lbDailyPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 	}
 
