@@ -168,8 +168,8 @@ public class MessageLookup {
 			addAndCheck(ErrorMessage.ORDER_SYMBOL_LOT_SIZE_ERROR,getBean(439, "Can not determine symbol for quantity lot size validation"));
 			addAndCheck(ErrorMessage.ORDER_SYMBOL_NOT_FOUND,getBean(440, "Can't find symbol in refdata"));
 			addAndCheck(ErrorMessage.INVALID_QUANTITY,getBean(441, "Invalid Quantity!"));
-			addAndCheck(ErrorMessage.ORDER_ACCOUNT_OVER_CREDIT_LIMIT,getBean(442, "This order would have caused account over credit limit"));
-			addAndCheck(ErrorMessage.AMEND_ORDER_OVER_CREDIT_LIMIT,getBean(443, "Amendment would have caused the account over credit limit"));
+			addAndCheck(ErrorMessage.ORDER_ACCOUNT_OVER_CREDIT_LIMIT,getBean(442, "Order exceeds cash available"));
+			addAndCheck(ErrorMessage.AMEND_ORDER_OVER_CREDIT_LIMIT,getBean(443, "Order would exceed cash available"));
 			addAndCheck(ErrorMessage.ENDTIME_IN_THE_PASS,getBean(444, "end time is in the pass"));
 			addAndCheck(ErrorMessage.STARTTIME_SAME_AS_ENDTIME,getBean(445, "end time is is the same or before start time"));
 			addAndCheck(ErrorMessage.ICEBERG_STRATEGY_QTY_EMPTY,getBean(446, "Display quantity can not be empty for Iceberg stratgy"));

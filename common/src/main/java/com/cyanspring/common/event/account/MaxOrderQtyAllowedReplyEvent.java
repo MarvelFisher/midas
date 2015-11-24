@@ -34,4 +34,14 @@ public class MaxOrderQtyAllowedReplyEvent extends AbstractReplyEvent {
 	public double getCashAvailable() {
 		return cashAvailable;
 	}
+	
+	@Override
+	public String toString() {
+		return "MaxOrderQtyAllowedReplyEvent: " + 
+				account + ", " +
+				symbol + ", " +
+				qty + ", " +
+				cashAvailable + ", " + this.getTxId();
+	}
+	
 }

@@ -44,4 +44,13 @@ public class MaxOrderQtyAllowedRequestEvent extends AbstractRequestEvent {
 		return price;
 	}
 	
+	@Override
+	public String toString() {
+		return "MaxOrderQtyAllowedRequestEvent: " + 
+				account + ", " +
+				symbol + ", " +
+				orderSide + ", " +
+				orderType + ", " +
+				price + ", " + this.getTxId();
+	}
 }
