@@ -13,6 +13,7 @@ import com.cyanspring.common.pool.ExchangeSubAccount;
 import com.cyanspring.common.pool.InstrumentPool;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.util.PriceUtils;
+import com.cyanspring.cstw.keepermanager.InstrumentPoolKeeperManager;
 import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
 import com.cyanspring.cstw.model.admin.InstrumentInfoModel;
 import com.cyanspring.cstw.model.admin.SubAccountModel;
@@ -237,8 +238,13 @@ public final class ModelTransfer {
 
 	public static SubAccountModel parseSubAccountModel(
 			ExchangeSubAccount subAccount) {
+		String exName = InstrumentPoolKeeperManager.getInstance()
+				.getInstrumentPoolKeeper()
+				.getExchangeAccount(subAccount.getExchangeAccount()).getName();
 		SubAccountModel model = new SubAccountModel.Builder()
-				.id(subAccount.getId()).name(subAccount.getName()).build();
+				.id(subAccount.getId()).name(subAccount.getName())
+				.relativeExchAccount(subAccount.getExchangeAccount())
+				.exchangeAccountName(exName).build();
 		return model;
 	}
 

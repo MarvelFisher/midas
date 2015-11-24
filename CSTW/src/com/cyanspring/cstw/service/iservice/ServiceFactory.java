@@ -2,7 +2,7 @@ package com.cyanspring.cstw.service.iservice;
 
 import com.cyanspring.common.account.UserRole;
 import com.cyanspring.cstw.service.common.ExportCsvServiceImpl;
-import com.cyanspring.cstw.service.impl.admin.MockSubAccountManageServiceImpl;
+import com.cyanspring.cstw.service.impl.admin.SubAccountManageServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.CurrentPositionServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.InstrumentStatisticsServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.InstrumentSummaryServiceImpl;
@@ -72,7 +72,7 @@ public final class ServiceFactory {
 	}
 
 	public static ISubAccountManagerService createSubAccountManagerService() {
-		ISubAccountManagerService instance = new MockSubAccountManageServiceImpl();
+		ISubAccountManagerService instance = new SubAccountManageServiceImpl();
 		return instance;
 	}
 
