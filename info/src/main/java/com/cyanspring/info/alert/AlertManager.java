@@ -234,12 +234,12 @@ public class AlertManager extends Compute {
             TradeAlert TA;
             if (parentOrder.getSide().toString().toLowerCase().equals("sell")) {
                 TA = new TradeAlert(parentOrder.getUser(), parentOrder.getSymbol(),
-                        null, 0 - parentOrder.getQuantity(),
+                		parentOrder.getReason(), 0 - parentOrder.getQuantity(),
                         parentOrder.getPrice(), Datetime, tradeMessage);
             } else {
                 TA = new TradeAlert(parentOrder.getUser(), parentOrder.getSymbol(),
-                        null, parentOrder.getQuantity(), parentOrder.getPrice(),
-                        Datetime, tradeMessage);
+                		parentOrder.getReason(), parentOrder.getQuantity(), 
+                		parentOrder.getPrice(), Datetime, tradeMessage);
             }
             if (RefDataBitUtil.isForex(refdata.getInstrumentType())) {
             	TA.setCommodity("F");
