@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
-import com.cyanspring.common.staticdata.RefDataManager;
 import com.cyanspring.common.util.PriceUtils;
 
 public class FxUtils {

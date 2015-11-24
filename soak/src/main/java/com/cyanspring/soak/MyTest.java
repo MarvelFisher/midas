@@ -35,26 +35,39 @@ public class MyTest extends ClientAdaptor {
 				while(true) {
 					log.info("=== Sending requests ===");
 					MaxOrderQtyAllowedRequestEvent request;
+//					request = new MaxOrderQtyAllowedRequestEvent("Mytest", getServer(), "txId1",
+//							"test1-FX", "AUDUSD", OrderSide.Buy, OrderType.Limit, 10.0);
+//					sendEvent(request);
+//					request = new MaxOrderQtyAllowedRequestEvent("Mytest", getServer(), "txId1",
+//							"test1-FX", "AUDUSD", OrderSide.Sell, OrderType.Limit, 10.0);
+//					sendEvent(request);
+//
+//					request = new MaxOrderQtyAllowedRequestEvent("Mytest", getServer(), "txId1",
+//							"test1-FX", "USDJPY", OrderSide.Buy, OrderType.Limit, 10.0);
+//					sendEvent(request);
+//					request = new MaxOrderQtyAllowedRequestEvent("Mytest", getServer(), "txId1",
+//							"test1-FX", "USDJPY", OrderSide.Sell, OrderType.Limit, 10.0);
+//					sendEvent(request);
+//
+//					request = new MaxOrderQtyAllowedRequestEvent("Mytest", getServer(), "txId1",
+//							"test1-FX", "EURJPY", OrderSide.Buy, OrderType.Limit, 10.0);
+//					sendEvent(request);
+//					request = new MaxOrderQtyAllowedRequestEvent("Mytest", getServer(), "txId1",
+//							"test1-FX", "EURJPY", OrderSide.Sell, OrderType.Limit, 10.0);
+//					sendEvent(request);
 					request = new MaxOrderQtyAllowedRequestEvent("Mytest", getServer(), "txId1",
-							"test1-FX", "AUDUSD", OrderSide.Buy, OrderType.Limit, 10.0);
+							"test1-FC", "IF1512.CF", OrderSide.Buy, OrderType.Limit, 3500);
 					sendEvent(request);
 					request = new MaxOrderQtyAllowedRequestEvent("Mytest", getServer(), "txId1",
-							"test1-FX", "AUDUSD", OrderSide.Sell, OrderType.Limit, 10.0);
-					sendEvent(request);
-
-					request = new MaxOrderQtyAllowedRequestEvent("Mytest", getServer(), "txId1",
-							"test1-FX", "USDJPY", OrderSide.Buy, OrderType.Limit, 10.0);
+							"test1-FC", "IF1512.CF", OrderSide.Sell, OrderType.Limit, 3500);
 					sendEvent(request);
 					request = new MaxOrderQtyAllowedRequestEvent("Mytest", getServer(), "txId1",
-							"test1-FX", "USDJPY", OrderSide.Sell, OrderType.Limit, 10.0);
-					sendEvent(request);
-
-					request = new MaxOrderQtyAllowedRequestEvent("Mytest", getServer(), "txId1",
-							"test1-FX", "EURJPY", OrderSide.Buy, OrderType.Limit, 10.0);
+							"test1-FC", "IF1512.CF", OrderSide.Buy, OrderType.Market, 3500);
 					sendEvent(request);
 					request = new MaxOrderQtyAllowedRequestEvent("Mytest", getServer(), "txId1",
-							"test1-FX", "EURJPY", OrderSide.Sell, OrderType.Limit, 10.0);
+							"test1-FC", "IF1512.CF", OrderSide.Sell, OrderType.Market, 3500);
 					sendEvent(request);
+					
 					try {
 						Thread.sleep(5000);
 					} catch (InterruptedException e) {
