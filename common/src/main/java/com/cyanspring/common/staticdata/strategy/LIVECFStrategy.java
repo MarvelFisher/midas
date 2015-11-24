@@ -102,7 +102,7 @@ public class LIVECFStrategy extends AbstractRefDataStrategy {
     }
 
     @Override
-    public List<RefData> updateRefData(RefData refData) {
+    public List<RefData> updateRefData(RefData refData) throws ParseException {
     	List<RefData> lstRefData = super.updateRefData(refData);
 		try {
 			for (RefData data : lstRefData) {

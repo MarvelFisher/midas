@@ -35,6 +35,7 @@ import com.cyanspring.common.staticdata.IRefDataChecker;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.type.OrdStatus;
+import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.PriceUtils;
@@ -764,8 +765,11 @@ public class PositionKeeper {
 		}
 	}
 
+	// OrderSide.Buy to only get buy side margin Qty
+	// OrderSide.Sell to get only sell side margin Qty
+	// null to get the maximum of two sides
 	private double getMarginQtyByAccountAndSymbol(Account account,
-			String symbol, double extraQty) {
+			String symbol, double extraQty, Boolean isBuy) { 
 		double buyQty = 0;
 		double sellQty = 0;
 
@@ -804,12 +808,23 @@ public class PositionKeeper {
 			sellQty -= extraQty;
 		}
 
-		// take the maximum one
-		return buyQty > sellQty ? buyQty : -sellQty;
+		if(isBuy == null) {
+			return buyQty > sellQty ? buyQty : -sellQty;
+		} else if(isBuy) {
+			return buyQty;
+		} else {
+			return -sellQty;
+		}
 	}
 
 	private double getMarginValueByAccountAndSymbol(Account account,
 			String symbol, Quote quote, double lev) {
+		return getMarginValueByAccountAndSymbol(account, symbol, quote, lev, false, 0.0, 0.0, 0.0, 0.0);
+	}
+
+	private double getMarginValueByAccountAndSymbol(Account account,
+			String symbol, Quote quote, double lev, 
+			boolean isBuy, double oldQty, double oldPrice, double newQty, double newPrice) {
 		double buyValue = 0;
 		double sellValue = 0;
 
@@ -820,23 +835,13 @@ public class PositionKeeper {
 				Map<String, ParentOrder> symbolMap = accountMap.get(symbol);
 				if (null != symbolMap) {
 					for (ParentOrder order : symbolMap.values()) {
-						double price;
-						double orderPrice = order.getPrice();
-						if (order.getOrderType().equals(OrderType.Limit)
-								&& PriceUtils.validPrice(orderPrice)) {
-							price = orderPrice;
-						} else {
-							price = QuoteUtils.getMarketablePrice(quote, order
-									.getSide().isBuy() ? 1 : -1);
-							if (!PriceUtils.validPrice(price)) {
-								price = QuoteUtils.getValidPrice(quote);
-							}
-						}
+						double price = QuoteUtils.getRiskPrice(order.getOrderType(), order.getSide(), order.getPrice(), quote);
+
 						if (!order.getOrdStatus().isCompleted()) {
 							double value = Math.abs(FxUtils
 									.convertPositionToCurrency(refDataManager,
 											fxConverter, account.getCurrency(),
-											quote.getSymbol(), (order
+											symbol, (order
 													.getQuantity() - order
 													.getCumQty()), price));
 							if (order.getSide().isBuy()) {
@@ -859,60 +864,46 @@ public class PositionKeeper {
 			}
 		}
 
+		double oldValue = oldQty > 0.0? 
+			Math.abs(FxUtils
+				.convertPositionToCurrency(refDataManager,
+						fxConverter, account.getCurrency(),
+						symbol, oldQty, oldPrice)) : 0.0;
+		
+		double newValue = newQty > 0.0? 
+			Math.abs(FxUtils
+				.convertPositionToCurrency(refDataManager,
+						fxConverter, account.getCurrency(),
+						symbol, newQty, newPrice)) : 0.0;
+				
+		
+		if (isBuy) {
+			buyValue += (newValue - oldValue)/lev;
+		} else {
+			sellValue += (newValue - oldValue)/lev;
+		}
+
 		// take the maximum one
 		return buyValue > sellValue ? buyValue : sellValue;
 	}
 
-	// private double getMarginValueByAccountAndSymbol(Account account, String
-	// symbol, Quote quote) {
-	// double marginQty = getMarginQtyByAccountAndSymbol(account, symbol, 0);
-	// double price = QuoteUtils.getMarketablePrice(quote, marginQty);
-	// if(!PriceUtils.validPrice(price))
-	// price = QuoteUtils.getValidPrice(quote);
-	// return Math.abs(FxUtils.convertPositionToCurrency(refDataManager,
-	// fxConverter, account.getCurrency(), quote.getSymbol(),
-	// marginQty, price));
-	// }
-
 	public boolean checkMarginDeltaByAccountAndSymbol(Account account,
-			String symbol, Quote quote, double extraQty)
+			String symbol, Quote quote, 
+			boolean isBuy, double oldQty, double oldPrice, double newQty, double newPrice)
 			throws AccountException {
-		double currentMarginQty = getMarginQtyByAccountAndSymbol(account,
-				symbol, 0);
-		double futureMarginQty = getMarginQtyByAccountAndSymbol(account,
-				symbol, extraQty);
-		if (Math.abs(currentMarginQty) >= Math.abs(futureMarginQty)) {
-			return true; // reducing qty, ok
-		}
-
-		double deltaQty = Math.abs(futureMarginQty)
-				- Math.abs(currentMarginQty);
-		if (futureMarginQty < 0) {
-			deltaQty = -deltaQty;
-		}
-
-		double price = QuoteUtils.getMarketablePrice(quote, deltaQty);
-		if (!PriceUtils.validPrice(price)) {
-			price = QuoteUtils.getValidPrice(quote);
-		}
-
-		if (!PriceUtils.validPrice(price)) {
-			log.error("Quote invalid: " + quote);
-			return false;
-		}
-
-		double deltaValue = Math.abs(FxUtils.convertPositionToCurrency(
-				refDataManager, fxConverter, account.getCurrency(),
-				quote.getSymbol(), deltaQty, price));
-
 		AccountSetting accountSetting = accountKeeper.getAccountSetting(account
 				.getId());
-
 		RefData refData = refDataManager.getRefData(symbol);
 		double leverage = leverageManager.getLeverage(refData, accountSetting);
 
-		if (account.getCashAvailable() * Default.getMarginCall() - deltaValue
-				/ leverage >= 0) {
+		double currentMarginValue = getMarginValueByAccountAndSymbol(account,
+				symbol, quote, leverage) ;
+		double futureMarginValue = getMarginValueByAccountAndSymbol(account,
+				symbol, quote, leverage, isBuy, oldQty, oldPrice, newQty, newPrice) ;
+
+		double deltaValue = futureMarginValue - currentMarginValue;
+		
+		if (account.getCashAvailable() * Default.getMarginCall() > deltaValue) {
 			return true;
 		} else {
 			log.debug("Credit check fail: " + account.getCashAvailable() + ", "
@@ -957,42 +948,20 @@ public class PositionKeeper {
 	}
 
 	public boolean checkPartialCreditByAccountAndRefDataChecker(Account account,
-			String symbol, Quote quote, double extraQty, double ratio, IRefDataChecker refDataChecker)
+			String symbol, Quote quote, double ratio, IRefDataChecker refDataChecker,
+			boolean isBuy, double oldQty, double oldPrice, double newQty, double newPrice)
 			throws AccountException {
-		double currentMarginQty = getMarginQtyByAccountAndSymbol(account,
-				symbol, 0);
-		double futureMarginQty = getMarginQtyByAccountAndSymbol(account,
-				symbol, extraQty);
-		if (Math.abs(currentMarginQty) >= Math.abs(futureMarginQty)) {
-			return true; // reducing qty, ok
-		}
-
-		double deltaQty = Math.abs(futureMarginQty)
-				- Math.abs(currentMarginQty);
-		if (futureMarginQty < 0) {
-			deltaQty = -deltaQty;
-		}
-
-		double price = QuoteUtils.getMarketablePrice(quote, deltaQty);
-		if (!PriceUtils.validPrice(price)) {
-			price = QuoteUtils.getValidPrice(quote);
-		}
-
-		if (!PriceUtils.validPrice(price)) {
-			log.error("Quote invalid: " + quote);
-			return false;
-		}
-
-		double deltaValue = Math.abs(FxUtils.convertPositionToCurrency(
-				refDataManager, fxConverter, account.getCurrency(),
-				quote.getSymbol(), deltaQty, price));
-
 		AccountSetting accountSetting = accountKeeper.getAccountSetting(account
 				.getId());
-
 		RefData refData = refDataManager.getRefData(symbol);
 		double leverage = leverageManager.getLeverage(refData, accountSetting);
-		deltaValue /= leverage;
+
+		double currentMarginValue = getMarginValueByAccountAndSymbol(account,
+				symbol, quote, leverage) ;
+		double futureMarginValue = getMarginValueByAccountAndSymbol(account,
+				symbol, quote, leverage, isBuy, oldQty, oldPrice, newQty, newPrice) ;
+
+		double deltaValue = futureMarginValue - currentMarginValue;
 
 		double partialCredit = getPartialCreditByAccountAndRefDataChecker(account, refDataChecker);
 		
@@ -1005,6 +974,39 @@ public class PositionKeeper {
 					+ leverage + ", " + quote);
 			return false;
 		}
+	}
+	
+	public double getMaxOrderQtyAllowed(Account account, RefData refData, OrderSide orderSide, 
+			OrderType orderType, double orderPrice, Quote quote) {
+		double price = QuoteUtils.getRiskPrice(orderType, orderSide, orderPrice, quote);
+
+		AccountSetting accountSetting = null;
+		try {
+			accountSetting = accountKeeper.getAccountSetting(account.getId());
+		} catch (AccountException e) {
+			log.error(e.getMessage(), e);
+		}
+
+		double allowedQty = FxUtils.calculateQtyFromValue(refDataManager, fxConverter, account.getCurrency(), 
+				refData.getSymbol(), account.getCashAvailable() * Default.getMarginCall(), price);
+				
+		double lev = leverageManager.getLeverage(refData,
+				accountSetting);
+		allowedQty *= lev;
+
+		double existingMarginQty = Math.abs(getMarginQtyByAccountAndSymbol(account, refData.getSymbol(), 0, orderSide.isBuy()));
+		double oppositeMarginQty = Math.abs(getMarginQtyByAccountAndSymbol(account, refData.getSymbol(), 0, !orderSide.isBuy()));
+		
+		if(oppositeMarginQty > existingMarginQty)
+			allowedQty += oppositeMarginQty - existingMarginQty;
+		
+		long lot =	Math.max(refData.getLotSize(), 1);
+		long rounded = ((long) allowedQty) / lot * lot;
+		
+		log.info("getMaxOrderQtyAllowed: " + account.getId() + ", " + refData.getSymbol() + 
+				", " + refData.getMarginRate() + ", " + accountSetting.getLeverageRate() +
+				", " + allowedQty + ", " + rounded);
+		return rounded;
 	}
 
 	public List<Execution> getExecutions(String account) {
