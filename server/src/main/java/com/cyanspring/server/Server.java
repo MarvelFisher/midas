@@ -416,7 +416,7 @@ public class Server implements ApplicationContextAware {
 
 		accountPositionManager.endAcountPositionRecovery();
 
-		if (null != executionRecoveryProcessor) {
+		if (null != executionRecoveryProcessor) { 
 			List<Execution> executions = executionRecoveryProcessor.recover();
 			log.info("Executions recovered: " + executions.size());
 			orderManager.injectExecutions(executions);

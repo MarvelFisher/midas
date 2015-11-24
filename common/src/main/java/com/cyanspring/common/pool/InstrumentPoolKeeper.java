@@ -30,7 +30,7 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 	// k1=InstrumentPool id; k2=symbol; v=InstrumentPoolRecord
 	private Map<String, Map<String, InstrumentPoolRecord>> instrumentPoolRecordMap = new ConcurrentHashMap<String, Map<String, InstrumentPoolRecord>>();
 
-	// k1=Account id; k2=ExchangeSubAccount id; v=ExchangeSubAccount
+	// k1=User id; k2=ExchangeSubAccount id; v=ExchangeSubAccount
 	private Map<String, Map<String, ExchangeSubAccount>> userSubAccounMap = new ConcurrentHashMap<String, Map<String, ExchangeSubAccount>>();
 
 	/**
@@ -93,23 +93,23 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 		return poolSubAccountMap.get(instrumentPool);
 	}
 
-	public List<String> getAccountsByExchangeSubAccount(
+	public List<String> getUsersByExchangeSubAccount(
 			String exchangeSubAccount) {
-		List<String> accounts = new ArrayList<String>();
+		List<String> users = new ArrayList<String>();
 		for (Entry<String, Map<String, ExchangeSubAccount>> entry : userSubAccounMap
 				.entrySet()) {
 			if (entry.getValue().containsKey(exchangeSubAccount)) {
-				accounts.add(entry.getKey());
+				users.add(entry.getKey());
 			}
 		}
-		return accounts;
+		return users;
 	}
 
-	public List<ExchangeSubAccount> getExchangeSubAccountsByAccount(
-			String account) {
+	public List<ExchangeSubAccount> getExchangeSubAccountsByUser(
+			String user) {
 		List<ExchangeSubAccount> subAccounts = new ArrayList<ExchangeSubAccount>();
-		if (userSubAccounMap.containsKey(account)) { 
-			subAccounts.addAll(userSubAccounMap.get(account).values());
+		if (userSubAccounMap.containsKey(user)) { 
+			subAccounts.addAll(userSubAccounMap.get(user).values());
 		}
 		return subAccounts;
 	}
@@ -312,11 +312,11 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 	public void injectUserExchangeSubAccounts(
 			List<UserExchangeSubAccount> userExchangeSubAccounts) {
 		for (UserExchangeSubAccount subAccount : userExchangeSubAccounts) {
-			if (!userSubAccounMap.containsKey(subAccount.getAccount())) {
-				userSubAccounMap.put(subAccount.getAccount(),
+			if (!userSubAccounMap.containsKey(subAccount.getUser())) {
+				userSubAccounMap.put(subAccount.getUser(),
 						new ConcurrentHashMap<String, ExchangeSubAccount>());
 			}
-			userSubAccounMap.get(subAccount.getAccount()).put(
+			userSubAccounMap.get(subAccount.getUser()).put(
 					subAccount.getExchangeSubAccount(),
 					subAccountMap.get(subAccount.getExchangeSubAccount()));
 		}
