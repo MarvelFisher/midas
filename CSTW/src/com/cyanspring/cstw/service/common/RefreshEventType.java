@@ -24,6 +24,7 @@ public enum RefreshEventType {
 	// BW
 	
 	//Admin	
+	InstrumentPoolUpdate,
 	
 	//常用事件
 	LoginFinished,

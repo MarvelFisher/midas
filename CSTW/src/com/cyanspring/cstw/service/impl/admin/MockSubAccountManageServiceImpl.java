@@ -151,7 +151,10 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 	@Override
 	public List<InstrumentInfoModel> getInstrumentInfoModelListBySubAccountId(
 			String id) {
-		return instruList.subList(0, 1);
+		List<InstrumentInfoModel> instrumentInfoModelList = new ArrayList<InstrumentInfoModel>();
+		instrumentInfoModelList.add(new InstrumentInfoModel.Builder().symbolId("AUDUSD").symbolName("AUDUSD").qty(10000).build());
+		instrumentInfoModelList.add(new InstrumentInfoModel.Builder().symbolId("AUDUSD").symbolName("AUDUSD").qty(10000).build());
+		return instrumentInfoModelList;
 	}
 	
 	@Override

@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.cyanspring.common.account.UserGroup;
 import com.cyanspring.common.client.IInstrumentPoolKeeper;
 import com.cyanspring.common.client.IInstrumentPoolKeeper.ModelType;
@@ -29,7 +32,8 @@ import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
  */
 public class SubAccountManageServiceImpl extends BasicServiceImpl
 		implements ISubAccountManagerService {
-
+	private static final Logger log = LoggerFactory.getLogger(SubAccountManageServiceImpl.class);
+	
 	private IInstrumentPoolKeeper instrumentPoolKeeper;
 
 	@Override
@@ -93,6 +97,31 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 		}
 		return instrumentInfoModelList;
 	}
+	
+	@Override
+	public List<InstrumentInfoModel> getInstrumentInfoModelListBySubAccountId(
+			String id) {
+		List<InstrumentPoolRecord> recordList = instrumentPoolKeeper
+				.getInstrumentPoolRecordList(id, ModelType.EXCHANGE_SUB_ACCOUNT);
+		// merge record
+		Map<String, Double> symbolQtyMap = new HashMap<String, Double>();
+		for(InstrumentPoolRecord record : recordList) {
+			if (!symbolQtyMap.containsKey(record.getSymbol())) {
+				symbolQtyMap.put(record.getSymbol(), new Double(0));
+			}
+			Double qty = symbolQtyMap.get(record.getSymbol());
+			qty = Double.valueOf(qty + record.getQty());
+			symbolQtyMap.put(record.getSymbol(), qty);
+		}
+		List<InstrumentInfoModel> instrumentInfoModelList = new ArrayList<InstrumentInfoModel>();
+		for (Map.Entry<String, Double> entry : symbolQtyMap.entrySet()) {
+			InstrumentInfoModel infoModel = new InstrumentInfoModel.Builder().symbolName(entry.getKey()).symbolName(entry.getKey()).qty(entry.getValue()).build();
+			instrumentInfoModelList.add(infoModel);
+		}
+		instrumentInfoModelList.add(new InstrumentInfoModel.Builder().symbolId("AUDUSD").symbolName("AUDUSD").qty(10000).build());
+		instrumentInfoModelList.add(new InstrumentInfoModel.Builder().symbolId("AUDUSD").symbolName("AUDUSD").qty(10000).build());
+		return instrumentInfoModelList;
+	}
 
 	@Override
 	protected List<Class<? extends AsyncEvent>> getReplyEventList() {
@@ -103,18 +132,20 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 
 	@Override
 	protected RefreshEventType handleEvent(AsyncEvent event) {
-		// TODO Auto-generated method stub
-		return null;
+		if (event instanceof InstrumentPoolUpdateLocalEvent) {
+			return RefreshEventType.InstrumentPoolUpdate;
+		}
+		return RefreshEventType.Default;
 	}
 
 	@Override
 	public void createNewExchangeAccount() {
-
+		
 	}
 
 	@Override
 	public void createNewSubAccount(String exchange) {
-
+		
 	}
 
 	@Override
@@ -130,21 +161,16 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 	}
 
 	@Override
-	public List<InstrumentInfoModel> getInstrumentInfoModelListBySubAccountId(
-			String id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public List<AssignedModel> getAssignedModelListBySubAccountId(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		List<AssignedModel> assList = new ArrayList<AssignedModel>();
+//		assList.add(new AssignedModel.Builder().userId("front_risk1").roleType("FrontRiskManager").build());
+//		assList.add(new AssignedModel.Builder().userId("group1").roleType("Group").build());
+//		assList.add(new AssignedModel.Builder().userId("front_risk2").roleType("FrontRiskManager").build());
+		return assList;
 	}
 
 	@Override
 	public List<UserGroup> getAvailableAssigneeList(SubAccountModel subAccount) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
