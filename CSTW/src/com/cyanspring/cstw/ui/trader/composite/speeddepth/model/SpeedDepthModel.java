@@ -24,6 +24,10 @@ public final class SpeedDepthModel {
 
 	private double bidQty;
 
+	private double stopAskQty;
+
+	private double stopBidQty;
+
 	private String symbol;
 
 	private boolean isLastPrice;
@@ -100,6 +104,22 @@ public final class SpeedDepthModel {
 
 	public void setIndex(int index) {
 		this.index = index;
+	}
+
+	public double getStopAskQty() {
+		return stopAskQty;
+	}
+
+	public void setStopAskQty(double stopAskQty) {
+		this.stopAskQty = stopAskQty;
+	}
+
+	public double getStopBidQty() {
+		return stopBidQty;
+	}
+
+	public void setStopBidQty(double stopBidQty) {
+		this.stopBidQty = stopBidQty;
 	}
 
 }

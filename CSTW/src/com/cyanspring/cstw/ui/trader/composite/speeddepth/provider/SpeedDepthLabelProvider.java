@@ -24,10 +24,14 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 		SpeedDepthModel model = (SpeedDepthModel) element;
 		switch (columnIndex) {
 		case 0:
+			String columnLabel = "";
 			if (model.getAskQty() > 0) {
-				return "" + model.getAskQty();
+				columnLabel = "" + model.getAskQty();
 			}
-			return "";
+			if (model.getStopAskQty() > 0) {
+				columnLabel = columnLabel + "(" + model.getStopAskQty() + ")";
+			}
+			return columnLabel;
 		case 1:
 			if (model.getType() == SpeedDepthModel.BID && model.getVol() > 0) {
 				try {
@@ -51,10 +55,15 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 			}
 			return "";
 		case 4:
+			String columnBidLabel = "";
 			if (model.getBidQty() > 0) {
-				return "" + model.getBidQty();
+				columnBidLabel = "" + model.getBidQty();
 			}
-			return "";
+			if (model.getStopBidQty() > 0) {
+				columnBidLabel = columnBidLabel + "(" + model.getStopBidQty()
+						+ ")";
+			}
+			return columnBidLabel;
 		}
 		return "";
 	}
