@@ -11,7 +11,6 @@ import com.cyanspring.common.staticdata.RefData;
 
 public class DefaultContractPolicy {
 
-
 	public SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	public SimpleDateFormat ymSdf = new SimpleDateFormat("yyyyMM");
 	Calendar cal;

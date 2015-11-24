@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -100,7 +101,13 @@ public class GenRefDataListTest {
 		}};
 
 		for (RefData data : lstAUTemplate) {
-			List<RefData> lstAURefData = strategy.updateRefData(data);
+			List<RefData> lstAURefData = null;
+			try {
+				lstAURefData = strategy.updateRefData(data);
+			} catch (ParseException e) {
+				e.printStackTrace();
+				fail(e.getMessage());
+			}
 			assertNotNull(lstAURefData);
 			int size = lstAURefData.size();
 			assertTrue(size == 8);
@@ -168,7 +175,13 @@ public class GenRefDataListTest {
 		}};
 
 		for (RefData data : lstBUTemplate) {
-			List<RefData> lstBURefData = strategy.updateRefData(data);
+			List<RefData> lstBURefData = null;
+			try {
+				lstBURefData = strategy.updateRefData(data);
+			} catch (ParseException e) {
+				e.printStackTrace();
+				fail(e.getMessage());
+			}
 			assertNotNull(lstBURefData);
 			int size = lstBURefData.size();
 			assertTrue(size == 12);
@@ -220,7 +233,13 @@ public class GenRefDataListTest {
 		}};
 
 		for (RefData data : lstIndexTemplate) {
-			List<RefData> lstIndexRefData = strategy.updateRefData(data);
+			List<RefData> lstIndexRefData = null;
+			try {
+				lstIndexRefData = strategy.updateRefData(data);
+			} catch (ParseException e) {
+				e.printStackTrace();
+				fail(e.getMessage());
+			}
 			assertNotNull(lstIndexRefData);
 			int size = lstIndexRefData.size();
 			assertTrue(size == 4);
@@ -276,7 +295,13 @@ public class GenRefDataListTest {
 		}};
 
 		for (RefData data : lstOddsTemplate) {
-			List<RefData> lstOddsRefData = strategy.updateRefData(data);
+			List<RefData> lstOddsRefData = null;
+			try {
+				lstOddsRefData = strategy.updateRefData(data);
+			} catch (ParseException e) {
+				e.printStackTrace();
+				fail(e.getMessage());
+			}
 			assertNotNull(lstOddsRefData);
 			int size = lstOddsRefData.size();
 			assertTrue(size == 6);
@@ -336,7 +361,13 @@ public class GenRefDataListTest {
 		}};
 
 		for (RefData data : lstTXTemplate) {
-			List<RefData> lstTXRefData = strategy.updateRefData(data);
+			List<RefData> lstTXRefData = null;
+			try {
+				lstTXRefData = strategy.updateRefData(data);
+			} catch (ParseException e) {
+				e.printStackTrace();
+				fail(e.getMessage());
+			}
 			assertNotNull(lstTXRefData);
 			int size = lstTXRefData.size();
 			assertTrue(size == 5);
@@ -413,7 +444,13 @@ public class GenRefDataListTest {
 		}};
 
 		for (RefData data : lstDefaultTemplate) {
-			List<RefData> lstDefaultRefData = strategy.updateRefData(data);
+			List<RefData> lstDefaultRefData = null;
+			try {
+				lstDefaultRefData = strategy.updateRefData(data);
+			} catch (ParseException e) {
+				e.printStackTrace();
+				fail(e.getMessage());
+			}
 			assertNotNull(lstDefaultRefData);
 			int size = lstDefaultRefData.size();
 			assertTrue(size == 12);
@@ -465,7 +502,13 @@ public class GenRefDataListTest {
 			add("1612");
 		}};
 
-		List<RefData> lstDefaultRefData = strategy.updateRefData(data);
+		List<RefData> lstDefaultRefData = null;
+		try {
+			lstDefaultRefData = strategy.updateRefData(data);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
 		assertNotNull(lstDefaultRefData);
 		int size = lstDefaultRefData.size();
 		assertTrue(size == 10);
@@ -509,7 +552,13 @@ public class GenRefDataListTest {
 			add("1612");
 		}};
 
-		List<RefData> lstDefaultRefData = strategy.updateRefData(data);
+		List<RefData> lstDefaultRefData = null;
+		try {
+			lstDefaultRefData = strategy.updateRefData(data);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
 		assertNotNull(lstDefaultRefData);
 		int size = lstDefaultRefData.size();
 		assertTrue(size == 8);
@@ -552,7 +601,13 @@ public class GenRefDataListTest {
 			add("611");
 		}};
 
-		List<RefData> lstDefaultRefData = strategy.updateRefData(data);
+		List<RefData> lstDefaultRefData = null;
+		try {
+			lstDefaultRefData = strategy.updateRefData(data);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
 		assertNotNull(lstDefaultRefData);
 		int size = lstDefaultRefData.size();
 		assertTrue(size == 7);
@@ -592,7 +647,13 @@ public class GenRefDataListTest {
 			add("611");
 		}};
 
-		List<RefData> lstDefaultRefData = strategy.updateRefData(data);
+		List<RefData> lstDefaultRefData = null;
+		try {
+			lstDefaultRefData = strategy.updateRefData(data);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
 		assertNotNull(lstDefaultRefData);
 		int size = lstDefaultRefData.size();
 		assertTrue(size == 4);
@@ -638,7 +699,13 @@ public class GenRefDataListTest {
 			add("1611");
 		}};
 
-		List<RefData> lstDefaultRefData = strategy.updateRefData(data);
+		List<RefData> lstDefaultRefData = null;
+		try {
+			lstDefaultRefData = strategy.updateRefData(data);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
 		assertNotNull(lstDefaultRefData);
 		int size = lstDefaultRefData.size();
 		assertTrue(size == 10);
@@ -685,7 +752,13 @@ public class GenRefDataListTest {
 			add("1612");
 		}};
 
-		List<RefData> lstDefaultRefData = strategy.updateRefData(data);
+		List<RefData> lstDefaultRefData = null;
+		try {
+			lstDefaultRefData = strategy.updateRefData(data);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
 		assertNotNull(lstDefaultRefData);
 		int size = lstDefaultRefData.size();
 		assertTrue(size == 11);
