@@ -61,19 +61,19 @@ public class MarketSessionChecker implements IMarketSessionChecker {
 				continue;
 			}
 
-            if (data.getSessionType().equals(MarketSessionType.PREMARKET) && tradeDateManager != null) {
-                if (currentType != null && !currentType.equals(data.getSessionType())){
-                	if( tradeDate == null) {
+            MarketSessionType type = data.getSessionType();
+            if (type.equals(MarketSessionType.PREMARKET) && tradeDateManager != null
+            		&& currentType != null && !currentType.equals(type)) {
+                	if (tradeDate == null) {
 						continue;
 					}
                 	log.debug("Change trade date for index: " + index + ", from: " + tradeDate);
                 	tradeDate = tradeDateManager.nextTradeDate(tradeDate);
                 	log.debug("Change trade date for index: " + index + ", to: " + tradeDate);
-                }
             }
-            sessionData = new MarketSessionData(data.getSessionType(), data.getStart(), data.getEnd());
+            sessionData = new MarketSessionData(type, data.getStart(), data.getEnd());
             sessionData.setDate(tradeDate);
-            currentType = data.getSessionType();
+            currentType = type;
             break;
         }
         return sessionData;
