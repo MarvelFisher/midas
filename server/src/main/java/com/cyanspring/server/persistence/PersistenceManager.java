@@ -69,6 +69,7 @@ import com.cyanspring.common.pool.ExchangeAccount;
 import com.cyanspring.common.pool.ExchangeSubAccount;
 import com.cyanspring.common.pool.InstrumentPool;
 import com.cyanspring.common.pool.InstrumentPoolRecord;
+import com.cyanspring.common.pool.UserExchangeSubAccount;
 import com.cyanspring.common.type.PersistType;
 import com.cyanspring.common.type.StrategyState;
 import com.cyanspring.common.util.IdGenerator;
@@ -1800,6 +1801,22 @@ public class PersistenceManager {
 		List<AccountPool> result = new ArrayList<AccountPool>();
 		try {
 			result = session.createCriteria(AccountPool.class).list();
+		} catch (HibernateException e) {
+			log.error(e.getMessage(), e);
+			throw e;
+		} finally {
+			session.close();
+		}
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<UserExchangeSubAccount> recoverUserExchangeSubAccounts() {
+		Session session = sessionFactory.openSession();
+		List<UserExchangeSubAccount> result = new ArrayList<UserExchangeSubAccount>();
+		try {
+			result = session.createCriteria(UserExchangeSubAccount.class)
+					.list();
 		} catch (HibernateException e) {
 			log.error(e.getMessage(), e);
 			throw e;

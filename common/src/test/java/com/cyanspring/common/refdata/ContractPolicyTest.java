@@ -1,7 +1,10 @@
 package com.cyanspring.common.refdata;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -53,7 +56,14 @@ public class ContractPolicyTest {
 			add("201612");
 		}};
 
-		List<String> lstContractMonth = policy.getContractMonths(data);
+		List<String> lstContractMonth = null;
+		try {
+			lstContractMonth = policy.getContractMonths(data);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+		assertNotNull(lstContractMonth);
 		lstExpectedContractMonth.removeAll(lstContractMonth);
 		assertTrue(lstExpectedContractMonth.size() == 0);
 	}
@@ -82,7 +92,14 @@ public class ContractPolicyTest {
 			add("201712");
 		}};
 
-		List<String> lstContractMonth = policy.getContractMonths(data);
+		List<String> lstContractMonth = null;
+		try {
+			lstContractMonth = policy.getContractMonths(data);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+		assertNotNull(lstContractMonth);
 		lstExpectedContractMonth.removeAll(lstContractMonth);
 		assertTrue(lstExpectedContractMonth.size() == 0);
 	}
@@ -107,7 +124,13 @@ public class ContractPolicyTest {
 			}
 		};
 
-		Calendar cal = policy.getFirstContractMonth(data);
+		Calendar cal = null;
+		try {
+			cal = policy.getFirstContractMonth(data);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
 		List<String> lstExpectedContractMonth = new ArrayList<>();
 
 		for (int i = 0; i < 12; i++) {
@@ -119,7 +142,14 @@ public class ContractPolicyTest {
 		List<Integer> contractMonths = policy.getContractMonths();
 		policy.setContractMonths(contractMonths);
 
-		List<String> lstContractMonth = policy.getContractMonths(data);
+		List<String> lstContractMonth = null;
+		try {
+			lstContractMonth = policy.getContractMonths(data);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+		assertNotNull(lstContractMonth);
 		assertTrue(lstContractMonth.size() == 12);
 		lstExpectedContractMonth.removeAll(lstContractMonth);
 		assertTrue(lstExpectedContractMonth.size() == 0);
@@ -141,7 +171,14 @@ public class ContractPolicyTest {
 			add("201606");
 		}};
 
-		List<String> lstContractMonth = policy.getContractMonths(data);
+		List<String> lstContractMonth = null;
+		try {
+			lstContractMonth = policy.getContractMonths(data);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+		assertNotNull(lstContractMonth);
 		lstExpectedContractMonth.removeAll(lstContractMonth);
 		assertTrue(lstExpectedContractMonth.size() == 0);
 	}
@@ -164,7 +201,14 @@ public class ContractPolicyTest {
 			add("201611");
 		}};
 
-		List<String> lstContractMonth = policy.getContractMonths(data);
+		List<String> lstContractMonth = null;
+		try {
+			lstContractMonth = policy.getContractMonths(data);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+		assertNotNull(lstContractMonth);
 		lstExpectedContractMonth.removeAll(lstContractMonth);
 		assertTrue(lstExpectedContractMonth.size() == 0);
 	}
@@ -186,7 +230,14 @@ public class ContractPolicyTest {
 			add("201609");
 		}};
 
-		List<String> lstContractMonth = policy.getContractMonths(data);
+		List<String> lstContractMonth = null;
+		try {
+			lstContractMonth = policy.getContractMonths(data);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+		assertNotNull(lstContractMonth);
 		lstExpectedContractMonth.removeAll(lstContractMonth);
 		assertTrue(lstExpectedContractMonth.size() == 0);
 	}

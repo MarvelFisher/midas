@@ -358,6 +358,9 @@
 	<bean id="accountPoolRecoveryProcessor" class="com.cyanspring.server.AccountPoolRecoveryProcessor">
 	</bean>
 
+	<bean id="userExchangeSubAccountRecoveryProcessor"
+		class="com.cyanspring.server.UserExchangeSubAccountRecoveryProcessor"></bean>
+
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
 		<constructor-arg>
 			<list>

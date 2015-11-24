@@ -15,7 +15,9 @@ public final class SubAccountModel extends BasicModel{
 
 	private String name;
 
-	private ExchangeAccountModel exchangeAccountModel;
+	private String exchangeAccountName;
+	
+	private String relativeExchAccount;
 
 	private double useableMoney;
 
@@ -29,13 +31,21 @@ public final class SubAccountModel extends BasicModel{
 		this.id = id;
 	}
 
-	public ExchangeAccountModel getExchangeAccountModel() {
-		return exchangeAccountModel;
+	public String getExchangeAccountName() {
+		return exchangeAccountName;
 	}
 
-	public void setExchangeAccountModel(
-			ExchangeAccountModel exchangeAccountModel) {
-		this.exchangeAccountModel = exchangeAccountModel;
+	public void setExchangeAccountName(
+			String exchangeAccount) {
+		this.exchangeAccountName = exchangeAccount;
+	}
+	
+	public String getRelativeExchAccount() {
+		return relativeExchAccount;
+	}
+
+	public void setRelativeExchAccount(String relativeExchAccount) {
+		this.relativeExchAccount = relativeExchAccount;
 	}
 
 	public double getUseableMoney() {
@@ -65,7 +75,8 @@ public final class SubAccountModel extends BasicModel{
 	public static class Builder {
 		private String id;
 		private String name;
-		private ExchangeAccountModel exchangeAccountModel;
+		private String exchangeAccountName;
+		private String relativeExchAccount;
 		private double useableMoney;
 		private double commissionRate;
 		
@@ -77,8 +88,12 @@ public final class SubAccountModel extends BasicModel{
 			name = val;		return this;
 		}
 		
-		public Builder exchangeAccount(ExchangeAccountModel val) {
-			exchangeAccountModel = val;		return this;
+		public Builder relativeExchAccount(String val) {
+			relativeExchAccount = val;		return this;
+		}
+		
+		public Builder exchangeAccountName(String val) {
+			exchangeAccountName = val;		return this;
 		}
 		
 		public Builder useableMoney(double val) {
@@ -97,7 +112,8 @@ public final class SubAccountModel extends BasicModel{
 	private SubAccountModel(Builder builder) {
 		id = builder.id;
 		name = builder.name;
-		exchangeAccountModel = builder.exchangeAccountModel;
+		exchangeAccountName = builder.exchangeAccountName;
+		relativeExchAccount = builder.relativeExchAccount;
 		useableMoney = builder.useableMoney;
 		commissionRate = builder.commissionRate;
 	}

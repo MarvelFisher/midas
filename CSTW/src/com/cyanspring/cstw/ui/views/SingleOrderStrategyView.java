@@ -87,19 +87,20 @@ import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeThrottler;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.common.CustomOrderType;
 import com.cyanspring.cstw.common.ImageID;
-import com.cyanspring.cstw.event.AccountSelectionEvent;
-import com.cyanspring.cstw.event.GuiSingleOrderStrategyUpdateEvent;
-import com.cyanspring.cstw.event.MarketDataReplyEvent;
-import com.cyanspring.cstw.event.MarketDataRequestEvent;
-import com.cyanspring.cstw.event.OrderCacheReadyEvent;
-import com.cyanspring.cstw.event.SingleOrderStrategySelectionEvent;
 import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.command.auth.AuthMenuManager;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
 import com.cyanspring.cstw.gui.filter.ParentOrderFilter;
+import com.cyanspring.cstw.localevent.AccountSelectionLocalEvent;
+import com.cyanspring.cstw.localevent.GuiSingleOrderStrategyUpdateLocalEvent;
+import com.cyanspring.cstw.localevent.MarketDataReplyLocalEvent;
+import com.cyanspring.cstw.localevent.MarketDataRequestLocalEvent;
+import com.cyanspring.cstw.localevent.OrderCacheReadyLocalEvent;
+import com.cyanspring.cstw.localevent.SingleOrderStrategySelectionLocalEvent;
 import com.cyanspring.cstw.service.iservice.ServiceFactory;
 import com.cyanspring.cstw.session.CSTWSession;
 import com.cyanspring.cstw.session.GuiSession;
@@ -208,10 +209,6 @@ public class SingleOrderStrategyView extends ViewPart implements
 		Pause, Stop, Start, ClearAlert, MultiAmend, Create, Cancel, ForceCancel, Save
 	};
 
-	private enum CustomOrderType {
-		Limit, Market, Stop
-	};
-
 	private enum LogType {
 		Enter, Cancel, Amend
 	};
@@ -282,9 +279,9 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 		// business logic goes here
 		Business.getInstance().getEventManager()
-				.subscribe(OrderCacheReadyEvent.class, this);
+				.subscribe(OrderCacheReadyLocalEvent.class, this);
 		Business.getInstance().getEventManager()
-				.subscribe(GuiSingleOrderStrategyUpdateEvent.class, this);
+				.subscribe(GuiSingleOrderStrategyUpdateLocalEvent.class, this);
 		Business.getInstance().getEventManager()
 				.subscribe(EnterParentOrderReplyEvent.class, this);
 		Business.getInstance().getEventManager()
@@ -292,9 +289,9 @@ public class SingleOrderStrategyView extends ViewPart implements
 		Business.getInstance().getEventManager()
 				.subscribe(CancelParentOrderReplyEvent.class, this);
 		Business.getInstance().getEventManager()
-				.subscribe(AccountSelectionEvent.class, this);
+				.subscribe(AccountSelectionLocalEvent.class, this);
 		Business.getInstance().getEventManager()
-				.subscribe(MarketDataReplyEvent.class, this);
+				.subscribe(MarketDataReplyLocalEvent.class, this);
 
 		showOrders();
 		this.parent = parent;
@@ -308,9 +305,9 @@ public class SingleOrderStrategyView extends ViewPart implements
 	@Override
 	public void dispose() {
 		Business.getInstance().getEventManager()
-				.unsubscribe(OrderCacheReadyEvent.class, this);
+				.unsubscribe(OrderCacheReadyLocalEvent.class, this);
 		Business.getInstance().getEventManager()
-				.unsubscribe(GuiSingleOrderStrategyUpdateEvent.class, this);
+				.unsubscribe(GuiSingleOrderStrategyUpdateLocalEvent.class, this);
 		Business.getInstance().getEventManager()
 				.unsubscribe(EnterParentOrderReplyEvent.class, this);
 		Business.getInstance().getEventManager()
@@ -318,9 +315,9 @@ public class SingleOrderStrategyView extends ViewPart implements
 		Business.getInstance().getEventManager()
 				.unsubscribe(CancelParentOrderReplyEvent.class, this);
 		Business.getInstance().getEventManager()
-				.unsubscribe(AccountSelectionEvent.class, this);
+				.unsubscribe(AccountSelectionLocalEvent.class, this);
 		Business.getInstance().getEventManager()
-				.unsubscribe(MarketDataReplyEvent.class, this);
+				.unsubscribe(MarketDataReplyLocalEvent.class, this);
 		super.dispose();
 	}
 
@@ -354,7 +351,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 	private void sendMarketDataRequestEvent(String symbol) {
 		// if null , send now market data view quote
-		MarketDataRequestEvent requestEvent = new MarketDataRequestEvent(symbol);
+		MarketDataRequestLocalEvent requestEvent = new MarketDataRequestLocalEvent(symbol);
 		Business.getInstance().getEventManager().sendEvent(requestEvent);
 	}
 
@@ -453,7 +450,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 					Business.getInstance()
 							.getEventManager()
 							.sendEvent(
-									new SingleOrderStrategySelectionEvent(
+									new SingleOrderStrategySelectionLocalEvent(
 											map,
 											Business.getInstance()
 													.getSingleOrderAmendableFields(
@@ -1650,15 +1647,15 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 	@Override
 	public void onEvent(AsyncEvent event) {
-		if (event instanceof OrderCacheReadyEvent) {
+		if (event instanceof OrderCacheReadyLocalEvent) {
 			log.debug("Recieved event: " + event);
 			smartShowOrders();
-		} else if (event instanceof GuiSingleOrderStrategyUpdateEvent) {
+		} else if (event instanceof GuiSingleOrderStrategyUpdateLocalEvent) {
 			log.debug("Recieved event: " + event);
 			smartShowOrders();
-		} else if (event instanceof MarketDataReplyEvent) {
+		} else if (event instanceof MarketDataReplyLocalEvent) {
 			log.debug("Recieved event: " + event);
-			MarketDataReplyEvent e = (MarketDataReplyEvent) event;
+			MarketDataReplyLocalEvent e = (MarketDataReplyLocalEvent) event;
 			if (null != e.getQuote()) {
 				nowQuote = e.getQuote();
 				setQuoteToPad();
@@ -1666,9 +1663,9 @@ public class SingleOrderStrategyView extends ViewPart implements
 		} else if (event instanceof AsyncTimerEvent) {
 			timerEvent = null;
 			asyncShowOrders();
-		} else if (event instanceof AccountSelectionEvent) {
+		} else if (event instanceof AccountSelectionLocalEvent) {
 
-			accountId = ((AccountSelectionEvent) event).getAccount();
+			accountId = ((AccountSelectionLocalEvent) event).getAccount();
 			if (pinned) {
 				accountFilter.setMatch("Account", accountId);
 				smartShowOrders();

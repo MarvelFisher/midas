@@ -55,15 +55,15 @@ import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.cachingmanager.quote.IQuoteChangeListener;
 import com.cyanspring.cstw.cachingmanager.quote.QuoteCachingManager;
-import com.cyanspring.cstw.event.InstrumentSelectionEvent;
-import com.cyanspring.cstw.event.MarketDataReplyEvent;
-import com.cyanspring.cstw.event.MarketDataRequestEvent;
-import com.cyanspring.cstw.event.MultiInstrumentStrategySelectionEvent;
-import com.cyanspring.cstw.event.ObjectSelectionEvent;
-import com.cyanspring.cstw.event.QuoteSymbolSelectEvent;
-import com.cyanspring.cstw.event.SingleInstrumentStrategySelectionEvent;
-import com.cyanspring.cstw.event.SingleOrderStrategySelectionEvent;
 import com.cyanspring.cstw.gui.Activator;
+import com.cyanspring.cstw.localevent.InstrumentSelectionLocalEvent;
+import com.cyanspring.cstw.localevent.MarketDataReplyLocalEvent;
+import com.cyanspring.cstw.localevent.MarketDataRequestLocalEvent;
+import com.cyanspring.cstw.localevent.MultiInstrumentStrategySelectionLocalEvent;
+import com.cyanspring.cstw.localevent.ObjectSelectionLocalEvent;
+import com.cyanspring.cstw.localevent.QuoteSymbolSelectLocalEvent;
+import com.cyanspring.cstw.localevent.SingleInstrumentStrategySelectionLocalEvent;
+import com.cyanspring.cstw.localevent.SingleOrderStrategySelectionLocalEvent;
 
 public class MarketDataView extends ViewPart implements IAsyncEventListener {
 
@@ -340,13 +340,13 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 
 		tableViewer.setContentProvider(new ViewContentProvider());
 		Business.getInstance().getEventManager()
-				.subscribe(SingleOrderStrategySelectionEvent.class, this);
+				.subscribe(SingleOrderStrategySelectionLocalEvent.class, this);
 		Business.getInstance().getEventManager()
-				.subscribe(SingleInstrumentStrategySelectionEvent.class, this);
+				.subscribe(SingleInstrumentStrategySelectionLocalEvent.class, this);
 		Business.getInstance().getEventManager()
-				.subscribe(InstrumentSelectionEvent.class, this);
+				.subscribe(InstrumentSelectionLocalEvent.class, this);
 		Business.getInstance().getEventManager()
-				.subscribe(QuoteSymbolSelectEvent.class, this);
+				.subscribe(QuoteSymbolSelectLocalEvent.class, this);
 		cbSymbol.notifyListeners(SWT.Selection, new Event());
 
 		try {
@@ -534,7 +534,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 
 	private synchronized void subscribeMD(String symbol, String server) {
 		Business.getInstance().getEventManager()
-				.subscribe(MarketDataRequestEvent.class, this);
+				.subscribe(MarketDataRequestLocalEvent.class, this);
 
 		this.symbol = symbol;
 
@@ -563,7 +563,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 		nowQuote = quote;
 		
 		if(changeSubSymbol){
-			MarketDataReplyEvent reply = new MarketDataReplyEvent(nowQuote);
+			MarketDataReplyLocalEvent reply = new MarketDataReplyLocalEvent(nowQuote);
 			Business.getInstance().getEventManager().sendEvent(reply);
 			changeSubSymbol = false;
 		}
@@ -671,9 +671,9 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 
 	@Override
 	public void onEvent(AsyncEvent e) {
-		if (e instanceof ObjectSelectionEvent) {
-			ObjectSelectionEvent event = (ObjectSelectionEvent) e;
-			if (e instanceof MultiInstrumentStrategySelectionEvent)
+		if (e instanceof ObjectSelectionLocalEvent) {
+			ObjectSelectionLocalEvent event = (ObjectSelectionLocalEvent) e;
+			if (e instanceof MultiInstrumentStrategySelectionLocalEvent)
 				return;
 
 			Map<String, Object> map = event.getData();
@@ -683,18 +683,18 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 			subscribeMD(symbol, server);
 			setSymbol(symbol);
 
-		} else if (e instanceof QuoteSymbolSelectEvent) {
-			QuoteSymbolSelectEvent event = (QuoteSymbolSelectEvent) e;
+		} else if (e instanceof QuoteSymbolSelectLocalEvent) {
+			QuoteSymbolSelectLocalEvent event = (QuoteSymbolSelectLocalEvent) e;
 			String symbol = event.getSymbol();
 			subscribeMD(symbol, null);
 			setSymbol(symbol);
 
-		} else if (e instanceof MarketDataRequestEvent) {
+		} else if (e instanceof MarketDataRequestLocalEvent) {
 			log.info("get market data request event");
-			MarketDataRequestEvent event = (MarketDataRequestEvent) e;
+			MarketDataRequestLocalEvent event = (MarketDataRequestLocalEvent) e;
 			String symbol = event.getSymbol();
 			if (null == symbol) {
-				MarketDataReplyEvent reply = new MarketDataReplyEvent(nowQuote);
+				MarketDataReplyLocalEvent reply = new MarketDataReplyLocalEvent(nowQuote);
 				Business.getInstance().getEventManager().sendEvent(reply);
 			} else {
 				subscribeMD(symbol, null);

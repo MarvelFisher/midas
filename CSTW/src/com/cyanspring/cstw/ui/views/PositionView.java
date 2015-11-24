@@ -57,13 +57,13 @@ import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
-import com.cyanspring.cstw.event.AccountSelectionEvent;
-import com.cyanspring.cstw.event.OrderCacheReadyEvent;
 import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.command.auth.AuthMenuManager;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
+import com.cyanspring.cstw.localevent.AccountSelectionLocalEvent;
+import com.cyanspring.cstw.localevent.OrderCacheReadyLocalEvent;
 import com.cyanspring.cstw.ui.views.SetPriceDialog.Mode;
 
 public class PositionView extends ViewPart implements IAsyncEventListener {
@@ -209,14 +209,14 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		// finally lay them out
 		mainComposite.layout();
 		Business.getInstance().getEventManager()
-				.subscribe(AccountSelectionEvent.class, this);
+				.subscribe(AccountSelectionLocalEvent.class, this);
 		Business.getInstance().getEventManager()
 				.subscribe(AccountSnapshotReplyEvent.class, ID, this);
 		if (Business.getInstance().getOrderManager().isReady()) {
 			sendSubscriptionRequest(Business.getInstance().getAccount());
 		} else {
 			Business.getInstance().getEventManager()
-					.subscribe(OrderCacheReadyEvent.class, this);
+					.subscribe(OrderCacheReadyLocalEvent.class, this);
 		}
 
 		sendTraderRequestEvent();
@@ -226,7 +226,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	@Override
 	public void dispose() {
 		Business.getInstance().getEventManager()
-				.unsubscribe(AccountSelectionEvent.class, this);
+				.unsubscribe(AccountSelectionLocalEvent.class, this);
 		Business.getInstance().getEventManager()
 				.unsubscribe(AccountSnapshotReplyEvent.class, this);
 		Business.getInstance().getEventManager()
@@ -244,7 +244,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		Business.getInstance().getEventManager()
 				.unsubscribe(ClosePositionReplyEvent.class, this);
 		Business.getInstance().getEventManager()
-				.unsubscribe(OrderCacheReadyEvent.class, this);
+				.unsubscribe(OrderCacheReadyLocalEvent.class, this);
 
 		super.dispose();
 	}
@@ -785,7 +785,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 
 	@Override
 	public void onEvent(AsyncEvent event) {
-		if (event instanceof OrderCacheReadyEvent) {
+		if (event instanceof OrderCacheReadyLocalEvent) {
 			sendSubscriptionRequest(Business.getInstance().getAccount());
 		} else if (event instanceof AccountSnapshotReplyEvent) {
 			AccountSnapshotReplyEvent evt = (AccountSnapshotReplyEvent) event;
@@ -850,9 +850,9 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 			log.info("Close position reply: " + evt.getAccount() + ", "
 					+ evt.getSymbol() + ", " + evt.isOk() + ", "
 					+ evt.getMessage());
-		} else if (event instanceof AccountSelectionEvent) {
+		} else if (event instanceof AccountSelectionLocalEvent) {
 
-			AccountSelectionEvent evt = (AccountSelectionEvent) event;
+			AccountSelectionLocalEvent evt = (AccountSelectionLocalEvent) event;
 			log.info("Account Selection:{}", evt.getAccount());
 			sendSubscriptionRequest(evt.getAccount());
 		}

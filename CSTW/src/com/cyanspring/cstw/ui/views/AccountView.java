@@ -49,13 +49,13 @@ import com.cyanspring.common.util.ArrayMap;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
-import com.cyanspring.cstw.event.AccountSelectionEvent;
-import com.cyanspring.cstw.event.SelectUserAccountEvent;
-import com.cyanspring.cstw.event.ServerStatusEvent;
 import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
+import com.cyanspring.cstw.localevent.AccountSelectionLocalEvent;
+import com.cyanspring.cstw.localevent.SelectUserAccountLocalEvent;
+import com.cyanspring.cstw.localevent.ServerStatusLocalEvent;
 
 public class AccountView extends ViewPart implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -139,12 +139,12 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 					Business.getInstance()
 							.getEventManager()
 							.sendEvent(
-									new SelectUserAccountEvent(account
+									new SelectUserAccountLocalEvent(account
 											.getUserId(), account.getId()));
 					Business.getInstance()
 							.getEventManager()
 							.sendEvent(
-									new AccountSelectionEvent(account.getId()));
+									new AccountSelectionLocalEvent(account.getId()));
 
 					try {
 						Business.getInstance()
@@ -172,7 +172,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 			sendSubscriptionRequest(Business.getInstance().getFirstServer());
 		else
 			Business.getInstance().getEventManager()
-					.subscribe(ServerStatusEvent.class, this);
+					.subscribe(ServerStatusLocalEvent.class, this);
 
 		log.info("no auto refresh account version");
 		// Business.getInstance().getScheduleManager().scheduleRepeatTimerEvent(maxRefreshInterval,
@@ -473,7 +473,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 							Business.getInstance()
 									.getEventManager()
 									.sendEvent(
-											new SelectUserAccountEvent(account
+											new SelectUserAccountLocalEvent(account
 													.getUserId(), account
 													.getId()));
 						}
@@ -614,8 +614,8 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 
 	@Override
 	public void onEvent(AsyncEvent event) {
-		if (event instanceof ServerStatusEvent) {
-			sendSubscriptionRequest(((ServerStatusEvent) event).getServer());
+		if (event instanceof ServerStatusLocalEvent) {
+			sendSubscriptionRequest(((ServerStatusLocalEvent) event).getServer());
 		} else if (event instanceof AllAccountSnapshotReplyEvent) {
 			AllAccountSnapshotReplyEvent evt = (AllAccountSnapshotReplyEvent) event;
 			for (Account account : evt.getAccounts()) {

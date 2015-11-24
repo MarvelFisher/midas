@@ -205,6 +205,13 @@
             id="com.cyanspring.cstw.ui.views.SubAccountView"
             name="SubAccount"
             restorable="true">
+      </view>
+      <view
+            class="com.cyanspring.cstw.ui.views.SubPoolView"
+            icon="icons/Leaves16.png"
+            id="com.cyanspring.cstw.ui.views.SubPoolView"
+            name="SubPool"
+            restorable="true">
       </view>        
    </extension>
    <extension
@@ -604,6 +611,22 @@
                   </or>
                </visibleWhen>
             </command>
+            <command
+                  commandId="CSTW.SubPoolManage"
+                  label="SubPool"
+                  style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                  <or>
+                     <with
+                           variable="RiskManager">
+                        <equals
+                              value="ENABLED">
+                        </equals>
+                     </with>
+                  </or>
+               </visibleWhen>
+            </command>
          </menu>
       </menuContribution>
    </extension>
@@ -776,6 +799,11 @@
             defaultHandler="com.cyanspring.cstw.gui.command.SubAccoutViewCommand"
             id="CSTW.SubAccountManage"
             name="SubAccountManage">
+      </command>
+      <command
+            defaultHandler="com.cyanspring.cstw.gui.command.SubPoolViewCommand"
+            id="CSTW.SubPoolManage"
+            name="SubPoolManage">
       </command>      
    </extension>
    <extension

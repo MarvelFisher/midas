@@ -9,7 +9,7 @@ import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
 import com.cyanspring.cstw.cachingmanager.BasicCachingManager;
-import com.cyanspring.cstw.event.OrderCacheReadyEvent;
+import com.cyanspring.cstw.localevent.OrderCacheReadyLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCParentOrderUpdateCachingLocalEvent;
 
 /**
@@ -48,14 +48,14 @@ public final class FrontRCOrderCachingManager extends BasicCachingManager {
 	@Override
 	protected List<Class<? extends AsyncEvent>> getReplyEventList() {
 		List<Class<? extends AsyncEvent>> list = new ArrayList<Class<? extends AsyncEvent>>();
-		list.add(OrderCacheReadyEvent.class);
+		list.add(OrderCacheReadyLocalEvent.class);
 		list.add(ParentOrderUpdateEvent.class);
 		return list;
 	}
 
 	@Override
 	protected void processAsyncEvent(AsyncEvent event) {
-		if (event instanceof OrderCacheReadyEvent) {
+		if (event instanceof OrderCacheReadyLocalEvent) {
 			refreshData();
 			sendParentOrderUpdateEvent();
 		}

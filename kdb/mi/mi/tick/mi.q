@@ -53,7 +53,11 @@ init:{[params]
 getnew:{[funcs;TI;TPS;TPM;TPL;DATADAYS;TIBUFFER]
 
     new:rdb "" sv ("select from (select[<time] time, sym, ask, bid, sprice, eprice, hprice, lprice, v:(abs sprice-eprice) % sprice from select last time, last ask, last bid, sprice:first price, eprice:last price, hprice:max price, lprice:min price by sym, "; string TI; " xbar time.second from quote where time > .z.P  - "; string TIBUFFER;") where ({x in -1_x};i) fby sym");
-    if[(count new)=0;:0]
+    
+    if[(count new)=0;
+    if[(count select from (get (`$("idx",string TI))) where time.date=.z.D-1)>0; endday[TI]];
+    :0];
+    
     lasttime:select lasttime:(last time) by sym from get (`$("data",string TI));
     (`$("data",string TI)) set (get (`$("data",string TI))) , (select time,sym,ask,bid,sprice,eprice,hprice,lprice,v from aj[`sym;new;lasttime] where time>lasttime);
     / show count data;

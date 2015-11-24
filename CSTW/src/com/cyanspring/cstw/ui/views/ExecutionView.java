@@ -37,12 +37,12 @@ import com.cyanspring.common.event.order.AllExecutionSnapshotRequestEvent;
 import com.cyanspring.common.event.order.ChildOrderUpdateEvent;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
-import com.cyanspring.cstw.event.AccountSelectionEvent;
 import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
 import com.cyanspring.cstw.gui.filter.ParentOrderFilter;
+import com.cyanspring.cstw.localevent.AccountSelectionLocalEvent;
 
 public class ExecutionView extends ViewPart implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -93,7 +93,7 @@ public class ExecutionView extends ViewPart implements IAsyncEventListener {
 		Business.getInstance().getEventManager()
 				.subscribe(AllExecutionSnapshotReplyEvent.class, this);
 		Business.getInstance().getEventManager()
-				.subscribe(AccountSelectionEvent.class, this);
+				.subscribe(AccountSelectionLocalEvent.class, this);
 
 		UserGroup ug = Business.getInstance().getUserGroup();
 		List<String> id = Business.getInstance().getAccountGroup();
@@ -175,7 +175,7 @@ public class ExecutionView extends ViewPart implements IAsyncEventListener {
 		Business.getInstance().getEventManager()
 				.unsubscribe(AllExecutionSnapshotReplyEvent.class, this);
 		Business.getInstance().getEventManager()
-				.unsubscribe(AccountSelectionEvent.class, this);
+				.unsubscribe(AccountSelectionLocalEvent.class, this);
 	}
 
 	private void show(final List<Map<String, Object>> data) {
@@ -246,8 +246,8 @@ public class ExecutionView extends ViewPart implements IAsyncEventListener {
 			executionList = list;
 			log.info("get AllExecution list:{}", list.size());
 			show(executionListToMap(list));
-		} else if (e instanceof AccountSelectionEvent) {
-			currentAccount = ((AccountSelectionEvent) e).getAccount();
+		} else if (e instanceof AccountSelectionLocalEvent) {
+			currentAccount = ((AccountSelectionLocalEvent) e).getAccount();
 			if (pinned) {
 				accountFilter.setMatch("Account", currentAccount);
 				show(executionListToMap(executionList));

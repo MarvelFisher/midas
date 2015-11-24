@@ -82,6 +82,7 @@ public abstract class BasicTableComposite extends Composite {
 		initProvider();
 		initListener();
 		initService();
+		initOthers();
 	}
 
 	private void initCompoments() {
@@ -234,6 +235,10 @@ public abstract class BasicTableComposite extends Composite {
 	private void initProvider() {
 		tableViewer.setContentProvider(new DefaultContentProvider());
 		tableViewer.setLabelProvider(createLabelProvider());
+	}
+
+	protected void initOthers() {
+		// to insert code
 	}
 
 	private void initListener() {

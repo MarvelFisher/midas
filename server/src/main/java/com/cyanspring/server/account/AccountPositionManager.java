@@ -291,7 +291,8 @@ public class AccountPositionManager implements IPlugin {
 			subscribeToEvent(AccountSnapshotRequestEvent.class, null);
 			subscribeToEvent(MarketDataReadyEvent.class, null);
 			subscribeToEvent(AccountSettingSnapshotRequestEvent.class, null);
-			subscribeToEvent(AccountClosedPositionSnapshotRequestEvent.class, null);
+			subscribeToEvent(AccountClosedPositionSnapshotRequestEvent.class,
+					null);
 			subscribeToEvent(AccountExecutionSnapshotRequestEvent.class, null);
 			subscribeToEvent(ChangeAccountSettingRequestEvent.class, null);
 			subscribeToEvent(OnUserCreatedEvent.class, null);
@@ -303,12 +304,12 @@ public class AccountPositionManager implements IPlugin {
 			subscribeToEvent(CreateGroupManagementEvent.class, null);
 			subscribeToEvent(DeleteGroupManagementEvent.class, null);
 			subscribeToEvent(GroupManageeRequestEvent.class, null);
-			subscribeToEvent(CSTWUserLoginEvent.class, null);			
+			subscribeToEvent(CSTWUserLoginEvent.class, null);
 			subscribeToEvent(ChangeUserRoleEvent.class, null);
 			subscribeToEvent(AddCashEvent.class, null);
 			subscribeToEvent(ChangeAccountStateRequestEvent.class, null);
 			subscribeToEvent(ManualClosePositionRequestEvent.class, null);
-			subscribeToEvent(UpdateOpenPositionPriceEvent.class, null);			
+			subscribeToEvent(UpdateOpenPositionPriceEvent.class, null);
 			subscribeToEvent(RateConverterRequestEvent.class, null);
 		}
 
@@ -570,17 +571,19 @@ public class AccountPositionManager implements IPlugin {
 		timerProcessor.uninit();
 		eventMultiProcessor.uninit();
 	}
-	
-	public void processAccountExecutionSnapshotRequestEvent(AccountExecutionSnapshotRequestEvent event){
 
-	    List<Execution> executions =  null;
-	    log.info("ExecutionSnapshotRequestEvent txid:{} , accountId:{}",event.getTxId(),event.getAccountId());
-		if(StringUtils.hasText(event.getAccountId())){
+	public void processAccountExecutionSnapshotRequestEvent(
+			AccountExecutionSnapshotRequestEvent event) {
+
+		List<Execution> executions = null;
+		log.info("ExecutionSnapshotRequestEvent txid:{} , accountId:{}",
+				event.getTxId(), event.getAccountId());
+		if (StringUtils.hasText(event.getAccountId())) {
 			executions = positionKeeper.getExecutions(event.getAccountId());
 		}
-	    
-	    AccountExecutionSnapshotReplyEvent reply = new AccountExecutionSnapshotReplyEvent(
-				event.getKey(), event.getSender(),event.getAccountId(),
+
+		AccountExecutionSnapshotReplyEvent reply = new AccountExecutionSnapshotReplyEvent(
+				event.getKey(), event.getSender(), event.getAccountId(),
 				event.getTxId(), executions);
 
 		try {
@@ -589,17 +592,20 @@ public class AccountPositionManager implements IPlugin {
 			log.error(e.getMessage(), e);
 		}
 	}
-	
-	public void processAccountClosedPositionSnapshotRequestEvent(AccountClosedPositionSnapshotRequestEvent event){
-	    
+
+	public void processAccountClosedPositionSnapshotRequestEvent(
+			AccountClosedPositionSnapshotRequestEvent event) {
+
 		List<ClosedPosition> closedPositions = null;
-	    log.info("ClosedPositionSnapshotRequestEvent txid:{} , accountId:{}",event.getTxId(),event.getAccountId());
-		if(StringUtils.hasText(event.getAccountId())){
-			 closedPositions = positionKeeper.getClosedPositions(event.getAccountId());
+		log.info("ClosedPositionSnapshotRequestEvent txid:{} , accountId:{}",
+				event.getTxId(), event.getAccountId());
+		if (StringUtils.hasText(event.getAccountId())) {
+			closedPositions = positionKeeper.getClosedPositions(event
+					.getAccountId());
 		}
-		
+
 		AccountClosedPositionSnapshotReplyEvent reply = new AccountClosedPositionSnapshotReplyEvent(
-				event.getKey(), event.getSender(),event.getAccountId(),
+				event.getKey(), event.getSender(), event.getAccountId(),
 				event.getTxId(), closedPositions);
 
 		try {
@@ -608,7 +614,7 @@ public class AccountPositionManager implements IPlugin {
 			log.error(e.getMessage(), e);
 		}
 	}
-	
+
 	public void processRateConverterRequestEvent(RateConverterRequestEvent event) {
 		try {
 			RateConverterReplyEvent reply = new RateConverterReplyEvent(
@@ -1141,111 +1147,122 @@ public class AccountPositionManager implements IPlugin {
 
 	public void processCSTWUserLoginEvent(CSTWUserLoginEvent event) {
 		String id = event.getId();
-    	String pwd = event.getPassword();
-    	boolean isOk = false;
-    	String message = "";
-    	UserGroup userGroup = null;
-    	List <Account> accountList = null;
-    	Map<String, Account> user2AccountMap = null;
+		String pwd = event.getPassword();
+		boolean isOk = false;
+		String message = "";
+		UserGroup userGroup = null;
+		List<Account> accountList = null;
+		Map<String, Account> user2AccountMap = null;
+		List<User> users = null;
 
-    	boolean isAdminRole = false;
-    	boolean isServerShutdownEvent = event.getShutdownServer();
+		boolean isAdminRole = false;
+		boolean isServerShutdownEvent = event.getShutdownServer();
 
-    	if (userKeeper.isAdmin(id, pwd)) {
-    		isAdminRole = true;
-    	}
-
-    	if (isAdminRole) {
-    		userGroup = new UserGroup(id,UserRole.Admin);
-	    	accountList = accountKeeper.getAllAccounts();
-	    	user2AccountMap = new HashMap<>();
-    		if(null == accountList)
-    			accountList = new ArrayList<>();
-    		
-	    	if(accountList.size() < limitUser){
-	    		for(Account account:accountList){
-	    			if(account != null){
-	    				user2AccountMap.put(account.getId(), account);
-	    			}
-	    		}
-	    	}else{    		
-	    		log.info("over user limit:{},{}",accountList.size(),limitUser);
-	    	}
-
-    		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(event.getKey(),event.getSender(),true,"",userGroup,accountList,user2AccountMap );
-    		try {
-    			eventManager.sendRemoteEvent(reply);
-    		} catch (Exception e) {
-    			log.warn(e.getMessage(),e);
-    		}
-    		return;
+		if (userKeeper.isAdmin(id, pwd)) {
+			isAdminRole = true;
 		}
 
-    	try{
-	    	if (!StringUtils.hasText(id) || !StringUtils.hasText(pwd)) {
-        		throw new UserException("id or password is empty!",ErrorMessage.CSTW_LOGIN_FAILED);
-	    	} else {
-	    		id = id.toLowerCase().trim();
-	    	}
+		if (isAdminRole) {
+			userGroup = new UserGroup(id, UserRole.Admin);
+			users = userKeeper.getUsersByRole(UserRole.RiskManager);
+			accountList = accountKeeper.getAllAccounts();
+			user2AccountMap = new HashMap<>();
+			if (null == accountList)
+				accountList = new ArrayList<>();
 
-	    	if ( null == userKeeper.getUser(id) ) {
-        		throw new UserException("id not exist",ErrorMessage.CSTW_LOGIN_FAILED);
-	    	}
+			if (accountList.size() < limitUser) {
+				for (Account account : accountList) {
+					if (account != null) {
+						user2AccountMap.put(account.getId(), account);
+					}
+				}
+			} else {
+				log.info("over user limit:{},{}", accountList.size(), limitUser);
+			}
 
-	    	User user = userKeeper.getUser(id);
-	    	if (!pwd.equals(user.getPassword())) {
-        		throw new UserException("wrong password!",ErrorMessage.CSTW_LOGIN_FAILED);
-	    	}
+			CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(
+					event.getKey(), event.getSender(), true, "", userGroup,
+					users, accountList, user2AccountMap);
+			try {
+				eventManager.sendRemoteEvent(reply);
+			} catch (Exception e) {
+				log.warn(e.getMessage(), e);
+			}
+			return;
+		}
 
-	    	if (isServerShutdownEvent && !isAdminRole) {
+		try {
+			if (!StringUtils.hasText(id) || !StringUtils.hasText(pwd)) {
+				throw new UserException("id or password is empty!",
+						ErrorMessage.CSTW_LOGIN_FAILED);
+			} else {
+				id = id.toLowerCase().trim();
+			}
+
+			if (null == userKeeper.getUser(id)) {
+				throw new UserException("id not exist",
+						ErrorMessage.CSTW_LOGIN_FAILED);
+			}
+
+			User user = userKeeper.getUser(id);
+			if (!pwd.equals(user.getPassword())) {
+				throw new UserException("wrong password!",
+						ErrorMessage.CSTW_LOGIN_FAILED);
+			}
+
+			if (isServerShutdownEvent && !isAdminRole) {
 				throw new UserException("only admin has permission",
 						ErrorMessage.CSTW_LOGIN_FAILED);
 			}
 
-	    	userGroup = userKeeper.getUserGroup(id);
-	    	accountList = accountKeeper.getAccounts(id);
-	    	if ( null == userGroup ) {
-	    		userGroup = new UserGroup(id,user.getRole());
-	    	}
-	    	
-	    	if(!userGroup.getRole().allowLogin()){
+			userGroup = userKeeper.getUserGroup(id);
+			accountList = accountKeeper.getAccounts(id);
+			if (null == userGroup) {
+				userGroup = new UserGroup(id, user.getRole());
+			}
+
+			if (!userGroup.getRole().allowLogin()) {
 				throw new UserException("This user not allow to login",
 						ErrorMessage.CSTW_LOGIN_FAILED);
-	    	}
-	    	
-	    	if (!StringUtils.hasText(message)) {
-				isOk =true;
 			}
-	    	
-	    	user2AccountMap = new HashMap<>();
-	    	if(null != accountList && !accountList.isEmpty())
-	    		user2AccountMap.put(id, accountList.get(0));
-	    	
+
+			if (!StringUtils.hasText(message)) {
+				isOk = true;
+			}
+
+			user2AccountMap = new HashMap<>();
+			if (null != accountList && !accountList.isEmpty())
+				user2AccountMap.put(id, accountList.get(0));
+
 			for (UserGroup ug : userGroup.getManageeSet()) {
-				List <Account>tempList = accountKeeper.getAccounts(ug.getUser());
-				if( null == tempList || tempList.isEmpty())
+				List<Account> tempList = accountKeeper
+						.getAccounts(ug.getUser());
+				if (null == tempList || tempList.isEmpty())
 					continue;
-				
-				user2AccountMap.put(ug.getUser(),
-						tempList.get(0));
+
+				user2AccountMap.put(ug.getUser(), tempList.get(0));
 			}
-	    	log.info("CSTW Login success:{} - {}",id,userGroup.getRole());
+			log.info("CSTW Login success:{} - {}", id, userGroup.getRole());
 			user.setLastLogin(Clock.getInstance().now());
-			eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID, null, user));
+			eventManager.sendEvent(new PmUpdateUserEvent(PersistenceManager.ID,
+					null, user));
 
-    	}catch(UserException e) {
-    		isOk = false;
-    		message = MessageLookup.buildEventMessage(e.getClientMessage(), e.getMessage());
-    		log.info("CSTW Login fail:{} - {}",id,message);
-    	}
+		} catch (UserException e) {
+			isOk = false;
+			message = MessageLookup.buildEventMessage(e.getClientMessage(),
+					e.getMessage());
+			log.info("CSTW Login fail:{} - {}", id, message);
+		}
 
-		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(event.getKey(),event.getSender(),isOk,message,userGroup,accountList,user2AccountMap);
+		CSTWUserLoginReplyEvent reply = new CSTWUserLoginReplyEvent(
+				event.getKey(), event.getSender(), isOk, message, userGroup,
+				null, accountList, user2AccountMap);
 		try {
 			eventManager.sendRemoteEvent(reply);
 		} catch (Exception e) {
-			log.warn(e.getMessage(),e);
+			log.warn(e.getMessage(), e);
 		}
-    }
+	}
 
 	public void processGroupManageeRequestEvent(GroupManageeRequestEvent event) {
 		String manager = event.getManager();
@@ -1476,21 +1493,33 @@ public class AccountPositionManager implements IPlugin {
 	}
 
 	public void processQuoteExtEvent(QuoteExtEvent event) {
-        DataObject qExt = event.getQuoteExt();
+		DataObject qExt = event.getQuoteExt();
 		String symbol = event.getSymbol();
 		if (qExt.fieldExists(QuoteExtDataField.SETTLEPRICE.value())) {
-			if (PriceUtils.GreaterThan(qExt.get(Double.class, QuoteExtDataField.SETTLEPRICE.value()), 0))
-				settlePrices.put(symbol, qExt.get(Double.class, QuoteExtDataField.SETTLEPRICE.value()));
-        } else if (qExt.fieldExists(QuoteExtDataField.PRECLOSE.value())){
-        	Double preSettlePrice = settlePrices.get(symbol);
-        	if (preSettlePrice != null && PriceUtils.GreaterThan(preSettlePrice, 0))
-        		return;
-        	if (PriceUtils.GreaterThan(qExt.get(Double.class, QuoteExtDataField.PRECLOSE.value()), 0)){
-        		log.info("No settle price temporary use preclose price, symbol: " + symbol);        		
-        		settlePrices.put(symbol, qExt.get(Double.class, QuoteExtDataField.PRECLOSE.value()));
-        	}
-        }
-    }
+			if (PriceUtils.GreaterThan(
+					qExt.get(Double.class,
+							QuoteExtDataField.SETTLEPRICE.value()), 0))
+				settlePrices.put(
+						symbol,
+						qExt.get(Double.class,
+								QuoteExtDataField.SETTLEPRICE.value()));
+		} else if (qExt.fieldExists(QuoteExtDataField.PRECLOSE.value())) {
+			Double preSettlePrice = settlePrices.get(symbol);
+			if (preSettlePrice != null
+					&& PriceUtils.GreaterThan(preSettlePrice, 0))
+				return;
+			if (PriceUtils.GreaterThan(
+					qExt.get(Double.class, QuoteExtDataField.PRECLOSE.value()),
+					0)) {
+				log.info("No settle price temporary use preclose price, symbol: "
+						+ symbol);
+				settlePrices.put(
+						symbol,
+						qExt.get(Double.class,
+								QuoteExtDataField.PRECLOSE.value()));
+			}
+		}
+	}
 
 	public void processAccountSnapshotRequestEvent(
 			AccountSnapshotRequestEvent event) {
@@ -1515,7 +1544,8 @@ public class AccountPositionManager implements IPlugin {
 						.getId());
 			} catch (AccountException e) {
 				log.error(e.getMessage(), e);
-			}		reply = new AccountSnapshotReplyEvent(event.getKey(),
+			}
+			reply = new AccountSnapshotReplyEvent(event.getKey(),
 					event.getSender(), account, accountSetting, openPositions,
 					closedPosition, executions, event.getTxId(),
 					getUserLiveTradingTime(accountSetting));
@@ -1527,7 +1557,7 @@ public class AccountPositionManager implements IPlugin {
 			log.error(e.getMessage(), e);
 		}
 	}
-	
+
 	public void processAllPositionSnapshotRequestEvent(
 			AllPositionSnapshotRequestEvent event) {
 		if (null == accountKeeper || null == positionKeeper) {

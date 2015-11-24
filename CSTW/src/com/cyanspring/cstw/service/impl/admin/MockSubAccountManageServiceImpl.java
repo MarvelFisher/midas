@@ -3,8 +3,15 @@ package com.cyanspring.cstw.service.impl.admin;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.cyanspring.common.account.UserGroup;
+import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.client.IInstrumentPoolKeeper;
 import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.cstw.keepermanager.InstrumentPoolKeeperManager;
+import com.cyanspring.cstw.model.admin.AssignedModel;
 import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
 import com.cyanspring.cstw.model.admin.InstrumentInfoModel;
 import com.cyanspring.cstw.model.admin.SubAccountModel;
@@ -18,6 +25,8 @@ import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
  */
 public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 		ISubAccountManagerService {
+	private static final Logger log = LoggerFactory.getLogger(MockSubAccountManageServiceImpl.class);
+	
 	private IInstrumentPoolKeeper instrumentPoolKeeper;
 
 	@Override
@@ -33,9 +42,14 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 	private List<ExchangeAccountModel> exlist;
 	private List<SubAccountModel> sub1list;
 	private List<SubAccountModel> sub2list;
+	
+	private List<InstrumentInfoModel> instruList;
+	private List<AssignedModel> assList;
 
 	// Mock
 	public MockSubAccountManageServiceImpl() {
+		instrumentPoolKeeper = InstrumentPoolKeeperManager.getInstance().getInstrumentPoolKeeper();
+		
 		ex1 = new ExchangeAccountModel.Builder().id("id1").name("ex1").build();
 		ex2 = new ExchangeAccountModel.Builder().id("id2").name("ex2").build();
 
@@ -45,23 +59,38 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 
 		sub1list = new ArrayList<SubAccountModel>();
 		sub1list.add(new SubAccountModel.Builder().id("sub1.1")
-				.name("account1.1").exchangeAccount(ex1).useableMoney(10000)
+				.name("account1.1").exchangeAccountName("ex1").useableMoney(10000)
 				.commissionRate(0.01).build());
 		sub1list.add(new SubAccountModel.Builder().id("sub1.2")
-				.name("account1.2").exchangeAccount(ex1).useableMoney(10000)
+				.name("account1.2").exchangeAccountName("ex1").useableMoney(10000)
 				.commissionRate(0.01).build());
 		sub1list.add(new SubAccountModel.Builder().id("sub1.3")
-				.name("account1.3").exchangeAccount(ex1).useableMoney(10000)
+				.name("account1.3").exchangeAccountName("ex1").useableMoney(10000)
 				.commissionRate(0.01).build());
 
 		sub2list = new ArrayList<SubAccountModel>();
 		sub2list.add(new SubAccountModel.Builder().id("sub2.1")
-				.name("account2.1").exchangeAccount(ex2).useableMoney(10000)
+				.name("account2.1").exchangeAccountName("ex2").useableMoney(10000)
 				.commissionRate(0.01).build());
 		sub2list.add(new SubAccountModel.Builder().id("sub2.2")
-				.name("account2.2").exchangeAccount(ex2).useableMoney(10000)
+				.name("account2.2").exchangeAccountName("ex2").useableMoney(10000)
 				.commissionRate(0.01).build());
-
+		
+		instruList = new ArrayList<InstrumentInfoModel>();
+		instruList.add(new InstrumentInfoModel.Builder().symbolId("AUDUSD")
+				.symbolName("AUDUSD").qty(10000).build());
+		instruList.add(new InstrumentInfoModel.Builder().symbolId("AUDCAD")
+				.symbolName("AUDCAD").qty(10000).build());
+		instruList.add(new InstrumentInfoModel.Builder().symbolId("AUDCAD")
+				.symbolName("AUDCAD").qty(10000).build());
+		instruList.add(new InstrumentInfoModel.Builder().symbolId("AUDCAD")
+				.symbolName("AUDCAD").qty(10000).build());
+		
+		assList = new ArrayList<AssignedModel>();
+		assList.add(new AssignedModel.Builder().userId("front_risk1").roleType("FrontRiskManager").build());
+		assList.add(new AssignedModel.Builder().userId("group1").roleType("Group").build());
+		assList.add(new AssignedModel.Builder().userId("front_risk2").roleType("FrontRiskManager").build());
+		
 	}
 
 	/*
@@ -69,7 +98,8 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 	 */
 	@Override
 	public List<ExchangeAccountModel> getExchangeAccountList() {
-
+		
+		
 		return exlist;
 	}
 
@@ -77,12 +107,12 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 	 * Mock Code
 	 */
 	@Override
-	public List<SubAccountModel> getSubAccountListByExchangeAccountName(
+	public List<SubAccountModel> getSubAccountListByExchangeAccountId(
 			String name) {
-		if (name.equals("ex1")) {
+		if (name.equals("id1")) {
 
 			return sub1list;
-		} else if (name.equals("ex2")) {
+		} else if (name.equals("id2")) {
 
 			return sub2list;
 		} else {
@@ -94,7 +124,8 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 
 	@Override
 	protected List<Class<? extends AsyncEvent>> getReplyEventList() {
-		// TODO Auto-generated method stub
+		List<Class<? extends AsyncEvent>> list = new ArrayList<Class<? extends AsyncEvent>>();
+		
 		return null;
 	}
 
@@ -108,14 +139,10 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 	 * Mock
 	 */
 	@Override
-	public List<InstrumentInfoModel> getInstrumentInfoModelListByExchangeAccountName(
+	public List<InstrumentInfoModel> getInstrumentInfoModelListByExchangeAccountId(
 			String name) {
-		List<InstrumentInfoModel> list = new ArrayList<InstrumentInfoModel>();
-		list.add(new InstrumentInfoModel.Builder().symbolId("AUDUSD")
-				.symbolName("AUDUSD").qty(10000).build());
-		list.add(new InstrumentInfoModel.Builder().symbolId("AUDCAD")
-				.symbolName("AUDCAD").qty(10000).build());
-		return list;
+		
+		return instruList;
 	}
 	
 	/**
@@ -124,8 +151,16 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 	@Override
 	public List<InstrumentInfoModel> getInstrumentInfoModelListBySubAccountId(
 			String id) {
-		// TODO Auto-generated method stub
-		return null;
+		List<InstrumentInfoModel> instrumentInfoModelList = new ArrayList<InstrumentInfoModel>();
+		instrumentInfoModelList.add(new InstrumentInfoModel.Builder().symbolId("AUDUSD").symbolName("AUDUSD").qty(10000).build());
+		instrumentInfoModelList.add(new InstrumentInfoModel.Builder().symbolId("AUDUSD").symbolName("AUDUSD").qty(10000).build());
+		return instrumentInfoModelList;
+	}
+	
+	@Override
+	public List<AssignedModel> getAssignedModelListBySubAccountId(String id) {
+		
+		return assList;
 	}
 
 
@@ -137,14 +172,14 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 
 	@Override
 	public void createNewSubAccount(String exchange) {
-		if (exchange.equals("ex1")) {
+		if (exchange.equals("id1")) {
 			sub1list.add(new SubAccountModel.Builder().id("sub1.3")
-					.name("account1.3").exchangeAccount(ex1)
+					.name("account1.3").exchangeAccountName("ex1")
 					.useableMoney(10000).commissionRate(0.01).build());
 
-		} else if (exchange.equals("ex2")) {
+		} else if (exchange.equals("id2")) {
 			sub2list.add(new SubAccountModel.Builder().id("sub2.3")
-					.name("account2.3").exchangeAccount(ex1)
+					.name("account2.3").exchangeAccountName("ex1")
 					.useableMoney(10000).commissionRate(0.01).build());
 
 		}
@@ -211,5 +246,28 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 		}
 		
 	}
+
+	@Override
+	public void createNewAssignedModel(SubAccountModel subAccount,
+			AssignedModel assigned, int index) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeAssignedUser(SubAccountModel subAccount, AssignedModel assign) {
+		log.info("removeAssignedUser: " + subAccount.getName() + ", " + assign.getUserId());
+		
+	}
+
+	@Override
+	public List<UserGroup> getAvailableAssigneeList(SubAccountModel subAccount) {
+		List<UserGroup> usrGroups = new ArrayList<UserGroup>();
+		usrGroups.add(new UserGroup("front_risk8", UserRole.RiskManager));
+		usrGroups.add(new UserGroup("group7", UserRole.Group));
+		return usrGroups;
+	}
+
+	
 
 }

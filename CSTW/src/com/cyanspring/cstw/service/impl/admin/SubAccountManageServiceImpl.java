@@ -1,24 +1,39 @@
 package com.cyanspring.cstw.service.impl.admin;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.cyanspring.common.account.UserGroup;
 import com.cyanspring.common.client.IInstrumentPoolKeeper;
+import com.cyanspring.common.client.IInstrumentPoolKeeper.ModelType;
 import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.common.pool.ExchangeAccount;
+import com.cyanspring.common.pool.ExchangeSubAccount;
+import com.cyanspring.common.pool.InstrumentPoolRecord;
+import com.cyanspring.cstw.keepermanager.InstrumentPoolKeeperManager;
+import com.cyanspring.cstw.localevent.InstrumentPoolUpdateLocalEvent;
+import com.cyanspring.cstw.model.admin.AssignedModel;
 import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
 import com.cyanspring.cstw.model.admin.InstrumentInfoModel;
 import com.cyanspring.cstw.model.admin.SubAccountModel;
 import com.cyanspring.cstw.service.common.BasicServiceImpl;
 import com.cyanspring.cstw.service.common.RefreshEventType;
+import com.cyanspring.cstw.service.helper.transfer.ModelTransfer;
 import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
 
 /**
  * @author Junfeng
  * @create 11 Nov 2015
  */
-public abstract class SubAccountManageServiceImpl extends BasicServiceImpl implements
-		ISubAccountManagerService {
-
+public class SubAccountManageServiceImpl extends BasicServiceImpl
+		implements ISubAccountManagerService {
+	private static final Logger log = LoggerFactory.getLogger(SubAccountManageServiceImpl.class);
+	
 	private IInstrumentPoolKeeper instrumentPoolKeeper;
 
 	@Override
@@ -27,122 +42,172 @@ public abstract class SubAccountManageServiceImpl extends BasicServiceImpl imple
 
 	}
 
-	// Mock
-	private ExchangeAccountModel ex1;
-	private ExchangeAccountModel ex2;
-	private List<ExchangeAccountModel> exlist;
-	private List<SubAccountModel> sub1list;
-	private List<SubAccountModel> sub2list;
-
-	// Mock
 	public SubAccountManageServiceImpl() {
-		ex1 = new ExchangeAccountModel.Builder().id("id1").name("ex1").build();
-		ex2 = new ExchangeAccountModel.Builder().id("id2").name("ex2").build();
-		
-		exlist = new ArrayList<ExchangeAccountModel>();
-		exlist.add(ex1);
-		exlist.add(ex2);
-		
-		sub1list = new ArrayList<SubAccountModel>();
-		sub1list.add(new SubAccountModel.Builder().id("sub1.1").name("account1.1")
-				.exchangeAccount(ex1).useableMoney(10000)
-				.commissionRate(0.01).build());
-		sub1list.add(new SubAccountModel.Builder().id("sub1.2").name("account1.2")
-				.exchangeAccount(ex1).useableMoney(10000)
-				.commissionRate(0.01).build());
-		
-		sub2list = new ArrayList<SubAccountModel>();
-		sub2list.add(new SubAccountModel.Builder().id("sub2.1").name("account2.1")
-				.exchangeAccount(ex2).useableMoney(10000)
-				.commissionRate(0.01).build());
-		sub2list.add(new SubAccountModel.Builder().id("sub2.2").name("account2.2")
-				.exchangeAccount(ex2).useableMoney(10000)
-				.commissionRate(0.01).build());
-		
+		instrumentPoolKeeper = InstrumentPoolKeeperManager.getInstance().getInstrumentPoolKeeper();
 	}
 
-	/*
-	 * Mock Code
-	 */
 	@Override
 	public List<ExchangeAccountModel> getExchangeAccountList() {
-		
+		List<ExchangeAccountModel> exlist = new ArrayList<ExchangeAccountModel>();
+		List<ExchangeAccount> exchangeAccountlist = instrumentPoolKeeper
+				.getExchangeAccountList();
+		for (ExchangeAccount account : exchangeAccountlist) {
+			ExchangeAccountModel model = ModelTransfer
+					.parseExchangeAccountModel(account);
+			exlist.add(model);
+		}
 		return exlist;
 	}
 
-	/*
-	 * Mock Code
-	 */
 	@Override
-	public List<SubAccountModel> getSubAccountListByExchangeAccountName(
-			String name) {
-		if (name.equals("ex1")) {
-			
-			return sub1list;
-		} else if (name.equals("ex2")) {
-			
-			return sub2list;
-		} else {
-			List<SubAccountModel> list = new ArrayList<SubAccountModel>();
-			return list;
+	public List<SubAccountModel> getSubAccountListByExchangeAccountId(
+			String id) {
+		List<SubAccountModel> sublist = new ArrayList<SubAccountModel>();
+		List<ExchangeSubAccount> exchangeSubAccountList = instrumentPoolKeeper
+				.getExchangeSubAccountList(id);
+		for (ExchangeSubAccount subAccount : exchangeSubAccountList) {
+			SubAccountModel model = ModelTransfer
+					.parseSubAccountModel(subAccount);
+			sublist.add(model);
 		}
+		return sublist;
+	}
 
+	@Override
+	public List<InstrumentInfoModel> getInstrumentInfoModelListByExchangeAccountId(
+			String id) {
+		Map<String, Double> symbolQtyMap = new HashMap<String, Double>();
+		List<InstrumentPoolRecord> recordList = instrumentPoolKeeper
+				.getInstrumentPoolRecordList(id, ModelType.EXCHANGE_ACCOUNT);
+		for (InstrumentPoolRecord record : recordList) {
+			if (symbolQtyMap.get(record.getSymbol()) == null) {
+				symbolQtyMap.put(record.getSymbol(), new Double(0));
+			}
+			Double qty = symbolQtyMap.get(record.getSymbol());
+			qty = Double.valueOf(qty.doubleValue() + record.getQty());
+			symbolQtyMap.put(record.getSymbol(), qty);
+		}
+		List<InstrumentInfoModel> instrumentInfoModelList = new ArrayList<InstrumentInfoModel>();
+		for (Map.Entry<String, Double> entry : symbolQtyMap.entrySet()) {
+			InstrumentInfoModel infoModel = new InstrumentInfoModel.Builder()
+					.build();
+			infoModel.setSymbolName(entry.getKey());
+			infoModel.setStockQuanity(entry.getValue());
+			instrumentInfoModelList.add(infoModel);
+		}
+		return instrumentInfoModelList;
+	}
+	
+	@Override
+	public List<InstrumentInfoModel> getInstrumentInfoModelListBySubAccountId(
+			String id) {
+		List<InstrumentPoolRecord> recordList = instrumentPoolKeeper
+				.getInstrumentPoolRecordList(id, ModelType.EXCHANGE_SUB_ACCOUNT);
+		// merge record
+		Map<String, Double> symbolQtyMap = new HashMap<String, Double>();
+		for(InstrumentPoolRecord record : recordList) {
+			if (!symbolQtyMap.containsKey(record.getSymbol())) {
+				symbolQtyMap.put(record.getSymbol(), new Double(0));
+			}
+			Double qty = symbolQtyMap.get(record.getSymbol());
+			qty = Double.valueOf(qty + record.getQty());
+			symbolQtyMap.put(record.getSymbol(), qty);
+		}
+		List<InstrumentInfoModel> instrumentInfoModelList = new ArrayList<InstrumentInfoModel>();
+		for (Map.Entry<String, Double> entry : symbolQtyMap.entrySet()) {
+			InstrumentInfoModel infoModel = new InstrumentInfoModel.Builder().symbolName(entry.getKey()).symbolName(entry.getKey()).qty(entry.getValue()).build();
+			instrumentInfoModelList.add(infoModel);
+		}
+		instrumentInfoModelList.add(new InstrumentInfoModel.Builder().symbolId("AUDUSD").symbolName("AUDUSD").qty(10000).build());
+		instrumentInfoModelList.add(new InstrumentInfoModel.Builder().symbolId("AUDUSD").symbolName("AUDUSD").qty(10000).build());
+		return instrumentInfoModelList;
 	}
 
 	@Override
 	protected List<Class<? extends AsyncEvent>> getReplyEventList() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected RefreshEventType handleEvent(AsyncEvent event) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
-	 * Mock
-	 */
-	@Override
-	public List<InstrumentInfoModel> getInstrumentInfoModelListByExchangeAccountName(
-			String name) {
-		List<InstrumentInfoModel> list = new ArrayList<InstrumentInfoModel>();
-		list.add(new InstrumentInfoModel.Builder().symbolId("AUDUSD")
-				.symbolName("AUDUSD").qty(10000).build());
-		list.add(new InstrumentInfoModel.Builder().symbolId("AUDCAD")
-				.symbolName("AUDCAD").qty(10000).build());
+		List<Class<? extends AsyncEvent>> list = new ArrayList<Class<? extends AsyncEvent>>();
+		list.add(InstrumentPoolUpdateLocalEvent.class);
 		return list;
 	}
 
 	@Override
+	protected RefreshEventType handleEvent(AsyncEvent event) {
+		if (event instanceof InstrumentPoolUpdateLocalEvent) {
+			return RefreshEventType.InstrumentPoolUpdate;
+		}
+		return RefreshEventType.Default;
+	}
+
+	@Override
 	public void createNewExchangeAccount() {
-		exlist.add(new ExchangeAccountModel.Builder().id("id3").name("ex3").build());
+		
 	}
 
 	@Override
 	public void createNewSubAccount(String exchange) {
-		if (exchange.equals("ex1")) {
-			sub1list.add(new SubAccountModel.Builder().id("sub1.3").name("account1.3")
-					.exchangeAccount(ex1).useableMoney(10000)
-					.commissionRate(0.01).build());
-			
-		} else if (exchange.equals("ex2")) {
-			sub2list.add(new SubAccountModel.Builder().id("sub2.3").name("account2.3")
-					.exchangeAccount(ex1).useableMoney(10000)
-					.commissionRate(0.01).build());
-			
-		} 
+		
 	}
 
 	@Override
 	public void removeExchangeAccount(ExchangeAccountModel exchange) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void removeSubAccount(SubAccountModel subAccount) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public List<AssignedModel> getAssignedModelListBySubAccountId(String id) {
+		List<AssignedModel> assList = new ArrayList<AssignedModel>();
+//		assList.add(new AssignedModel.Builder().userId("front_risk1").roleType("FrontRiskManager").build());
+//		assList.add(new AssignedModel.Builder().userId("group1").roleType("Group").build());
+//		assList.add(new AssignedModel.Builder().userId("front_risk2").roleType("FrontRiskManager").build());
+		return assList;
+	}
+
+	@Override
+	public List<UserGroup> getAvailableAssigneeList(SubAccountModel subAccount) {
+		return null;
+	}
+
+	@Override
+	public void createNewAssignedModel(SubAccountModel subAccount,
+			AssignedModel assigned, int index) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeAssignedUser(SubAccountModel subAccount,
+			AssignedModel assign) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void moveUpExchangeAccount(ExchangeAccountModel exchange) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void moveDownExchangeAccount(ExchangeAccountModel exchange) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void moveUpSubAccount(SubAccountModel subAccount) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void moveDownSubAccount(SubAccountModel subAccount) {
 		// TODO Auto-generated method stub
 		
 	}

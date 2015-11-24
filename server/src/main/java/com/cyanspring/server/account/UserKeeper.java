@@ -1,11 +1,7 @@
 package com.cyanspring.server.account;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -13,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.Default;
-import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserException;
 import com.cyanspring.common.account.UserGroup;
@@ -151,9 +146,12 @@ public class UserKeeper {
 					+ " is a Trader who can't manage someone else",
 					ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED);
 		}
-		
-		if(!managerInfo.getRole().isManagerLevel() && !managerInfo.getRole().equals(UserRole.Group)){
-			throw new UserException("Manager:"+manager+" role:"+managerInfo.getRole()+" who can't manage someone else",ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED);
+
+		if (!managerInfo.getRole().isManagerLevel()
+				&& !managerInfo.getRole().equals(UserRole.Group)) {
+			throw new UserException("Manager:" + manager + " role:"
+					+ managerInfo.getRole() + " who can't manage someone else",
+					ErrorMessage.CREATE_GROUP_MANAGEMENT_FAILED);
 		}
 
 		if (!userGroups.containsKey(manager)) {
@@ -218,6 +216,16 @@ public class UserKeeper {
 		}
 
 		return false;
+	}
+
+	public List<User> getUsersByRole(UserRole role) {
+		List<User> userList = new ArrayList<User>();
+		for (User user : users.values()) {
+			if (user.getRole() == UserRole.RiskManager) {
+				userList.add(user);
+			}
+		}
+		return userList;
 	}
 
 	public String getCSTWAdmin() {

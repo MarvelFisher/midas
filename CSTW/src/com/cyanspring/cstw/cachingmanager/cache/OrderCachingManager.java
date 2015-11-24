@@ -38,11 +38,11 @@ import com.cyanspring.common.event.strategy.SingleInstrumentStrategyUpdateEvent;
 import com.cyanspring.common.event.strategy.StrategyLogEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
-import com.cyanspring.cstw.event.AccountSelectionEvent;
-import com.cyanspring.cstw.event.GuiMultiInstrumentStrategyUpdateEvent;
-import com.cyanspring.cstw.event.GuiSingleInstrumentStrategyUpdateEvent;
-import com.cyanspring.cstw.event.GuiSingleOrderStrategyUpdateEvent;
-import com.cyanspring.cstw.event.OrderCacheReadyEvent;
+import com.cyanspring.cstw.localevent.AccountSelectionLocalEvent;
+import com.cyanspring.cstw.localevent.GuiMultiInstrumentStrategyUpdateLocalEvent;
+import com.cyanspring.cstw.localevent.GuiSingleInstrumentStrategyUpdateLocalEvent;
+import com.cyanspring.cstw.localevent.GuiSingleOrderStrategyUpdateLocalEvent;
+import com.cyanspring.cstw.localevent.OrderCacheReadyLocalEvent;
 
 public class OrderCachingManager implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -99,7 +99,7 @@ public class OrderCachingManager implements IAsyncEventListener {
 
 		// setting ready
 		setReady(true);
-		eventManager.sendEvent(new OrderCacheReadyEvent(null));
+		eventManager.sendEvent(new OrderCacheReadyLocalEvent(null));
 	}
 
 	private void clearLogs(String sender) {
@@ -194,7 +194,7 @@ public class OrderCachingManager implements IAsyncEventListener {
 					parentOrder.getId());
 
 			groupOrderCache.updateOrder(parentOrder);
-			eventManager.sendEvent(new GuiSingleOrderStrategyUpdateEvent(
+			eventManager.sendEvent(new GuiSingleOrderStrategyUpdateLocalEvent(
 					parentOrder));
 		} else {
 			singleOrderStrategyQueue.add(parentOrder);
@@ -262,7 +262,7 @@ public class OrderCachingManager implements IAsyncEventListener {
 	}
 
 	public void init() {
-		eventManager.subscribe(AccountSelectionEvent.class, this);
+		eventManager.subscribe(AccountSelectionLocalEvent.class, this);
 		eventManager.subscribe(StrategySnapshotEvent.class, this);
 		eventManager.subscribe(StrategyLogEvent.class, this);
 		subscribeAccountOrder(Business.getInstance().getAccount());
@@ -345,7 +345,7 @@ public class OrderCachingManager implements IAsyncEventListener {
 		String server = event.getSender();
 		if (server == null || server.equals("") || servers.contains(server)) {
 			multiInstrumentStrategyCache.update(data);
-			eventManager.sendEvent(new GuiMultiInstrumentStrategyUpdateEvent(
+			eventManager.sendEvent(new GuiMultiInstrumentStrategyUpdateLocalEvent(
 					event.getStrategyData().getId()));
 		} else {
 			multiInstrumentStrategyQueue.add(data);
@@ -357,7 +357,7 @@ public class OrderCachingManager implements IAsyncEventListener {
 		String server = event.getSender();
 		if (server == null || server.equals("") || servers.contains(server)) {
 			singleInstrumentStrategyCache.update(event.getInstrument());
-			eventManager.sendEvent(new GuiSingleInstrumentStrategyUpdateEvent(
+			eventManager.sendEvent(new GuiSingleInstrumentStrategyUpdateLocalEvent(
 					event.getInstrument()));
 		} else {
 			singleInstrumentStrategyQueue.add(event.getInstrument());
@@ -368,8 +368,8 @@ public class OrderCachingManager implements IAsyncEventListener {
 	synchronized public void onEvent(AsyncEvent event) {
 		if (event instanceof StrategySnapshotEvent) {
 			processStrategySnapshotEvent((StrategySnapshotEvent) event);
-		} else if (event instanceof AccountSelectionEvent) {
-			subscribeAccountOrder(((AccountSelectionEvent) event).getAccount());
+		} else if (event instanceof AccountSelectionLocalEvent) {
+			subscribeAccountOrder(((AccountSelectionLocalEvent) event).getAccount());
 		} else if (event instanceof StrategyLogEvent) {
 			processStrategyLogEvent((StrategyLogEvent) event);
 		} else if (event instanceof ParentOrderUpdateEvent) {
@@ -402,7 +402,7 @@ public class OrderCachingManager implements IAsyncEventListener {
 
 		// setting ready
 		setReady(true);
-		eventManager.sendEvent(new OrderCacheReadyEvent(null));
+		eventManager.sendEvent(new OrderCacheReadyLocalEvent(null));
 	}
 
 	private void subGroupEvent(List<String> accountList) {

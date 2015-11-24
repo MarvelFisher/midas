@@ -39,11 +39,11 @@ import com.cyanspring.common.event.strategy.StrategyLogEvent;
 import com.cyanspring.common.type.LogType;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
-import com.cyanspring.cstw.event.MultiInstrumentStrategySelectionEvent;
-import com.cyanspring.cstw.event.SingleOrderStrategySelectionEvent;
-import com.cyanspring.cstw.event.ServerStatusEvent;
 import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.StyledAction;
+import com.cyanspring.cstw.localevent.MultiInstrumentStrategySelectionLocalEvent;
+import com.cyanspring.cstw.localevent.ServerStatusLocalEvent;
+import com.cyanspring.cstw.localevent.SingleOrderStrategySelectionLocalEvent;
 
 public class StrategyLogView extends ViewPart implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -111,9 +111,9 @@ public class StrategyLogView extends ViewPart implements IAsyncEventListener {
 		initializeMenu();
 		
 		// subscribe to business event
-		Business.getInstance().getEventManager().subscribe(SingleOrderStrategySelectionEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(MultiInstrumentStrategySelectionEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(ServerStatusEvent.class, this);
+		Business.getInstance().getEventManager().subscribe(SingleOrderStrategySelectionLocalEvent.class, this);
+		Business.getInstance().getEventManager().subscribe(MultiInstrumentStrategySelectionLocalEvent.class, this);
+		Business.getInstance().getEventManager().subscribe(ServerStatusLocalEvent.class, this);
 	}
 
 	
@@ -176,14 +176,14 @@ public class StrategyLogView extends ViewPart implements IAsyncEventListener {
 		}
 	}
 	
-	private void processParentOrderSelectionEvent(SingleOrderStrategySelectionEvent event) {
+	private void processParentOrderSelectionEvent(SingleOrderStrategySelectionLocalEvent event) {
 		Map<String, Object> parentOrder = event.getData();
 		final String orderId = (String)parentOrder.get(OrderField.ID.value());
 		smartShowLog(orderId);
 	}
 	
 	private void processMultiInstrumentStrategySelectionEvent(
-			MultiInstrumentStrategySelectionEvent e) {
+			MultiInstrumentStrategySelectionLocalEvent e) {
 		final String id = (String)e.getData().get(OrderField.ID.value());
 		smartShowLog(id);
 	}
@@ -233,21 +233,21 @@ public class StrategyLogView extends ViewPart implements IAsyncEventListener {
 		});
 	}
 	
-	private void processServerStatusEvent(ServerStatusEvent event) {
+	private void processServerStatusEvent(ServerStatusLocalEvent event) {
 		log.debug("ServerStatusEvent: " + event.getServer() + " " + (event.isUp()?"up":"down"));
 	}
 
 	@Override
 	public void onEvent(AsyncEvent e) {
 		
-		if (e instanceof SingleOrderStrategySelectionEvent) {
-			processParentOrderSelectionEvent((SingleOrderStrategySelectionEvent)e);
-		} else if (e instanceof MultiInstrumentStrategySelectionEvent) {
-			processMultiInstrumentStrategySelectionEvent((MultiInstrumentStrategySelectionEvent)e);
+		if (e instanceof SingleOrderStrategySelectionLocalEvent) {
+			processParentOrderSelectionEvent((SingleOrderStrategySelectionLocalEvent)e);
+		} else if (e instanceof MultiInstrumentStrategySelectionLocalEvent) {
+			processMultiInstrumentStrategySelectionEvent((MultiInstrumentStrategySelectionLocalEvent)e);
 		} else if (e instanceof StrategyLogEvent) {
 			processStrategyLogEvent((StrategyLogEvent)e);
-		} else if (e instanceof ServerStatusEvent) {
-			processServerStatusEvent((ServerStatusEvent)e);
+		} else if (e instanceof ServerStatusLocalEvent) {
+			processServerStatusEvent((ServerStatusLocalEvent)e);
 		}
 	}
 

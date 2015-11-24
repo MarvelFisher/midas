@@ -11,7 +11,7 @@ import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.RemoteAsyncEvent;
 import com.cyanspring.common.event.account.AccountSettingSnapshotReplyEvent;
 import com.cyanspring.common.event.account.AccountSettingSnapshotRequestEvent;
-import com.cyanspring.cstw.event.AccountSelectionEvent;
+import com.cyanspring.cstw.localevent.AccountSelectionLocalEvent;
 import com.cyanspring.cstw.session.GuiSession;
 
 public class TraderInfoListener implements IAsyncEventListener{
@@ -32,9 +32,9 @@ public class TraderInfoListener implements IAsyncEventListener{
 				accountSetting = e.getAccountSetting();
 				GuiSession.getInstance().setAccountSetting(accountSetting);
 			}
-		} else if (event instanceof AccountSelectionEvent) {
+		} else if (event instanceof AccountSelectionLocalEvent) {
 
-			AccountSelectionEvent evt = (AccountSelectionEvent) event;
+			AccountSelectionLocalEvent evt = (AccountSelectionLocalEvent) event;
 			this.account = evt.getAccount();
 		} else if(event instanceof AsyncEvent) {
 			sendAccountSettingRequestEvent();
@@ -50,7 +50,7 @@ public class TraderInfoListener implements IAsyncEventListener{
 	
 	public void init(Account account){
 		subEvent(AccountSettingSnapshotReplyEvent.class);
-		subEvent(AccountSelectionEvent.class);
+		subEvent(AccountSelectionLocalEvent.class);
 		scheduleJob(refreshEvent,minRefreshInterval);
 		if(null != account)
 			this.account = account.getId();
@@ -58,7 +58,7 @@ public class TraderInfoListener implements IAsyncEventListener{
 	
 	public void unInit(){
 		unSubEvent(AccountSettingSnapshotReplyEvent.class);
-		unSubEvent(AccountSelectionEvent.class);
+		unSubEvent(AccountSelectionLocalEvent.class);
 		cancelScheduleJob(refreshEvent);
 	}
 	

@@ -1,5 +1,6 @@
 package com.cyanspring.common.staticdata.policy;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -10,7 +11,7 @@ public class OddsContractPolicy extends DefaultContractPolicy {
 
 	// 1、3、5、7、9、11月
 	@Override
-	public List<String> getContractMonths(RefData refData) {
+	public List<String> getContractMonths(RefData refData) throws ParseException {
 		List<String> lstContractMonth = new ArrayList<>();
 		Calendar firstContractMonth = getFirstContractMonth(refData);
 		for (int i = 0; i < 12; i++) {

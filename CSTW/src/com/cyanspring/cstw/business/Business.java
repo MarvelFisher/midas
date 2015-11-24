@@ -46,6 +46,8 @@ import com.cyanspring.common.event.info.RateConverterReplyEvent;
 import com.cyanspring.common.event.info.RateConverterRequestEvent;
 import com.cyanspring.common.event.order.InitClientEvent;
 import com.cyanspring.common.event.order.InitClientRequestEvent;
+import com.cyanspring.common.event.pool.AccountInstrumentSnapshotReplyEvent;
+import com.cyanspring.common.event.pool.AccountInstrumentSnapshotRequestEvent;
 import com.cyanspring.common.event.strategy.MultiInstrumentStrategyFieldDefUpdateEvent;
 import com.cyanspring.common.event.strategy.SingleInstrumentStrategyFieldDefUpdateEvent;
 import com.cyanspring.common.event.strategy.SingleOrderStrategyFieldDefUpdateEvent;
@@ -68,8 +70,9 @@ import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCInstrume
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCInstrumentSummaryEventController;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCOrderEventController;
 import com.cyanspring.cstw.cachingmanager.riskcontrol.eventcontroller.RCTradeEventController;
-import com.cyanspring.cstw.event.SelectUserAccountEvent;
-import com.cyanspring.cstw.event.ServerStatusEvent;
+import com.cyanspring.cstw.keepermanager.InstrumentPoolKeeperManager;
+import com.cyanspring.cstw.localevent.SelectUserAccountLocalEvent;
+import com.cyanspring.cstw.localevent.ServerStatusLocalEvent;
 import com.cyanspring.cstw.session.CSTWSession;
 import com.cyanspring.cstw.ui.views.ServerStatusDisplay;
 
@@ -77,12 +80,13 @@ import com.cyanspring.cstw.ui.views.ServerStatusDisplay;
  * This class is used to init different server. Get data form sever. Support api
  * to visit common service and bean.
  */
-public class Business {
+public final class Business {
 	private static Logger log = LoggerFactory.getLogger(Business.class);
 	private static Business instance; // Singleton
 
 	private IRemoteEventManager eventManager;
 	private EventListenerImpl listener;
+
 	private CSTWBeanPool beanPool;
 	private OrderCachingManager orderManager;
 	private AllPositionManager allPositionManager;
@@ -96,9 +100,11 @@ public class Business {
 	private List<String> singleOrderDisplayFieldList;
 	private List<String> singleInstrumentDisplayFieldList;
 	private List<String> multiInstrumentDisplayFieldList;
+
 	private Map<String, Map<String, FieldDef>> singleOrderFieldDefMap;
 	private Map<String, Map<String, FieldDef>> singleInstrumentFieldDefMap;
 	private Map<String, MultiInstrumentStrategyDisplayConfig> multiInstrumentFieldDefMap;
+
 	private ScheduleManager scheduleManager;
 	private AsyncTimerEvent timerEvent;
 	private int heartBeatInterval; // 5 seconds
@@ -164,11 +170,7 @@ public class Business {
 			throw new Exception("BeanHolder is not yet initialised");
 		}
 		beanPool = new CSTWBeanPool(beanHolder);
-		// ActiveMQObjectService transport = new ActiveMQObjectService();
-		// transport.setUrl(systemInfo.getUrl());
 
-		// eventManager = new
-		// RemoteEventManager(beanHolder.getTransportService());
 		eventManager = beanHolder.getEventManager();
 		alertColorConfig = beanHolder.getAlertColorConfig();
 		quoteDataReceiver = beanHolder.getDataReceiver();
@@ -197,7 +199,7 @@ public class Business {
 		eventManager.subscribe(NodeInfoEvent.class, listener);
 		eventManager.subscribe(InitClientEvent.class, listener);
 		eventManager.subscribe(UserLoginReplyEvent.class, listener);
-		eventManager.subscribe(SelectUserAccountEvent.class, listener);
+		eventManager.subscribe(SelectUserAccountLocalEvent.class, listener);
 		eventManager.subscribe(ServerHeartBeatEvent.class, listener);
 		eventManager.subscribe(ServerReadyEvent.class, listener);
 		eventManager.subscribe(SingleOrderStrategyFieldDefUpdateEvent.class,
@@ -208,6 +210,8 @@ public class Business {
 		eventManager
 				.subscribe(AccountSettingSnapshotReplyEvent.class, listener);
 		eventManager.subscribe(RateConverterReplyEvent.class, listener);
+		eventManager.subscribe(AccountInstrumentSnapshotReplyEvent.class,
+				listener);
 		// schedule timer
 		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval, listener,
 				timerEvent);
@@ -304,8 +308,10 @@ public class Business {
 				processingMultiInstrumentStrategyFieldDefUpdateEvent((MultiInstrumentStrategyFieldDefUpdateEvent) event);
 			} else if (event instanceof AsyncTimerEvent) {
 				processAsyncTimerEvent((AsyncTimerEvent) event);
-			} else if (event instanceof SelectUserAccountEvent) {
-				processSelectUserAccountEvent((SelectUserAccountEvent) event);
+			} else if (event instanceof SelectUserAccountLocalEvent) {
+				processSelectUserAccountEvent((SelectUserAccountLocalEvent) event);
+			} else if (event instanceof AccountInstrumentSnapshotReplyEvent) {
+				processAccountInstrumentSnapshotReplyEvent((AccountInstrumentSnapshotReplyEvent) event);
 			} else if (event instanceof RateConverterReplyEvent) {
 				RateConverterReplyEvent e = (RateConverterReplyEvent) event;
 				rateConverter = e.getConverter();
@@ -326,7 +332,7 @@ public class Business {
 		}
 	}
 
-	private void processSelectUserAccountEvent(SelectUserAccountEvent event) {
+	private void processSelectUserAccountEvent(SelectUserAccountLocalEvent event) {
 		log.info("Setting current user/account to: " + this.userId + "/"
 				+ this.accountId);
 		this.userId = event.getUser();
@@ -336,7 +342,7 @@ public class Business {
 	private void requestStrategyInfo(String server) {
 		try {
 			orderManager.init();
-			eventManager.sendEvent(new ServerStatusEvent(server, true));
+			eventManager.sendEvent(new ServerStatusLocalEvent(server, true));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			e.printStackTrace();
@@ -374,14 +380,14 @@ public class Business {
 			if (TimeUtil.getTimePass(entry.getValue()) > heartBeatInterval) {
 				log.debug("Sending server down event: " + entry.getKey());
 				servers.put(entry.getKey(), false);
-				eventManager.sendEvent(new ServerStatusEvent(entry.getKey(),
+				eventManager.sendEvent(new ServerStatusLocalEvent(entry.getKey(),
 						false));
 			} else { // server heart beat can go back up
 				Boolean up = servers.get(entry.getKey());
 				if (null != up && !up) {
 					log.debug("Sending server up event: " + entry.getKey());
 					servers.put(entry.getKey(), true);
-					eventManager.sendEvent(new ServerStatusEvent(
+					eventManager.sendEvent(new ServerStatusLocalEvent(
 							entry.getKey(), true));
 				}
 			}
@@ -390,10 +396,6 @@ public class Business {
 
 	public int getHeartBeatInterval() {
 		return heartBeatInterval;
-	}
-
-	public void setHeartBeatInterval(int heartBeatInterval) {
-		this.heartBeatInterval = heartBeatInterval;
 	}
 
 	public void stop() {
@@ -505,24 +507,24 @@ public class Business {
 		}
 	}
 
-	public boolean processCSTWUserLoginReplyEvent(CSTWUserLoginReplyEvent event) {
-		if (!event.isOk())
+	private boolean processCSTWUserLoginReplyEvent(CSTWUserLoginReplyEvent loginReplyEvent) {
+		if (!loginReplyEvent.isOk())
 			return false;
 
-		List<Account> accountList = event.getAccountList();
+		List<Account> accountList = loginReplyEvent.getAccountList();
 		if (null != accountList && !accountList.isEmpty()) {
-			loginAccount = event.getAccountList().get(0);
+			loginAccount = loginReplyEvent.getAccountList().get(0);
 			log.info("loginAccount:{}", loginAccount.getId());
 			sendAccountSettingRequestEvent(loginAccount.getId());
 		}
-		Map<String, Account> user2AccoutMap = event.getUser2AccountMap();
+		Map<String, Account> user2AccoutMap = loginReplyEvent.getUser2AccountMap();
 		if (null != user2AccoutMap && !user2AccoutMap.isEmpty()) {
 			accountList.addAll(user2AccoutMap.values());
 			for (Account acc : user2AccoutMap.values()) {
 				accountGroupList.add(acc.getId());
 			}
 		}
-		UserGroup userGroup = event.getUserGroup();
+		UserGroup userGroup = loginReplyEvent.getUserGroup();
 		this.userId = userGroup.getUser();
 
 		if (null != loginAccount) {
@@ -536,7 +538,6 @@ public class Business {
 		log.info("login user:{},{}", userId, userGroup.getRole());
 
 		QuoteCachingManager.getInstance().init();
-
 		if (this.userGroup.getRole() == UserRole.RiskManager
 				|| this.userGroup.getRole() == UserRole.BackEndRiskManager) {
 			allPositionManager.init(eventManager, getFirstServer(),
@@ -556,7 +557,24 @@ public class Business {
 			RCOrderEventController.getInstance().init();
 		}
 
+		AccountInstrumentSnapshotRequestEvent request = new AccountInstrumentSnapshotRequestEvent(
+				IdGenerator.getInstance().getNextID(), Business.getInstance()
+						.getFirstServer(), IdGenerator.getInstance()
+						.getNextID());
+
+		try {
+			this.getEventManager().sendRemoteEvent(request);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return true;
+	}
+
+	private void processAccountInstrumentSnapshotReplyEvent(
+			AccountInstrumentSnapshotReplyEvent replyEvent) {
+		InstrumentPoolKeeperManager.getInstance().init();
+		InstrumentPoolKeeperManager.getInstance().setInstrumentPoolKeeper(
+				replyEvent.getInstrumentPoolKeeper());
 	}
 
 	private void sendAccountSettingRequestEvent(String accountId) {

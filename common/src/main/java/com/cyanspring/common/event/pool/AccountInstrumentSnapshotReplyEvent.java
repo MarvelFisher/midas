@@ -1,6 +1,7 @@
 package com.cyanspring.common.event.pool;
 
 import com.cyanspring.common.event.BaseReplyEvent;
+import com.cyanspring.common.pool.InstrumentPoolKeeper;
 
 /**
  * @author GuoWei
@@ -10,8 +11,19 @@ public class AccountInstrumentSnapshotReplyEvent extends BaseReplyEvent {
 
 	private static final long serialVersionUID = 1303548411351081003L;
 
+	private InstrumentPoolKeeper instrumentPoolKeeper;
+
 	public AccountInstrumentSnapshotReplyEvent(String key, String receiver,
-			boolean ok, String message, int errorCode, String txId) {
-		super(key, receiver, ok, message, errorCode, txId);
+			boolean ok, String message, String txId) {
+		super(key, receiver, ok, message, txId);
+	}
+
+	public InstrumentPoolKeeper getInstrumentPoolKeeper() {
+		return instrumentPoolKeeper;
+	}
+
+	public void setInstrumentPoolKeeper(
+			InstrumentPoolKeeper instrumentPoolKeeper) {
+		this.instrumentPoolKeeper = instrumentPoolKeeper;
 	}
 }

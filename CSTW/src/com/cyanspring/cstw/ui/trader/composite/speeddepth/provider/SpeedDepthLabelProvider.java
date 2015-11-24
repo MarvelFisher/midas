@@ -17,17 +17,23 @@ import com.cyanspring.cstw.ui.trader.composite.speeddepth.model.SpeedDepthModel;
 public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 		implements ITableColorProvider {
 
-	private int selectIndex = -1;
+	private int mouseselectIndex = -1;
+
+	private int keyselectIndex = -1;
 
 	@Override
 	public String getColumnText(Object element, int columnIndex) {
 		SpeedDepthModel model = (SpeedDepthModel) element;
 		switch (columnIndex) {
 		case 0:
+			String columnLabel = "";
 			if (model.getAskQty() > 0) {
-				return "" + model.getAskQty();
+				columnLabel = "" + model.getAskQty();
 			}
-			return "";
+			if (model.getStopAskQty() > 0) {
+				columnLabel = columnLabel + "(" + model.getStopAskQty() + ")";
+			}
+			return columnLabel;
 		case 1:
 			if (model.getType() == SpeedDepthModel.BID && model.getVol() > 0) {
 				try {
@@ -51,10 +57,15 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 			}
 			return "";
 		case 4:
+			String columnBidLabel = "";
 			if (model.getBidQty() > 0) {
-				return "" + model.getBidQty();
+				columnBidLabel = "" + model.getBidQty();
 			}
-			return "";
+			if (model.getStopBidQty() > 0) {
+				columnBidLabel = columnBidLabel + "(" + model.getStopBidQty()
+						+ ")";
+			}
+			return columnBidLabel;
 		}
 		return "";
 	}
@@ -81,13 +92,15 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 		SpeedDepthModel model = (SpeedDepthModel) element;
 		switch (columnIndex) {
 		case 1:
-			if (model.getIndex() == selectIndex) {
+			if (model.getIndex() == mouseselectIndex
+					|| model.getIndex() == keyselectIndex) {
 				return SWTResourceManager.getColor(SWT.COLOR_BLACK);
 			} else {
 				return SWTResourceManager.getColor(SWT.COLOR_WHITE);
 			}
 		case 3:
-			if (model.getIndex() == selectIndex) {
+			if (model.getIndex() == mouseselectIndex
+					|| model.getIndex() == keyselectIndex) {
 				return SWTResourceManager.getColor(SWT.COLOR_BLACK);
 			} else {
 				return SWTResourceManager.getColor(SWT.COLOR_WHITE);
@@ -96,8 +109,12 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 		return null;
 	}
 
-	public void setSelectIndex(int selectIndex) {
-		this.selectIndex = selectIndex;
+	public void setMouseselectIndex(int mouseselectIndex) {
+		this.mouseselectIndex = mouseselectIndex;
+	}
+
+	public void setKeyselectIndex(int keyselectIndex) {
+		this.keyselectIndex = keyselectIndex;
 	}
 
 }

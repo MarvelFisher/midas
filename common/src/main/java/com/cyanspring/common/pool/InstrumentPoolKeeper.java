@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.cyanspring.common.account.Account;
@@ -28,6 +29,9 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 
 	// k1=InstrumentPool id; k2=symbol; v=InstrumentPoolRecord
 	private Map<String, Map<String, InstrumentPoolRecord>> instrumentPoolRecordMap = new ConcurrentHashMap<String, Map<String, InstrumentPoolRecord>>();
+
+	// k1=User id; k2=ExchangeSubAccount id; v=ExchangeSubAccount
+	private Map<String, Map<String, ExchangeSubAccount>> userSubAccounMap = new ConcurrentHashMap<String, Map<String, ExchangeSubAccount>>();
 
 	/**
 	 * 根据交易员账号和输入的股票，返回其对应的ExchangeSubAccountId和股票池信息List<InstrumentPoolRecord>
@@ -89,6 +93,27 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 		return poolSubAccountMap.get(instrumentPool);
 	}
 
+	public List<String> getUsersByExchangeSubAccount(
+			String exchangeSubAccount) {
+		List<String> users = new ArrayList<String>();
+		for (Entry<String, Map<String, ExchangeSubAccount>> entry : userSubAccounMap
+				.entrySet()) {
+			if (entry.getValue().containsKey(exchangeSubAccount)) {
+				users.add(entry.getKey());
+			}
+		}
+		return users;
+	}
+
+	public List<ExchangeSubAccount> getExchangeSubAccountsByUser(
+			String user) {
+		List<ExchangeSubAccount> subAccounts = new ArrayList<ExchangeSubAccount>();
+		if (userSubAccounMap.containsKey(user)) { 
+			subAccounts.addAll(userSubAccounMap.get(user).values());
+		}
+		return subAccounts;
+	}
+ 
 	@Override
 	public List<InstrumentPoolRecord> getInstrumentPoolRecordList(String id,
 			ModelType type) {
@@ -281,6 +306,19 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 			}
 			instrumentPoolRecordMap.get(record.getInstrumentPoolId()).put(
 					record.getSymbol(), record);
+		}
+	}
+
+	public void injectUserExchangeSubAccounts(
+			List<UserExchangeSubAccount> userExchangeSubAccounts) {
+		for (UserExchangeSubAccount subAccount : userExchangeSubAccounts) {
+			if (!userSubAccounMap.containsKey(subAccount.getUser())) {
+				userSubAccounMap.put(subAccount.getUser(),
+						new ConcurrentHashMap<String, ExchangeSubAccount>());
+			}
+			userSubAccounMap.get(subAccount.getUser()).put(
+					subAccount.getExchangeSubAccount(),
+					subAccountMap.get(subAccount.getExchangeSubAccount()));
 		}
 	}
 

@@ -30,9 +30,9 @@ import com.cyanspring.common.event.account.ChangeAccountSettingRequestEvent;
 import com.cyanspring.common.type.KeyValue;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
-import com.cyanspring.cstw.event.AccountSelectionEvent;
 import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.PropertyTableViewer;
+import com.cyanspring.cstw.localevent.AccountSelectionLocalEvent;
 
 public class AccountSettingView extends ViewPart implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory.getLogger(PropertyView.class);
@@ -79,7 +79,7 @@ public class AccountSettingView extends ViewPart implements IAsyncEventListener 
 
 		// subscribe to business event
 		Business.getInstance().getEventManager().subscribe(AccountSettingSnapshotReplyEvent.class, this);
-		Business.getInstance().getEventManager().subscribe(AccountSelectionEvent.class, this);
+		Business.getInstance().getEventManager().subscribe(AccountSelectionLocalEvent.class, this);
 		Business.getInstance().getEventManager().subscribe(ChangeAccountSettingReplyEvent.class, this);
 		
 	}
@@ -87,7 +87,7 @@ public class AccountSettingView extends ViewPart implements IAsyncEventListener 
 	@Override
 	public void dispose() {
 		Business.getInstance().getEventManager().unsubscribe(AccountSettingSnapshotReplyEvent.class, this);
-		Business.getInstance().getEventManager().unsubscribe(AccountSelectionEvent.class, this);
+		Business.getInstance().getEventManager().unsubscribe(AccountSelectionLocalEvent.class, this);
 		Business.getInstance().getEventManager().unsubscribe(ChangeAccountSettingReplyEvent.class, this);
 		super.dispose();
 	}
@@ -188,8 +188,8 @@ public class AccountSettingView extends ViewPart implements IAsyncEventListener 
 	
 	@Override
 	public void onEvent(final AsyncEvent event) {
-		if(event instanceof AccountSelectionEvent) {
-			AccountSelectionEvent evt = (AccountSelectionEvent)event;
+		if(event instanceof AccountSelectionLocalEvent) {
+			AccountSelectionLocalEvent evt = (AccountSelectionLocalEvent)event;
 			AccountSettingSnapshotRequestEvent request = new AccountSettingSnapshotRequestEvent(ID, Business.getInstance().getFirstServer(), evt.getAccount(), null);
 			sendRemoteEvent(request);
 		} else if(event instanceof AccountSettingSnapshotReplyEvent) {

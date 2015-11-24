@@ -1,20 +1,10 @@
 package com.cyanspring.cstw.ui.trader.composite.speeddepth.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.cstw.tick.Ticker;
-import com.cyanspring.common.event.order.CancelParentOrderEvent;
-import com.cyanspring.common.event.order.EnterParentOrderEvent;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.staticdata.ITickTable;
 import com.cyanspring.common.type.OrdStatus;
@@ -31,9 +21,6 @@ import com.cyanspring.cstw.ui.trader.composite.speeddepth.model.SpeedDepthModel;
  *
  */
 public final class SpeedDepthService {
-
-	private static final Logger log = LoggerFactory
-			.getLogger(SpeedDepthService.class);
 
 	private List<SpeedDepthModel> currentList;
 
@@ -183,6 +170,8 @@ public final class SpeedDepthService {
 			}
 			currentModel.setAskQty(0);
 			currentModel.setBidQty(0);
+			currentModel.setStopAskQty(0);
+			currentModel.setStopBidQty(0);
 			currentModel.setIndex(i++);
 		}
 		List<Map<String, Object>> orders = Business.getInstance()
@@ -191,103 +180,44 @@ public final class SpeedDepthService {
 			OrdStatus status = (OrdStatus) map.get("Status");
 			if (!status.isCompleted()) {
 				for (SpeedDepthModel currentModel : currentList) {
-					String symbol = (String) map.get("Symbol");
-					if (null == map.get("Price"))
-						continue;
-
-					double price = (Double) map.get("Price");
-
-					if (currentModel.getSymbol().equals(symbol)
-							&& PriceUtils.Equal(price, currentModel.getPrice(),
-									delta)) {
-						OrderSide side = (OrderSide) map.get("Side");
-						double cumQty = (Double) map.get("Qty");
-						if (side.isBuy()) {
-							currentModel.setAskQty(currentModel.getAskQty()
-									+ cumQty);
-						} else if (side.isSell()) {
-							currentModel.setBidQty(currentModel.getBidQty()
-									+ cumQty);
-						}
+					if (map.get("Price") != null) {
+						caculateQtyByPrice(currentModel, map);
+					} else if (map.get("Stop Loss") != null) {
+						caculateQtyByStopLoss(currentModel, map);
 					}
 				}
 			}
 		}
 	}
 
-	private void logOrder(Map<String, Object> fields) {
-		StringBuffer sb = new StringBuffer();
-		Set<Entry<String, Object>> entrys = fields.entrySet();
-		Iterator<Entry<String, Object>> ite = entrys.iterator();
-		while (ite.hasNext()) {
-			Entry<String, Object> entry = ite.next();
-			sb.append(entry.getValue() + " - " + entry.getValue() + "\n");
-		}
-		log.info("SpeedDepthOrder : " + sb.toString());
-	}
-
-	public void quickEnterOrder(SpeedDepthModel model, String side,
-			String quantity, String receiverId) {
-		HashMap<String, Object> fields = new HashMap<String, Object>();
-
-		fields.put(OrderField.SYMBOL.value(), model.getSymbol());
-		fields.put(OrderField.SIDE.value(), side);
-		fields.put(OrderField.TYPE.value(), "Limit");
-		fields.put(OrderField.QUANTITY.value(), quantity);
-		fields.put(OrderField.PRICE.value(), model.getPrice());
-		fields.put(OrderField.STRATEGY.value(), "SDMA");
-		fields.put(OrderField.USER.value(), Business.getInstance().getUser());
-		fields.put(OrderField.ACCOUNT.value(), Business.getInstance()
-				.getAccount());
-
-		logOrder(fields);
-		EnterParentOrderEvent event = new EnterParentOrderEvent(Business
-				.getInstance().getInbox(), Business.getInstance()
-				.getFirstServer(), fields, receiverId, false);
-		try {
-			Business.getInstance().getEventManager().sendRemoteEvent(event);
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
-	}
-
-	public void cancelOrder(String currentSymbol) {
-		cancelOrder(currentSymbol, null);
-	}
-
-	public void cancelOrder(String currentSymbol, Double price) {
-		List<Map<String, Object>> orders = Business.getInstance()
-				.getOrderManager().getParentOrders();
-		for (Map<String, Object> map : orders) {
-			String symbol = (String) map.get(OrderField.SYMBOL.value());
-			String id = (String) map.get(OrderField.ID.value());
-
-			OrdStatus status = (OrdStatus) map
-					.get(OrderField.ORDSTATUS.value());
-			boolean isPriceEqual;
-			if (price == null) {
-				isPriceEqual = true;
-			} else {
-				Double orderPrice = (Double) map.get(OrderField.PRICE.value());
-				if (null == orderPrice)
-					continue;
-
-				isPriceEqual = PriceUtils.Equal(orderPrice, price, delta);
+	private void caculateQtyByPrice(SpeedDepthModel model,
+			Map<String, Object> map) {
+		String symbol = (String) map.get("Symbol");
+		double price = (Double) map.get("Price");
+		if (model.getSymbol().equals(symbol)
+				&& PriceUtils.Equal(price, model.getPrice(), delta)) {
+			OrderSide side = (OrderSide) map.get("Side");
+			double cumQty = (Double) map.get("Qty");
+			if (side.isBuy()) {
+				model.setAskQty(model.getAskQty() + cumQty);
+			} else if (side.isSell()) {
+				model.setBidQty(model.getBidQty() + cumQty);
 			}
-			if (!status.isCompleted() && symbol.equals(currentSymbol)
-					&& isPriceEqual) {
-				if (null != symbol && id != null)
-					log.info("SpeedDepth cancelOrder:{},{}", symbol, id);
+		}
+	}
 
-				CancelParentOrderEvent event = new CancelParentOrderEvent(id,
-						Business.getInstance().getFirstServer(), id, false,
-						null, true);
-				try {
-					Business.getInstance().getEventManager()
-							.sendRemoteEvent(event);
-				} catch (Exception e) {
-					log.error(e.getMessage(), e);
-				}
+	private void caculateQtyByStopLoss(SpeedDepthModel model,
+			Map<String, Object> map) {
+		String symbol = (String) map.get("Symbol");
+		double price = (Double) map.get("Stop Loss");
+		if (model.getSymbol().equals(symbol)
+				&& PriceUtils.Equal(price, model.getPrice(), delta)) {
+			OrderSide side = (OrderSide) map.get("Side");
+			double cumQty = (Double) map.get("Qty");
+			if (side.isBuy()) {
+				model.setStopAskQty(model.getStopAskQty() + cumQty);
+			} else if (side.isSell()) {
+				model.setStopBidQty(model.getStopBidQty() + cumQty);
 			}
 		}
 	}

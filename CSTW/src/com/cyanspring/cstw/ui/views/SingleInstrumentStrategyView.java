@@ -49,13 +49,13 @@ import com.cyanspring.common.event.strategy.StopStrategyEvent;
 import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.ImageID;
-import com.cyanspring.cstw.event.GuiSingleInstrumentStrategyUpdateEvent;
-import com.cyanspring.cstw.event.OrderCacheReadyEvent;
-import com.cyanspring.cstw.event.SingleInstrumentStrategySelectionEvent;
 import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.ColumnProperty;
 import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.filter.ParentOrderFilter;
+import com.cyanspring.cstw.localevent.GuiSingleInstrumentStrategyUpdateLocalEvent;
+import com.cyanspring.cstw.localevent.OrderCacheReadyLocalEvent;
+import com.cyanspring.cstw.localevent.SingleInstrumentStrategySelectionLocalEvent;
 import com.cyanspring.cstw.session.CSTWSession;
 
 public class SingleInstrumentStrategyView extends ViewPart implements
@@ -155,7 +155,7 @@ public class SingleInstrumentStrategyView extends ViewPart implements
 					Business.getInstance()
 							.getEventManager()
 							.sendEvent(
-									new SingleInstrumentStrategySelectionEvent(
+									new SingleInstrumentStrategySelectionLocalEvent(
 											map,
 											Business.getInstance()
 													.getSingleInstrumentAmendableFields(
@@ -168,19 +168,19 @@ public class SingleInstrumentStrategyView extends ViewPart implements
 
 		// business logic goes here
 		Business.getInstance().getEventManager()
-				.subscribe(OrderCacheReadyEvent.class, this);
+				.subscribe(OrderCacheReadyLocalEvent.class, this);
 		Business.getInstance().getEventManager()
-				.subscribe(GuiSingleInstrumentStrategyUpdateEvent.class, this);
+				.subscribe(GuiSingleInstrumentStrategyUpdateLocalEvent.class, this);
 		showInstruments();
 	}
 
 	@Override
 	public void dispose() {
 		Business.getInstance().getEventManager()
-				.unsubscribe(OrderCacheReadyEvent.class, this);
+				.unsubscribe(OrderCacheReadyLocalEvent.class, this);
 		Business.getInstance()
 				.getEventManager()
-				.unsubscribe(GuiSingleInstrumentStrategyUpdateEvent.class, this);
+				.unsubscribe(GuiSingleInstrumentStrategyUpdateLocalEvent.class, this);
 		super.dispose();
 	}
 
@@ -630,10 +630,10 @@ public class SingleInstrumentStrategyView extends ViewPart implements
 
 	@Override
 	public void onEvent(AsyncEvent event) {
-		if (event instanceof OrderCacheReadyEvent) {
+		if (event instanceof OrderCacheReadyLocalEvent) {
 			log.debug("Recieved event: " + event);
 			smartShowInstruments();
-		} else if (event instanceof GuiSingleInstrumentStrategyUpdateEvent) {
+		} else if (event instanceof GuiSingleInstrumentStrategyUpdateLocalEvent) {
 			log.debug("Recieved event: " + event);
 			smartShowInstruments();
 		} else if (event instanceof AsyncTimerEvent) {
