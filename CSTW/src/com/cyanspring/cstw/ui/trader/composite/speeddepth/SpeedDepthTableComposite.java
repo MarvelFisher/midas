@@ -283,6 +283,7 @@ public final class SpeedDepthTableComposite extends Composite {
 		currentQuote = quote;
 		List<SpeedDepthModel> list = speedDepthService.getSpeedDepthList(
 				currentQuote, isLock);
+		labelProvider.setKeyselectIndex(-1);
 		tableViewer.setInput(list);
 
 		// 每次刷新后key选择失效
