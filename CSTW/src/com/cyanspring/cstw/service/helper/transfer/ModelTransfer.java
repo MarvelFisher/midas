@@ -243,7 +243,8 @@ public final class ModelTransfer {
 				.getExchangeAccount(subAccount.getExchangeAccount()).getName();
 		SubAccountModel model = new SubAccountModel.Builder()
 				.id(subAccount.getId()).name(subAccount.getName())
-				.exchangeAccount(exName).build();
+				.relativeExchAccount(subAccount.getExchangeAccount())
+				.exchangeAccountName(exName).build();
 		return model;
 	}
 

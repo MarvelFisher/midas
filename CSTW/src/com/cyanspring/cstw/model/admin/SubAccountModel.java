@@ -15,7 +15,9 @@ public final class SubAccountModel extends BasicModel{
 
 	private String name;
 
-	private String exchangeAccount;
+	private String exchangeAccountName;
+	
+	private String relativeExchAccount;
 
 	private double useableMoney;
 
@@ -29,13 +31,21 @@ public final class SubAccountModel extends BasicModel{
 		this.id = id;
 	}
 
-	public String getExchangeAccount() {
-		return exchangeAccount;
+	public String getExchangeAccountName() {
+		return exchangeAccountName;
 	}
 
-	public void setExchangeAccount(
+	public void setExchangeAccountName(
 			String exchangeAccount) {
-		this.exchangeAccount = exchangeAccount;
+		this.exchangeAccountName = exchangeAccount;
+	}
+	
+	public String getRelativeExchAccount() {
+		return relativeExchAccount;
+	}
+
+	public void setRelativeExchAccount(String relativeExchAccount) {
+		this.relativeExchAccount = relativeExchAccount;
 	}
 
 	public double getUseableMoney() {
@@ -65,7 +75,8 @@ public final class SubAccountModel extends BasicModel{
 	public static class Builder {
 		private String id;
 		private String name;
-		private String exchangeAccount;
+		private String exchangeAccountName;
+		private String relativeExchAccount;
 		private double useableMoney;
 		private double commissionRate;
 		
@@ -77,8 +88,12 @@ public final class SubAccountModel extends BasicModel{
 			name = val;		return this;
 		}
 		
-		public Builder exchangeAccount(String val) {
-			exchangeAccount = val;		return this;
+		public Builder relativeExchAccount(String val) {
+			relativeExchAccount = val;		return this;
+		}
+		
+		public Builder exchangeAccountName(String val) {
+			exchangeAccountName = val;		return this;
 		}
 		
 		public Builder useableMoney(double val) {
@@ -97,7 +112,8 @@ public final class SubAccountModel extends BasicModel{
 	private SubAccountModel(Builder builder) {
 		id = builder.id;
 		name = builder.name;
-		exchangeAccount = builder.exchangeAccount;
+		exchangeAccountName = builder.exchangeAccountName;
+		relativeExchAccount = builder.relativeExchAccount;
 		useableMoney = builder.useableMoney;
 		commissionRate = builder.commissionRate;
 	}

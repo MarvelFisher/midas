@@ -207,8 +207,8 @@ public class SubAccountDetailsPage implements IDetailsPage {
 	
 	private void update() {
 		if ( input != null ) {		
-			txtName1.setText(input.getExchangeAccount());
-			exTableComposite.setInput(service.getInstrumentInfoModelListByExchangeAccountId(input.getExchangeAccount()));
+			txtName1.setText(input.getExchangeAccountName());
+			exTableComposite.setInput(service.getInstrumentInfoModelListByExchangeAccountId(input.getRelativeExchAccount()));
 			
 			txtName2.setText(input.getName());
 			subTableComposite.setInput(service.getInstrumentInfoModelListBySubAccountId(input.getId()));

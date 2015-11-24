@@ -246,7 +246,7 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 				if (obj instanceof SubAccountModel) {
 					SubAccountModel subAccountModel = (SubAccountModel) obj;
 					service.createNewSubAccount(subAccountModel
-							.getExchangeAccount());
+							.getExchangeAccountName());
 				} else if (obj instanceof ExchangeAccountModel) {
 					ExchangeAccountModel exchangeAccountModel = (ExchangeAccountModel) obj;
 					service.createNewSubAccount(exchangeAccountModel.getName());
