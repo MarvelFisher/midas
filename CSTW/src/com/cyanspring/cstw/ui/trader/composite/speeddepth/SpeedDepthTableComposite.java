@@ -239,8 +239,7 @@ public final class SpeedDepthTableComposite extends Composite {
 				changeItemColor(item, SWT.COLOR_BLACK);
 				if (currentMouseSelectedItem != null
 						&& !currentMouseSelectedItem.isDisposed()
-						&& currentMouseSelectedItem != item
-						&& currentMouseSelectedItem != currentKeySelectedItem) {
+						&& currentMouseSelectedItem != item && !isLock) {
 					changeItemColor(currentMouseSelectedItem, SWT.COLOR_WHITE);
 				}
 				currentMouseSelectedItem = item;
@@ -273,13 +272,6 @@ public final class SpeedDepthTableComposite extends Composite {
 			}
 		});
 
-		/*
-		 * table.addSelectionListener(new SelectionAdapter() {
-		 * 
-		 * @Override public void widgetSelected(SelectionEvent e) { TableItem
-		 * item = table.getItem(table.getSelectionIndex()); currentSelectedItem
-		 * = item; } });
-		 */
 	}
 
 	private void changeItemColor(TableItem item, int color) {
