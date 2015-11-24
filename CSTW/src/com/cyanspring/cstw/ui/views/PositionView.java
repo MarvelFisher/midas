@@ -273,32 +273,32 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 
 		Composite comp1 = new Composite(parent, SWT.NONE);
 		comp1.setLayout(new GridLayout(2, true));
-		comp1.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, true));
+		comp1.setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, true));
 
 		Composite comp2 = new Composite(parent, SWT.NONE);
 		comp2.setLayout(new GridLayout(2, true));
-		comp2.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, true));
+		comp2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
 		Composite comp3 = new Composite(parent, SWT.NONE);
 		comp3.setLayout(new GridLayout(2, true));
-		comp3.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, true));
+		comp3.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
 		Composite comp4 = new Composite(parent, SWT.NONE);
 		comp4.setLayout(new GridLayout(2, true));
-		comp4.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, true));
+		comp4.setLayoutData(new GridData(SWT.END, SWT.FILL, false, true));
 
 		Label lb1 = new Label(comp1, SWT.LEFT);
 		lb1.setText("Account Value: ");
 		lb1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		lbValue = new Label(comp1, SWT.LEFT);
+		lbValue = new Label(comp1, SWT.RIGHT);
 		lbValue.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
 		Label lb8 = new Label(comp2, SWT.LEFT);
 		lb8.setText("Account Cash: ");
 		lb8.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		lbCashDeduct = new Label(comp2, SWT.LEFT);
+		lbCashDeduct = new Label(comp2, SWT.RIGHT);
 		lbCashDeduct
 				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
@@ -306,7 +306,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		lb7.setText("Cash Available: ");
 		lb7.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		lbCashAvailable = new Label(comp3, SWT.LEFT);
+		lbCashAvailable = new Label(comp3, SWT.RIGHT);
 		lbCashAvailable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
 				true));
 
@@ -314,21 +314,21 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		lb10.setText("Status : ");
 		lb10.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		lbstatus = new Label(comp4, SWT.LEFT);
+		lbstatus = new Label(comp4, SWT.RIGHT);
 		lbstatus.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
 		Label lb5 = new Label(comp1, SWT.LEFT);
 		lb5.setText("P&&L: ");
 		lb5.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		lbPnL = new Label(comp1, SWT.LEFT);
+		lbPnL = new Label(comp1, SWT.RIGHT);
 		lbPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
 		Label lb6 = new Label(comp2, SWT.LEFT);
 		lb6.setText("Unrealized P&&L: ");
 		lb6.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		lbUrPnL = new Label(comp2, SWT.LEFT);
+		lbUrPnL = new Label(comp2, SWT.RIGHT);
 		lbUrPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
 		Label lb9 = new Label(comp3, SWT.LEFT);
@@ -336,7 +336,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, false, true);
 		lb9.setLayoutData(gd);
 
-		lblastUrPnL = new Label(comp3, SWT.LEFT);
+		lblastUrPnL = new Label(comp3, SWT.RIGHT);
 		lblastUrPnL
 				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
@@ -344,7 +344,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		lb4.setText("Daily P&&L: ");
 		lb4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		lbDailyPnL = new Label(comp4, SWT.LEFT);
+		lbDailyPnL = new Label(comp4, SWT.RIGHT);
 		lbDailyPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 	}
 
