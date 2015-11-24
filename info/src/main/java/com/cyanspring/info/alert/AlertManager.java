@@ -718,6 +718,7 @@ public class AlertManager extends Compute {
 				}
 			}
 		}
+		SQLSave(pastPriceAlert);
 		// Delete Alert from CurSQL
 		CurPriceAlert curPriceAlert = new CurPriceAlert(
 				alert.getUserId(), alert.getSymbol(),
