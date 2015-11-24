@@ -59,7 +59,7 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 			if (model.getBidQty() > 0) {
 				columnBidLabel = "" + model.getBidQty();
 			}
-			if (model.getStopAskQty() > 0) {
+			if (model.getStopBidQty() > 0) {
 				columnBidLabel = columnBidLabel + "(" + model.getStopBidQty()
 						+ ")";
 			}

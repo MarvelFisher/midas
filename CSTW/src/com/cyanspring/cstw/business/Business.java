@@ -80,12 +80,13 @@ import com.cyanspring.cstw.ui.views.ServerStatusDisplay;
  * This class is used to init different server. Get data form sever. Support api
  * to visit common service and bean.
  */
-public class Business {
+public final class Business {
 	private static Logger log = LoggerFactory.getLogger(Business.class);
 	private static Business instance; // Singleton
 
 	private IRemoteEventManager eventManager;
 	private EventListenerImpl listener;
+
 	private CSTWBeanPool beanPool;
 	private OrderCachingManager orderManager;
 	private AllPositionManager allPositionManager;
@@ -99,9 +100,11 @@ public class Business {
 	private List<String> singleOrderDisplayFieldList;
 	private List<String> singleInstrumentDisplayFieldList;
 	private List<String> multiInstrumentDisplayFieldList;
+
 	private Map<String, Map<String, FieldDef>> singleOrderFieldDefMap;
 	private Map<String, Map<String, FieldDef>> singleInstrumentFieldDefMap;
 	private Map<String, MultiInstrumentStrategyDisplayConfig> multiInstrumentFieldDefMap;
+
 	private ScheduleManager scheduleManager;
 	private AsyncTimerEvent timerEvent;
 	private int heartBeatInterval; // 5 seconds
@@ -167,11 +170,7 @@ public class Business {
 			throw new Exception("BeanHolder is not yet initialised");
 		}
 		beanPool = new CSTWBeanPool(beanHolder);
-		// ActiveMQObjectService transport = new ActiveMQObjectService();
-		// transport.setUrl(systemInfo.getUrl());
 
-		// eventManager = new
-		// RemoteEventManager(beanHolder.getTransportService());
 		eventManager = beanHolder.getEventManager();
 		alertColorConfig = beanHolder.getAlertColorConfig();
 		quoteDataReceiver = beanHolder.getDataReceiver();
@@ -313,9 +312,7 @@ public class Business {
 				processSelectUserAccountEvent((SelectUserAccountEvent) event);
 			} else if (event instanceof AccountInstrumentSnapshotReplyEvent) {
 				processAccountInstrumentSnapshotReplyEvent((AccountInstrumentSnapshotReplyEvent) event);
-			}
-
-			else if (event instanceof RateConverterReplyEvent) {
+			} else if (event instanceof RateConverterReplyEvent) {
 				RateConverterReplyEvent e = (RateConverterReplyEvent) event;
 				rateConverter = e.getConverter();
 			} else {
@@ -399,10 +396,6 @@ public class Business {
 
 	public int getHeartBeatInterval() {
 		return heartBeatInterval;
-	}
-
-	public void setHeartBeatInterval(int heartBeatInterval) {
-		this.heartBeatInterval = heartBeatInterval;
 	}
 
 	public void stop() {
