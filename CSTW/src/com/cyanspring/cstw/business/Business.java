@@ -507,24 +507,24 @@ public final class Business {
 		}
 	}
 
-	private boolean processCSTWUserLoginReplyEvent(CSTWUserLoginReplyEvent event) {
-		if (!event.isOk())
+	private boolean processCSTWUserLoginReplyEvent(CSTWUserLoginReplyEvent loginReplyEvent) {
+		if (!loginReplyEvent.isOk())
 			return false;
 
-		List<Account> accountList = event.getAccountList();
+		List<Account> accountList = loginReplyEvent.getAccountList();
 		if (null != accountList && !accountList.isEmpty()) {
-			loginAccount = event.getAccountList().get(0);
+			loginAccount = loginReplyEvent.getAccountList().get(0);
 			log.info("loginAccount:{}", loginAccount.getId());
 			sendAccountSettingRequestEvent(loginAccount.getId());
 		}
-		Map<String, Account> user2AccoutMap = event.getUser2AccountMap();
+		Map<String, Account> user2AccoutMap = loginReplyEvent.getUser2AccountMap();
 		if (null != user2AccoutMap && !user2AccoutMap.isEmpty()) {
 			accountList.addAll(user2AccoutMap.values());
 			for (Account acc : user2AccoutMap.values()) {
 				accountGroupList.add(acc.getId());
 			}
 		}
-		UserGroup userGroup = event.getUserGroup();
+		UserGroup userGroup = loginReplyEvent.getUserGroup();
 		this.userId = userGroup.getUser();
 
 		if (null != loginAccount) {

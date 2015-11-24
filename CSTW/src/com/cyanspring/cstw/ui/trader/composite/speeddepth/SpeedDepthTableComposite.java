@@ -250,6 +250,7 @@ public final class SpeedDepthTableComposite extends Composite {
 				changeItemColor(item, SWT.COLOR_BLACK);
 				if (currentKeySelectedItem != null
 						&& !currentKeySelectedItem.isDisposed()
+						&& currentKeySelectedItem != item
 						&& currentKeySelectedItem != currentMouseSelectedItem) {
 					changeItemColor(currentKeySelectedItem, SWT.COLOR_WHITE);
 				}
