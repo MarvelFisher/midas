@@ -150,6 +150,8 @@ public final class SpeedDepthTableComposite extends Composite {
 			public void widgetSelected(SelectionEvent e) {
 				isLock = lockButton.getSelection();
 				if (currentQuote != null) {
+					labelProvider.setKeyselectIndex(-1);
+					currentKeySelectedItem = null;
 					tableViewer.setInput(speedDepthService.getSpeedDepthList(
 							currentQuote, isLock));
 				}
