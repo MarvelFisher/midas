@@ -364,16 +364,14 @@
 		<property name="fxSymbols">
 			<list>
 				<value>AUDUSD</value>
-				<value>USDJPY</value>
-				<value>USDCHF</value>
-				<value>USDCAD</value>
-				<value>USDRUB</value>
-				<value>EURUSD</value>
-				<value>EURJPY</value>
-				<value>EURRUB</value>
-				<value>GBPUSD</value>
-				<value>NZDUSD</value>
-				<value>GBPJPY</value>
+	            <value>USDJPY</value>
+	            <value>USDCHF</value>
+	            <value>USDCAD</value>
+	            <value>EURUSD</value>
+	            <value>EURJPY</value>
+	            <value>GBPUSD</value>
+	            <value>NZDUSD</value>
+	            <value>GBPJPY</value>
 			</list>
 		</property>
 		<property name="dailyExecTime" ref="dailyExec" /> <!-- format=[HH:mm:ss] 24hr -->

@@ -230,16 +230,16 @@ public class AlertManager extends Compute {
             String tradeMessage = "Trade " + parentOrder.getSymbol() + " "
                     + (parentOrder.getSide().isBuy() ? "BOUGHT" : "SOLD") + " " + strQty + "@"
 //					+ "SOLD" + " " + strQty + "@"
-                    + strAvgPx;
+                    + strAvgPx + " " + parentOrder.getReason().toString();
             TradeAlert TA;
             if (parentOrder.getSide().toString().toLowerCase().equals("sell")) {
                 TA = new TradeAlert(parentOrder.getUser(), parentOrder.getSymbol(),
-                        null, 0 - parentOrder.getQuantity(),
+                		parentOrder.getReason(), 0 - parentOrder.getQuantity(),
                         parentOrder.getPrice(), Datetime, tradeMessage);
             } else {
                 TA = new TradeAlert(parentOrder.getUser(), parentOrder.getSymbol(),
-                        null, parentOrder.getQuantity(), parentOrder.getPrice(),
-                        Datetime, tradeMessage);
+                		parentOrder.getReason(), parentOrder.getQuantity(), 
+                		parentOrder.getPrice(), Datetime, tradeMessage);
             }
             if (RefDataBitUtil.isForex(refdata.getInstrumentType())) {
             	TA.setCommodity("F");
@@ -252,7 +252,8 @@ public class AlertManager extends Compute {
             }
             String keyValue = parentOrder.getSymbol() + "," + strAvgPx + ","
                     + strQty + ","
-                    + (parentOrder.getSide().isBuy() ? "BOUGHT" : "SOLD");
+                    + (parentOrder.getSide().isBuy() ? "BOUGHT" : "SOLD") + ","
+                    + parentOrder.getReason().value();
             // SendEvent
             SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
                     null, null, "txId", new ParseData(parentOrder.getUser(),
@@ -352,7 +353,7 @@ public class AlertManager extends Compute {
 			String tradeMessage = "Trade " + execution.getSymbol() + " "
 					+ (execution.getSide().isBuy() ? "BOUGHT" : "SOLD") + " " + strQty + "@"
 //					+ "SOLD" + " " + strQty + "@"
-					+ strPrice;
+					+ strPrice + " Normal";
 			TradeAlert TA;
 			if (execution.getSide().toString().toLowerCase().equals("sell")) {
 				TA = new TradeAlert(execution.getUser(), execution.getSymbol(),
@@ -374,7 +375,7 @@ public class AlertManager extends Compute {
             }
 			String keyValue = execution.getSymbol() + "," + strPrice + ","
 					+ strQty + ","
-					+ (execution.getSide().isBuy() ? "BOUGHT" : "SOLD");
+					+ (execution.getSide().isBuy() ? "BOUGHT" : "SOLD") + ",0";
 			// SendEvent
 			SendNotificationRequestEvent sendNotificationRequestEvent = new SendNotificationRequestEvent(
 					null, null, "txId", new ParseData(execution.getUser(),
