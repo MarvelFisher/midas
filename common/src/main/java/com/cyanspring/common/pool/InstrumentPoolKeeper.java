@@ -93,8 +93,7 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 		return poolSubAccountMap.get(instrumentPool);
 	}
 
-	public List<String> getUsersByExchangeSubAccount(
-			String exchangeSubAccount) {
+	public List<String> getUsersByExchangeSubAccount(String exchangeSubAccount) {
 		List<String> users = new ArrayList<String>();
 		for (Entry<String, Map<String, ExchangeSubAccount>> entry : userSubAccounMap
 				.entrySet()) {
@@ -105,15 +104,14 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 		return users;
 	}
 
-	public List<ExchangeSubAccount> getExchangeSubAccountsByUser(
-			String user) {
+	public List<ExchangeSubAccount> getExchangeSubAccountsByUser(String user) {
 		List<ExchangeSubAccount> subAccounts = new ArrayList<ExchangeSubAccount>();
-		if (userSubAccounMap.containsKey(user)) { 
+		if (userSubAccounMap.containsKey(user)) {
 			subAccounts.addAll(userSubAccounMap.get(user).values());
 		}
 		return subAccounts;
 	}
- 
+
 	@Override
 	public List<InstrumentPoolRecord> getInstrumentPoolRecordList(String id,
 			ModelType type) {
@@ -264,6 +262,27 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 			return true;
 		}
 		return false;
+	}
+
+	public void add(UserExchangeSubAccount userExchangeSubAccount) {
+		if (!userSubAccounMap.containsKey(userExchangeSubAccount.getUser())) {
+			userSubAccounMap.put(userExchangeSubAccount.getUser(),
+					new ConcurrentHashMap<String, ExchangeSubAccount>());
+		}
+		userSubAccounMap.get(userExchangeSubAccount.getUser()).put(
+				userExchangeSubAccount.getExchangeSubAccount(),
+				subAccountMap.get(userExchangeSubAccount
+						.getExchangeSubAccount()));
+	}
+
+	public void delete(UserExchangeSubAccount userExchangeSubAccount) {
+		Map<String, ExchangeSubAccount> tempSubAccountMap = userSubAccounMap
+				.get(userExchangeSubAccount.getUser());
+		tempSubAccountMap
+				.remove(userExchangeSubAccount.getExchangeSubAccount());
+		if (tempSubAccountMap.isEmpty()) {
+			userSubAccounMap.remove(userExchangeSubAccount.getUser());
+		}
 	}
 
 	public void injectExchangeAccounts(List<ExchangeAccount> exchangeAccounts) {

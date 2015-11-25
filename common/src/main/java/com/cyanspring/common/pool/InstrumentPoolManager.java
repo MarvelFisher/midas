@@ -46,6 +46,11 @@ import com.cyanspring.common.event.pool.PmInstrumentPoolInsertEvent;
 import com.cyanspring.common.event.pool.PmInstrumentPoolRecordUpdateEvent;
 import com.cyanspring.common.event.pool.PmInstrumentPoolRecordsDeleteEvent;
 import com.cyanspring.common.event.pool.PmInstrumentPoolRecordsInsertEvent;
+import com.cyanspring.common.event.pool.PmUserExchangeSubAccountDeleteEvent;
+import com.cyanspring.common.event.pool.PmUserExchangeSubAccountInsertEvent;
+import com.cyanspring.common.event.pool.UserExchangeSubAccountOperationReplyEvent;
+import com.cyanspring.common.event.pool.UserExchangeSubAccountOperationRequestEvent;
+import com.cyanspring.common.event.pool.UserExchangeSubAccountUpdateEvent;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.MessageLookup;
 
@@ -82,6 +87,8 @@ public class InstrumentPoolManager implements IPlugin {
 					null);
 			subscribeToEvent(InstrumentPoolRecordUpdateRequestEvent.class, null);
 			subscribeToEvent(AccountPoolsOperationRequestEvent.class, null);
+			subscribeToEvent(UserExchangeSubAccountOperationRequestEvent.class,
+					null);
 		}
 
 		@Override
@@ -430,6 +437,50 @@ public class InstrumentPoolManager implements IPlugin {
 		if (ok) {
 			AccountPoolsUpdateEvent updateEvent = new AccountPoolsUpdateEvent(
 					null, null, accountPools, type);
+			eventManager.sendRemoteEvent(updateEvent);
+		}
+		eventManager.sendRemoteEvent(replyEvent);
+	}
+
+	public void processUserExchangeSubAccountOperationRequestEvent(
+			UserExchangeSubAccountOperationRequestEvent event) throws Exception {
+		boolean ok = true;
+		String errorMessage = "";
+		List<UserExchangeSubAccount> userExchangeSubAccounts = event
+				.getUserExchangeSubAccounts();
+		OperationType type = event.getOperationType();
+		log.info("Received UserExchangeSubAccountOperationRequestEvent: "
+				+ userExchangeSubAccounts + ", " + type);
+		if (userExchangeSubAccounts != null
+				&& !userExchangeSubAccounts.isEmpty()) {
+			InstrumentPoolHelper.updateUserExchangeSubAccounts(
+					instrumentPoolKeeper, userExchangeSubAccounts, type);
+			switch (type) {
+			case CREATE:
+				PmUserExchangeSubAccountInsertEvent insertEvent = new PmUserExchangeSubAccountInsertEvent(
+						userExchangeSubAccounts);
+				eventManager.sendEvent(insertEvent);
+				break;
+			case UPDATE:
+				break;
+			case DELETE:
+				PmUserExchangeSubAccountDeleteEvent deleteEvent = new PmUserExchangeSubAccountDeleteEvent(
+						userExchangeSubAccounts);
+				eventManager.sendEvent(deleteEvent);
+				break;
+			}
+		} else {
+			ok = false;
+			errorMessage = MessageLookup.buildEventMessage(
+					ErrorMessage.USER_EXCHANGE_SUB_ACCOUNT_IS_NULL,
+					"The received UserExchangeSubAccount list is null");
+		}
+		UserExchangeSubAccountOperationReplyEvent replyEvent = new UserExchangeSubAccountOperationReplyEvent(
+				event.getKey(), event.getSender(), ok, errorMessage,
+				event.getTxId());
+		if (ok) {
+			UserExchangeSubAccountUpdateEvent updateEvent = new UserExchangeSubAccountUpdateEvent(
+					null, null, userExchangeSubAccounts, type);
 			eventManager.sendRemoteEvent(updateEvent);
 		}
 		eventManager.sendRemoteEvent(replyEvent);

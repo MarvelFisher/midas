@@ -2,14 +2,20 @@ package com.cyanspring.cstw.ui.rw.forms;
 
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.forms.DetailsPart;
 import org.eclipse.ui.forms.IManagedForm;
@@ -19,6 +25,8 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 
+import com.cyanspring.cstw.model.admin.InstrumentPoolModel;
+import com.cyanspring.cstw.model.admin.SubAccountModel;
 import com.cyanspring.cstw.service.iservice.riskmgr.ISubPoolManageService;
 
 /**
@@ -91,14 +99,13 @@ public class SubPoolManageMasterDetailBlock extends MasterDetailsBlock {
 		ediTree = new TreeViewer(memberTree);
 		ediTree.setContentProvider(new EditTreeContentProvider());
 		ediTree.setLabelProvider(new EditTreeLabelProvider());
-		initTreeMenu();
+		initTreeMenu(sectionClient);
 		refreshTree();
 		
 		// create buttons
 		Composite btnComposite = toolkit.createComposite(sectionClient, SWT.NONE);
 		GridData btnData = new GridData(SWT.FILL, SWT.FILL, false, true);
-		btnData.widthHint = SWT.DEFAULT;
-		btnData.heightHint = SWT.DEFAULT;
+		btnData.widthHint = 100;
 		btnComposite.setLayoutData(btnData);
 		GridLayout btnLayout = new GridLayout(1, false);
 		btnLayout.marginWidth = 5;
@@ -107,7 +114,7 @@ public class SubPoolManageMasterDetailBlock extends MasterDetailsBlock {
 		btnLayout.horizontalSpacing = 0;
 		btnComposite.setLayout(btnLayout);
 		
-		btnData = new GridData(SWT.FILL, SWT.FILL, false, true);
+		btnData = new GridData(SWT.FILL, SWT.FILL, true, false);
 //		btnAddAcc = toolkit.createButton(btnComposite, "Add Sub", SWT.NONE);
 		btnAddPool = toolkit.createButton(btnComposite, "Add SubPool", SWT.NONE);
 		btnDelete = toolkit.createButton(btnComposite, "Delete", SWT.NONE);
@@ -116,32 +123,82 @@ public class SubPoolManageMasterDetailBlock extends MasterDetailsBlock {
 		btnAddPool.setEnabled(false);
 		btnDelete.setEnabled(false);
 		
+		toolkit.createLabel(btnComposite, "");
+		
+		btnUp = toolkit.createButton(btnComposite, "Up", SWT.NONE);
+		btnDown = toolkit.createButton(btnComposite, "Down", SWT.NONE);
+		btnUp.setLayoutData(btnData);
+		btnDown.setLayoutData(btnData);
+		btnUp.setEnabled(false);
+		btnDown.setEnabled(false);
 		
 		dataSection.setClient(sectionClient);
 	}
 
-	private void refreshTree() {
-		// TODO Auto-generated method stub
+	
+	private void initTreeMenu(final Composite sectionClient) {
+		treeMenu = new Menu(sectionClient.getShell(), SWT.POP_UP);
+		final MenuItem item1 = new MenuItem(treeMenu, SWT.PUSH);
+		item1.setText("Add SubPool");
+		item1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				addPoolAction.run();
+			}
+		});
+		final MenuItem item2 = new MenuItem(treeMenu, SWT.PUSH);
+		item2.setText("Delete");
+		item2.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				delAction.run();
+			}
+		});
+		
+		ediTree.getTree().setMenu(treeMenu);
 		
 	}
 
 
-	private void initTreeMenu() {
-		// TODO Auto-generated method stub
-		
-	}
+	private void initListener(final IManagedForm managedForm) {
+		ediTree.addSelectionChangedListener(new ISelectionChangedListener() {
+			
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				managedForm.fireSelectionChanged(spart, event.getSelection());
+			}
+		});
+		ediTree.addSelectionChangedListener(new ISelectionChangedListener() {
+			
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				changeUiElementState();
+			}
 
-
-	private void initListener(IManagedForm managedForm) {
-		// TODO Auto-generated method stub
-
+			
+		});
 	}
 
 	private void initAction() {
-		// TODO Auto-generated method stub
-
+		
 	}
 	
+	private void changeUiElementState() {
+		IStructuredSelection selected = (IStructuredSelection) ediTree.getSelection();
+		if (selected.isEmpty()) {
+			
+		} else if (selected.size() == 1) {
+			
+		} else {
+			
+		}
+	}
+	
+	private void refreshTree() {
+		ediTree.setInput(null);
+		ediTree.refresh();
+	}
+
 	private void createSpacer(FormToolkit toolkit, Composite parent, int span) {
 		Label spacer = toolkit.createLabel(parent, "");
 		GridData gd = new GridData();
@@ -151,8 +208,8 @@ public class SubPoolManageMasterDetailBlock extends MasterDetailsBlock {
 
 	@Override
 	protected void registerPages(DetailsPart detailsPart) {
-		// TODO Auto-generated method stub
-
+		detailsPart.registerPage(SubAccountModel.class, new SubAccountDetailsPage(service));
+		detailsPart.registerPage(InstrumentPoolModel.class, new SubPoolDetailsPage(service));
 	}
 
 	

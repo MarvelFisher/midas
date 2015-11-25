@@ -50,6 +50,8 @@ public class InstrumentPoolHelper {
 		case CREATE:
 			instrumentPoolKeeper.add(instrumentPool);
 			break;
+		case UPDATE:
+			break;
 		case DELETE:
 			instrumentPoolKeeper.delete(instrumentPool);
 			break;
@@ -62,6 +64,8 @@ public class InstrumentPoolHelper {
 		switch (type) {
 		case CREATE:
 			instrumentPoolKeeper.add(records);
+			break;
+		case UPDATE:
 			break;
 		case DELETE:
 			instrumentPoolKeeper.delete(records);
@@ -81,12 +85,34 @@ public class InstrumentPoolHelper {
 						accountPool.getInstrumentPool()).add(accountPool);
 			}
 			break;
+		case UPDATE:
+			break;
 		case DELETE:
 			for (AccountPool accountPool : accountPools) {
 				accountKeeper.getAccount(accountPool.getAccount()).delete(
 						accountPool);
 				instrumentPoolKeeper.getInstrumentPool(
 						accountPool.getInstrumentPool()).delete(accountPool);
+			}
+			break;
+		}
+	}
+
+	public static void updateUserExchangeSubAccounts(
+			InstrumentPoolKeeper instrumentPoolKeeper,
+			List<UserExchangeSubAccount> userExchangeSubAccounts,
+			OperationType type) {
+		switch (type) {
+		case CREATE:
+			for (UserExchangeSubAccount userExchangeSubAccount : userExchangeSubAccounts) {
+				instrumentPoolKeeper.add(userExchangeSubAccount);
+			}
+			break;
+		case UPDATE:
+			break;
+		case DELETE:
+			for (UserExchangeSubAccount userExchangeSubAccount : userExchangeSubAccounts) {
+				instrumentPoolKeeper.delete(userExchangeSubAccount);
 			}
 			break;
 		}

@@ -277,13 +277,15 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
             }
             if (marketSessionData != null && (marketSessionData.getSessionType() == MarketSessionType.CLOSE
                     || marketSessionData.getSessionType() == MarketSessionType.PREMARKET)) {
-                //get IB close & Open price
-                if(inEvent.getQuoteSource()==QuoteSource.IB){
-                    if(quotes.containsKey(quote.getSymbol())){
+                if(quotes.containsKey(quote.getSymbol())){
+                    //get IB close & Open price
+                    if(inEvent.getQuoteSource()==QuoteSource.IB){
                         Quote tmpQuote = quotes.get(quote.getSymbol());
                         if(PriceUtils.GreaterThan(quote.getClose(), 0)) tmpQuote.setClose(quote.getClose());
                         if(PriceUtils.GreaterThan(quote.getOpen(), 0)) tmpQuote.setOpen(quote.getOpen());
                     }
+                } else {
+                    quotes.put(quote.getSymbol(), quote);
                 }
                 return;
             }

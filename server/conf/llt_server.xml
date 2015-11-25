@@ -121,6 +121,9 @@
         <constructor-arg value="0" />
     </bean>
 
+	<bean id="appSetting" class="java.lang.String">
+  		<constructor-arg value=""/>
+	</bean>
 	<!--  -->
 
 
@@ -153,6 +156,7 @@
    				<ref bean="terminateStopLossValue"/>  <!-- terminateValue -->              
                 <value>DEFAULT</value>        		  <!-- liveTradingType -->
                 <value>0.0</value>	                  <!-- creditPartial -->
+                <ref bean="appSetting"/>
             </list>
         </property>
     </bean>

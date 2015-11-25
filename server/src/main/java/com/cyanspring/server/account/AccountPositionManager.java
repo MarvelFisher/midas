@@ -207,6 +207,7 @@ public class AccountPositionManager implements IPlugin {
 	private boolean checkMargincut = true;
 	private TotalPnLCalculator totalPnLCalculator = new TotalPnLCalculator();
 	private TimeThrottler totalPnLCalculatorThrottler = new TimeThrottler(20000);
+	private TimeThrottler fxSymbolTimeoutChecker;
 
 	@Autowired
 	private IRemoteEventManager eventManager;
@@ -1153,7 +1154,7 @@ public class AccountPositionManager implements IPlugin {
 		UserGroup userGroup = null;
 		List<Account> accountList = null;
 		Map<String, Account> user2AccountMap = null;
-		List<User> users = null;
+		List<User> users = new ArrayList<User>();
 
 		boolean isAdminRole = false;
 		boolean isServerShutdownEvent = event.getShutdownServer();
@@ -1164,7 +1165,9 @@ public class AccountPositionManager implements IPlugin {
 
 		if (isAdminRole) {
 			userGroup = new UserGroup(id, UserRole.Admin);
-			users = userKeeper.getUsersByRole(UserRole.RiskManager);
+			users.addAll(userKeeper.getUsersByRole(UserRole.RiskManager));
+			users.addAll(userKeeper.getUsersByRole(UserRole.Group));
+
 			accountList = accountKeeper.getAllAccounts();
 			user2AccountMap = new HashMap<>();
 			if (null == accountList)
@@ -1991,6 +1994,11 @@ public class AccountPositionManager implements IPlugin {
 					Double rate = fxConverter.getFxRate(symbol);
 					if (null == rate || PriceUtils.isZero(rate)) {
 						log.debug("Waiting on FX rate: " + symbol);
+						if(null == fxSymbolTimeoutChecker)
+							fxSymbolTimeoutChecker = new TimeThrottler(60000);
+						
+						if(fxSymbolTimeoutChecker.check())
+							log.error("Waiting for FX rate too long, as a result, risk control is not working!!!: " + symbol);
 						return;
 					}
 				}

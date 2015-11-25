@@ -6,11 +6,17 @@ import org.eclipse.ui.forms.IDetailsPage;
 import org.eclipse.ui.forms.IFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 
+import com.cyanspring.cstw.service.iservice.riskmgr.ISubPoolManageService;
+
 /**
  * @author Junfeng
  * @create 24 Nov 2015
  */
 public class SubAccountDetailsPage implements IDetailsPage {
+
+	public SubAccountDetailsPage(ISubPoolManageService service) {
+		// TODO Auto-generated constructor stub
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.forms.IFormPart#initialize(org.eclipse.ui.forms.IManagedForm)

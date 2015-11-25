@@ -1248,6 +1248,7 @@ public class BusinessManager implements ApplicationContextAware {
 		setting.setTimeZone(Default.getTimeZone());
 		setting.setUser(Default.getUser());
 		setting.setUserLiveTrading(Default.isUserLiveTrading());
+		setting.setAppSetting(Default.getAppSetting());
 			
 		GlobalSettingReplyEvent reply = 
 				new GlobalSettingReplyEvent(event.getKey(),event.getSender(),setting);
