@@ -11,6 +11,7 @@ import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.livetrading.TradingUtil;
 import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.QuoteUtils;
+import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.order.RiskOrderController;
 import com.cyanspring.common.position.PositionKeeper;
 import com.cyanspring.common.server.event.ServerReadyEvent;
@@ -37,6 +38,7 @@ import java.util.*;
  * @since 1.0
  */
 public class LumpSumManager implements IPlugin {
+
     private static final Logger log = LoggerFactory.getLogger(LumpSumManager.class);
 
     @Autowired
@@ -56,6 +58,9 @@ public class LumpSumManager implements IPlugin {
 
     @Autowired
     private RiskOrderController riskOrderController;
+
+    @Autowired (required = false)
+	private MarketSessionUtil marketSessionUtil;
 
     private Map<String, Quote> marketData = new HashMap<>();
     private AsyncTimerEvent timerEvent = new AsyncTimerEvent();
@@ -97,14 +102,16 @@ public class LumpSumManager implements IPlugin {
         log.info("initializing");
         eventProcessor.setHandler(this);
         eventProcessor.init();
-        if (eventProcessor.getThread() != null)
-            eventProcessor.getThread().setName("LumpSumManager");
+        if (eventProcessor.getThread() != null) {
+			eventProcessor.getThread().setName("LumpSumManager");
+		}
     }
 
     @Override
     public void uninit() {
-        if (!eventProcessor.isSync())
-            scheduleManager.uninit();
+        if (!eventProcessor.isSync()) {
+			scheduleManager.uninit();
+		}
         eventProcessor.uninit();
     }
 
@@ -114,16 +121,18 @@ public class LumpSumManager implements IPlugin {
         if (exec == null) {
             log.error("Account:{}, Price:{} is not available, return without action.", oPosition.getAccount());
             return;
-        } else
-            log.info("processClosePositionExecution: " + exec.toString());
+        } else {
+			log.info("processClosePositionExecution: " + exec.toString());
+		}
         positionKeeper.processExecution(exec, accountKeeper.getAccount(oPosition.getAccount()));
     }
 
     private void processLumpSum() {
         log.info("Start lumpSum process.");
         List<Account> allAccount = accountKeeper.getAllAccounts();
-        for (Account account : allAccount)
-            TradingUtil.cancelAllOrders(account, positionKeeper, eventManager, OrderReason.DayTradingMode, riskOrderController);
+        for (Account account : allAccount) {
+			TradingUtil.cancelAllOrders(account, positionKeeper, eventManager, OrderReason.DayTradingMode, riskOrderController);
+		}
 
         List<String> routers = accountKeeper.getAllRouters();
         for (String router : routers) {
@@ -133,8 +142,9 @@ public class LumpSumManager implements IPlugin {
                 List<Account> accounts = accountKeeper.getAccountsByRouter(router);
                 for (Account account : accounts) {
                     AccountSetting setting = accountKeeper.getAccountSetting(account.getId());
-                    if (!setting.isLiveTrading())
-                        continue;
+                    if (!setting.isLiveTrading()) {
+						continue;
+					}
                     List<OpenPosition> accountPositions = positionKeeper.getOverallPosition(account);
                     for (OpenPosition accountPosition : accountPositions) {
                     	originPositions.put(accountPosition.getAccount() + accountPosition.getSymbol(), accountPosition.clone());
@@ -173,7 +183,7 @@ public class LumpSumManager implements IPlugin {
                                     break;
                                 }
                             }
-                            
+
                             if(!closed){
 //                            	double minus = position.getQty() - positionQty;
 //                            	processClosePositionExecution(position.getSymbol(), position, minus);
@@ -193,12 +203,13 @@ public class LumpSumManager implements IPlugin {
                 for (List<OpenPosition> positions : totalPositions.values()) {
                     for (OpenPosition position : positions) {
                     	OpenPosition oPosition = originPositions.get(position.getAccount() + position.getSymbol());
-                    	if(!PriceUtils.Equal(position.getQty(), oPosition.getQty()))
-                    		processClosePositionExecution(oPosition.getSymbol(), oPosition, oPosition.getQty() - position.getQty());
-                    	
-                    	log.info("process close position, account: " 
+                    	if(!PriceUtils.Equal(position.getQty(), oPosition.getQty())) {
+							processClosePositionExecution(oPosition.getSymbol(), oPosition, oPosition.getQty() - position.getQty());
+						}
+
+                    	log.info("process close position, account: "
                     			+ position.getAccount() + ", symbol: " + position.getSymbol() + ", Qty: " + position.getQty());
-                    	
+
                         businessManager.processClosePosition(null, null, null, OrderReason.DayTradingMode,
                                 accountKeeper.getAccount(position.getAccount()), position.getSymbol(),
                                 position.getQty() > 0 ? OrderSide.Sell : OrderSide.Buy, Math.abs(position.getQty()));
@@ -217,17 +228,28 @@ public class LumpSumManager implements IPlugin {
                                               String user, String account, String route) throws OrderException {
         Quote quote = marketData.get(symbol);
         double price = QuoteUtils.getMarketablePrice(quote, qty);
-        if (PriceUtils.isZero(price))
-            price = quote.getLast();
-        if (!PriceUtils.validPrice(price))
-            return null;
+        if (PriceUtils.isZero(price)) {
+			price = quote.getLast();
+		}
+        if (!PriceUtils.validPrice(price)) {
+			return null;
+		}
+
+        Date tradeDate = Calendar.getInstance().getTime();
+
+		if (marketSessionUtil != null) {
+			try {
+				tradeDate = marketSessionUtil.getCurrentMarketSession(symbol).getTradeDateByDate();
+			} catch (Exception e) {
+				log.error(e.getMessage());
+				log.error("Can't find market session or trade date for symbol " + symbol);
+				log.error("Set trade date to current time " + tradeDate);
+			}
+		}
 
         Execution exec = new Execution(symbol, qty > 0 ? OrderSide.Sell : OrderSide.Buy,
-                Math.abs(qty),
-                price,
-                "", "",
-                "", IdGenerator.getInstance().getNextID() + "LumpSum",
-                user, account, route);
+                Math.abs(qty), price, "", "", "", IdGenerator.getInstance().getNextID() + "LumpSum",
+                user, account, route, tradeDate);
         exec.put(OrderField.ID.value(), IdGenerator.getInstance().getNextID() + "LumpSum");
         return exec;
     }
@@ -244,8 +266,9 @@ public class LumpSumManager implements IPlugin {
         int sec = Integer.parseInt(times[2]);
 
         Date date = TimeUtil.getScheduledDate(Calendar.getInstance(), Clock.getInstance().now(), hour, min, sec);
-        if (TimeUtil.getTimePass(Clock.getInstance().now(), date) > 0)
-            date = TimeUtil.getNextDay(date);
+        if (TimeUtil.getTimePass(Clock.getInstance().now(), date) > 0) {
+			date = TimeUtil.getNextDay(date);
+		}
 
         scheduleManager.scheduleTimerEvent(date, eventProcessor, timerEvent);
     }

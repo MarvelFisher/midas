@@ -7,7 +7,8 @@ import com.cyanspring.common.Clock;
 import com.cyanspring.common.util.PriceUtils;
 
 @SuppressWarnings("serial")
-public abstract class Position implements Serializable{
+public abstract class Position implements Serializable {
+
 	private String id;
 	private String account;
 	private String user;
@@ -16,11 +17,12 @@ public abstract class Position implements Serializable{
 	private double PnL;
 	private Date created;
 	private double acPnL;
+	private Date tradeDate;
 
 	protected Position() {
-		
+
 	}
-	
+
 	protected Position(String id, String user, String account, String symbol, double qty) {
 		this.user = user;
 		this.account = account;
@@ -29,7 +31,7 @@ public abstract class Position implements Serializable{
 		this.qty = qty;
 		this.created = Clock.getInstance().now();
 	}
-	
+
 	//// getters and setters ////
 	public double getPnL() {
 		return PnL;
@@ -45,7 +47,7 @@ public abstract class Position implements Serializable{
 	public double getQty() {
 		return qty;
 	}
-	
+
 	public String getId() {
 		return id;
 	}
@@ -69,7 +71,7 @@ public abstract class Position implements Serializable{
 	public void setQty(double qty) {
 		this.qty = qty;
 	}
-	
+
 	public double getAcPnL() {
 		return acPnL;
 	}
@@ -77,7 +79,7 @@ public abstract class Position implements Serializable{
 	public void setAcPnL(double acPnL) {
 		this.acPnL = acPnL;
 	}
-	
+
 	///// end of getters and setters ////////
 
 	public String getAccount() {
@@ -103,11 +105,11 @@ public abstract class Position implements Serializable{
 	public boolean zeroPosition(double position) {
 		return PriceUtils.isZero(this.qty + position);
 	}
-	
+
 	public boolean zeroPosition(OpenPosition position) {
 		return PriceUtils.isZero(this.qty + position.getQty());
 	}
-	
+
 	public boolean oppositePosition(double position) {
 		return PriceUtils.GreaterThan(this.qty, 0) && PriceUtils.LessThan(position, 0) ||
 				PriceUtils.LessThan(this.qty, 0) && PriceUtils.GreaterThan(position, 0);
@@ -116,18 +118,27 @@ public abstract class Position implements Serializable{
 	public boolean oppositePosition(OpenPosition position) {
 		return oppositePosition(position.getQty());
 	}
-	
+
 	public boolean isBuy() {
 		return PriceUtils.GreaterThan(this.qty, 0);
 	}
-	
+
 	protected String formatString() {
-		return this.id + ", " + this.account + ", " + this.symbol  + ", " + 
+		return this.id + ", " + this.account + ", " + this.symbol  + ", " +
 				this.qty + ", " + this.PnL;
 	}
-	
+
 	@Override
 	public synchronized String toString() {
 		return "[" + formatString() + "]";
 	}
+
+	public Date getTradeDate() {
+		return tradeDate;
+	}
+
+	public void setTradeDate(Date tradeDate) {
+		this.tradeDate = tradeDate;
+	}
+
 }

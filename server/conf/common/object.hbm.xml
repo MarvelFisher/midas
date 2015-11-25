@@ -26,6 +26,7 @@
 		<property column="TRADER" name="user" type="java.lang.String" />
 		<property column="ACCOUNT" name="account" type="java.lang.String" />
 		<property column="ROUTE" name="route" type="java.lang.String" />
+		<property column="TRADE_DATE" name="tradeDate" type="java.util.Date" />
 	</class>
 
 	<class name="com.cyanspring.common.business.ChildOrder" table="ANYONE.ACTIVE_CHILD_ORDERS">
@@ -257,6 +258,7 @@
 		<property column="PNL" name="PnL" type="java.lang.Double" />
 		<property column="AC_PNL" name="acPnL" type="java.lang.Double" />
 		<property column="CREATED" name="created" type="java.util.Date" />
+		<property column="TRADE_DATE" name="tradeDate" type="java.util.Date" />
 
 		<union-subclass name="com.cyanspring.common.account.OpenPosition"
 			table="ANYONE.OPEN_POSITIONS">

@@ -2,13 +2,15 @@
  * Copyright (c) 2011-2012 Cyan Spring Limited
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms specified by license file attached.
- * 
+ *
  * Software distributed under the License is released on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
 package com.cyanspring.common.business;
+
+import java.util.Date;
 
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.util.IdGenerator;
@@ -18,9 +20,9 @@ public class Execution extends BaseOrder {
 	private static final long serialVersionUID = 1L;
 
 	public Execution(String symbol, OrderSide side, double quantity,
-			double price, String orderId, String parentOrderId, 
+			double price, String orderId, String parentOrderId,
 			String strategyId, String execId,
-			String user, String account, String route) throws OrderException {
+			String user, String account, String route, Date tradeDate) throws OrderException {
 		super(symbol, side, quantity, price);
 		if (PriceUtils.EqualLessThan(quantity, 0)) {
 			throw new OrderException("Execution quantity must great than zero");
@@ -31,13 +33,14 @@ public class Execution extends BaseOrder {
 		put(OrderField.EXECID.value(), execId);
 		put(OrderField.USER.value(), user);
 		put(OrderField.ACCOUNT.value(), account);
+		put(OrderField.TRADE_DATE.value(), tradeDate);
 		this.setRoute(route);
 	}
 
 	private Execution() {
 		super();
 	}
-	
+
 	@Override
 	protected String generateId() {
 		return IdGenerator.getInstance().getNextID() + "E";
@@ -58,7 +61,7 @@ public class Execution extends BaseOrder {
 	public String getStrategyId() {
 		return get(String.class, OrderField.STRATEGY_ID.value());
 	}
-	
+
 	public Execution clone() {
 		return (Execution)super.clone();
 	}
@@ -75,12 +78,12 @@ public class Execution extends BaseOrder {
 	public void setStrategyId(String strategyId) {
 		put(OrderField.STRATEGY_ID.value(), strategyId);
 	}
-	
-	
+
+
 	public void setExecId(String execId) {
 		put(OrderField.EXECID.value(), execId);
 	}
-	
+
 	public double toPostion() {
 		return getSide().isBuy()?getQuantity():-getQuantity();
 	}

@@ -5,4 +5,12 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
 
 	<include file="log/sprint_20151127.xml" relativeToChangelogFile="true"/>
+	
+	<changeSet author="alvin" id="master_20151125" runOnChange="true">
+	    <sql>
+	         ALTER TABLE ANYONE.EXECUTIONS ADD TRADE_DATE DATE;
+	         ALTER TABLE ANYONE.OPEN_POSITIONS ADD TRADE_DATE DATE;
+	         ALTER TABLE ANYONE.CLOSED_POSITIONS ADD TRADE_DATE DATE;
+	    </sql>
+	</changeSet>
 </databaseChangeLog>

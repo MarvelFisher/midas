@@ -2,9 +2,9 @@
  * Copyright (c) 2011-2012 Cyan Spring Limited
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms specified by license file attached.
- * 
+ *
  * Software distributed under the License is released on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
@@ -67,11 +67,12 @@ public enum OrderField {
 		UNSOLICITED("Unsolicited"),
 		FLAG("Flag"),
 		TIF("TIF"),
-		EXCHANGE_ORDER_ID("Exchange Order ID")
+		EXCHANGE_ORDER_ID("Exchange Order ID"),
+		TRADE_DATE("Trade Date")
 		;
-		
+
 		static HashMap<String, OrderField> map = new HashMap<String, OrderField>();
-		
+
 		private String value;
 		OrderField(String value) {
 			this.value = value;
@@ -79,7 +80,7 @@ public enum OrderField {
 		public String value() {
 			return value;
 		}
-		
+
 		static public OrderField getValue(String str) {
 			return map.get(str);
 		}
@@ -87,12 +88,13 @@ public enum OrderField {
 		public static void validate() throws Exception {
 			map.clear();
 			for (OrderField field: OrderField.values()) {
-				if (map.containsKey(field.value()))
+				if (map.containsKey(field.value())) {
 					throw new Exception("OrderField duplicated: " + field.value);
-				else
+				} else {
 					map.put(field.value(), field);
+				}
 			}
-			
+
 		}
 
 }

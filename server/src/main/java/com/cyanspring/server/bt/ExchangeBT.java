@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +25,7 @@ import com.cyanspring.common.downstream.IDownStreamConnection;
 import com.cyanspring.common.downstream.IDownStreamListener;
 import com.cyanspring.common.downstream.IDownStreamSender;
 import com.cyanspring.common.marketdata.*;
+import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.stream.IStreamAdaptor;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.ExecType;
@@ -37,10 +40,12 @@ import java.util.Comparator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import webcurve.util.PriceUtils;
 
-public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStreamConnection>{
+public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStreamConnection> {
+
 	private static final Logger log = LoggerFactory
 			.getLogger(ExchangeBT.class);
 	private ITickDataReader tickDataReader = new QuoteDataReader();
@@ -48,28 +53,30 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 	private Map<String, BufferedReader> readers = new HashMap<String, BufferedReader>();
 	protected Map<String, Quote> currentQuotes = new HashMap<String, Quote>();
 	protected IMarketDataListener mdListener; // supports only one listener
-	protected IMarketDataStateListener stateListener; 
+	protected IMarketDataStateListener stateListener;
 	private IDownStreamListener dsListener;
 	private Map<String, DualSet> exchangeOrders = new HashMap<String, DualSet>();
 	private List<OrderAck> orderAcks = new LinkedList<OrderAck>();
-	
-	
+
+	@Autowired (required = false)
+	private MarketSessionUtil marketSessionUtil;
+
 	class DualSet {
 		Set<ChildOrder> bids = new TreeSet<ChildOrder>(OrderUtils.childOrderComparator);
 		Set<ChildOrder> asks = new TreeSet<ChildOrder>(OrderUtils.childOrderComparator);
 		public void add(ChildOrder order) {
-			if(order.getSide().isBuy()) {
+			if (order.getSide().isBuy()) {
 				bids.add(order);
 			} else {
 				asks.add(order);
 			}
 		}
 	}
-	
+
 	class OrderAck {
 		ExecType execType;
-		ChildOrder order; 
-		Execution execution; 
+		ChildOrder order;
+		Execution execution;
 		String message;
 		public OrderAck(ExecType execType, ChildOrder order,
 				Execution execution, String message) {
@@ -79,19 +86,19 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 			this.execution = execution;
 			this.message = message;
 		}
-		
+
 	}
-	
+
 	public void loadTickDataFiles(String[] files) throws TickDataException, IOException {
-		for(String fileName: files) {
+		for (String fileName: files) {
 			File file = new File(fileName);
-			if(!file.exists()) {
+			if (!file.exists()) {
 				throw new TickDataException("Tick data file doesn't exist: " + fileName);
 			}
 			BufferedReader reader = new BufferedReader(new FileReader(file));
 			String line = reader.readLine();
 			Quote quote = tickDataReader.stringToQuote(line);
-			if(readers.containsKey(quote.getSymbol())) {
+			if (readers.containsKey(quote.getSymbol())) {
 				reader.close();
 				throw new TickDataException("Duplicated tick data file: " + fileName);
 			}
@@ -101,17 +108,17 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 			log.info("Tick file loaded: " + fileName);
 		}
 	}
-	
+
 	public void replay() {
 		Quote quote;
 		while((quote = quotes.poll())!= null) {
 			processQuote(quote);
-			
+
 			BufferedReader reader = readers.get(quote.getSymbol());
 			Quote nextQuote;
 			try {
 				String line = reader.readLine();
-				if(null == line) {
+				if (null == line) {
 					readers.remove(quote.getSymbol());
 					reader.close();
 					continue;
@@ -125,55 +132,58 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 				log.warn(e.getMessage());
 				readers.remove(quote.getSymbol());
 				continue;
-			} 
+			}
 			quotes.add(nextQuote);
 		}
 		log.info("Finished replay of tick files");
 	}
-	
+
 	public void setQuote(Quote quote) {
 		processQuote(quote);
 	}
-	
+
 	public void processQuote(Quote quote) {
-		if(Clock.getInstance().isManual())
+		if (Clock.getInstance().isManual()) {
 			Clock.getInstance().setManualClock(quote.getTimeStamp());
-		
+		}
+
 		Quote prevQuote = currentQuotes.put(quote.getSymbol(), quote);
 
 		// try to match existing orders in market
 		DualSet dualSet = exchangeOrders.get(quote.getSymbol());
-		if(null != dualSet) {
+		if (null != dualSet) {
 			List<ChildOrder> toBeRemoved = new LinkedList<ChildOrder>();
-			for(ChildOrder order: dualSet.bids) {
+			for (ChildOrder order: dualSet.bids) {
 				fillLimitOrder(order, quote, true);
-				if(PriceUtils.isZero(order.getRemainingQty()))
+				if (PriceUtils.isZero(order.getRemainingQty())) {
 					toBeRemoved.add(order);
+				}
 			}
-			
-			for(ChildOrder order: toBeRemoved) {
+
+			for (ChildOrder order: toBeRemoved) {
 				dualSet.bids.remove(order);
 			}
-	
+
 			toBeRemoved.clear();
-			for(ChildOrder order: dualSet.asks) {
+			for (ChildOrder order: dualSet.asks) {
 				fillLimitOrder(order, quote, true);
-				if(PriceUtils.isZero(order.getRemainingQty()))
+				if (PriceUtils.isZero(order.getRemainingQty())) {
 					toBeRemoved.add(order);
+				}
 			}
-			
-			for(ChildOrder order: toBeRemoved) {
+
+			for (ChildOrder order: toBeRemoved) {
 				dualSet.asks.remove(order);
 			}
-	
+
 			sendOrderAcks();
 		}
-		
+
 		// call back listener
-		if(null != mdListener) {
+		if (null != mdListener) {
 			mdListener.onQuote(new InnerQuote(QuoteSource.DEFAULT, quote));
 			//work out trade
-			if(null != prevQuote && quote.getTotalVolume() > prevQuote.getTotalVolume()) {
+			if (null != prevQuote && quote.getTotalVolume() > prevQuote.getTotalVolume()) {
 				Trade trade = new Trade();
 				trade.setSymbol(quote.getSymbol());
 				trade.setPrice(quote.getLast());
@@ -181,13 +191,13 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 				trade.setId(IdGenerator.getInstance().getNextID() + "T");
 				mdListener.onTrade(trade);
 			}
-		} 
-		
+		}
+
 	}
-	
+
 	public void reset() {
 		quotes.clear();
-		for(BufferedReader reader: readers.values()) {
+		for (BufferedReader reader: readers.values()) {
 			try {
 				reader.close();
 			} catch (IOException e) {
@@ -199,26 +209,41 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 		dsListener = null;
 		exchangeOrders.clear();
 	}
-	
+
 	private void ackOrder(ExecType execType, ChildOrder order, Execution execution, String message) {
-		if(null != dsListener)
+		if (null != dsListener) {
 			orderAcks.add(new OrderAck(execType, order.clone(), execution, message));
+		}
 	}
-	
+
 	private void sendOrderAcks() {
 			while(orderAcks.size()>0) {
 				OrderAck ack = orderAcks.remove(0);
-				if(null != dsListener)
+				if (null != dsListener) {
 					dsListener.onOrder(ack.execType, ack.order, ack.execution, ack.message);
+				}
 			}
 	}
 
 	private void fillOrder(ChildOrder order, double price, double qty) {
+		Date tradeDate = Calendar.getInstance().getTime();
+		String symbol = order.getSymbol();
+		if (marketSessionUtil != null) {
+			try {
+				tradeDate = marketSessionUtil.getCurrentMarketSession(symbol).getTradeDateByDate();
+			} catch (Exception e) {
+				log.error(e.getMessage());
+				log.error("Can't find market session or trade date for symbol " + symbol);
+				log.error("Set trade date to current time " + tradeDate);
+			}
+		}
+
 		try {
 			Execution execution = new Execution(order.getSymbol(), order.getSide(), qty,
 					price, order.getId(), order.getParentOrderId(), order.getStrategyId(),
-					IdGenerator.getInstance().getNextID() + "E", order.getUser(), order.getAccount(), order.getRoute());
-			
+					IdGenerator.getInstance().getNextID() + "E", order.getUser(), order.getAccount(),
+					order.getRoute(), tradeDate);
+
 			double remainingQty = order.getRemainingQty();
 			double cumQty = order.getCumQty();
 			double avgPx = order.getAvgPx();
@@ -229,7 +254,7 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 			log.debug("cumtQty, avgPx: " + cumQty + ", " + avgPx);
 			order.touch();
 
-			if(PriceUtils.Equal(qty, remainingQty)) {
+			if (PriceUtils.Equal(qty, remainingQty)) {
 				order.setOrdStatus(OrdStatus.FILLED);
 				ackOrder(ExecType.FILLED, order, execution, "");
 			} else {
@@ -240,52 +265,54 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 			log.error(e.getMessage(), e);
 		}
 	}
-	
+
 	private void fillOrderWithLevelOneLiquidity(ChildOrder order, double price, double qty, Quote quote) {
-		if(order.getSide().isBuy()) {
+		if (order.getSide().isBuy()) {
 			quote.setAskVol(quote.getAskVol()-qty);
-			if(PriceUtils.EqualLessThan(quote.getAskVol(), 0)) {
+			if (PriceUtils.EqualLessThan(quote.getAskVol(), 0)) {
 				quote.setAsk(0);
 				quote.setAskVol(0);
 			}
 		} else {
 			quote.setBidVol(quote.getBidVol()-qty);
-			if(PriceUtils.EqualLessThan(quote.getBidVol(), 0)) {
+			if (PriceUtils.EqualLessThan(quote.getBidVol(), 0)) {
 				quote.setBid(0);
 				quote.setBidVol(0);
 			}
 		}
 		fillOrder(order, price, qty);
 	}
-	
+
 	private void deductQuote(Quote quote) {
 		List<QtyPrice> list = quote.getBids();
 		while(list.size()>0) {
 			QtyPrice qp = list.get(0);
-			if(PriceUtils.isZero(qp.getQuantity()))
+			if (PriceUtils.isZero(qp.getQuantity())) {
 				list.remove(0);
-			else
+			} else {
 				break;
+			}
 		}
-		
-		if(list.size()>0) {
+
+		if (list.size()>0) {
 			quote.setBid(list.get(0).price);
 			quote.setBidVol(list.get(0).quantity);
 		} else {
 			quote.setBid(0);
 			quote.setBidVol(0);
 		}
-		
+
 		list = quote.getAsks();
 		while(list.size()>0) {
 			QtyPrice qp = list.get(0);
-			if(PriceUtils.isZero(qp.getQuantity()))
+			if (PriceUtils.isZero(qp.getQuantity())) {
 				list.remove(0);
-			else
+			} else {
 				break;
+			}
 		}
-		
-		if(list.size()>0) {
+
+		if (list.size()>0) {
 			quote.setAsk(list.get(0).price);
 			quote.setAskVol(list.get(0).quantity);
 		} else {
@@ -293,7 +320,7 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 			quote.setAskVol(0);
 		}
 	}
-	
+
 	private void fillMarketOrder(ChildOrder order, Quote quote) {
 		OrderSide side = order.getSide();
 		List<QtyPrice> list = side.isBuy()?quote.getAsks():quote.getBids();
@@ -301,71 +328,72 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 		order.setOrdStatus(OrdStatus.NEW);
 		ackOrder(ExecType.NEW, order, null, "");
 		//if no level 2 data
-		if(null == list || list.size() == 0 || PriceUtils.isZero(list.get(0).getQuantity())) {
+		if (null == list || list.size() == 0 || PriceUtils.isZero(list.get(0).getQuantity())) {
 			double fillPrice = side.isBuy()?quote.getAsk():quote.getBid();
 			double liquidity = side.isBuy()?quote.getAskVol():quote.getBidVol();
-			if(PriceUtils.isZero(liquidity)) {
+			if (PriceUtils.isZero(liquidity)) {
 				// do nothing
-			} else if(PriceUtils.EqualGreaterThan(liquidity, order.getRemainingQty())) {
+			} else if (PriceUtils.EqualGreaterThan(liquidity, order.getRemainingQty())) {
 				fillQty = order.getRemainingQty();
 				fillOrderWithLevelOneLiquidity(order, fillPrice, fillQty, quote);
 			} else {
 				fillQty = liquidity;
 				fillOrderWithLevelOneLiquidity(order, fillPrice, fillQty, quote);
-			} 
-			
+			}
+
 		} else { // work with level 2 data
-			for(QtyPrice qp: list) {
+			for (QtyPrice qp: list) {
 				double remainingQty = order.getRemainingQty();
-				if(PriceUtils.EqualLessThan(remainingQty, qp.getQuantity())) {
+				if (PriceUtils.EqualLessThan(remainingQty, qp.getQuantity())) {
 					fillOrder(order, qp.getPrice(), remainingQty);
 					qp.setQuantity(qp.getQuantity() - remainingQty);
 					break;
 				}
-					
+
 				fillOrder(order, qp.getPrice(), qp.getQuantity());
 				qp.setQuantity(0);
 			}
 			deductQuote(quote);
 		}
-		
-		if(!PriceUtils.isZero(order.getRemainingQty())) {
+
+		if (!PriceUtils.isZero(order.getRemainingQty())) {
 			order.setOrdStatus(OrdStatus.CANCELED);
 			ackOrder(ExecType.CANCELED, order, null, "");
 		}
-		
+
 	}
-	
+
 	private void fillLimitOrder(ChildOrder order, Quote quote, boolean late) {
 		OrderSide side = order.getSide();
 		List<QtyPrice> list = side.isBuy()?quote.getAsks():quote.getBids();
 		//if no level 2 data
-		if(null == list || list.size() == 0 || PriceUtils.isZero(list.get(0).getQuantity())) {
+		if (null == list || list.size() == 0 || PriceUtils.isZero(list.get(0).getQuantity())) {
 			QtyPrice qp = QuoteUtil.getLevelOneMatchingQtyPrice(quote, order.getPrice(), order.getRemainingQty(), order.getSide());
-			if(!PriceUtils.isZero(qp.getPrice())) {
+			if (!PriceUtils.isZero(qp.getPrice())) {
 				double price = late?order.getPrice():qp.getPrice();
 				fillOrderWithLevelOneLiquidity(order, price, qp.getQuantity(), quote);
 			}
 		} else { // work with level 2 data
-			for(QtyPrice qp: list) {
-				if(!QuoteUtil.priceCanMatch(qp.getPrice(), order.getPrice(), order.getSide()))
+			for (QtyPrice qp: list) {
+				if (!QuoteUtil.priceCanMatch(qp.getPrice(), order.getPrice(), order.getSide())) {
 					break;
-					
+				}
+
 				double price = late?order.getPrice():qp.getPrice();
 				double remainingQty = order.getRemainingQty();
-				if(PriceUtils.EqualLessThan(remainingQty, qp.getQuantity())) {
+				if (PriceUtils.EqualLessThan(remainingQty, qp.getQuantity())) {
 					fillOrder(order, price, remainingQty);
 					qp.setQuantity(qp.getQuantity() - remainingQty);
 					break;
 				}
-					
+
 				fillOrder(order, price, qp.getQuantity());
 				qp.setQuantity(0);
 			}
 			deductQuote(quote);
 		}
 	}
-	
+
 	IDownStreamSender dsSender = new IDownStreamSender() {
 
 		@Override
@@ -376,18 +404,19 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 		@Override
 		synchronized public void newOrder(ChildOrder order) throws DownStreamException {
 			Quote quote = currentQuotes.get(order.getSymbol());
-			if(null == quote)
+			if (null == quote) {
 				throw new DownStreamException("Quote isn't found for this symbol: " + order.getSymbol());
+			}
 
-			if(order.getType().equals(ExchangeOrderType.MARKET)) {
+			if (order.getType().equals(ExchangeOrderType.MARKET)) {
 				fillMarketOrder(order, quote);
 			} else if (order.getType().equals(ExchangeOrderType.LIMIT)) {
 				order.setOrdStatus(OrdStatus.NEW);
 				ackOrder(ExecType.NEW, order, null, "");
 				fillLimitOrder(order, quote, false);
-				if(!PriceUtils.isZero(order.getRemainingQty())) {
+				if (!PriceUtils.isZero(order.getRemainingQty())) {
 					DualSet dualSet = exchangeOrders.get(quote.getSymbol());
-					if(null == dualSet) {
+					if (null == dualSet) {
 						dualSet = new DualSet();
 						exchangeOrders.put(quote.getSymbol(), dualSet);
 					}
@@ -396,7 +425,7 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 			} else {
 				throw new DownStreamException("Order type not yet supported in back test: " + order.getType());
 			}
-			
+
 			sendOrderAcks();
 		}
 
@@ -405,34 +434,34 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 				throws DownStreamException {
 			Quote quote = currentQuotes.get(order.getSymbol());
 			DualSet dualSet = exchangeOrders.get(quote.getSymbol());
-			if(null == dualSet) {
+			if (null == dualSet) {
 				dualSet = new DualSet();
 				exchangeOrders.put(quote.getSymbol(), dualSet);
 			}
-		
+
 			Double price = (Double)fields.get(OrderField.PRICE.value());
 			boolean priceChanged = price != null && !PriceUtils.Equal(price, order.getPrice());
 			ChildOrder found = null;
 			Set<ChildOrder> orders = order.getSide().isBuy()?dualSet.bids:dualSet.asks;
-			for(ChildOrder o: orders) {
-				if(o.getId().equals(order.getId())) {
+			for (ChildOrder o: orders) {
+				if (o.getId().equals(order.getId())) {
 					found = o;
 					break;
 				}
 			}
-			
-			if(null != found) {
-				for(Entry<String, Object> entry: fields.entrySet()) {
+
+			if (null != found) {
+				for (Entry<String, Object> entry: fields.entrySet()) {
 					found.put(entry.getKey(), entry.getValue());
 				}
 				found.setOrdStatus(OrdStatus.REPLACED);
 				ackOrder(ExecType.REPLACE, found, null, "");
 				fillLimitOrder(found, quote, false);
-				if(PriceUtils.isZero(found.getRemainingQty()))
+				if (PriceUtils.isZero(found.getRemainingQty())) {
 					orders.remove(found);
-				else if(priceChanged) { //price changed so re-insert to proper location
+				} else if (priceChanged) { //price changed so re-insert to proper location
 					orders.remove(found);
-					orders.add(found); 
+					orders.add(found);
 				}
 			} else {
 				ackOrder(ExecType.REJECTED, order, null, "Can't find this order");
@@ -443,13 +472,13 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 		@Override
 		synchronized public void cancelOrder(ChildOrder order) throws DownStreamException {
 			DualSet dualSet = exchangeOrders.get(order.getSymbol());
-			if(null == dualSet) {
+			if (null == dualSet) {
 				dualSet = new DualSet();
 				exchangeOrders.put(order.getSymbol(), dualSet);
 			}
 			Set<ChildOrder> orders = order.getSide().isBuy()?dualSet.bids:dualSet.asks;
-			for(ChildOrder o: orders) {
-				if(o.getId().equals(order.getId())) {
+			for (ChildOrder o: orders) {
+				if (o.getId().equals(order.getId())) {
 					o.setOrdStatus(OrdStatus.CANCELED);
 					ackOrder(ExecType.CANCELED, o, null, "");
 					sendOrderAcks();
@@ -460,9 +489,9 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 			ackOrder(ExecType.REJECTED, order, null, "Can't find this order");
 			sendOrderAcks();
 		}
-		
+
 	};
-	
+
 	IDownStreamConnection dsCon = new  IDownStreamConnection() {
 
 		@Override
@@ -488,9 +517,9 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 			dsListener = listener;
 			return dsSender;
 		}
-		
+
 	};
-	
+
 	@Override
 	public List<IDownStreamConnection> getConnections() {
 		List<IDownStreamConnection> list = new LinkedList<IDownStreamConnection>();
@@ -505,13 +534,15 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 			public int compare(Quote o1, Quote o2) {
 				long d1 = o1.getTimeStamp().getTime();
 				long d2 = o2.getTimeStamp().getTime();
-				
-				if(d1 == d2)
+
+				if (d1 == d2) {
 					return 0;
-				
-				if(d1 > d2)
+				}
+
+				if (d1 > d2) {
 					return 1;
-				
+				}
+
 				return -1;
 			}
 		});
@@ -520,7 +551,7 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 	@Override
 	public void uninit() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -544,27 +575,28 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 			IMarketDataListener listener) throws MarketDataException {
 		this.mdListener = listener; // supports only one listener
 		Quote quote = currentQuotes.get(instrument);
-		if(null != quote && null!= mdListener)
+		if (null != quote && null!= mdListener) {
 			mdListener.onQuote(new InnerQuote(QuoteSource.DEFAULT, quote));
+		}
 	}
 
 	@Override
 	public void unsubscribeMarketData(String instrument,
 			IMarketDataListener listener) {
 		this.mdListener = null;
-		
+
 	}
 
 	@Override
 	public void subscribeMultiMarketData(List<String> subscribeList, IMarketDataListener listener) throws MarketDataException {
-		for(String symbol: subscribeList){
+		for (String symbol: subscribeList){
 			subscribeMarketData(symbol, listener);
 		}
 	}
 
 	@Override
 	public void unsubscribeMultiMarketData(List<String> unSubscribeList, IMarketDataListener listener) {
-		for(String symbol: unSubscribeList){
+		for (String symbol: unSubscribeList){
 			unsubscribeMarketData(symbol, listener);
 		}
 	}
@@ -581,4 +613,5 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 	public void clean() {
 
 	}
+
 }

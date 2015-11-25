@@ -1,11 +1,13 @@
 package com.cyanspring.adaptor.avro;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cyanspring.avro.AvroSerializableObject;
 import com.cyanspring.avro.generate.base.StateUpdate;
@@ -31,6 +33,7 @@ import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamConnection;
 import com.cyanspring.common.downstream.IDownStreamListener;
 import com.cyanspring.common.downstream.IDownStreamSender;
+import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.transport.IObjectListener;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.ExecType;
@@ -41,6 +44,7 @@ import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeUtil;
 
 public class AvroDownStreamConnection implements IDownStreamConnection, IObjectListener {
+
 	private static final Logger log = LoggerFactory.getLogger(AvroDownStreamConnection.class);
 	private String id = "avro";
 	private String exchangeAccount;
@@ -54,7 +58,10 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 	private long checkIntrval = 5000;
 	private Date updated;
 	private boolean stop = false;
-	
+
+	@Autowired (required = false)
+	private MarketSessionUtil marketSessionUtil;
+
 	@Override
 	public void init() throws Exception {
 		downStreamEventSender.setEventListener(this);
@@ -71,7 +78,7 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 							log.info("Connection is timeout, id: " + id + ", exchangeAccount: " + exchangeAccount);
 							setState(false);
 						}
-					}					
+					}
 				} catch (Exception e) {
 					log.error(e.getMessage(), e);
 				}
@@ -99,7 +106,7 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 	public boolean getState() {
 		return state;
 	}
-	
+
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -135,7 +142,7 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 		this.listener = listener;
 		return avroDSSender;
 	}
-	
+
 	private class AvroDownStreamSender implements IDownStreamSender {
 
 		@Override
@@ -156,12 +163,14 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 			localOrders.put(order.getId(), order);
 			int side = WrapOrderSide.valueOf(order.getSide()).getCode();
 			int type = WrapOrderType.valueOf(ExchangeOrderType.toOrderType(order.getType())).getCode();
-			
-			if (order.getClOrderId() == null)
+
+			if (order.getClOrderId() == null) {
 				order.setClOrderId(IdGenerator.getInstance().getNextID() + "X");
-			if (order.get(TimeInForce.class, OrderField.TIF.value()) == null)
+			}
+			if (order.get(TimeInForce.class, OrderField.TIF.value()) == null) {
 				order.set(TimeInForce.DAY, OrderField.TIF.value());
-			
+			}
+
 			NewOrderRequest request = NewOrderRequest.newBuilder()
 					.setOrderId(order.getId())
 					.setClOrderId(order.getClOrderId())
@@ -191,30 +200,33 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 				return;
 			}
 			ChildOrder local = exchangeOrders.get(order.getExchangeOrderId());
-			if(!checkOrderStatus(order, local))
+			if (!checkOrderStatus(order, local)) {
 				return;
+			}
 			log.info(order.getId() + "->" + order.getExchangeOrderId());
 			Builder request = AmendOrderRequest.newBuilder()
 					.setObjectType(WrapObjectType.AmendOrderRequest.getCode())
 					.setOrderId(order.getExchangeOrderId())
 					.setExchangeAccount(exchangeAccount);
-			Double qty = (Double) fields.get(OrderField.QUANTITY.value());		
-			if (qty != null && PriceUtils.EqualGreaterThan(qty, 0))
+			Double qty = (Double) fields.get(OrderField.QUANTITY.value());
+			if (qty != null && PriceUtils.EqualGreaterThan(qty, 0)) {
 				request.setQuantity(qty);
-			else
+			} else {
 				request.setQuantity(0.0);
-				
+			}
+
 			Double price = (Double) fields.get(OrderField.PRICE.value());
-			if (price != null && PriceUtils.EqualGreaterThan(price, 0))
+			if (price != null && PriceUtils.EqualGreaterThan(price, 0)) {
 				request.setPrice(price);
-			else
+			} else {
 				request.setPrice(0.0);
-			
+			}
+
 			request.setTxId(IdGenerator.getInstance().getNextID());
 			local.setOrdStatus(OrdStatus.PENDING_REPLACE);
 			downStreamEventSender.sendRemoteEvent(request.build(), WrapObjectType.AmendOrderRequest);
 		}
-		
+
 		@Override
 		public void cancelOrder(ChildOrder order) throws DownStreamException {
 			log.info("Cancel order: " + order.getId());
@@ -224,8 +236,9 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 				return;
 			}
 			ChildOrder local = exchangeOrders.get(order.getExchangeOrderId());
-			if(!checkOrderStatus(order, local))
+			if (!checkOrderStatus(order, local)) {
 				return;
+			}
 			log.info(order.getId() + "->" + order.getExchangeOrderId());
 			CancelOrderRequest request = CancelOrderRequest.newBuilder()
 					.setObjectType(WrapObjectType.CancelOrderRequest.getCode())
@@ -236,7 +249,7 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 			local.setOrdStatus(OrdStatus.PENDING_CANCEL);
 			downStreamEventSender.sendRemoteEvent(request, WrapObjectType.CancelOrderRequest);
 		}
-		
+
 		private boolean checkOrderStatus(ChildOrder order, ChildOrder local) {
 			if (!state) {
 				listener.onOrder(ExecType.REJECTED, order, null, "Down stream connection not ready");
@@ -248,7 +261,7 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 				listener.onOrder(ExecType.REJECTED, order, null, "Can't locate order");
 				return false;
 			}
-			
+
 			if (local.getOrdStatus().isCompleted()) {
 				listener.onOrder(ExecType.REJECTED, order, null, "Order completed");
 				return false;
@@ -279,18 +292,21 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 			log.error(e.getMessage(), e);
 		}
 	}
-	
+
 	private void onStateUpdate(StateUpdate update) {
-		if (!checkExchangeAccount(update.getExchangeAccount()))
+		if (!checkExchangeAccount(update.getExchangeAccount())) {
 			return;
+		}
 		updated = Clock.getInstance().now();
-		if (this.state != update.getOnline())
+		if (this.state != update.getOnline()) {
 			this.setState(update.getOnline());
+		}
 	}
-	
+
 	private void onNewOrderReply(NewOrderReply reply) throws Exception {
-		if (!checkExchangeAccount(reply.getExchangeAccount()))
+		if (!checkExchangeAccount(reply.getExchangeAccount())) {
 			return;
+		}
 		if (!reply.getResult()) {
 			ChildOrder order = getChildOrderFromLocal(reply.getOrderId());
 			order.setOrdStatus(OrdStatus.REJECTED);
@@ -298,30 +314,33 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 			listener.onOrder(ExecType.REJECTED, order, null, reply.getMessage());
 		}
 	}
-	
+
 	private void onAmendOrderReply(AmendOrderReply reply) throws Exception {
-		if (!checkExchangeAccount(reply.getExchangeAccount()))
+		if (!checkExchangeAccount(reply.getExchangeAccount())) {
 			return;
+		}
 		if (!reply.getResult()) {
 			ChildOrder order = getChildOrderFromLocal(reply.getOrderId());
 			log.info("order: " + reply.getOrderId() + ", msg" + reply.getMessage());
 			listener.onOrder(ExecType.REJECTED, order, null, reply.getMessage());
 		}
 	}
-	
+
 	private void onCancelOrderReply(CancelOrderReply reply) throws Exception {
-		if (!checkExchangeAccount(reply.getExchangeAccount()))
+		if (!checkExchangeAccount(reply.getExchangeAccount())) {
 			return;
+		}
 		if (!reply.getResult()) {
 			ChildOrder order = getChildOrderFromLocal(reply.getOrderId());
 			log.info("order: " + reply.getOrderId() + ", msg" + reply.getMessage());
 			listener.onOrder(ExecType.REJECTED, order, null, reply.getMessage());
 		}
 	}
-	
+
 	private void onOrderUpdate(OrderUpdate update) throws Exception {
-		if (!checkExchangeAccount(update.getExchangeAccount()))
+		if (!checkExchangeAccount(update.getExchangeAccount())) {
 			return;
+		}
 		ChildOrder order = exchangeOrders.get(update.getExchangeOrderId());
 		if (order == null){
 			order = localOrders.get(update.getOrderId());
@@ -331,7 +350,7 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 			}
 			if (update.getExchangeOrderId() != null) {
 				order.setExchangeOrderId(update.getExchangeOrderId());
-				exchangeOrders.put(update.getExchangeOrderId(), order);			
+				exchangeOrders.put(update.getExchangeOrderId(), order);
 			}
 		}
 		ExecType type = WrapExecType.valueOf(update.getExecType()).getCommonExecType();
@@ -346,15 +365,26 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
                 + ", delta: " + delta + ", msg:" + update.getMsg());
 
 		if (PriceUtils.GreaterThan(delta, 0)) {
+			Date tradeDate = Calendar.getInstance().getTime();
+			String symbol = order.getSymbol();
+			if (marketSessionUtil != null) {
+				try {
+					tradeDate = marketSessionUtil.getCurrentMarketSession(symbol).getTradeDateByDate();
+				} catch (Exception e) {
+					log.error(e.getMessage());
+					log.error("Can't find market session or trade date for symbol " + symbol);
+					log.error("Set trade date to current time " + tradeDate);
+				}
+			}
+
 			order.setOrdStatus(status);
 			double price = (update.getAvgPx() * update.getCumQty() - order.getAvgPx() * order.getCumQty()) / delta;
 			order.setCumQty(update.getCumQty());
 			order.setAvgPx(update.getAvgPx());
 			Execution exe = new Execution(order.getSymbol(), order.getSide(), delta,
-					price, order.getId(), order.getParentOrderId(), 
-					order.getStrategyId(), IdGenerator.getInstance()
-                    .getNextID() + "E",
-					order.getUser(), order.getAccount(), order.getRoute());
+					price, order.getId(), order.getParentOrderId(),
+					order.getStrategyId(), IdGenerator.getInstance().getNextID() + "E",
+					order.getUser(), order.getAccount(), order.getRoute(), tradeDate);
 			listener.onOrder(type, order, exe, update.getMsg());
 		} else if (PriceUtils.Equal(delta, 0)) {
 			order.setOrdStatus(status);
@@ -364,17 +394,20 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 			return;
 		}
 	}
-	
+
 	private boolean checkExchangeAccount(String exchangeAccount) {
-		if (this.exchangeAccount == null)
+		if (this.exchangeAccount == null) {
 			return true;
+		}
 		return this.exchangeAccount.equals(exchangeAccount);
 	}
-	
+
 	private ChildOrder getChildOrderFromLocal(String id) throws Exception {
 		ChildOrder order = localOrders.get(id);
-		if (order == null)
+		if (order == null) {
 			throw new Exception("Order not found");
+		}
 		return order;
 	}
+
 }
