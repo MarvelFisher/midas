@@ -111,7 +111,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>IF${SEQ}</string>
+				<string>IF${CFSEQ}</string>
 			</entry>
 			<entry>
 				<string>Instrument type</string>
@@ -235,7 +235,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>IH${SEQ}</string>
+				<string>IH${CFSEQ}</string>
 			</entry>
 			<entry>
 				<string>Instrument type</string>
@@ -359,7 +359,7 @@
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
-				<string>IC${SEQ}</string>
+				<string>IC${CFSEQ}</string>
 			</entry>
 			<entry>
 				<string>Instrument type</string>

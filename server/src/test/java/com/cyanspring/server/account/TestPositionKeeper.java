@@ -45,7 +45,6 @@ public class TestPositionKeeper {
 					Default.getUser(), Default.getAccount(), null);
 		} catch (OrderException e) {
 			log.error(e.getMessage(), e);
-			;
 		}
 
 		return exe;
@@ -330,8 +329,9 @@ public class TestPositionKeeper {
 
 		@Override
 		public RefData getRefData(String symbol) {
-			if (symbol.equals("AUDUSD"))
+			if (symbol.equals("AUDUSD")) {
 				return refData;
+			}
 			return null;
 		}
 
@@ -375,13 +375,13 @@ public class TestPositionKeeper {
 		@Override
 		public void setQuoteFile(String quoteFile) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void saveRefDataToFile() {
 			// TODO Auto-generated method stub
-			
+
 		}
 	}
 }
