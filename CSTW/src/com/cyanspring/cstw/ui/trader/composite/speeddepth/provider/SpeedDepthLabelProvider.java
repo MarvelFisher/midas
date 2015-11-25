@@ -66,6 +66,9 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 						+ ")";
 			}
 			return columnBidLabel;
+
+		case 5:
+			return "";
 		}
 		return "";
 	}

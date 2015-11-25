@@ -10,6 +10,8 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -137,6 +139,9 @@ public final class SpeedDepthTableComposite extends Composite {
 
 		TableColumn tblclmnNewColumn_4 = new TableColumn(table, SWT.CENTER);
 		tblclmnNewColumn_4.setWidth(100);
+		
+		TableColumn tblclmnNewColumn_5 = new TableColumn(table, SWT.CENTER);
+		tblclmnNewColumn_5.setWidth(1000);
 	}
 
 	private void initProvider() {
@@ -233,18 +238,25 @@ public final class SpeedDepthTableComposite extends Composite {
 			@Override
 			public void mouseMove(MouseEvent e) {
 				TableItem item = table.getItem(new Point(e.x, e.y));
-				if (item == null) {
-					return;
-				}
-				changeItemColor(item, SWT.COLOR_BLACK);
-				if (currentMouseSelectedItem != null
-						&& !currentMouseSelectedItem.isDisposed()
-						&& currentMouseSelectedItem != item && !isLock) {
-					changeItemColor(currentMouseSelectedItem, SWT.COLOR_WHITE);
+				if (item != null) {
+					changeItemColor(item, SWT.COLOR_BLACK);
+					if (currentMouseSelectedItem != null
+							&& !currentMouseSelectedItem.isDisposed()
+							&& currentMouseSelectedItem != item) {
+						changeItemColor(currentMouseSelectedItem,
+								SWT.COLOR_WHITE);
+					}
+					SpeedDepthModel model = (SpeedDepthModel) item.getData();
+					labelProvider.setMouseselectIndex(model.getIndex());
+				} else {
+					labelProvider.setMouseselectIndex(-1);
 				}
 				currentMouseSelectedItem = item;
-				SpeedDepthModel model = (SpeedDepthModel) item.getData();
-				labelProvider.setMouseselectIndex(model.getIndex());
+				if (isLock) {
+					for (TableItem selectedItem : table.getSelection()) {
+						changeItemColor(selectedItem, SWT.COLOR_BLACK);
+					}
+				}
 			}
 		});
 
@@ -272,9 +284,20 @@ public final class SpeedDepthTableComposite extends Composite {
 			}
 		});
 
+		table.addPaintListener(new PaintListener() {
+
+			@Override
+			public void paintControl(PaintEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+		});
+
 	}
 
 	private void changeItemColor(TableItem item, int color) {
+
 		item.setForeground(1, SWTResourceManager.getColor(color));
 		item.setForeground(3, SWTResourceManager.getColor(color));
 	}
