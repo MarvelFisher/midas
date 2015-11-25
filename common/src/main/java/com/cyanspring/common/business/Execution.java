@@ -63,10 +63,13 @@ public class Execution extends BaseOrder {
 		return get(String.class, OrderField.STRATEGY_ID.value());
 	}
 
+	public Date getTradeDate() {
+		return get(Date.class, OrderField.TRADE_DATE.value());
+	}
+
 	public Execution clone() {
 		return (Execution)super.clone();
 	}
-
 
 	public void setOrderId(String orderId) {
 		put(OrderField.ORDER_ID.value(), orderId);
@@ -87,6 +90,10 @@ public class Execution extends BaseOrder {
 
 	public double toPostion() {
 		return getSide().isBuy()?getQuantity():-getQuantity();
+	}
+
+	public void setTradeDate(Date tradeDate) {
+		put(OrderField.TRADE_DATE.value(), tradeDate);
 	}
 
 }
