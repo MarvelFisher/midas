@@ -36,6 +36,17 @@ public class MarketSessionChecker implements IMarketSessionChecker {
 
             boolean crossDay = session.isCrossDay();
             String openingTime = session.getOpeningTime();
+            if (openingTime != null) {
+            	try {
+            		// validate openingTime
+            		SimpleDateFormat sdfHms = new SimpleDateFormat("HH:mm:ss");
+    				sdfHms.parse(openingTime);
+    			} catch (Exception e) {
+    				// if not valid, set to null
+    				openingTime = null;
+    			}
+			}
+
         	if (crossDay) {
         		if (openingTime == null) {
         			openingTime = DEFAULT_OPENING_XD;
