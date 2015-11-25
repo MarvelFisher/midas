@@ -9,7 +9,7 @@
 
 	<context:annotation-config />
 	
-	<bean id="alSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionCheckerXD">
+	<bean id="alSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionChecker">
 		<property name="stateMap">
 			<map>
 				<entry key="DEFAULT">
@@ -28,6 +28,8 @@
 	</bean>
 	
 	<bean id="alDefaultSession" class="com.cyanspring.common.marketsession.MarketSession">
+	    <constructor-arg value="true" />
+        <constructor-arg value="20:30:00" />
 		<constructor-arg>
 			<list>
 				<bean class="com.cyanspring.common.marketsession.MarketSessionData">

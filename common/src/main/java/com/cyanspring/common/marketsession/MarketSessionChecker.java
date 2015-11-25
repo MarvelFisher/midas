@@ -17,12 +17,13 @@ public class MarketSessionChecker implements IMarketSessionChecker {
 
 	private static final Logger log = LoggerFactory.getLogger(MarketSessionChecker.class);
 	private final String DEFAULT_OPENING = "08:30:00";
-    protected SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    protected Date tradeDate;
-    protected Map<String, MarketSession> stateMap;
-    protected ITradeDate tradeDateManager;
-    protected MarketSessionType currentType;
-    protected String index;
+	private final String DEFAULT_OPENING_XD = "20:30:00";
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    private Date tradeDate;
+    private Map<String, MarketSession> stateMap;
+    private ITradeDate tradeDateManager;
+    private MarketSessionType currentType;
+    private String index;
 
     @Override
     public void init(Date date, RefData refData) throws Exception {
@@ -33,16 +34,28 @@ public class MarketSessionChecker implements IMarketSessionChecker {
 				session = stateMap.get(MarketSessionIndex.DEFAULT.toString());
 			}
 
+            boolean crossDay = session.isCrossDay();
             String openingTime = session.getOpeningTime();
-            if (openingTime == null) {
-				openingTime = DEFAULT_OPENING;
-			}
-
-            Date opening = getDate(openingTime);
-        	if (TimeUtil.getTimePass(date, opening) > 0) {
-        		tradeDate = tradeDateManager.currTradeDate(date);
+        	if (crossDay) {
+        		if (openingTime == null) {
+        			openingTime = DEFAULT_OPENING_XD;
+        		}
+				Date opening = getDate(openingTime);
+	        	if (TimeUtil.getTimePass(date, opening) > 0) {
+	        		tradeDate = tradeDateManager.nextTradeDate(date);
+				} else {
+					tradeDate = tradeDateManager.currTradeDate(date);
+				}
 			} else {
-				tradeDate = tradeDateManager.preTradeDate(date);
+				if (openingTime == null) {
+        			openingTime = DEFAULT_OPENING;
+        		}
+				Date opening = getDate(openingTime);
+	        	if (TimeUtil.getTimePass(date, opening) > 0) {
+	        		tradeDate = tradeDateManager.currTradeDate(date);
+				} else {
+					tradeDate = tradeDateManager.preTradeDate(date);
+				}
 			}
         }
     }
@@ -113,7 +126,7 @@ public class MarketSessionChecker implements IMarketSessionChecker {
         return sdf.format(this.tradeDate);
     }
 
-    protected String getCurrentIndex(Date date, RefData refData) throws ParseException {
+    private String getCurrentIndex(Date date, RefData refData) throws ParseException {
         if (refData != null && refData.getSettlementDate() != null){
             String settlementDay = refData.getSettlementDate();
             if (TimeUtil.sameDate(date, sdf.parse(settlementDay))) {
@@ -152,7 +165,7 @@ public class MarketSessionChecker implements IMarketSessionChecker {
         return tradeDateManager;
     }
 
-    protected boolean compare(MarketSessionData data, Date compare) throws ParseException {
+    private boolean compare(MarketSessionData data, Date compare) throws ParseException {
 
     	data.setDate(compare);
         if (TimeUtil.getTimePass(data.getStartDate(), compare) <= 0 &&
@@ -174,7 +187,7 @@ public class MarketSessionChecker implements IMarketSessionChecker {
         this.index = index;
     }
 
-    protected Date getDate(String opening) {
+    private Date getDate(String opening) {
     	String[] time = opening.split(":");
 		int hr = Integer.parseInt(time[0]);
 		int min = Integer.parseInt(time[1]);
