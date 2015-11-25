@@ -48,7 +48,6 @@ public class TestPositionKeeper {
 					Default.getUser(), Default.getAccount(), null, tradeDate);
 		} catch (OrderException e) {
 			log.error(e.getMessage(), e);
-			;
 		}
 
 		return exe;

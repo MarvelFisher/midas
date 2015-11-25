@@ -49,6 +49,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
     private final String MONTH_PATTERN_YMM = "${YMM}";
     private final String MONTH_PATTERN_MY = "${MY}";
     private final String SEQ_PATTERN = "${SEQ}";
+    private final String CFSEQ_PATTERN = "${CFSEQ}";
 	private final Map<String, String> mapMonthAlphabet = new HashMap<String, String>() {
 		{
 			put("01", "A"); // Jan
@@ -123,6 +124,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 			String m = yymm.substring(2);
 			String a = mapMonthAlphabet.get(m);
 			String seq = formatter.format(i);
+			String cfSeq = "C" + (i + 1);
 			RefData data = (RefData)refData.clone();
 			data.setENDisplayName(refData.getENDisplayName().replace(MONTH_PATTERN_YYMM, yymm));
 			data.setCNDisplayName(refData.getCNDisplayName().replace(MONTH_PATTERN_YYMM, yymm));
@@ -133,6 +135,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 			symbol = symbol.replace(MONTH_PATTERN_MY, a + y); // for LTFT, ex: C6 means 2016.03
 			data.setSymbol(symbol);
 			data.setRefSymbol(refData.getRefSymbol().replace(SEQ_PATTERN, seq));
+			data.setRefSymbol(refData.getRefSymbol().replace(CFSEQ_PATTERN, cfSeq));
 			String code = refData.getCode();
 			if (code != null && code.length() > 0) {
 				code = code.replace(MONTH_PATTERN_YYYYMM, yyyymm);
