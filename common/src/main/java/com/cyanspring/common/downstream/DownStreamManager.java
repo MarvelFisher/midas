@@ -11,7 +11,9 @@
 package com.cyanspring.common.downstream;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cyanspring.common.IPlugin;
 import com.cyanspring.common.business.ChildOrder;
 import com.cyanspring.common.business.Execution;
+import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.event.IAsyncEventManager;
 import com.cyanspring.common.event.order.UpdateChildOrderEvent;
 import com.cyanspring.common.marketsession.MarketSessionUtil;
@@ -32,6 +35,7 @@ import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.server.event.DownStreamReadyEvent;
 import com.cyanspring.common.stream.IStreamAdaptor;
 import com.cyanspring.common.type.ExecType;
+import com.cyanspring.common.util.TimeUtil;
 
 public class DownStreamManager implements IPlugin {
 	private static final Logger log = LoggerFactory
@@ -176,6 +180,17 @@ public class DownStreamManager implements IPlugin {
 
 			if (execution != null) {
 				execution = execution.clone();
+				Date tradeDate = TimeUtil.getOnlyDate(Calendar.getInstance().getTime());
+				String symbol = order.getSymbol();
+				if (marketSessionUtil != null) {
+					try {
+						tradeDate = marketSessionUtil.getCurrentMarketSession(symbol).getTradeDateByDate();
+					} catch (Exception e) {
+						log.error(e.getMessage(), e);
+					}
+				}
+
+				execution.put(OrderField.TRADE_DATE.value(), tradeDate);
 			}
 
 			UpdateChildOrderEvent event = new UpdateChildOrderEvent(

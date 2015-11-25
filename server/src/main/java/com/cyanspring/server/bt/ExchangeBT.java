@@ -25,7 +25,6 @@ import com.cyanspring.common.downstream.IDownStreamConnection;
 import com.cyanspring.common.downstream.IDownStreamListener;
 import com.cyanspring.common.downstream.IDownStreamSender;
 import com.cyanspring.common.marketdata.*;
-import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.stream.IStreamAdaptor;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.ExecType;
@@ -34,14 +33,13 @@ import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.QtyPrice;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.OrderUtils;
+import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.strategy.utils.QuoteUtil;
 
 import java.util.Comparator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import webcurve.util.PriceUtils;
 
 public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStreamConnection> {
@@ -57,9 +55,6 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 	private IDownStreamListener dsListener;
 	private Map<String, DualSet> exchangeOrders = new HashMap<String, DualSet>();
 	private List<OrderAck> orderAcks = new LinkedList<OrderAck>();
-
-	@Autowired (required = false)
-	private MarketSessionUtil marketSessionUtil;
 
 	class DualSet {
 		Set<ChildOrder> bids = new TreeSet<ChildOrder>(OrderUtils.childOrderComparator);
@@ -226,17 +221,7 @@ public class ExchangeBT implements IMarketDataAdaptor, IStreamAdaptor<IDownStrea
 	}
 
 	private void fillOrder(ChildOrder order, double price, double qty) {
-		Date tradeDate = Calendar.getInstance().getTime();
-		String symbol = order.getSymbol();
-		if (marketSessionUtil != null) {
-			try {
-				tradeDate = marketSessionUtil.getCurrentMarketSession(symbol).getTradeDateByDate();
-			} catch (Exception e) {
-				log.error(e.getMessage());
-				log.error("Can't find market session or trade date for symbol " + symbol);
-				log.error("Set trade date to current time " + tradeDate);
-			}
-		}
+		Date tradeDate = TimeUtil.getOnlyDate(Calendar.getInstance().getTime());
 
 		try {
 			Execution execution = new Execution(order.getSymbol(), order.getSide(), qty,

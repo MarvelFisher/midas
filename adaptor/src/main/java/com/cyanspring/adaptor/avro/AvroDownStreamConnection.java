@@ -7,8 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cyanspring.avro.AvroSerializableObject;
 import com.cyanspring.avro.generate.base.StateUpdate;
 import com.cyanspring.avro.generate.trade.bean.AmendOrderReply;
@@ -33,7 +31,6 @@ import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamConnection;
 import com.cyanspring.common.downstream.IDownStreamListener;
 import com.cyanspring.common.downstream.IDownStreamSender;
-import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.transport.IObjectListener;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.ExecType;
@@ -58,9 +55,6 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
 	private long checkIntrval = 5000;
 	private Date updated;
 	private boolean stop = false;
-
-	@Autowired (required = false)
-	private MarketSessionUtil marketSessionUtil;
 
 	@Override
 	public void init() throws Exception {
@@ -365,17 +359,7 @@ public class AvroDownStreamConnection implements IDownStreamConnection, IObjectL
                 + ", delta: " + delta + ", msg:" + update.getMsg());
 
 		if (PriceUtils.GreaterThan(delta, 0)) {
-			Date tradeDate = Calendar.getInstance().getTime();
-			String symbol = order.getSymbol();
-			if (marketSessionUtil != null) {
-				try {
-					tradeDate = marketSessionUtil.getCurrentMarketSession(symbol).getTradeDateByDate();
-				} catch (Exception e) {
-					log.error(e.getMessage());
-					log.error("Can't find market session or trade date for symbol " + symbol);
-					log.error("Set trade date to current time " + tradeDate);
-				}
-			}
+			Date tradeDate = TimeUtil.getOnlyDate(Calendar.getInstance().getTime());
 
 			order.setOrdStatus(status);
 			double price = (update.getAvgPx() * update.getCumQty() - order.getAvgPx() * order.getCumQty()) / delta;

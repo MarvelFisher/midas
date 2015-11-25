@@ -18,8 +18,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import quickfix.DoNotSend;
 import quickfix.FieldNotFound;
 import quickfix.IncorrectDataFormat;
@@ -50,10 +48,10 @@ import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamListener;
 import com.cyanspring.common.downstream.IDownStreamSender;
-import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.util.IdGenerator;
+import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.server.fix.IFixDownStreamConnection;
 
 public class FixDownStreamConnection implements IFixDownStreamConnection {
@@ -65,9 +63,6 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
 	private boolean on;
 	// this map contains both the child order id and fix clOrderId
 	private Map<String, ChildOrder> orders = Collections.synchronizedMap(new HashMap<String, ChildOrder>());
-
-	@Autowired (required = false)
-	private MarketSessionUtil marketSessionUtil;
 
 	public FixDownStreamConnection(SessionID sessionID) {
 		this.sessionID = sessionID;
@@ -328,17 +323,7 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
 	        double execQty = message.getField(new quickfix.field.LastShares()).getValue(); //LastShares
 	        double execPrice = message.getField(new LastPx()).getValue();
 
-	        Date tradeDate = Calendar.getInstance().getTime();
-    		String symbol = order.getSymbol();
-    		if (marketSessionUtil != null) {
-    			try {
-    				tradeDate = marketSessionUtil.getCurrentMarketSession(symbol).getTradeDateByDate();
-    			} catch (Exception e) {
-    				log.error(e.getMessage());
-    				log.error("Can't find market session or trade date for symbol " + symbol);
-    				log.error("Set trade date to current time " + tradeDate);
-    			}
-    		}
+	        Date tradeDate = TimeUtil.getOnlyDate(Calendar.getInstance().getTime());
 
 			try {
 				Execution exec = new Execution(order.getSymbol(), order.getSide(), execQty, execPrice,

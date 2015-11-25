@@ -41,8 +41,7 @@ public class TestPositionKeeper {
 
 	private Execution createExecution(OrderSide side, double qty, double price) {
 		Execution exe = null;
-		Date tradeDate = Calendar.getInstance().getTime();
-
+		Date tradeDate = TimeUtil.getOnlyDate(Calendar.getInstance().getTime());
 		try {
 			exe = new Execution("AUDUSD", side, qty, price, "orderId",
 					"parentOrderId", "strategyId", "EXEC-" + count++,

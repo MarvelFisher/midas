@@ -235,15 +235,13 @@ public class LumpSumManager implements IPlugin {
 			return null;
 		}
 
-        Date tradeDate = Calendar.getInstance().getTime();
+        Date tradeDate = TimeUtil.getOnlyDate(Calendar.getInstance().getTime());
 
 		if (marketSessionUtil != null) {
 			try {
 				tradeDate = marketSessionUtil.getCurrentMarketSession(symbol).getTradeDateByDate();
 			} catch (Exception e) {
-				log.error(e.getMessage());
-				log.error("Can't find market session or trade date for symbol " + symbol);
-				log.error("Set trade date to current time " + tradeDate);
+				log.error(e.getMessage(), e);
 			}
 		}
 

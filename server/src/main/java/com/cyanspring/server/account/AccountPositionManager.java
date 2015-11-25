@@ -790,15 +790,13 @@ public class AccountPositionManager implements IPlugin {
 			price = QuoteUtils.getMarketablePrice(quote, position.getQty());
 		}
 
-		Date tradeDate = Calendar.getInstance().getTime();
+		Date tradeDate = TimeUtil.getOnlyDate(Calendar.getInstance().getTime());
 		String symbol = position.getSymbol();
 		if (marketSessionUtil != null) {
 			try {
 				tradeDate = marketSessionUtil.getCurrentMarketSession(symbol).getTradeDateByDate();
 			} catch (Exception e) {
-				log.error(e.getMessage());
-				log.error("Can't find market session or trade date for symbol " + symbol);
-				log.error("Set trade date to current time " + tradeDate);
+				log.error(e.getMessage(), e);
 			}
 		}
 
@@ -2547,14 +2545,12 @@ public class AccountPositionManager implements IPlugin {
 				double price = quote != null ? QuoteUtils.getMarketablePrice(
 						quote, position.getQty()) : settlePrice;
 
-				Date tradeDate = Calendar.getInstance().getTime();
+				Date tradeDate = TimeUtil.getOnlyDate(Calendar.getInstance().getTime());
 				if (marketSessionUtil != null) {
 					try {
 						tradeDate = marketSessionUtil.getCurrentMarketSession(symbol).getTradeDateByDate();
 					} catch (Exception e) {
-						log.error(e.getMessage());
-						log.error("Can't find market session or trade date for symbol " + symbol);
-						log.error("Set trade date to current time " + tradeDate);
+						log.error(e.getMessage(), e);
 					}
 				}
 

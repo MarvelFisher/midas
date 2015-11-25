@@ -14,7 +14,6 @@ import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketdata.*;
-import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.stream.IStreamAdaptor;
 import com.cyanspring.common.type.*;
@@ -43,9 +42,6 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     @Autowired
     private IRemoteEventManager eventManager;
-
-    @Autowired (required = false)
-	private MarketSessionUtil marketSessionUtil;
 
     // connection parameters
     private String host;
@@ -1012,17 +1008,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 				lastFillPrice = avgFillPrice;
 			}
 
-            Date tradeDate = Calendar.getInstance().getTime();
-    		String symbol = order.getSymbol();
-    		if (marketSessionUtil != null) {
-    			try {
-    				tradeDate = marketSessionUtil.getCurrentMarketSession(symbol).getTradeDateByDate();
-    			} catch (Exception e) {
-    				log.error(e.getMessage());
-    				log.error("Can't find market session or trade date for symbol " + symbol);
-    				log.error("Set trade date to current time " + tradeDate);
-    			}
-    		}
+            Date tradeDate = TimeUtil.getOnlyDate(Calendar.getInstance().getTime());
 
             try {
 				execution = new com.cyanspring.common.business.Execution(

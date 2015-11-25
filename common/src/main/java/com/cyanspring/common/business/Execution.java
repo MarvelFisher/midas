@@ -17,6 +17,7 @@ import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 
 public class Execution extends BaseOrder {
+
 	private static final long serialVersionUID = 1L;
 
 	public Execution(String symbol, OrderSide side, double quantity,
@@ -87,4 +88,5 @@ public class Execution extends BaseOrder {
 	public double toPostion() {
 		return getSide().isBuy()?getQuantity():-getQuantity();
 	}
+
 }

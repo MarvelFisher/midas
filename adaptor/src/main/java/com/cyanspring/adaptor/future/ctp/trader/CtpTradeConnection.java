@@ -8,8 +8,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cyanspring.adaptor.future.ctp.trader.client.CtpPosition;
 import com.cyanspring.adaptor.future.ctp.trader.client.CtpTraderProxy;
 import com.cyanspring.adaptor.future.ctp.trader.client.ILtsTraderListener;
@@ -31,21 +29,18 @@ import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.AsyncTimerEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.ScheduleManager;
-import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.util.DailyKeyCounter;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.util.TimeThrottler;
+import com.cyanspring.common.util.TimeUtil;
 
 public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderListener, IAsyncEventListener {
 
 	private static final Logger log = LoggerFactory
 			.getLogger(CtpTradeConnection.class);
-
-	@Autowired (required = false)
-	private MarketSessionUtil marketSessionUtil;
 
 	private String url;
 	private String conLog;
@@ -347,17 +342,7 @@ public class CtpTradeConnection implements IDownStreamConnection, ILtsTraderList
 
 		Execution execution;
 
-		Date tradeDate = Calendar.getInstance().getTime();
-		String symbol = order.getSymbol();
-		if (marketSessionUtil != null) {
-			try {
-				tradeDate = marketSessionUtil.getCurrentMarketSession(symbol).getTradeDateByDate();
-			} catch (Exception e) {
-				log.error(e.getMessage());
-				log.error("Can't find market session or trade date for symbol " + symbol);
-				log.error("Set trade date to current time " + tradeDate);
-			}
-		}
+		Date tradeDate = TimeUtil.getOnlyDate(Calendar.getInstance().getTime());
 
 		try {
 			execution = new com.cyanspring.common.business.Execution(

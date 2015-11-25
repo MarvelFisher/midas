@@ -21,8 +21,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.cyanspring.common.marketdata.*;
-import com.cyanspring.common.marketsession.MarketSessionUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +45,7 @@ import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.TimeInForce;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
+import com.cyanspring.common.util.TimeUtil;
 import com.cyanspring.common.event.AsyncEventProcessor;
 
 public class HyperDownStreamConnection extends AsyncEventProcessor implements
@@ -60,9 +59,6 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements
 
 	@Autowired
 	protected MarketDataManager marketDataManager;
-
-	@Autowired (required = false)
-	private MarketSessionUtil marketSessionUtil;
 
 	private IQuoteChecker quoteChecker;
 
@@ -142,17 +138,7 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements
 		order.setModified(Clock.getInstance().now());
 		order.setOrdStatus(OrdStatus.FILLED);
 
-		Date tradeDate = Calendar.getInstance().getTime();
-		String symbol = order.getSymbol();
-		if (marketSessionUtil != null) {
-			try {
-				tradeDate = marketSessionUtil.getCurrentMarketSession(symbol).getTradeDateByDate();
-			} catch (Exception e) {
-				log.error(e.getMessage());
-				log.error("Can't find market session or trade date for symbol " + symbol);
-				log.error("Set trade date to current time " + tradeDate);
-			}
-		}
+		Date tradeDate = TimeUtil.getOnlyDate(Calendar.getInstance().getTime());
 
 		try {
 			Execution execution = new Execution(order.getSymbol(),

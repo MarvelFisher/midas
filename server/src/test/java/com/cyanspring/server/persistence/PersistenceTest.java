@@ -43,6 +43,7 @@ import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.type.PersistType;
 import com.cyanspring.common.type.StrategyState;
+import com.cyanspring.common.util.TimeUtil;
 
 @ContextConfiguration(locations = { "classpath:conf/common/persistence.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -60,7 +61,7 @@ public class PersistenceTest {
 
 	@Test
 	public void testExecutionPersistence() throws Exception {
-		Date tradeDate = Calendar.getInstance().getTime();
+		Date tradeDate = TimeUtil.getOnlyDate(Calendar.getInstance().getTime());
 		Execution execution = new Execution("0005.HK", OrderSide.Sell, 2000, 68.2,
 				"orderId2", "parentId", "strategyId", "execId", Default.getUser(),
 				Default.getAccount(), null, tradeDate);

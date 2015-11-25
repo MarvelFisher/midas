@@ -19,8 +19,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import webcurve.common.ExchangeListener;
 import webcurve.exchange.Exchange;
 
@@ -32,11 +30,11 @@ import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamConnection;
 import com.cyanspring.common.downstream.IDownStreamListener;
 import com.cyanspring.common.downstream.IDownStreamSender;
-import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.ExecType;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.type.OrderSide;
+import com.cyanspring.common.util.TimeUtil;
 
 public class SimDownStreamConnection implements IDownStreamConnection {
 
@@ -50,9 +48,6 @@ public class SimDownStreamConnection implements IDownStreamConnection {
 	private boolean sendPendingAck;
 	private Map<String, ChildOrder> uOrders = Collections.synchronizedMap(new HashMap<String, ChildOrder>());
 	private Map<String, webcurve.common.Order> dOrders = Collections.synchronizedMap(new HashMap<String, webcurve.common.Order>());
-
-	@Autowired (required = false)
-	private MarketSessionUtil marketSessionUtil;
 
 	public SimDownStreamConnection(Exchange exchange) {
 		this.exchannge = exchange;
@@ -120,17 +115,7 @@ public class SimDownStreamConnection implements IDownStreamConnection {
 			return;
 		}
 
-		Date tradeDate = Calendar.getInstance().getTime();
-		String symbol = uOrder.getSymbol();
-		if (marketSessionUtil != null) {
-			try {
-				tradeDate = marketSessionUtil.getCurrentMarketSession(symbol).getTradeDateByDate();
-			} catch (Exception e) {
-				log.error(e.getMessage());
-				log.error("Can't find market session or trade date for symbol " + symbol);
-				log.error("Set trade date to current time " + tradeDate);
-			}
-		}
+		Date tradeDate = TimeUtil.getOnlyDate(Calendar.getInstance().getTime());
 
 		try {
 			Execution execution = new Execution(uOrder.getSymbol(), uOrder.getSide(), trade.getQuantity(),
