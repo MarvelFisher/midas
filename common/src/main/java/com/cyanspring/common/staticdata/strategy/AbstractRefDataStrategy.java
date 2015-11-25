@@ -133,8 +133,10 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 			symbol = symbol.replace(MONTH_PATTERN_YMM, ymm); // for exchange CZC
 			symbol = symbol.replace(MONTH_PATTERN_MY, a + y); // for LTFT, ex: C6 means 2016.03
 			data.setSymbol(symbol);
-			data.setRefSymbol(refData.getRefSymbol().replace(SEQ_PATTERN, seq));
-			data.setRefSymbol(refData.getRefSymbol().replace(CFSEQ_PATTERN, cfSeq));
+			String refSymbol = refData.getRefSymbol();
+			refSymbol = refSymbol.replace(SEQ_PATTERN, seq);
+			refSymbol = refSymbol.replace(CFSEQ_PATTERN, cfSeq);
+			data.setRefSymbol(refSymbol);
 			String code = refData.getCode();
 			if (code != null && code.length() > 0) {
 				code = code.replace(MONTH_PATTERN_YYYYMM, yyyymm);
