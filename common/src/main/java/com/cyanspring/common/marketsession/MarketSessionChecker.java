@@ -2,6 +2,7 @@ package com.cyanspring.common.marketsession;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
@@ -13,7 +14,10 @@ import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.util.TimeUtil;
 
 public class MarketSessionChecker implements IMarketSessionChecker {
+
 	private static final Logger log = LoggerFactory.getLogger(MarketSessionChecker.class);
+	private final String DEFAULT_OPENING = "08:30:00";
+	private final String DEFAULT_OPENING_XD = "20:30:00";
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private Date tradeDate;
     private Map<String, MarketSession> stateMap;
@@ -26,18 +30,44 @@ public class MarketSessionChecker implements IMarketSessionChecker {
         if (tradeDateManager != null) {
             String currentIndex = getCurrentIndex(date, refData);
             MarketSession session = stateMap.get(currentIndex);
-            if (session == null)
-                session = stateMap.get(MarketSessionIndex.DEFAULT.toString());
-            for (MarketSessionData data : session.getSessionDatas()) {
-                if (!data.getSessionType().equals(MarketSessionType.PREMARKET))
-                    continue;
-                if (TimeUtil.getTimePass(date, data.getStartDate()) > 0) {
-                    tradeDate = date;
-                    return;
-                }
-            }
-            tradeDate = tradeDateManager.preTradeDate(date);
-            log.debug("Initial trade date, index: " + index + ", tradeDate:" + tradeDate);
+            if (session == null) {
+				session = stateMap.get(MarketSessionIndex.DEFAULT.toString());
+			}
+
+            boolean crossDay = session.isCrossDay();
+            String openingTime = session.getOpeningTime();
+            if (openingTime != null) {
+            	try {
+            		// validate openingTime
+            		SimpleDateFormat sdfHms = new SimpleDateFormat("HH:mm:ss");
+    				sdfHms.parse(openingTime);
+    			} catch (Exception e) {
+    				// if not valid, set to null
+    				openingTime = null;
+    			}
+			}
+
+        	if (crossDay) {
+        		if (openingTime == null) {
+        			openingTime = DEFAULT_OPENING_XD;
+        		}
+				Date opening = getDate(openingTime);
+	        	if (TimeUtil.getTimePass(date, opening) > 0) {
+	        		tradeDate = tradeDateManager.nextTradeDate(date);
+				} else {
+					tradeDate = tradeDateManager.currTradeDate(date);
+				}
+			} else {
+				if (openingTime == null) {
+        			openingTime = DEFAULT_OPENING;
+        		}
+				Date opening = getDate(openingTime);
+	        	if (TimeUtil.getTimePass(date, opening) > 0) {
+	        		tradeDate = tradeDateManager.currTradeDate(date);
+				} else {
+					tradeDate = tradeDateManager.preTradeDate(date);
+				}
+			}
         }
     }
 
@@ -47,24 +77,27 @@ public class MarketSessionChecker implements IMarketSessionChecker {
         MarketSessionData sessionData = null;
         String currentIndex = getCurrentIndex(date, refData);
         MarketSession session = stateMap.get(currentIndex);
-        if (session == null)
-            session = stateMap.get(MarketSessionIndex.DEFAULT.toString());
+        if (session == null) {
+			session = stateMap.get(MarketSessionIndex.DEFAULT.toString());
+		}
         for (MarketSessionData data : session.getSessionDatas()) {
-            if (!compare(data, date))
-                continue;
-            
-            if (data.getSessionType().equals(MarketSessionType.PREMARKET) && tradeDateManager != null) {
-                if (currentType != null && !currentType.equals(data.getSessionType())){
-                	if( tradeDate == null)
-                		continue;
+            if (!compare(data, date)) {
+				continue;
+			}
+
+            MarketSessionType type = data.getSessionType();
+            if (type.equals(MarketSessionType.PREMARKET) && tradeDateManager != null
+            		&& currentType != null && !currentType.equals(type)) {
+                	if (tradeDate == null) {
+						continue;
+					}
                 	log.debug("Change trade date for index: " + index + ", from: " + tradeDate);
-                	tradeDate = tradeDateManager.nextTradeDate(tradeDate);                	
+                	tradeDate = tradeDateManager.nextTradeDate(tradeDate);
                 	log.debug("Change trade date for index: " + index + ", to: " + tradeDate);
-                }
             }
-            sessionData = new MarketSessionData(data.getSessionType(), data.getStart(), data.getEnd());
+            sessionData = new MarketSessionData(type, data.getStart(), data.getEnd());
             sessionData.setDate(tradeDate);
-            currentType = data.getSessionType();
+            currentType = type;
             break;
         }
         return sessionData;
@@ -75,11 +108,13 @@ public class MarketSessionChecker implements IMarketSessionChecker {
         MarketSessionData sessionData = null;
         String currentIndex = getCurrentIndex(date, refData);
         MarketSession session = stateMap.get(currentIndex);
-        if (session == null)
-            session = stateMap.get(MarketSessionIndex.DEFAULT.toString());
+        if (session == null) {
+			session = stateMap.get(MarketSessionIndex.DEFAULT.toString());
+		}
         for (MarketSessionData data : session.getSessionDatas()) {
-            if (!compare(data, date))
-                continue;
+            if (!compare(data, date)) {
+				continue;
+			}
             sessionData = new MarketSessionData(data.getSessionType(), data.getStart(), data.getEnd());
             sessionData.setDate(date);
         }
@@ -91,11 +126,12 @@ public class MarketSessionChecker implements IMarketSessionChecker {
     	Date search = sdf.parse(date);
 		String currentIndex = getCurrentIndex(search, refData);
 		MarketSession session = stateMap.get(currentIndex);
-        if (session == null)
-            session = stateMap.get(MarketSessionIndex.DEFAULT.toString());
+        if (session == null) {
+			session = stateMap.get(MarketSessionIndex.DEFAULT.toString());
+		}
         return session;
 	}
-    
+
     @Override
     public String getTradeDate() {
         return sdf.format(this.tradeDate);
@@ -104,8 +140,9 @@ public class MarketSessionChecker implements IMarketSessionChecker {
     private String getCurrentIndex(Date date, RefData refData) throws ParseException {
         if (refData != null && refData.getSettlementDate() != null){
             String settlementDay = refData.getSettlementDate();
-            if (TimeUtil.sameDate(date, sdf.parse(settlementDay)))
-                return MarketSessionIndex.SETTLEMENT_DAY.toString();
+            if (TimeUtil.sameDate(date, sdf.parse(settlementDay))) {
+				return MarketSessionIndex.SETTLEMENT_DAY.toString();
+			}
         }
 
         if (tradeDateManager == null) {
@@ -128,7 +165,7 @@ public class MarketSessionChecker implements IMarketSessionChecker {
     public Map<String, MarketSession> getStateMap() {
         return stateMap;
     }
-    
+
     @Override
     public String getIndex() {
         return index;
@@ -138,10 +175,10 @@ public class MarketSessionChecker implements IMarketSessionChecker {
     public ITradeDate getTradeDateManager() {
         return tradeDateManager;
     }
-    
+
     private boolean compare(MarketSessionData data, Date compare) throws ParseException {
-    	
-    	data.setDate(compare);   	
+
+    	data.setDate(compare);
         if (TimeUtil.getTimePass(data.getStartDate(), compare) <= 0 &&
                 TimeUtil.getTimePass(data.getEndDate(), compare) >= 0) {
             return true;
@@ -160,4 +197,19 @@ public class MarketSessionChecker implements IMarketSessionChecker {
     public void setIndex(String index) {
         this.index = index;
     }
+
+    private Date getDate(String opening) {
+    	String[] time = opening.split(":");
+		int hr = Integer.parseInt(time[0]);
+		int min = Integer.parseInt(time[1]);
+		int sec = Integer.parseInt(time[2]);
+
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.HOUR_OF_DAY, hr);
+		cal.set(Calendar.MINUTE, min);
+		cal.set(Calendar.SECOND, sec);
+
+		return cal.getTime();
+    }
+
 }

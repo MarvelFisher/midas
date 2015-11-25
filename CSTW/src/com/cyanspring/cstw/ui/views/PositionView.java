@@ -264,87 +264,70 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	// private Label lbMarginHeld;
 
 	private void createAccountInfoPad(Composite parent) {
-		GridLayout layout = new GridLayout(4, true);
+		GridLayout layout = new GridLayout(8, true);
 		layout.marginRight = 10;
 		layout.marginLeft = 10;
 		layout.horizontalSpacing = 5;
 		layout.verticalSpacing = 10;
 		parent.setLayout(layout);
 
-		Composite comp1 = new Composite(parent, SWT.NONE);
-		comp1.setLayout(new GridLayout(2, true));
-		comp1.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, true));
-
-		Composite comp2 = new Composite(parent, SWT.NONE);
-		comp2.setLayout(new GridLayout(2, true));
-		comp2.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, true));
-
-		Composite comp3 = new Composite(parent, SWT.NONE);
-		comp3.setLayout(new GridLayout(2, true));
-		comp3.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, true));
-
-		Composite comp4 = new Composite(parent, SWT.NONE);
-		comp4.setLayout(new GridLayout(2, true));
-		comp4.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, true));
-
-		Label lb1 = new Label(comp1, SWT.LEFT);
+		Label lb1 = new Label(parent, SWT.RIGHT);
 		lb1.setText("Account Value: ");
-		lb1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
+		lb1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		lbValue = new Label(comp1, SWT.LEFT);
+		lbValue = new Label(parent, SWT.RIGHT);
 		lbValue.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		Label lb8 = new Label(comp2, SWT.LEFT);
+		Label lb8 = new Label(parent, SWT.RIGHT);
 		lb8.setText("Account Cash: ");
-		lb8.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
+		lb8.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		lbCashDeduct = new Label(comp2, SWT.LEFT);
+		lbCashDeduct = new Label(parent, SWT.RIGHT);
 		lbCashDeduct
 				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		Label lb7 = new Label(comp3, SWT.LEFT);
+		Label lb7 = new Label(parent, SWT.RIGHT);
 		lb7.setText("Cash Available: ");
-		lb7.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
+		lb7.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		lbCashAvailable = new Label(comp3, SWT.LEFT);
+		lbCashAvailable = new Label(parent, SWT.RIGHT);
 		lbCashAvailable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
 				true));
 
-		Label lb10 = new Label(comp4, SWT.LEFT);
+		Label lb10 = new Label(parent, SWT.RIGHT);
 		lb10.setText("Status : ");
-		lb10.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
+		lb10.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		lbstatus = new Label(comp4, SWT.LEFT);
+		lbstatus = new Label(parent, SWT.RIGHT);
 		lbstatus.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		Label lb5 = new Label(comp1, SWT.LEFT);
+		Label lb5 = new Label(parent, SWT.RIGHT);
 		lb5.setText("P&&L: ");
 		lb5.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		lbPnL = new Label(comp1, SWT.LEFT);
+		lbPnL = new Label(parent, SWT.RIGHT);
 		lbPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		Label lb6 = new Label(comp2, SWT.LEFT);
+		Label lb6 = new Label(parent, SWT.RIGHT);
 		lb6.setText("Unrealized P&&L: ");
 		lb6.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		lbUrPnL = new Label(comp2, SWT.LEFT);
+		lbUrPnL = new Label(parent, SWT.RIGHT);
 		lbUrPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		Label lb9 = new Label(comp3, SWT.LEFT);
+		Label lb9 = new Label(parent, SWT.RIGHT);
 		lb9.setText("Unrealized Last P&&L: ");
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, false, true);
-		lb9.setLayoutData(gd);
+		lb9.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		lblastUrPnL = new Label(comp3, SWT.LEFT);
+		lblastUrPnL = new Label(parent, SWT.RIGHT);
 		lblastUrPnL
 				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		Label lb4 = new Label(comp4, SWT.LEFT);
+		Label lb4 = new Label(parent, SWT.RIGHT);
 		lb4.setText("Daily P&&L: ");
 		lb4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		lbDailyPnL = new Label(comp4, SWT.LEFT);
+		lbDailyPnL = new Label(parent, SWT.RIGHT);
 		lbDailyPnL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 	}
 

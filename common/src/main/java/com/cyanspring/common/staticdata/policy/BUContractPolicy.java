@@ -1,5 +1,6 @@
 package com.cyanspring.common.staticdata.policy;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -10,7 +11,7 @@ public class BUContractPolicy extends DefaultContractPolicy {
 
 	// 24个月以内，其中最近1-6个月为连续月份合约，6个月以后为季月合约。
 	@Override
-	public List<String> getContractMonths(RefData refData) {
+	public List<String> getContractMonths(RefData refData) throws ParseException {
 		List<String> lstContractMonth = new ArrayList<>();
 		Calendar firstContractMonth = getFirstContractMonth(refData);
 

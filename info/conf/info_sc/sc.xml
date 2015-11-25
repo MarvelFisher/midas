@@ -23,7 +23,7 @@
 			<list>
 				<!-- <ref bean="newsManager"/> -->
 				<!--<ref bean="premiumFollowManager" />-->
-				<!--<ref bean="IMManager" />-->
+				<ref bean="IMManager" />
 				<ref bean="alertManager" />
 			</list>
 		</property>

@@ -78,12 +78,8 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 		Composite sectionClient = toolkit.createComposite(dataSection, SWT.WRAP);
 		GridLayout clientLayout = new GridLayout();
 		clientLayout.numColumns = 2;
-		sectionClient.setLayout(clientLayout);
-		
-		GridData gd = new GridData();
-		gd.horizontalSpan = 2;
-		Label label = toolkit.createLabel(sectionClient, "");
-		label.setLayoutData(gd);
+		sectionClient.setLayout(clientLayout);		
+		createSpacer(toolkit, sectionClient, 2);
 		
 		spart = new SectionPart(dataSection);
 		managedForm.addPart(spart);
@@ -369,7 +365,14 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 		}
 		
 	}
-
+	
+	private void createSpacer(FormToolkit toolkit, Composite parent, int span) {
+		Label spacer = toolkit.createLabel(parent, "");
+		GridData gd = new GridData();
+		gd.horizontalSpan = span;
+		spacer.setLayoutData(gd);
+	}
+	
 	@Override
 	protected void registerPages(DetailsPart detailsPart) {
 		detailsPart.registerPage(ExchangeAccountModel.class, new ExchangeAccountDetailsPage(service));

@@ -6,6 +6,7 @@ import com.cyanspring.cstw.service.impl.admin.SubAccountManageServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.CurrentPositionServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.InstrumentStatisticsServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.InstrumentSummaryServiceImpl;
+import com.cyanspring.cstw.service.impl.riskmgr.MockSubPoolManageServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.OrderRecordServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.TradeRecordServiceImpl;
 import com.cyanspring.cstw.service.impl.riskmgr.UserStatisticsServiceImpl;
@@ -15,6 +16,7 @@ import com.cyanspring.cstw.service.iservice.riskmgr.ICurrentPositionService;
 import com.cyanspring.cstw.service.iservice.riskmgr.IInstrumentStatisticsService;
 import com.cyanspring.cstw.service.iservice.riskmgr.IInstrumentSummaryService;
 import com.cyanspring.cstw.service.iservice.riskmgr.IOrderRecordService;
+import com.cyanspring.cstw.service.iservice.riskmgr.ISubPoolManageService;
 import com.cyanspring.cstw.service.iservice.riskmgr.ITradeRecordService;
 import com.cyanspring.cstw.service.iservice.riskmgr.IUserStatisticsService;
 import com.cyanspring.cstw.service.iservice.trader.IParentOrderService;
@@ -73,6 +75,11 @@ public final class ServiceFactory {
 
 	public static ISubAccountManagerService createSubAccountManagerService() {
 		ISubAccountManagerService instance =  new SubAccountManageServiceImpl(); //  // new MockSubAccountManageServiceImpl();
+		return instance;
+	}
+	
+	public static ISubPoolManageService createSubPoolManageService() {
+		ISubPoolManageService instance = new MockSubPoolManageServiceImpl();
 		return instance;
 	}
 

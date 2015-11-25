@@ -9,6 +9,7 @@ import com.cyanspring.common.Clock;
 import com.cyanspring.common.util.TimeUtil;
 
 public class MarketSessionData {
+
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	private MarketSessionType sessionType;
 	private String start;
@@ -21,13 +22,15 @@ public class MarketSessionData {
 		this.start = start;
 		this.end = end;
 	}
-	
+
 	public MarketSessionType getSessionType() {
 		return sessionType;
 	}
+
 	public void setSessionType(MarketSessionType sessionType) {
 		this.sessionType = sessionType;
 	}
+
 	public Date getStartDate() throws ParseException {
 		String[] time = start.split(":");
 		int nHr = Integer.parseInt(time[0]);
@@ -35,15 +38,18 @@ public class MarketSessionData {
 		int nSec = Integer.parseInt(time[2]);
 		Calendar cal = Calendar.getInstance();
         Date date;
-        if (this.date == null)
-            date = Clock.getInstance().now();
-        else
-            date = this.date;
+        if (this.date == null) {
+			date = Clock.getInstance().now();
+		} else {
+			date = this.date;
+		}
 		return TimeUtil.getScheduledDate(cal, date, nHr, nMin, nSec);
 	}
+
 	public void setStart(String start) {
 		this.start = start;
 	}
+
 	public Date getEndDate() throws ParseException {
 		String[] time = end.split(":");
 		int nHr = Integer.parseInt(time[0]);
@@ -51,17 +57,18 @@ public class MarketSessionData {
 		int nSec = Integer.parseInt(time[2]);
 		Calendar cal = Calendar.getInstance();
         Date date;
-        if (this.date == null)
-            date = Clock.getInstance().now();
-        else
-            date = this.date;
+        if (this.date == null) {
+			date = Clock.getInstance().now();
+		} else {
+			date = this.date;
+		}
 		return TimeUtil.getScheduledDate(cal, date, nHr, nMin, nSec);
-	}	
+	}
 
 	public void setEnd(String end) {
 		this.end = end;
 	}
-	
+
 	public String getStart() {
 		return start;
 	}
@@ -73,14 +80,15 @@ public class MarketSessionData {
     public void setDate(Date date) {
         this.date = date;
     }
-    
+
     public Date getTradeDateByDate() {
     	return date;
     }
-    
+
     public String getTradeDateByString() {
-    	if (date == null)
-    		return null;
+    	if (date == null) {
+			return null;
+		}
     	return sdf.format(date);
     }
 }

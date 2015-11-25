@@ -11,7 +11,6 @@ import com.cyanspring.common.staticdata.RefData;
 
 public class DefaultContractPolicy {
 
-
 	public SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	public SimpleDateFormat ymSdf = new SimpleDateFormat("yyyyMM");
 	Calendar cal;
@@ -29,7 +28,7 @@ public class DefaultContractPolicy {
 		this.contractMonths = contractMonths;
 	}
 
-	public List<String> getContractMonths(RefData refData) {
+	public List<String> getContractMonths(RefData refData) throws ParseException {
 		List<String> lstContractMonth = new ArrayList<>();
 		Calendar firstContractMonth = getFirstContractMonth(refData);
 		for (int i = 0; i < 12; i++) {
@@ -44,17 +43,19 @@ public class DefaultContractPolicy {
 		return lstContractMonth;
 	}
 
-	public Calendar getFirstContractMonth(RefData refData) {
+	public Calendar getFirstContractMonth(RefData refData) throws ParseException {
 		String settlement = refData.getSettlementDate();
 		Date settlementDate = Calendar.getInstance().getTime();
 		try {
 			settlementDate = sdf.parse(settlement);
 		} catch (ParseException e) {
+			throw new ParseException("Unable to parse settlement " + settlement
+					+ " in yyyy-MM-dd format for category " + refData.getCategory(), e.getErrorOffset());
 		}
 
 		Calendar cal = (Calendar) this.cal.clone();
-		Date today = cal.getTime();
-		if (today.after(settlementDate)) {
+		Date tradeDate = cal.getTime();
+		if (tradeDate.after(settlementDate)) {
 			cal.add(Calendar.MONTH, 1);
 		}
 
