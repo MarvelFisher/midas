@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserGroup;
 import com.cyanspring.cstw.model.admin.AssignedModel;
 import com.cyanspring.cstw.model.admin.SubAccountModel;
@@ -166,10 +167,10 @@ public class AssignedTableComposite extends BasicTableComposite {
 		}
 
 		private void initCombContent() {
-			final List<UserGroup> usrList = service.getAvailableAssigneeList(subAccountModel);
+			final List<User> usrList = service.getAvailableAssigneeList(subAccountModel);
 			List<String> selectList = new ArrayList<String>();
-			for (UserGroup ug : usrList) {
-				selectList.add(ug.getUser());
+			for (User ug : usrList) {
+				selectList.add(ug.getId());
 			}
 			comboSelectUser.setItems(selectList.toArray(new String[0]));
 			comboSelectUser.addSelectionListener(new SelectionAdapter() {

@@ -8,6 +8,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserGroup;
 import com.cyanspring.common.client.IInstrumentPoolKeeper;
 import com.cyanspring.common.client.IInstrumentPoolKeeper.ModelType;
@@ -161,14 +162,21 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 	@Override
 	public List<AssignedModel> getAssignedModelListBySubAccountId(String id) {
 		List<AssignedModel> assList = new ArrayList<AssignedModel>();
-//		instrumentPoolKeeper.
+		List<String> userIdList = instrumentPoolKeeper.getAssignedAdminsBySubAccount(id);
+		for (String usrId : userIdList) {
+			User usr = InstrumentPoolKeeperManager.getInstance().getRiskManagerOrGroupUser(usrId);
+			if (usr != null) {
+				assList.add(new AssignedModel.Builder().userId(usr.getId())
+						.roleType(usr.getRole().desc()).build());
+			}
+		}
 		
 		return assList;
 	}
 
 	@Override
-	public List<UserGroup> getAvailableAssigneeList(SubAccountModel subAccount) {
-		return null;
+	public List<User> getAvailableAssigneeList(SubAccountModel subAccount) {
+		return InstrumentPoolKeeperManager.getInstance().getRiskManagerNGroupUser();
 	}
 
 	@Override

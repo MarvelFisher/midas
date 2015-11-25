@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.account.User;
 import com.cyanspring.common.account.UserGroup;
 import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.client.IInstrumentPoolKeeper;
@@ -261,10 +262,8 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 	}
 
 	@Override
-	public List<UserGroup> getAvailableAssigneeList(SubAccountModel subAccount) {
-		List<UserGroup> usrGroups = new ArrayList<UserGroup>();
-		usrGroups.add(new UserGroup("front_risk8", UserRole.RiskManager));
-		usrGroups.add(new UserGroup("group7", UserRole.Group));
+	public List<User> getAvailableAssigneeList(SubAccountModel subAccount) {
+		List<User> usrGroups = new ArrayList<User>();
 		return usrGroups;
 	}
 

@@ -27,6 +27,8 @@ import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
 public class SubAccountDetailsPage implements IDetailsPage {
 	
 	private static final int TEXT_WIDTH_HINT = 150;
+	private static final int TABLE_WIDTH_HINT = 400;
+	private static final int TABLE_HEIGHT_HINT = 150;
 	
 	private SubAccountModel input;
 	private ISubAccountManagerService service;
@@ -115,6 +117,8 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		exTableComposite = new InstrumentInfoTableComposite(client, SWT.NONE);
 		GridData gd3 = new GridData();
 		gd3.horizontalSpan = 2;
+		gd3.heightHint = TABLE_HEIGHT_HINT;
+		gd3.widthHint = TABLE_WIDTH_HINT;
 		exTableComposite.setLayoutData(gd3);
 		toolkit.adapt(exTableComposite);
 		
@@ -138,6 +142,8 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		subTableComposite = new InstrumentInfoTableComposite(client, SWT.NONE);
 		GridData gd3 = new GridData(); //SWT.LEFT, SWT.FILL, false, true
 		gd3.horizontalSpan = 2;
+		gd3.heightHint = TABLE_HEIGHT_HINT;
+		gd3.widthHint = TABLE_WIDTH_HINT;
 		subTableComposite.setLayoutData(gd3);
 		toolkit.adapt(subTableComposite);
 		
@@ -148,6 +154,8 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		assTableComposite = new AssignedTableComposite(client, service, SWT.NONE);
 		GridData gd4 = new GridData(); //SWT.LEFT, SWT.FILL, false, true
 		gd4.horizontalSpan = 2;
+		gd4.heightHint = TABLE_HEIGHT_HINT;
+		gd4.widthHint = TABLE_WIDTH_HINT;
 		assTableComposite.setLayoutData(gd4);
 		toolkit.adapt(assTableComposite);
 		
