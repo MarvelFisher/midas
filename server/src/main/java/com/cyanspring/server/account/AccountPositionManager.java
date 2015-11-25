@@ -153,10 +153,10 @@ import com.cyanspring.common.position.IQuoteFeeder;
 import com.cyanspring.common.position.PositionKeeper;
 import com.cyanspring.common.server.event.MarketDataReadyEvent;
 import com.cyanspring.common.staticdata.AccountSaver;
+import com.cyanspring.common.staticdata.IRefDataChecker;
 import com.cyanspring.common.staticdata.IRefDataManager;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.type.OrderSide;
-import com.cyanspring.common.type.OrderType;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PerfDurationCounter;
 import com.cyanspring.common.util.PerfFrequencyCounter;
@@ -249,6 +249,9 @@ public class AccountPositionManager implements IPlugin {
 
 	@Autowired(required = false)
 	AccountSaver accountSaver;
+
+	@Autowired(required = false)
+	private IRefDataChecker refDataChecker;
 
 	private IQuoteFeeder quoteFeeder = new IQuoteFeeder() {
 
@@ -2386,7 +2389,7 @@ public class AccountPositionManager implements IPlugin {
 			Quote quote = marketData.get(event.getSymbol());
 			
 			allowedQty = positionKeeper.getMaxOrderQtyAllowed(account, refData, event.getOrderSide(), 
-					event.getOrderType(), event.getPrice(), quote);
+					event.getOrderType(), event.getPrice(), quote, refDataChecker, Default.getCreditPartial());
 			
 		} catch (Exception e) {
 			ok = false;
