@@ -977,28 +977,44 @@ public class PositionKeeper {
 	}
 	
 	public double getMaxOrderQtyAllowed(Account account, RefData refData, OrderSide orderSide, 
-			OrderType orderType, double orderPrice, Quote quote) {
-		double price = QuoteUtils.getRiskPrice(orderType, orderSide, orderPrice, quote);
+			OrderType orderType, double orderPrice, Quote quote, IRefDataChecker refDataChecker,
+			double ratio) {
 
+		double price = QuoteUtils.getRiskPrice(orderType, orderSide, orderPrice, quote);
+		if(!QuoteUtils.validQuote(quote) && orderType.equals(OrderType.Market)) {
+			log.error("Quote invalid: " + quote);
+			return 0.0;
+		}
+		
 		AccountSetting accountSetting = null;
 		try {
 			accountSetting = accountKeeper.getAccountSetting(account.getId());
 		} catch (AccountException e) {
 			log.error(e.getMessage(), e);
 		}
-
-		double allowedQty = FxUtils.calculateQtyFromValue(refDataManager, fxConverter, account.getCurrency(), 
-				refData.getSymbol(), account.getCashAvailable() * Default.getMarginCall(), price);
-				
+		
+		double allowedValue = account.getCashAvailable() * Default.getMarginCall();
+		if(null != refDataChecker && refDataChecker.check(refData)) {
+			double partialCredit = getPartialCreditByAccountAndRefDataChecker(account, refDataChecker);
+			double partialAllowedValue = account.getValue() * Default.getMarginCall() * ratio - partialCredit;
+			allowedValue = Math.min(allowedValue, partialAllowedValue);
+			log.debug("Partial credit check: " + partialCredit + ", " + partialAllowedValue + ", " + allowedValue);
+			
+			if(allowedValue < 0.0)
+				return 0.0;
+		}
+		
 		double lev = leverageManager.getLeverage(refData,
 				accountSetting);
-		allowedQty *= lev;
-
+		double allowedQty = FxUtils.calculateQtyFromValue(refDataManager, fxConverter, account.getCurrency(), 
+				refData.getSymbol(), allowedValue * lev, price);
+				
 		double existingMarginQty = Math.abs(getMarginQtyByAccountAndSymbol(account, refData.getSymbol(), 0, orderSide.isBuy()));
 		double oppositeMarginQty = Math.abs(getMarginQtyByAccountAndSymbol(account, refData.getSymbol(), 0, !orderSide.isBuy()));
 		
 		if(oppositeMarginQty > existingMarginQty)
 			allowedQty += oppositeMarginQty - existingMarginQty;
+		
 		
 		long lot =	Math.max(refData.getLotSize(), 1);
 		long rounded = ((long) allowedQty) / lot * lot;
