@@ -14,19 +14,21 @@ public class CSTWUserLoginReplyEvent extends RemoteAsyncEvent {
 	private boolean isOk;
 	private String message;
 	private UserGroup userGroup;
-	private List<User> users;
+	// For super admin, only FrontRisk & Group
+	private List<User> riskManagerNGroupUsers;
 	private List<Account> accountList;
 	private Map<String, Account> user2AccountMap; // prepare first account of
 													// specified user
 
 	public CSTWUserLoginReplyEvent(String key, String receiver, boolean isOk,
-			String message, UserGroup userGroup, List<User> users,
-			List<Account> accountList, Map<String, Account> user2AccountMap) {
+			String message, UserGroup userGroup,
+			List<User> riskManagerNGroupUsers, List<Account> accountList,
+			Map<String, Account> user2AccountMap) {
 		super(key, receiver);
 		this.isOk = isOk;
 		this.message = message;
 		this.userGroup = userGroup;
-		this.users = users;
+		this.riskManagerNGroupUsers = riskManagerNGroupUsers;
 		this.accountList = accountList;
 		this.user2AccountMap = user2AccountMap;
 	}
@@ -43,8 +45,8 @@ public class CSTWUserLoginReplyEvent extends RemoteAsyncEvent {
 		return userGroup;
 	}
 
-	public List<User> getUsers() {
-		return users;
+	public List<User> getRiskManagerNGroupUsers() {
+		return riskManagerNGroupUsers;
 	}
 
 	public List<Account> getAccountList() {

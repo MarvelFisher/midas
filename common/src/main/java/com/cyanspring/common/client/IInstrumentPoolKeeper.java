@@ -89,5 +89,4 @@ public interface IInstrumentPoolKeeper {
 	 */
 	InstrumentPoolRecord getInstrumentPoolRecord(String instrumentPoolId,
 			String symbol);
-
 }
