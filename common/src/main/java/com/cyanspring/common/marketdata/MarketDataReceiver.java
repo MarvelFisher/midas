@@ -285,6 +285,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
                         if(PriceUtils.GreaterThan(quote.getOpen(), 0)) tmpQuote.setOpen(quote.getOpen());
                     }
                 } else {
+                	quote.setStale(true);
                     quotes.put(quote.getSymbol(), quote);
                 }
                 return;
