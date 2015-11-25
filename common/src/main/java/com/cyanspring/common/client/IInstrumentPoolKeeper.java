@@ -89,4 +89,14 @@ public interface IInstrumentPoolKeeper {
 	 */
 	InstrumentPoolRecord getInstrumentPoolRecord(String instrumentPoolId,
 			String symbol);
+
+	/**
+	 * 获取ExchangeSubAccount关联的User Id list(包含RiskManager & Group)
+	 * 
+	 * @param subAccount
+	 *            id
+	 * @return User Id list
+	 */
+	List<String> getAssignedAdminsBySubAccount(String subAccount);
+
 }

@@ -93,11 +93,12 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 		return poolSubAccountMap.get(instrumentPool);
 	}
 
-	public List<String> getUsersByExchangeSubAccount(String exchangeSubAccount) {
+	@Override
+	public List<String> getAssignedAdminsBySubAccount(String subAccount) {
 		List<String> users = new ArrayList<String>();
 		for (Entry<String, Map<String, ExchangeSubAccount>> entry : userSubAccounMap
 				.entrySet()) {
-			if (entry.getValue().containsKey(exchangeSubAccount)) {
+			if (entry.getValue().containsKey(subAccount)) {
 				users.add(entry.getKey());
 			}
 		}
