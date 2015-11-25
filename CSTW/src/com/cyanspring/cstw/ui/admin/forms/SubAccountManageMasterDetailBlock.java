@@ -47,14 +47,12 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 	private Button btnAddExch;
 	private Button btnAddSub;
 	private Button btnDelete;
-	private Button btnUp;
-	private Button btnDown;
+//	private Button btnUp;
+//	private Button btnDown;
 	
 	private Action addExchAction;
 	private Action addSubAction;
 	private Action delAction;
-	private Action upAction;
-	private Action downAction;
 	
 	public SubAccountManageMasterDetailBlock(ISubAccountManagerService service) {
 		this.service = service;
@@ -116,13 +114,6 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 		btnDelete.setLayoutData(btnData);
 		
 		toolkit.createLabel(btnComposite, "");
-		
-		btnUp = toolkit.createButton(btnComposite, "Up", SWT.NONE);
-		btnDown = toolkit.createButton(btnComposite, "Down", SWT.NONE);
-		btnUp.setEnabled(false);
-		btnDown.setEnabled(false);
-		btnUp.setLayoutData(btnData);
-		btnDown.setLayoutData(btnData);
 		
 		
 		dataSection.setClient(sectionClient);
@@ -205,20 +196,6 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 			}
 		});
 		
-		btnUp.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				upAction.run();
-			}
-		});
-		
-		btnDown.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				downAction.run();
-			}
-		});
-		
 	}
 	
 	private void initAction() {
@@ -267,36 +244,6 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 			}
 		};
 		
-		upAction = new Action() {
-			@Override
-			public void run() {
-				Object obj = ((IStructuredSelection) editTree.getSelection())
-						.getFirstElement();
-				if (obj instanceof ExchangeAccountModel) {
-					service.moveUpExchangeAccount((ExchangeAccountModel) obj);
-				} else if (obj instanceof SubAccountModel) {
-					service.moveUpSubAccount((SubAccountModel) obj);
-				}
-				refreshTree();
-				changeUiElementState();
-			}
-		};
-		
-		downAction = new Action() {
-			@Override
-			public void run() {
-				Object obj = ((IStructuredSelection) editTree.getSelection())
-						.getFirstElement();
-				if (obj instanceof ExchangeAccountModel) {
-					service.moveDownExchangeAccount((ExchangeAccountModel) obj);
-				} else if (obj instanceof SubAccountModel) {
-					service.moveDownSubAccount((SubAccountModel) obj);
-				}
-				refreshTree();
-				changeUiElementState();
-			}
-		};
-		
 	}
 
 	private void refreshTree() {
@@ -311,59 +258,21 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 			btnAddExch.setEnabled(true);
 			btnAddSub.setEnabled(false);
 			btnDelete.setEnabled(false);
-			btnUp.setEnabled(false);
-			btnDown.setEnabled(false);
 		} else if (selected.size() == 1) {
 			btnDelete.setEnabled(true);
 			Object object = selected.getFirstElement();
 			if (object instanceof ExchangeAccountModel) {
 				btnAddExch.setEnabled(true);
 				btnAddSub.setEnabled(true);
-				int index = service.getExchangeAccountList().indexOf(object);
-				setArrowButtonsFlag(index, 0, service.getExchangeAccountList().size()-1);
 			} else if (object instanceof SubAccountModel) {
 				btnAddExch.setEnabled(false);
 				btnAddSub.setEnabled(true);
-				TreeItem treeItem = editTree.getTree().getSelection()[0];
-				TreeItem parent = treeItem.getParentItem();
-				if (parent != null) {
-					TreeItem[] children = parent.getItems();
-					setArrowButtonsFlag(parent.indexOf(treeItem), 0, children.length-1);
-				}
 			}
 			
 		} else {
 			btnAddExch.setEnabled(true);
 			btnDelete.setEnabled(false);
-			btnUp.setEnabled(false);
-			btnDown.setEnabled(false);
 		}
-	}
-
-	private void setArrowButtonsFlag(int index, int begin, int end) {
-		if (begin < end) {
-			// not found
-			if (index == -1) {
-				btnUp.setEnabled(false);
-				btnDown.setEnabled(false);
-			}
-			else if (index == begin) {
-				btnUp.setEnabled(false);
-				btnDown.setEnabled(true);
-			}
-			else if (index == end) {
-				btnUp.setEnabled(true);
-				btnDown.setEnabled(false);
-			}
-			else {
-				btnUp.setEnabled(true);
-				btnDown.setEnabled(true);
-			}
-		} else {
-			btnUp.setEnabled(false);
-			btnDown.setEnabled(false);
-		}
-		
 	}
 	
 	private void createSpacer(FormToolkit toolkit, Composite parent, int span) {

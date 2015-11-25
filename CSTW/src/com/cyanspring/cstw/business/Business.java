@@ -556,6 +556,9 @@ public final class Business {
 			RCInstrumentSummaryEventController.getInstance().init();
 			RCOrderEventController.getInstance().init();
 		}
+		// inject RiskManagerNGroupUser List from loginReplyEvent
+		InstrumentPoolKeeperManager.getInstance().setRiskManagerNGroupUser(
+				loginReplyEvent.getRiskManagerNGroupUsers());
 
 		AccountInstrumentSnapshotRequestEvent request = new AccountInstrumentSnapshotRequestEvent(
 				IdGenerator.getInstance().getNextID(), Business.getInstance()
@@ -565,7 +568,7 @@ public final class Business {
 		try {
 			this.getEventManager().sendRemoteEvent(request);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.info(e.getMessage());
 		}
 		return true;
 	}

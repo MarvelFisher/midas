@@ -1,6 +1,9 @@
 package com.cyanspring.cstw.keepermanager;
 
+import java.util.List;
+
 import com.cyanspring.common.account.AccountKeeper;
+import com.cyanspring.common.account.User;
 import com.cyanspring.common.client.IInstrumentPoolKeeper;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
@@ -30,6 +33,8 @@ public final class InstrumentPoolKeeperManager {
 	private InstrumentPoolKeeper instrumentPoolKeeper;
 
 	private AccountKeeper accountKeeper;
+	
+	private List<User> riskManagerNGroupUser;
 
 	private IAsyncEventListener listener;
 
@@ -124,6 +129,14 @@ public final class InstrumentPoolKeeperManager {
 	public void setInstrumentPoolKeeper(
 			InstrumentPoolKeeper instrumentPoolKeeper) {
 		this.instrumentPoolKeeper = instrumentPoolKeeper;
+	}
+	
+	public List<User> getRiskManagerNGroupUser() {
+		return riskManagerNGroupUser;
+	}
+
+	public void setRiskManagerNGroupUser(List<User> riskManagerNGroupUser) {
+		this.riskManagerNGroupUser = riskManagerNGroupUser;
 	}
 
 	private void sendUpdateEvent() {

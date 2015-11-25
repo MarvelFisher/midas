@@ -118,8 +118,6 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 			InstrumentInfoModel infoModel = new InstrumentInfoModel.Builder().symbolName(entry.getKey()).symbolName(entry.getKey()).qty(entry.getValue()).build();
 			instrumentInfoModelList.add(infoModel);
 		}
-		instrumentInfoModelList.add(new InstrumentInfoModel.Builder().symbolId("AUDUSD").symbolName("AUDUSD").qty(10000).build());
-		instrumentInfoModelList.add(new InstrumentInfoModel.Builder().symbolId("AUDUSD").symbolName("AUDUSD").qty(10000).build());
 		return instrumentInfoModelList;
 	}
 
@@ -163,9 +161,8 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 	@Override
 	public List<AssignedModel> getAssignedModelListBySubAccountId(String id) {
 		List<AssignedModel> assList = new ArrayList<AssignedModel>();
-//		assList.add(new AssignedModel.Builder().userId("front_risk1").roleType("FrontRiskManager").build());
-//		assList.add(new AssignedModel.Builder().userId("group1").roleType("Group").build());
-//		assList.add(new AssignedModel.Builder().userId("front_risk2").roleType("FrontRiskManager").build());
+//		instrumentPoolKeeper.
+		
 		return assList;
 	}
 
