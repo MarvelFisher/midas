@@ -314,7 +314,7 @@
 			<value>refdata/template/template_SC.xml</value>
 		</property>
 		<property name="quoteFile">
-			<value>ticks/last_tdq.xml</value>
+			<value>ticks/last.xml</value>
 		</property>
 	</bean>
 
