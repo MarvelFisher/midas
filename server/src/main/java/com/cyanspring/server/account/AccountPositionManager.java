@@ -1149,7 +1149,7 @@ public class AccountPositionManager implements IPlugin {
 		UserGroup userGroup = null;
 		List<Account> accountList = null;
 		Map<String, Account> user2AccountMap = null;
-		List<User> users = null;
+		List<User> users = new ArrayList<User>();
 
 		boolean isAdminRole = false;
 		boolean isServerShutdownEvent = event.getShutdownServer();
@@ -1160,7 +1160,9 @@ public class AccountPositionManager implements IPlugin {
 
 		if (isAdminRole) {
 			userGroup = new UserGroup(id, UserRole.Admin);
-			users = userKeeper.getUsersByRole(UserRole.RiskManager);
+			users.addAll(userKeeper.getUsersByRole(UserRole.RiskManager));
+			users.addAll(userKeeper.getUsersByRole(UserRole.Group));
+
 			accountList = accountKeeper.getAllAccounts();
 			user2AccountMap = new HashMap<>();
 			if (null == accountList)
