@@ -29,7 +29,8 @@ public class GlobalSetting {
 	private  boolean liveTrading = false;
 	private  boolean userLiveTrading = false;
 	private  LiveTradingType liveTradingType = LiveTradingType.DEFAULT;
-	private  double creditPartial = 0.55;
+	private  double creditPartial = 0.0;
+	private  String appSetting = "";
 	/**
 	 * @return the user
 	 */
@@ -330,5 +331,12 @@ public class GlobalSetting {
 	public void setCreditPartial(double creditPartial) {
 		this.creditPartial = creditPartial;
 	}
-
+	
+	public String getAppSetting() {
+		return appSetting;
+	}
+	
+	public void setAppSetting(String appSetting) {
+		this.appSetting = appSetting;
+	}
 }

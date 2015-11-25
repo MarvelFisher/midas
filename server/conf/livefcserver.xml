@@ -147,6 +147,9 @@
         <constructor-arg value="0" />
     </bean>
 
+	<bean id="appSetting" class="java.lang.String">
+  		<constructor-arg value=""/>
+	</bean>
 	<!--  -->
 
     <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
@@ -178,6 +181,7 @@
    				<ref bean="terminateStopLossValue"/>  <!-- terminateValue -->
                 <value>DEFAULT</value>          <!-- liveTradingType -->
                 <value>0.0</value>
+                <ref bean="appSetting"/>               
             </list>
         </property>
     </bean>

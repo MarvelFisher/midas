@@ -95,6 +95,10 @@
         <constructor-arg value="0" />
     </bean>
     
+    <bean id="appSetting" class="java.lang.String">
+  		<constructor-arg value=""/>
+	</bean>
+    
 	<!-- MarketDataManager setting -->
 	<bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
 		<constructor-arg>
@@ -188,6 +192,7 @@
    				<ref bean="terminateStopLossValue"/>  <!-- terminateValue -->
 				<value>DAY_TRADING</value>
 				<value>0.2</value>
+				<ref bean="appSetting"/>
             </list>
        </property>
     </bean>

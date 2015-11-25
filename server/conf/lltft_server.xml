@@ -140,6 +140,10 @@
         <constructor-arg value="0" />
     </bean>
 
+	<bean id="appSetting" class="java.lang.String">
+  		<constructor-arg value=""/>
+	</bean>
+
     <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="staticMethod" value="com.cyanspring.common.Default.setValues"/>
         <property name="arguments">
@@ -169,6 +173,7 @@
    				<ref bean="terminateStopLossValue"/>  <!-- terminateValue -->
                 <value>DEFAULT</value>          <!-- liveTradingType -->
                 <value>0.0</value>              <!-- creditPartial -->
+           		<ref bean="appSetting"/>
             </list>
         </property>
     </bean>
