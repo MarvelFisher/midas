@@ -184,8 +184,13 @@
 				<value>0</value>
 				<value>DAY_TRADING</value>
 				<value>0.0</value>
+				<ref bean="appSetting"/>
             </list>
        </property>
     </bean>
 
+	<bean id="appSetting" class="java.lang.String">
+  		<constructor-arg value=""/>
+	</bean>
+	
 </beans>
