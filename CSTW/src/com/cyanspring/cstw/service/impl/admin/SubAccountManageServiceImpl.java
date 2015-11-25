@@ -138,7 +138,7 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 	}
 
 	@Override
-	public void createNewExchangeAccount() {
+	public void createNewExchangeAccount(String name) {
 		
 	}
 

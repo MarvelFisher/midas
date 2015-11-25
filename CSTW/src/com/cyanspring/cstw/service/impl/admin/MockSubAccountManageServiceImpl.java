@@ -166,7 +166,7 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 
 
 	@Override
-	public void createNewExchangeAccount() {
+	public void createNewExchangeAccount(String name) {
 		exlist.add(new ExchangeAccountModel.Builder().id("id3").name("ex3")
 				.build());
 	}

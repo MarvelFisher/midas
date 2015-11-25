@@ -33,7 +33,7 @@ public interface ISubAccountManagerService extends IBasicService {
 	
 	List<User> getAvailableAssigneeList(SubAccountModel subAccount);
 	
-	void createNewExchangeAccount();
+	void createNewExchangeAccount(String name);
 	
 	void createNewSubAccount(String exchangeId);
 	

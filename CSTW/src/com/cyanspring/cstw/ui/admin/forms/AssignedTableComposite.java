@@ -86,9 +86,10 @@ public class AssignedTableComposite extends BasicTableComposite {
 				List<AssignedModel> input = (List<AssignedModel>) tableViewer.getInput();
 				int index = input.indexOf(model);
 				NewAssignedModelDialog dialog = new NewAssignedModelDialog(getShell(), service, subAccountModel);
-				dialog.open();
-				AssignedModel newAssignedModel = dialog.getCreatedAssignModel();
-				service.createNewAssignedModel(subAccountModel, newAssignedModel, index);
+				if ( TrayDialog.OK == dialog.open() ) {
+					AssignedModel newAssignedModel = dialog.getCreatedAssignModel();
+					service.createNewAssignedModel(subAccountModel, newAssignedModel, index);
+				}
 				tableViewer.refresh();
 			}
 		};
