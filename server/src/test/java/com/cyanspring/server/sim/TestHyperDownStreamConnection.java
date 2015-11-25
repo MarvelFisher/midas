@@ -27,14 +27,15 @@ public class TestHyperDownStreamConnection {
 	private ChildOrder buyMarketOrder, sellMarketOrder;
 	private Quote quote;
 	private int updateCount;
-	
+
 	private double getHitPrice(Quote quote, ChildOrder order) {
-		if(order.getSide().isBuy())
+		if(order.getSide().isBuy()) {
 			return quote.getAsk();
-		else
+		} else {
 			return quote.getBid();
+		}
 	}
-	
+
 	IDownStreamListener fillOrderListener = new IDownStreamListener() {
 		@Override
 		public void onState(boolean on) {
@@ -78,7 +79,7 @@ public class TestHyperDownStreamConnection {
 		public void onError(String orderId, String message) {
 		}
 	};
-	
+
 	IDownStreamListener rejectOrderListener = new IDownStreamListener() {
 		@Override
 		public void onState(boolean on) {
@@ -106,23 +107,23 @@ public class TestHyperDownStreamConnection {
 		//connection.init();
 		buyOrder = new ChildOrder(symbol, OrderSide.Buy, 2000,
 				68, ExchangeOrderType.LIMIT, "parentOrderId", "strategyId", Default.getUser(), Default.getAccount(), null);
-		
+
 		sellOrder = new ChildOrder(symbol, OrderSide.Sell, 2000,
 				67, ExchangeOrderType.LIMIT, "parentOrderId", "strategyId", Default.getUser(), Default.getAccount(), null);
-		
+
 		buyMarketOrder = new ChildOrder(symbol, OrderSide.Buy, 2000,
 				0.0, ExchangeOrderType.MARKET, "parentOrderId", "strategyId", Default.getUser(), Default.getAccount(), null);
-		
+
 		sellMarketOrder = new ChildOrder(symbol, OrderSide.Sell, 2000,
 				0.0, ExchangeOrderType.MARKET, "parentOrderId", "strategyId", Default.getUser(), Default.getAccount(), null);
-		
-		
+
+
 		quote = new Quote(symbol, null, null);
 		quote.setAsk(68);
 		quote.setBid(67);
 		updateCount = 0;
 	}
-	
+
 	@Test
 	public void testFillBuyOrder() throws DownStreamException {
 		IDownStreamSender sender = connection.setListener(fillOrderListener);
@@ -130,7 +131,7 @@ public class TestHyperDownStreamConnection {
 		sender.newOrder(buyOrder);
 		assertEquals(1, updateCount);
 	}
-	
+
 	@Test
 	public void testFillSellOrder() throws DownStreamException {
 		IDownStreamSender sender = connection.setListener(fillOrderListener);
@@ -151,7 +152,7 @@ public class TestHyperDownStreamConnection {
 		connection.processQuoteEvent(new QuoteEvent(symbol, null, quote));
 		assertEquals(2, updateCount);
 	}
-	
+
 	@Test
 	public void testNewSellOrder() throws DownStreamException {
 		IDownStreamSender sender = connection.setListener(newOrderListener);
@@ -164,7 +165,7 @@ public class TestHyperDownStreamConnection {
 		connection.processQuoteEvent(new QuoteEvent(symbol, null, quote));
 		assertEquals(2, updateCount);
 	}
-	
+
 	@Test
 	public void testFillBuyMarketOrder() throws DownStreamException {
 		IDownStreamSender sender = connection.setListener(fillOrderListener);
@@ -172,7 +173,7 @@ public class TestHyperDownStreamConnection {
 		sender.newOrder(buyMarketOrder);
 		assertEquals(1, updateCount);
 	}
-	
+
 	@Test
 	public void testFillSellMarketOrder() throws DownStreamException {
 		IDownStreamSender sender = connection.setListener(fillOrderListener);
@@ -193,5 +194,5 @@ public class TestHyperDownStreamConnection {
 		assertEquals(2, updateCount);
 	}
 
-	
+
 }

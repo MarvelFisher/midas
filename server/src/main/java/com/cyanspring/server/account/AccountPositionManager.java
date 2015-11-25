@@ -142,6 +142,7 @@ import com.cyanspring.common.marketdata.Quote;
 import com.cyanspring.common.marketdata.QuoteExtDataField;
 import com.cyanspring.common.marketdata.QuoteUtils;
 import com.cyanspring.common.marketsession.MarketSessionData;
+import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.message.ErrorMessage;
 import com.cyanspring.common.message.ExtraEventMessage;
 import com.cyanspring.common.message.ExtraEventMessageBuilder;
@@ -171,6 +172,7 @@ import com.cyanspring.server.validation.transaction.SystemSuspendValidator;
 import com.google.common.base.Strings;
 
 public class AccountPositionManager implements IPlugin {
+
 	private static final Logger log = LoggerFactory
 			.getLogger(AccountPositionManager.class);
 
@@ -252,6 +254,9 @@ public class AccountPositionManager implements IPlugin {
 
 	@Autowired(required = false)
 	private IRefDataChecker refDataChecker;
+
+	@Autowired (required = false)
+	private MarketSessionUtil marketSessionUtil;
 
 	private IQuoteFeeder quoteFeeder = new IQuoteFeeder() {
 
@@ -654,12 +659,13 @@ public class AccountPositionManager implements IPlugin {
 
 			for (String id : event.getAccountIdList()) {
 				Account account = accountKeeper.getAccount(id);
-				if (null != account)
+				if (null != account) {
 					accountList.add(account);
-				else
+				} else {
 					log.info(
 							"(AllPositionRequestEvent) can't find this account:{}",
 							id);
+				}
 
 			}
 		}
@@ -783,12 +789,25 @@ public class AccountPositionManager implements IPlugin {
 			Quote quote = marketData.get(position.getSymbol());
 			price = QuoteUtils.getMarketablePrice(quote, position.getQty());
 		}
+
+		Date tradeDate = Calendar.getInstance().getTime();
+		String symbol = position.getSymbol();
+		if (marketSessionUtil != null) {
+			try {
+				tradeDate = marketSessionUtil.getCurrentMarketSession(symbol).getTradeDateByDate();
+			} catch (Exception e) {
+				log.error(e.getMessage());
+				log.error("Can't find market session or trade date for symbol " + symbol);
+				log.error("Set trade date to current time " + tradeDate);
+			}
+		}
+
 		try {
 			Execution exec = new Execution(position.getSymbol(),
 					position.getQty() > 0 ? OrderSide.Sell : OrderSide.Buy,
 					Math.abs(position.getQty()), price, "", "", "", IdGenerator
 							.getInstance().getNextID(), position.getUser(),
-					position.getAccount(), "");
+					position.getAccount(), "", tradeDate);
 
 			positionKeeper.processExecution(exec,
 					accountKeeper.getAccount(position.getAccount()));
@@ -1173,8 +1192,9 @@ public class AccountPositionManager implements IPlugin {
 
 			accountList = accountKeeper.getAllAccounts();
 			user2AccountMap = new HashMap<>();
-			if (null == accountList)
+			if (null == accountList) {
 				accountList = new ArrayList<>();
+			}
 
 			if (accountList.size() < limitUser) {
 				for (Account account : accountList) {
@@ -1237,14 +1257,16 @@ public class AccountPositionManager implements IPlugin {
 			}
 
 			user2AccountMap = new HashMap<>();
-			if (null != accountList && !accountList.isEmpty())
+			if (null != accountList && !accountList.isEmpty()) {
 				user2AccountMap.put(id, accountList.get(0));
+			}
 
 			for (UserGroup ug : userGroup.getManageeSet()) {
 				List<Account> tempList = accountKeeper
 						.getAccounts(ug.getUser());
-				if (null == tempList || tempList.isEmpty())
+				if (null == tempList || tempList.isEmpty()) {
 					continue;
+				}
 
 				user2AccountMap.put(ug.getUser(), tempList.get(0));
 			}
@@ -1504,16 +1526,18 @@ public class AccountPositionManager implements IPlugin {
 		if (qExt.fieldExists(QuoteExtDataField.SETTLEPRICE.value())) {
 			if (PriceUtils.GreaterThan(
 					qExt.get(Double.class,
-							QuoteExtDataField.SETTLEPRICE.value()), 0))
+							QuoteExtDataField.SETTLEPRICE.value()), 0)) {
 				settlePrices.put(
 						symbol,
 						qExt.get(Double.class,
 								QuoteExtDataField.SETTLEPRICE.value()));
+			}
 		} else if (qExt.fieldExists(QuoteExtDataField.PRECLOSE.value())) {
 			Double preSettlePrice = settlePrices.get(symbol);
 			if (preSettlePrice != null
-					&& PriceUtils.GreaterThan(preSettlePrice, 0))
+					&& PriceUtils.GreaterThan(preSettlePrice, 0)) {
 				return;
+			}
 			if (PriceUtils.GreaterThan(
 					qExt.get(Double.class, QuoteExtDataField.PRECLOSE.value()),
 					0)) {
@@ -1778,11 +1802,13 @@ public class AccountPositionManager implements IPlugin {
 					List<OpenPosition> openPositionList,
 					List<ClosedPosition> closedPositionList) {
 
-				if (null == openPositionList)
+				if (null == openPositionList) {
 					openPositionList = new ArrayList<OpenPosition>();
+				}
 
-				if (null == closedPositionList)
+				if (null == closedPositionList) {
 					closedPositionList = new ArrayList<ClosedPosition>();
+				}
 
 				try {
 					AllPositionSnapshotReplyEvent reply = new AllPositionSnapshotReplyEvent(
@@ -1997,11 +2023,13 @@ public class AccountPositionManager implements IPlugin {
 					Double rate = fxConverter.getFxRate(symbol);
 					if (null == rate || PriceUtils.isZero(rate)) {
 						log.debug("Waiting on FX rate: " + symbol);
-						if(null == fxSymbolTimeoutChecker)
+						if(null == fxSymbolTimeoutChecker) {
 							fxSymbolTimeoutChecker = new TimeThrottler(60000);
-						
-						if(fxSymbolTimeoutChecker.check())
+						}
+
+						if(fxSymbolTimeoutChecker.check()) {
 							log.error("Waiting for FX rate too long, as a result, risk control is not working!!!: " + symbol);
+						}
 						return;
 					}
 				}
@@ -2174,8 +2202,9 @@ public class AccountPositionManager implements IPlugin {
 		List<OpenPosition> positions = positionKeeper
 				.getOverallPosition(account);
 		for (OpenPosition position : positions) {
-			if (PriceUtils.Equal(position.getAvailableQty(), 0))
+			if (PriceUtils.Equal(position.getAvailableQty(), 0)) {
 				continue;
+			}
 			Quote quote = marketData.get(position.getSymbol());
 			if (PriceUtils
 					.EqualLessThan(position.getAcPnL(), -positionStopLoss)
@@ -2286,8 +2315,9 @@ public class AccountPositionManager implements IPlugin {
 
 				for (int i = 0; i < positions.size(); i++) {
 					OpenPosition position = positions.get(i);
-					if (PriceUtils.Equal(position.getAvailableQty(), 0))
+					if (PriceUtils.Equal(position.getAvailableQty(), 0)) {
 						continue;
+					}
 					Quote quote = marketData.get(position.getSymbol());
 					if (!quoteIsValid(quote)) {
 						continue;
@@ -2410,35 +2440,35 @@ public class AccountPositionManager implements IPlugin {
 		double cashAvailable = 0.0;
 		try {
 			Account account = accountKeeper.getAccount(event.getAccount());
-			if(null == account) {
+			if (null == account) {
 					message = MessageLookup.buildEventMessage(
 							ErrorMessage.ACCOUNT_NOT_EXIST, "Account not exist");
 				throw new AccountException(message, ErrorMessage.ACCOUNT_NOT_EXIST);
 			}
-			
+
 			cashAvailable = account.getCashAvailable();
 			RefData refData = refDataManager.getRefData(event.getSymbol());
 			Quote quote = marketData.get(event.getSymbol());
-			
-			allowedQty = positionKeeper.getMaxOrderQtyAllowed(account, refData, event.getOrderSide(), 
+
+			allowedQty = positionKeeper.getMaxOrderQtyAllowed(account, refData, event.getOrderSide(),
 					event.getOrderType(), event.getPrice(), quote, refDataChecker, Default.getCreditPartial());
-			
+
 		} catch (Exception e) {
 			ok = false;
 			log.warn(e.getMessage(), e);
 		}
-		
+
 		MaxOrderQtyAllowedReplyEvent reply = new MaxOrderQtyAllowedReplyEvent(event.getKey(), event.getSender(),
 							ok, event.getTxId(), message, event.getAccount(), event.getSymbol(),
 							allowedQty, cashAvailable);
-		
+
 		try {
 			eventManager.sendRemoteEvent(reply);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
 	}
-	
+
 	private String generateAccountId() {
 		return Default.getAccountPrefix()
 				+ IdGenerator.getInstance().getNextSimpleId();
@@ -2492,7 +2522,6 @@ public class AccountPositionManager implements IPlugin {
 	}
 
 	public void processSettlementEvent(SettlementEvent event) {
-
 		String symbol = event.getSymbol();
 		log.info("Received SettlementEvent: " + symbol);
 
@@ -2515,16 +2544,27 @@ public class AccountPositionManager implements IPlugin {
 					symbol);
 
 			if (!PriceUtils.isZero(position.getQty())) {
-
 				double price = quote != null ? QuoteUtils.getMarketablePrice(
 						quote, position.getQty()) : settlePrice;
+
+				Date tradeDate = Calendar.getInstance().getTime();
+				if (marketSessionUtil != null) {
+					try {
+						tradeDate = marketSessionUtil.getCurrentMarketSession(symbol).getTradeDateByDate();
+					} catch (Exception e) {
+						log.error(e.getMessage());
+						log.error("Can't find market session or trade date for symbol " + symbol);
+						log.error("Set trade date to current time " + tradeDate);
+					}
+				}
+
 				try {
 					Execution exec = new Execution(symbol,
 							position.getQty() > 0 ? OrderSide.Sell
 									: OrderSide.Buy,
 							Math.abs(position.getQty()), price, "", "", "",
 							"Settlement", position.getUser(),
-							position.getAccount(), "Settlement");
+							position.getAccount(), "Settlement", tradeDate);
 					exec.put(OrderField.ID.value(), IdGenerator.getInstance()
 							.getNextID() + "STLM");
 

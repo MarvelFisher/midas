@@ -96,6 +96,7 @@ public class ExchangeAccountDetailsPage implements IDetailsPage {
 		tableComposite = new InstrumentInfoTableComposite(client, SWT.NONE);
 		GridData gd3 = new GridData();
 		gd3.horizontalSpan = 2;
+		gd3.heightHint = 150;
 		tableComposite.setLayoutData(gd3);
 		toolkit.adapt(tableComposite);
 		

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.util.TimeUtil;
 
 public class TestPositionKeeper {
+
 	private static final Logger log = LoggerFactory
 			.getLogger(TestPositionKeeper.class);
 
@@ -39,10 +41,12 @@ public class TestPositionKeeper {
 
 	private Execution createExecution(OrderSide side, double qty, double price) {
 		Execution exe = null;
+		Date tradeDate = Calendar.getInstance().getTime();
+
 		try {
 			exe = new Execution("AUDUSD", side, qty, price, "orderId",
 					"parentOrderId", "strategyId", "EXEC-" + count++,
-					Default.getUser(), Default.getAccount(), null);
+					Default.getUser(), Default.getAccount(), null, tradeDate);
 		} catch (OrderException e) {
 			log.error(e.getMessage(), e);
 			;
@@ -330,8 +334,9 @@ public class TestPositionKeeper {
 
 		@Override
 		public RefData getRefData(String symbol) {
-			if (symbol.equals("AUDUSD"))
+			if (symbol.equals("AUDUSD")) {
 				return refData;
+			}
 			return null;
 		}
 
@@ -375,13 +380,14 @@ public class TestPositionKeeper {
 		@Override
 		public void setQuoteFile(String quoteFile) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void saveRefDataToFile() {
 			// TODO Auto-generated method stub
-			
+
 		}
 	}
+
 }

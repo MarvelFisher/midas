@@ -2,20 +2,23 @@
  * Copyright (c) 2011-2012 Cyan Spring Limited
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms specified by license file attached.
- * 
+ *
  * Software distributed under the License is released on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
 package com.cyanspring.server.downstream.fix;
 
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import quickfix.DoNotSend;
 import quickfix.FieldNotFound;
@@ -47,13 +50,14 @@ import com.cyanspring.common.business.OrderField;
 import com.cyanspring.common.downstream.DownStreamException;
 import com.cyanspring.common.downstream.IDownStreamListener;
 import com.cyanspring.common.downstream.IDownStreamSender;
+import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.message.ErrorMessage;
-import com.cyanspring.common.type.ExchangeOrderType;
 import com.cyanspring.common.type.OrdStatus;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.server.fix.IFixDownStreamConnection;
 
 public class FixDownStreamConnection implements IFixDownStreamConnection {
+
 	private static final Logger log = LoggerFactory
 			.getLogger(FixDownStreamConnection.class);
 	private SessionID sessionID;
@@ -61,15 +65,18 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
 	private boolean on;
 	// this map contains both the child order id and fix clOrderId
 	private Map<String, ChildOrder> orders = Collections.synchronizedMap(new HashMap<String, ChildOrder>());
-	
+
+	@Autowired (required = false)
+	private MarketSessionUtil marketSessionUtil;
+
 	public FixDownStreamConnection(SessionID sessionID) {
 		this.sessionID = sessionID;
 	}
-	
+
 	private String getNextClOrderId() {
 		return IdGenerator.getInstance().getNextID() + "X";
 	}
-	
+
 	public class FixDownStreamSender implements IDownStreamSender {
 		private SessionID sessionID;
 
@@ -89,12 +96,14 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
 
 		@Override
 		public void newOrder(ChildOrder order) throws DownStreamException {
-			if (listener == null)
+			if (listener == null) {
 				throw new DownStreamException("Null listener");
+			}
 
-			if (order == null)
+			if (order == null) {
 				throw new DownStreamException("Order sent in is null");
-			
+			}
+
 			String clOrderId = getNextClOrderId();
 			order.put(OrderField.CLORDERID.value(), clOrderId);
 			order.setOrdStatus(OrdStatus.PENDING_NEW);
@@ -103,24 +112,24 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
 			quickfix.fix42.NewOrderSingle nos;
 			try {
 				nos = new quickfix.fix42.NewOrderSingle(
-				        new ClOrdID(clOrderId), 
-				        new HandlInst('1'), 
+				        new ClOrdID(clOrderId),
+				        new HandlInst('1'),
 				        new Symbol(order.getSymbol()),
-				        new Side(FixUtils.toFixOrderSide(order.getSide())), 
-				        new TransactTime(), 
+				        new Side(FixUtils.toFixOrderSide(order.getSide())),
+				        new TransactTime(),
 				        new OrdType(FixUtils.toFixExchangeOrderType(order.getType()))
 				    );
-//	not sure why quickfixj requires to set price always, bug???				
+//	not sure why quickfixj requires to set price always, bug???
 //				if (order.getType() != ExchangeOrderType.MARKET)
 					nos.set(new Price(order.getPrice()));
-				
+
 				nos.set(new OrderQty(order.getQuantity()));
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 				e.printStackTrace();
 				throw new DownStreamException(e.getMessage());
 			}
-	        
+
 			log.debug("New FIX order: " + order.getId() + ", " + clOrderId + ", " + nos.toString());
 	        sendMessage(nos);
 		}
@@ -128,20 +137,22 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
 		@Override
 		public void amendOrder(ChildOrder order, Map<String, Object> fields)
 				throws DownStreamException {
-			if (listener == null)
+			if (listener == null) {
 				throw new DownStreamException("Null listener",ErrorMessage.DOWN_STREAM_NULL_LISTENER);
-			
-			
-			if (fields == null)
+			}
+
+
+			if (fields == null) {
 				throw new DownStreamException("amendOrder: fields sent in null",ErrorMessage.DOWN_STREAM_NULL_FIELDS);
-			
+			}
+
 
 			String clOrdID = order.get(String.class, OrderField.CLORDERID.value());
 			ChildOrder existing = orders.get(clOrdID);
 			if (null == existing) {
 				throw new DownStreamException("Amend order id not found: " + order.getId(),ErrorMessage.ORDER_ID_NOT_FOUND);
 			}
-			
+
 			if (order.getOrdStatus().isPending() || order.getOrdStatus().isCompleted()) {
 				throw new DownStreamException("Amend order isn't in ready status: " + order.getId() + " - " + order.getOrdStatus(),ErrorMessage.ORDER_NOT_IN_READY_STATUS);
 			}
@@ -150,23 +161,25 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
 			order.setOrdStatus(OrdStatus.PENDING_REPLACE);
 	        try {
 				quickfix.fix42.OrderCancelReplaceRequest message = new quickfix.fix42.OrderCancelReplaceRequest(
-				        new OrigClOrdID(clOrdID), 
-				        new ClOrdID(getNextClOrderId()), 
+				        new OrigClOrdID(clOrdID),
+				        new ClOrdID(getNextClOrderId()),
 				        new HandlInst('1'),
-				        new Symbol(order.getSymbol()), 
-				        new Side(FixUtils.toFixOrderSide(order.getSide())), 
+				        new Symbol(order.getSymbol()),
+				        new Side(FixUtils.toFixOrderSide(order.getSide())),
 				        new TransactTime(),
 				        new OrdType(FixUtils.toFixExchangeOrderType(order.getType()))
 				   );
-				
+
 				Double qty = (Double)fields.get(OrderField.QUANTITY.value());
-				if (null != qty)
+				if (null != qty) {
 					message.set(new OrderQty(qty));
-				
+				}
+
 				Double price = (Double)fields.get(OrderField.PRICE.value());
-				if (null != price)
+				if (null != price) {
 					message.set(new Price(price));
-					
+				}
+
 				log.debug("Amend FIX order: " + order.getId() + ", " + clOrdID);
 				sendMessage(message);
 			} catch (Exception e) {
@@ -178,15 +191,16 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
 
 		@Override
 		public void cancelOrder(ChildOrder order) throws DownStreamException {
-			if (listener == null)
+			if (listener == null) {
 				throw new DownStreamException("Null listener",ErrorMessage.DOWN_STREAM_NULL_LISTENER);
-			
+			}
+
 			String clOrdID = order.get(String.class, OrderField.CLORDERID.value());
 			ChildOrder existing = orders.get(clOrdID);
 			if (null == existing) {
 				throw new DownStreamException("Cancel order id not found: " + order.getId(),ErrorMessage.ORDER_ID_NOT_FOUND);
 			}
-			
+
 			if (order.getOrdStatus().isPending() || order.getOrdStatus().isCompleted()) {
 				throw new DownStreamException("Cancel order isn't in ready status: " + order.getId() + " - " + order.getOrdStatus(),ErrorMessage.ORDER_NOT_IN_READY_STATUS);
 			}
@@ -196,10 +210,10 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
 	        quickfix.fix42.OrderCancelRequest message;
 			try {
 				message = new quickfix.fix42.OrderCancelRequest(
-				        new OrigClOrdID(clOrdID), 
-				        new ClOrdID(getNextClOrderId()), 
+				        new OrigClOrdID(clOrdID),
+				        new ClOrdID(getNextClOrderId()),
 				        new Symbol(order.getSymbol()),
-				        new Side(FixUtils.toFixOrderSide(order.getSide())), 
+				        new Side(FixUtils.toFixOrderSide(order.getSide())),
 				        new TransactTime());
 
 				log.debug("Cancel FIX order: " + order.getId() + ", " + clOrdID);
@@ -217,14 +231,15 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
 		}
 
 	}
-	
+
 	@Override
 	public IDownStreamSender setListener(IDownStreamListener listener) {
 		this.listener = listener;
-		
-		if (null == listener)
+
+		if (null == listener) {
 			return null;
-		
+		}
+
 		try {
 			listener.onState(on);
 		} catch (Exception e) {
@@ -240,11 +255,11 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
 			log.error("processExecutionReport: Null listener");
 			return;
 		}
-		
+
 		String clOrderId;
 		String newClOrderId = null;
         ExecType execType = (ExecType)message.getField(new ExecType());
-		if (execType.valueEquals(quickfix.field.ExecType.REPLACE) || 
+		if (execType.valueEquals(quickfix.field.ExecType.REPLACE) ||
 			execType.valueEquals(quickfix.field.ExecType.CANCELED) ||
 			execType.valueEquals(quickfix.field.ExecType.REJECTED)) {
 			if (message.isSetField(OrigClOrdID.FIELD)) {
@@ -265,7 +280,7 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
         	listener.onError(clOrderId, error);
         	return;
         }
-        
+
        	order.setCumQty(message.getDouble(quickfix.field.CumQty.FIELD));
    		order.setAvgPx(message.getDouble(quickfix.field.AvgPx.FIELD));
 
@@ -286,7 +301,7 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
         	order.put(OrderField.CLORDERID.value(), newClOrderId);
         	order.touch();
         	listener.onOrder(com.cyanspring.common.type.ExecType.REPLACE, order, null, null);
-        } else if (execType.valueEquals(quickfix.field.OrdStatus.REJECTED)) { 
+        } else if (execType.valueEquals(quickfix.field.OrdStatus.REJECTED)) {
         	// most reject reason is in the text field
         	String reason = null;
         	if (message.isSetField(quickfix.field.Text.FIELD)) {
@@ -296,10 +311,10 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
         		char status = message.getField(new quickfix.field.OrdStatus()).getValue();
         		order.setOrdStatus(OrdStatus.getStatus(status));
         	}
-				
+
         	order.touch();
         	listener.onOrder(com.cyanspring.common.type.ExecType.REJECTED, order, null, reason);
-			
+
         }  else if (execType.valueEquals(quickfix.field.OrdStatus.CANCELED)) {
             orders.remove(clOrderId);
             orders.put(newClOrderId, order);
@@ -308,20 +323,32 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
         	listener.onOrder(com.cyanspring.common.type.ExecType.CANCELED, order, null, null);
         } else if ( execType.valueEquals(quickfix.field.OrdStatus.PARTIALLY_FILLED) ||
         		execType.valueEquals(quickfix.field.OrdStatus.FILLED) ) {
-			
+
         	String execId = message.getField(new ExecID()).getValue();
 	        double execQty = message.getField(new quickfix.field.LastShares()).getValue(); //LastShares
 	        double execPrice = message.getField(new LastPx()).getValue();
 
+	        Date tradeDate = Calendar.getInstance().getTime();
+    		String symbol = order.getSymbol();
+    		if (marketSessionUtil != null) {
+    			try {
+    				tradeDate = marketSessionUtil.getCurrentMarketSession(symbol).getTradeDateByDate();
+    			} catch (Exception e) {
+    				log.error(e.getMessage());
+    				log.error("Can't find market session or trade date for symbol " + symbol);
+    				log.error("Set trade date to current time " + tradeDate);
+    			}
+    		}
+
 			try {
-				Execution exec = new Execution(order.getSymbol(), order.getSide(), execQty, execPrice, 
-						order.getId(), order.getParentOrderId(), order.getStrategyId(), execId, 
-						order.getUser(), order.getAccount(), order.getRoute());
+				Execution exec = new Execution(order.getSymbol(), order.getSide(), execQty, execPrice,
+						order.getId(), order.getParentOrderId(), order.getStrategyId(), execId,
+						order.getUser(), order.getAccount(), order.getRoute(), tradeDate);
 				if (message.isSetField(quickfix.field.OrdStatus.FIELD)) {
 	        		char status = message.getField(new quickfix.field.OrdStatus()).getValue();
 	        		order.setOrdStatus(OrdStatus.getStatus(status));
 	        	}
-	        	
+
 	        	order.touch();
 	        	listener.onOrder(com.cyanspring.common.type.ExecType.getType(execType.getValue()), order, exec, null);
 			} catch (OrderException e) {
@@ -334,16 +361,16 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
         	}
         	listener.onOrder(com.cyanspring.common.type.ExecType.getType(execType.getValue()), order, null, null);
         }
-        
+
 	}
-	
+
 	private void processCancelReject(Message message, SessionID sessionId) throws FieldNotFound
 	{
 		if (listener == null) {
 			log.error("processCancelReject: Null listener");
 			return;
 		}
-		
+
         String clOrderId = message.getField(new OrigClOrdID()).getValue();
         ChildOrder order = orders.get(clOrderId);
         if (null == order) {
@@ -352,7 +379,7 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
         	listener.onError(clOrderId, error);
         	return;
         }
-        
+
     	if (message.isSetField(quickfix.field.OrdStatus.FIELD)) {
     		char status = message.getField(new quickfix.field.OrdStatus()).getValue();
     		order.setOrdStatus(OrdStatus.getStatus(status));
@@ -364,12 +391,12 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
     	listener.onOrder(com.cyanspring.common.type.ExecType.REJECTED, order, null, reason);
 	}
 
-	
+
 	@Override
 	public void fromAdmin(Message message, SessionID sessionID) throws FieldNotFound,
 			IncorrectDataFormat, IncorrectTagValue, RejectLogon {
 	}
-	
+
 	@Override
 	public void fromApp(Message message, SessionID sessionID) throws FieldNotFound,
 			IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType {
@@ -385,40 +412,42 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
         } catch (Exception e) {
 			log.error(e.getMessage(), e);
             e.printStackTrace();
-        }		
-		
+        }
+
 	}
-	
+
 	@Override
 	public void onCreate(SessionID arg0) {
 		log.info("Fix session created: " + arg0.toString());
-		
+
 	}
-	
+
 	@Override
 	public void onLogon(SessionID arg0) {
 		this.on = true;
 		try {
-			if(null != listener)
+			if (null != listener) {
 				listener.onState(on);
+			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	@Override
 	public void onLogout(SessionID arg0) {
 		this.on = false;
 		try {
-			if(null != listener)
+			if (null != listener) {
 				listener.onState(on);
+			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	@Override
@@ -442,13 +471,13 @@ public class FixDownStreamConnection implements IFixDownStreamConnection {
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void uninit() {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 }

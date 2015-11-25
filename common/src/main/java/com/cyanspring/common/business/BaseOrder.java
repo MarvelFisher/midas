@@ -2,9 +2,9 @@
  * Copyright (c) 2011-2012 Cyan Spring Limited
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms specified by license file attached.
- * 
+ *
  * Software distributed under the License is released on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
@@ -21,9 +21,9 @@ import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.util.IdGenerator;
 
 public abstract class BaseOrder extends DataObject {
-	
+
 	abstract protected String generateId();
-	
+
 	public Map<String, Object> update(Map<String, Object> map) {
 		Map<String, Object> result = new HashMap<String, Object>();
 		for(Entry<String, Object> entry: map.entrySet()) {
@@ -36,7 +36,7 @@ public abstract class BaseOrder extends DataObject {
 	protected BaseOrder() {
 		super();
 	}
-	
+
 	protected void init() {
 		Date now = Clock.getInstance().now();
 		put(OrderField.CREATED.value(), now);
@@ -45,12 +45,12 @@ public abstract class BaseOrder extends DataObject {
 		put(OrderField.SEQ_ID.value(), IdGenerator.getInstance().getNextID());
 		put(OrderField.SERVER_ID.value(), IdGenerator.getInstance().getSystemId());
 	}
-	
+
 	public BaseOrder(HashMap<String, Object> map) {
 		super(map);
 		init();
 	}
-	
+
 	public BaseOrder(String symbol, OrderSide side, double quantity, double price)
 	{
 		init();
@@ -59,7 +59,7 @@ public abstract class BaseOrder extends DataObject {
 		put(OrderField.QUANTITY.value(), quantity);
 		put(OrderField.PRICE.value(), price);
 	}
-	
+
 	public Date getModified() {
 		return get(Date.class, OrderField.MODIFIED.value());
 	}
@@ -95,15 +95,19 @@ public abstract class BaseOrder extends DataObject {
 	public String getSymbol() {
 		return get(String.class, OrderField.SYMBOL.value());
 	}
-	
+
 	public String getServerId() {
 		return get(String.class, OrderField.SERVER_ID.value());
+	}
+
+	public Date getTradeDate() {
+		return get(Date.class, OrderField.TRADE_DATE.value());
 	}
 
 	protected void setId(String id) {
 		put(OrderField.ID.value(), id);
 	}
-	
+
 	protected void setSymbol(String symbol) {
 		put(OrderField.SYMBOL.value(), symbol);
 	}
@@ -111,7 +115,7 @@ public abstract class BaseOrder extends DataObject {
 	public void setModified(Date modified) {
 		put(OrderField.MODIFIED.value(), modified);
 	}
-	
+
 	protected void setCreated(Date created) {
 		put(OrderField.CREATED.value(), created);
 	}
@@ -119,39 +123,39 @@ public abstract class BaseOrder extends DataObject {
 	protected void setSide(OrderSide side) {
 		put(OrderField.SIDE.value(), side);
 	}
-	
+
 	protected void setSeqId(String seqId) {
 		put(OrderField.SEQ_ID.value(), seqId);
 	}
-	
+
 	protected void setServerId(String systemId) {
 		put(OrderField.SERVER_ID.value(), systemId);
 	}
-	
+
 	public String getUser() {
 		return get(String.class, OrderField.USER.value());
 	}
-	
+
 	public String getAccount() {
 		return get(String.class, OrderField.ACCOUNT.value());
 	}
-	
+
 	public void setUser(String user) {
 		put(OrderField.USER.value(), user);
 	}
-	
+
 	public void setAccount(String account) {
 		put(OrderField.ACCOUNT.value(), account);
 	}
-	
+
 	public String getRoute() {
 		return get(String.class, OrderField.ROUTE.value());
 	}
-	
+
 	public void setRoute(String route) {
 		put(OrderField.ROUTE.value(), route);
 	}
-	
+
 	protected String fieldsToString() {
 		String id = get(String.class, OrderField.ID.value());
 		String symbol = get(String.class, OrderField.SYMBOL.value());
@@ -161,7 +165,7 @@ public abstract class BaseOrder extends DataObject {
 		String user = get(String.class, OrderField.USER.value());
 		String account = get(String.class, OrderField.ACCOUNT.value());
 		String route = get(String.class, OrderField.ROUTE.value());
-		
+
 		return id + ", "
 		+ symbol + ", "
 		+ (side!=null?side.toString():"Two way") + ", "
@@ -172,7 +176,7 @@ public abstract class BaseOrder extends DataObject {
 		+ route
 		;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "[" + fieldsToString() + "]";
@@ -190,5 +194,5 @@ public abstract class BaseOrder extends DataObject {
 		put(OrderField.MODIFIED.value(), Clock.getInstance().now());
 		put(OrderField.SEQ_ID.value(), IdGenerator.getInstance().getNextID());
 	}
-	
+
 }

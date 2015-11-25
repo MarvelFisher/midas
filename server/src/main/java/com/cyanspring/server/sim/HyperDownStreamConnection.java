@@ -2,9 +2,9 @@
  * Copyright (c) 2011-2012 Cyan Spring Limited
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms specified by license file attached.
- * 
+ *
  * Software distributed under the License is released on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  ******************************************************************************/
@@ -13,12 +13,15 @@
 package com.cyanspring.server.sim;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.cyanspring.common.marketdata.*;
+import com.cyanspring.common.marketsession.MarketSessionUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +49,9 @@ import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.common.event.AsyncEventProcessor;
 
-public class HyperDownStreamConnection extends AsyncEventProcessor implements IDownStreamConnection, IDownStreamSender{
+public class HyperDownStreamConnection extends AsyncEventProcessor implements
+		IDownStreamConnection, IDownStreamSender {
+
 	private static final Logger log = LoggerFactory
 			.getLogger(HyperDownStreamConnection.class);
 
@@ -55,7 +60,10 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 
 	@Autowired
 	protected MarketDataManager marketDataManager;
-	
+
+	@Autowired (required = false)
+	private MarketSessionUtil marketSessionUtil;
+
 	private IQuoteChecker quoteChecker;
 
     private boolean checkSingleSide;
@@ -66,7 +74,7 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 	private IDownStreamListener listener;
 	private boolean cancel;
 	private boolean reject;
-	
+
 	private class HyperEnterOrderEvent extends AsyncEvent {
 		private ChildOrder order;
 
@@ -79,11 +87,11 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 			return order;
 		}
 	}
-	
+
 	private class HyperAmendOrderEvent extends AsyncEvent {
 		private ChildOrder order;
 		private Map<String, Object> fields;
-		
+
 		public HyperAmendOrderEvent(ChildOrder order, Map<String, Object> fields) {
 			super();
 			this.order = order;
@@ -97,7 +105,7 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 			return fields;
 		}
 	}
-	
+
 	private class HyperCancelOrderEvent extends AsyncEvent {
 		private ChildOrder order;
 
@@ -110,64 +118,77 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 			return order;
 		}
 	}
-	
+
 	private void acceptOrder(ChildOrder order) {
 		Map<String, ChildOrder> list = orders.get(order.getSymbol());
-		if(null == list) {
+		if (null == list) {
 			list = new ConcurrentHashMap<String, ChildOrder>();
 			orders.put(order.getSymbol(), list);
 		}
 		list.put(order.getId(), order);
 		order.setOrdStatus(OrdStatus.NEW);
-		listener.onOrder(ExecType.NEW, order, null, null);		
+		listener.onOrder(ExecType.NEW, order, null, null);
 	}
-	
+
 	private void fillOrder(Quote quote, ChildOrder order) {
 		double tradePrice = order.getSide().isBuy()?quote.getAsk():quote.getBid();
-		if(PriceUtils.isZero(tradePrice) && order.getType() == ExchangeOrderType.MARKET ) {
+		if (PriceUtils.isZero(tradePrice) && order.getType() == ExchangeOrderType.MARKET ) {
 			order.setOrdStatus(OrdStatus.REJECTED);
 			listener.onOrder(ExecType.REJECTED, order, null, "No market for market order");
 		}
-			
+
 		order.setAvgPx(tradePrice);
 		order.setCumQty(order.getQuantity());
 		order.setModified(Clock.getInstance().now());
 		order.setOrdStatus(OrdStatus.FILLED);
-		
+
+		Date tradeDate = Calendar.getInstance().getTime();
+		String symbol = order.getSymbol();
+		if (marketSessionUtil != null) {
+			try {
+				tradeDate = marketSessionUtil.getCurrentMarketSession(symbol).getTradeDateByDate();
+			} catch (Exception e) {
+				log.error(e.getMessage());
+				log.error("Can't find market session or trade date for symbol " + symbol);
+				log.error("Set trade date to current time " + tradeDate);
+			}
+		}
+
 		try {
-			Execution execution = new Execution(order.getSymbol(), 
-					order.getSide(), order.getQuantity(), 
-					tradePrice, order.getId(), order.getParentOrderId(), 
+			Execution execution = new Execution(order.getSymbol(),
+					order.getSide(), order.getQuantity(),
+					tradePrice, order.getId(), order.getParentOrderId(),
 					order.getStrategyId(),
 					IdGenerator.getInstance().getNextID() + "T",
-					order.getUser(), order.getAccount(), order.getRoute());
+					order.getUser(), order.getAccount(), order.getRoute(), tradeDate);
 			listener.onOrder(ExecType.FILLED, order, execution, null);
 		} catch (OrderException e) {
 			log.error(e.getMessage(), e);
 		}
 
-		
+
 	}
-	
+
 	private void deleteOrder(ChildOrder order) {
 		order.setOrdStatus(OrdStatus.CANCELED);
 		listener.onOrder(ExecType.CANCELED, order, null, null);
 	}
-	
+
 	private void rejectOrder(ChildOrder order) {
 		order.setOrdStatus(OrdStatus.REJECTED);
 		listener.onOrder(ExecType.REJECTED, order, null, null);
 	}
-	
+
 	private boolean quoteIsValid(Quote quote) {
-		if(null != quoteChecker && !quoteChecker.check(quote))
+		if (null != quoteChecker && !quoteChecker.check(quote)) {
 			return false;
-		
+		}
+
 		return !quote.isStale();
 	}
 
     private boolean checkOrder(Quote quote, ChildOrder order){
-        if(order.getSide().isBuy()) {
+        if (order.getSide().isBuy()) {
             return PriceUtils.validPrice(quote.getAsk()) &&
                     PriceUtils.EqualGreaterThan(order.getPrice(), quote.getAsk());
         } else {
@@ -175,9 +196,9 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
                     PriceUtils.EqualLessThan(order.getPrice(), quote.getBid());
         }
     }
-    
+
     private boolean checkVolume(Quote quote, ChildOrder order){
-    	if(order.getSide().isBuy()){
+    	if (order.getSide().isBuy()){
     		return quote.getAskVol() >= 0 && PriceUtils.validPrice(quote.getAsk());
     	} else {
     		return quote.getBid() >= 0 && PriceUtils.validPrice(quote.getBid());
@@ -185,24 +206,27 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
     }
 
 	private boolean isMarketable(Quote quote, ChildOrder order) {
-		if(!quoteIsValid(quote))
+		if (!quoteIsValid(quote)) {
 			return false;
+		}
 
 		if (order.getType() == ExchangeOrderType.MARKET) {
-			if (checkSingleSide)
-	            return checkVolume(quote, order);
-			else 
+			if (checkSingleSide) {
+				return checkVolume(quote, order);
+			} else {
 				return true;
+			}
 		}
-		
+
 		return checkOrder(quote, order);
 	}
 
 	@Override
 	public void init() throws Exception {
 		super.init();
-		if(null != this.getThread())
+		if (null != this.getThread()) {
 			this.getThread().setName("HyperMarket-Thread");
+		}
 		log.info("Initialising...");
 	}
 
@@ -228,12 +252,14 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 
 	@Override
 	public IDownStreamSender setListener(IDownStreamListener listener) throws DownStreamException {
-		if(listener != null && this.listener != null)
+		if (listener != null && this.listener != null) {
 			throw new DownStreamException("Only support one listener per downstream connection",ErrorMessage.DOWN_STREAM_TOO_MANY_LISTENER);
-		
+		}
+
 		this.listener = listener;
-		if(null != this.listener)
+		if (null != this.listener) {
 			this.listener.onState(true);
+		}
 		return this;
 	}
 
@@ -248,43 +274,43 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 	public IAsyncEventManager getEventManager() {
 		return eventManager;
 	}
-	
+
 	private void processQuote(Quote quote) {
 		quotes.put(quote.getSymbol(), quote);
 		Map<String, ChildOrder> list = orders.get(quote.getSymbol());
 		ArrayList<ChildOrder> matched = new ArrayList<ChildOrder>();
-		if(null != list) {
-			for(Entry<String, ChildOrder> entry: list.entrySet()) {
-				if(isMarketable(quote, entry.getValue())) {
+		if (null != list) {
+			for (Entry<String, ChildOrder> entry: list.entrySet()) {
+				if (isMarketable(quote, entry.getValue())) {
 					matched.add(entry.getValue());
 				}
 			}
 		}
-		
-		for(ChildOrder order: matched) {
+
+		for (ChildOrder order: matched) {
 			list.remove(order.getId());
 			fillOrder(quote, order);
 		}
 	}
-	
+
 	public void processQuoteEvent(QuoteEvent event) {
 		processQuote(event.getQuote());
 	}
-	
+
 	public void processHyperEnterOrderEvent(HyperEnterOrderEvent event) {
 		ChildOrder order = event.getOrder();
-		if(this.isReject()) {
+		if (this.isReject()) {
 			rejectOrder(order);
 			return;
 		}
-		
-		if(this.isCancel()) {
+
+		if (this.isCancel()) {
 			deleteOrder(order);
 			return;
 		}
-			
+
 		Quote quote = quotes.get(order.getSymbol());
-		if(null == quote) {
+		if (null == quote) {
 			acceptOrder(order);
 			QuoteSubEvent sub = new QuoteSubEvent(this.id, null, order.getSymbol());
 			eventManager.sendEvent(sub);
@@ -294,12 +320,12 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 				fillOrder(quote, order);
 			} else {
 				TimeInForce tif = order.get(TimeInForce.class, OrderField.TIF.value());
-				if(null != tif && 
+				if (null != tif &&
 				 (tif.equals(TimeInForce.FILL_OR_KILL) || tif.equals(TimeInForce.IMMEDIATE_OR_CANCEL))) {
 					deleteOrder(order);
 				} else {
 					acceptOrder(order);
-				}				
+				}
 			}
 		}
 	}
@@ -308,41 +334,41 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 	public void newOrder(ChildOrder order) throws DownStreamException {
 		this.onEvent(new HyperEnterOrderEvent(order));
 	}
-	
+
 	public void processHyperAmendOrderEvent(HyperAmendOrderEvent event)  {
 		ChildOrder order = event.getOrder();
 		Map<String, Object> fields = event.getFields();
 		Map<String, ChildOrder> list = orders.get(order.getSymbol());
-		if(null == list) {
+		if (null == list) {
 			listener.onOrder(ExecType.REJECTED, order, null, "Unable to find this child order: " + order.getId());
 			return;
 		}
-		
+
 		ChildOrder existing = list.get(order.getId());
-		if(null == existing) {
+		if (null == existing) {
 			listener.onOrder(ExecType.REJECTED, order, null, "Unable to find this child order: " + order.getId());
 			return;
 		}
-		
+
 		order = existing;
 		Object oQty = fields.get(OrderField.QUANTITY.value());
-		if(oQty != null) {
+		if (oQty != null) {
 			double qty = (Double)oQty;
 			order.setQuantity(qty);
 		}
-		
+
 		Object oPrice = fields.get(OrderField.PRICE.value());
-		if(oPrice != null) {
+		if (oPrice != null) {
 			double price = (Double)oPrice;
 			order.setPrice(price);
 		}
-		
+
 		Quote quote = quotes.get(order.getSymbol());
-		if(null == quote) {
+		if (null == quote) {
 			return;
 		}
-		
-		if(isMarketable(quote, order)) {
+
+		if (isMarketable(quote, order)) {
 			list.remove(order.getId());
 			fillOrder(quote, order);
 		} else {
@@ -361,22 +387,22 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 		ChildOrder order = event.getOrder();
 
 		Map<String, ChildOrder> list = orders.get(order.getSymbol());
-		if(null == list) {
+		if (null == list) {
 			listener.onOrder(ExecType.REJECTED, order, null, "Unable to find this child order: " + order.getId());
 			return;
 		}
-		
+
 		ChildOrder existing = list.get(order.getId());
-		if(null == existing) {
+		if (null == existing) {
 			listener.onOrder(ExecType.REJECTED, order, null, "Unable to find this child order: " + order.getId());
 			return;
 		}
-		
+
 		list.remove(order.getId());
 		order.setOrdStatus(OrdStatus.CANCELED);
 		listener.onOrder(ExecType.CANCELED, order, null, null);
 	}
-	
+
 	@Override
 	public void cancelOrder(ChildOrder order) throws DownStreamException {
 		this.onEvent(new HyperCancelOrderEvent(order));
@@ -410,5 +436,5 @@ public class HyperDownStreamConnection extends AsyncEventProcessor implements ID
 	public void setReject(boolean reject) {
 		this.reject = reject;
 	}
-    
+
 }

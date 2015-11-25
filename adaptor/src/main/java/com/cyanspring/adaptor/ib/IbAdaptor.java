@@ -14,6 +14,7 @@ import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.refdata.RefDataEvent;
 import com.cyanspring.common.event.refdata.RefDataRequestEvent;
 import com.cyanspring.common.marketdata.*;
+import com.cyanspring.common.marketsession.MarketSessionUtil;
 import com.cyanspring.common.staticdata.RefData;
 import com.cyanspring.common.stream.IStreamAdaptor;
 import com.cyanspring.common.type.*;
@@ -35,12 +36,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         IStreamAdaptor<IDownStreamConnection>, IAsyncEventListener {
+
     private static final Logger log = LoggerFactory.getLogger(IbAdaptor.class);
     private static final Logger newsLog = LoggerFactory
             .getLogger(IbAdaptor.class.getName() + ".NewsLog");
 
     @Autowired
     private IRemoteEventManager eventManager;
+
+    @Autowired (required = false)
+	private MarketSessionUtil marketSessionUtil;
 
     // connection parameters
     private String host;
@@ -114,15 +119,15 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                             isConnected =false;
                             notifyAdaptorState(false);
                             marketSubscribed = false;
-                            if(reqDataReceived){
+                            if (reqDataReceived){
                                 ConnectToIBGateway();
                             }else{
                                 requestRequireData();
                             }
                         } else {
-                            if(marketSubscribed && checkLastTimeInterval != 0
+                            if (marketSubscribed && checkLastTimeInterval != 0
                                     && ((System.currentTimeMillis() - lastTimeSend) > checkLastTimeInterval)) {
-                                if(reconnectOn) {
+                                if (reconnectOn) {
                                     log.warn("IB Gateway too long not tick,reconnect!" + id);
                                     clientSocket.eDisconnect();
                                     isConnected = false;
@@ -156,7 +161,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                     @Override
                     public void run() {
                         log.info(id + " Requesting open orders");
-                        
+
                         while(!clientSocket.isConnected()) {
                         	try {
 								Thread.sleep(1000);
@@ -180,7 +185,9 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     }
 
     private void ConnectToIBGateway() {
-        if(clientSocket.isConnected()) return;
+        if (clientSocket.isConnected()) {
+			return;
+		}
         log.info("Attempting to establish connection to IB TWS/Gateway..." + id);
         clear();
         clientSocket.eDisconnect();
@@ -190,7 +197,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         } catch (InterruptedException e) {
             log.warn(e.getMessage(), e);
         }
-        if(clientSocket.isConnected()){
+        if (clientSocket.isConnected()){
             lastTimeSend = System.currentTimeMillis();
             log.info(id + " connected");
         }
@@ -213,8 +220,9 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
             for (Entry<Integer, ChildOrder> entry : idToOrder.entrySet()) {
                 ChildOrder order = entry.getValue();
                 if (order.getOrdStatus().isCompleted()
-                        && TimeUtil.getTimePass(order.getModified()) > 20000)
-                    toBeRemoved.add(entry.getKey());
+                        && TimeUtil.getTimePass(order.getModified()) > 20000) {
+					toBeRemoved.add(entry.getKey());
+				}
             }
             for (Integer id : toBeRemoved) {
                 idToChildId.remove(id);
@@ -226,18 +234,18 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     private void notifyAdaptorState(boolean on){
         log.info(id + " notifyState, prev=" + prevStatus +",now=" + on);
-        if(prevStatus == on && !prevStatus){
+        if (prevStatus == on && !prevStatus){
             return;
         }else{
             prevStatus = on;
         }
-        if(marketDataStateListeners != null && marketDataStateListeners.size() > 0){
+        if (marketDataStateListeners != null && marketDataStateListeners.size() > 0){
             log.info(id + " sendState to marketDataListener");
             for (IMarketDataStateListener listener : marketDataStateListeners) {
                 listener.onState(on, this);
             }
         }
-        if(downStreamListener != null){
+        if (downStreamListener != null){
             log.info(id + " sendState to downStreamListener");
             downStreamListener.onState(on);
         }
@@ -249,7 +257,9 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     @Override
     public boolean getState() {
-        if(!clientSocket.isConnected()) return false;
+        if (!clientSocket.isConnected()) {
+			return false;
+		}
         return isConnected;
     }
 
@@ -322,8 +332,9 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
             list.remove(listener);
             if (list.size() == 0) { // no more listeners on this stock, cancel
                 // subscription
-                if (!symbolToId.containsKey(instrument))
-                    return;
+                if (!symbolToId.containsKey(instrument)) {
+					return;
+				}
                 Integer reqId = symbolToId.get(instrument);
                 clientSocket.cancelMktData(reqId);
                 if (reqMarketDepth) {
@@ -335,28 +346,28 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     @Override
     public void subscribeMultiMarketData(List<String> subscribeList, IMarketDataListener listener) throws MarketDataException {
-        for(String symbol: subscribeList){
+        for (String symbol: subscribeList){
             subscribeMarketData(symbol, listener);
         }
-        if(subscribeList != null && subscribeList.size() > 0){
+        if (subscribeList != null && subscribeList.size() > 0){
             marketSubscribed = true;
         }
     }
 
     @Override
     public void unsubscribeMultiMarketData(List<String> unSubscribeList, IMarketDataListener listener) {
-        for(String symbol: unSubscribeList){
+        for (String symbol: unSubscribeList){
             unsubscribeMarketData(symbol, listener);
         }
     }
 
     @Override
     public void onEvent(AsyncEvent event) {
-        if(!reqDataReceived) {
+        if (!reqDataReceived) {
             if (event instanceof RefDataEvent) {
                 log.debug("Ib Adapter Receive RefDataEvent - " + id + "-" + event.getKey());
                 RefDataEvent refDataEvent = (RefDataEvent) event;
-                if(refDataEvent != null && refDataEvent.isOk() && refDataEvent.getRefDataList().size() > 0) {
+                if (refDataEvent != null && refDataEvent.isOk() && refDataEvent.getRefDataList().size() > 0) {
                     for (RefData refData : refDataEvent.getRefDataList()) {
                         refDataBySymbolMap.put(refData.getSymbol(), refData);
                     }
@@ -379,28 +390,32 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     class DownStreamSender implements IDownStreamSender {
 
         String getSide(OrderSide side) throws DownStreamException {
-            if (side.equals(OrderSide.Buy))
-                return "BUY";
-            else if (side.equals(OrderSide.Sell))
-                return "SELL";
-            else if (side.equals(OrderSide.SS))
-                return "SSHORT";
-            else
-                throw new DownStreamException(side + " is not supported");
+            if (side.equals(OrderSide.Buy)) {
+				return "BUY";
+			} else if (side.equals(OrderSide.Sell)) {
+				return "SELL";
+			} else if (side.equals(OrderSide.SS)) {
+				return "SSHORT";
+			} else {
+				throw new DownStreamException(side + " is not supported");
+			}
         }
 
         String getType(ExchangeOrderType type) throws DownStreamException {
-            if (type.equals(ExchangeOrderType.LIMIT))
-                return "LMT";
-            else if (type.equals(ExchangeOrderType.MARKET))
-                return "MKT";
-            else
-                throw new DownStreamException(type + " is not supported");
+            if (type.equals(ExchangeOrderType.LIMIT)) {
+				return "LMT";
+			} else if (type.equals(ExchangeOrderType.MARKET)) {
+				return "MKT";
+			} else {
+				throw new DownStreamException(type + " is not supported");
+			}
         }
 
         @Override
         public boolean getState() {
-            if(!clientSocket.isConnected()) return false;
+            if (!clientSocket.isConnected()) {
+				return false;
+			}
             return isConnected;
         }
 
@@ -471,7 +486,7 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                 return;
             }
 
-            // if(pendingAmends.containsKey(orderId)) {
+            // if (pendingAmends.containsKey(orderId)) {
             // downStreamListener.onOrder(ExecType.REJECTED, myOrder, null,
             // "Order has pending amend record");
             // return;
@@ -482,17 +497,19 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
             ibOrder.m_orderType = getType(myOrder.getType());
 
             Double qtyChange = (Double) fields.get(OrderField.QUANTITY.value());
-            if (qtyChange != null)
-                ibOrder.m_totalQuantity = qtyChange.intValue();
-            else
-                ibOrder.m_totalQuantity = (int) myOrder.getQuantity();
+            if (qtyChange != null) {
+				ibOrder.m_totalQuantity = qtyChange.intValue();
+			} else {
+				ibOrder.m_totalQuantity = (int) myOrder.getQuantity();
+			}
 
             Double priceChange = (Double) fields.get(OrderField.PRICE.value());
 
-            if (priceChange != null)
-                ibOrder.m_lmtPrice = priceChange;
-            else
-                ibOrder.m_lmtPrice = myOrder.getPrice();
+            if (priceChange != null) {
+				ibOrder.m_lmtPrice = priceChange;
+			} else {
+				ibOrder.m_lmtPrice = myOrder.getPrice();
+			}
             myOrder.setOrdStatus(OrdStatus.PENDING_REPLACE);
             // pendingAmends.put(orderId, fields);
             clientSocket.placeOrder(orderId, contract, ibOrder);
@@ -553,15 +570,18 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
         @Override
         public boolean getState() {
-            if(!clientSocket.isConnected()) return false;
+            if (!clientSocket.isConnected()) {
+				return false;
+			}
             return isConnected;
         }
 
         @Override
         public IDownStreamSender setListener(IDownStreamListener listener) {
             IbAdaptor.this.downStreamListener = listener;
-            if (null != listener)
-                downStreamListener.onState(getState());
+            if (null != listener) {
+				downStreamListener.onState(getState());
+			}
             return IbAdaptor.this.downStreamSender;
         }
 
@@ -601,16 +621,16 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
         ChildOrder order = idToOrder.get(id);
         if (null != order) {
-        	if(errorCode == 202) {
-        		if(!order.getOrdStatus().isCompleted()) {
+        	if (errorCode == 202) {
+        		if (!order.getOrdStatus().isCompleted()) {
 	        		order.setOrdStatus(OrdStatus.CANCELED);
 	                downStreamListener.onOrder(ExecType.CANCELED, order, null,
 	                        "IB error: " + errorCode + ", " + errorMsg);
         		} else {
         			log.debug("Ignore error code: " + order);
         		}
-        	} else if ((order.getOrdStatus().equals(OrdStatus.PENDING_NEW) || 
-        		order.getOrdStatus().equals(OrdStatus.PENDING_REPLACE))&& 
+        	} else if ((order.getOrdStatus().equals(OrdStatus.PENDING_NEW) ||
+        		order.getOrdStatus().equals(OrdStatus.PENDING_REPLACE))&&
                 (errorCode == 399 && errorMsg.contains("Warning"))) {
                 ExecType execType = ExecType.pendingToReady(order.getOrdStatus());
                 order.setOrdStatus(autoStatus(order));
@@ -653,27 +673,33 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
 
     synchronized private void publishTrade(Trade trade) {
         List<IMarketDataListener> list = subs.get(trade.getSymbol());
-        if (null != list)
-            for (IMarketDataListener listener : list)
-                listener.onTrade(trade);
+        if (null != list) {
+			for (IMarketDataListener listener : list) {
+				listener.onTrade(trade);
+			}
+		}
     }
 
     synchronized private void publishQuote(Quote quote) {
-//        if(!checkQuote(quote)) return;
+//        if (!checkQuote(quote)) return;
         lastTimeSend = System.currentTimeMillis();
         quote = (Quote) quote.clone();
         quote.sourceId = 1;
         quote.setTimeStamp(new Date());
         List<IMarketDataListener> list = subs.get(quote.getSymbol());
         if (null != list)
-            for (IMarketDataListener listener : list)
-                listener.onQuote(new InnerQuote(QuoteSource.IB, quote)); // use in MDM proceessInnerQuoteEvent , IB Adapter sourceid=1
+		 {
+			for (IMarketDataListener listener : list)
+			 {
+				listener.onQuote(new InnerQuote(QuoteSource.IB, quote)); // use in MDM proceessInnerQuoteEvent , IB Adapter sourceid=1
+			}
+		}
 
     }
 
     private boolean checkQuote(Quote quote){
         boolean isCheck = true;
-        if(PriceUtils.EqualLessThan(quote.getBid(),0) || PriceUtils.EqualLessThan(quote.getAsk(),0)){
+        if (PriceUtils.EqualLessThan(quote.getBid(),0) || PriceUtils.EqualLessThan(quote.getAsk(),0)){
             isCheck = false;
         }
         return isCheck;
@@ -685,9 +711,10 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
     @Override
     public void tickPrice(int tickerId, int field, double price,
                           int canAutoExecute) {
-        if (logMarketData)
-            log.info(EWrapperMsgGenerator.tickPrice(tickerId, field, price,
+        if (logMarketData) {
+			log.info(EWrapperMsgGenerator.tickPrice(tickerId, field, price,
                     canAutoExecute));
+		}
         String symbol = symbolToId.getKeyByValue(tickerId);
         if (null == symbol) {
             log.error("tickPrice: " + "can't find id in symbolToId map: "
@@ -756,16 +783,18 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                 break;
 
             default:
-                if (logMarketData)
-                    log.trace("tickPrice: " + symbol + " undefined field type: "
+                if (logMarketData) {
+					log.trace("tickPrice: " + symbol + " undefined field type: "
                             + field + ", value: " + price);
+				}
         }
     }
 
     @Override
     public void tickSize(int tickerId, int field, int size) {
-        if (logMarketData)
-            log.info(EWrapperMsgGenerator.tickSize(tickerId, field, size));
+        if (logMarketData) {
+			log.info(EWrapperMsgGenerator.tickSize(tickerId, field, size));
+		}
         String symbol = symbolToId.getKeyByValue(tickerId);
         if (null == symbol) {
             log.error("tickSize: " + "can't find id in symbolToId map: "
@@ -803,9 +832,10 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                 publishQuote(quote);
                 break;
             default:
-                if (logMarketData)
-                    log.trace("tickSize: " + symbol + " undefined field type: " + field
+                if (logMarketData) {
+					log.trace("tickSize: " + symbol + " undefined field type: " + field
                             + ", value: " + size);
+				}
         }
     }
 
@@ -834,8 +864,9 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                     list.add(position, new QtyPrice(size, price));
                 } else {
                     int inc = list.size() - position;
-                    for (int i = 0; i < inc; i++)
-                        list.add(new QtyPrice(0, 0));
+                    for (int i = 0; i < inc; i++) {
+						list.add(new QtyPrice(0, 0));
+					}
                     list.add(new QtyPrice(size, price));
                 }
                 publishQuote(quote);
@@ -854,8 +885,9 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                 } else {
                     // just to remove the last item at the list to get around a IB
                     // bug
-                    if (list.size() > 0)
-                        list.remove(list.size() - 1);
+                    if (list.size() > 0) {
+						list.remove(list.size() - 1);
+					}
                     log.debug("updateMktDepth: delete row not found " + position);
                 }
                 publishQuote(quote);
@@ -870,40 +902,45 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                                       double impliedVol, double delta, double optPrice,
                                       double pvDividend, double gamma, double vega, double theta,
                                       double undPrice) {
-        if (logMarketData)
-            log.info(EWrapperMsgGenerator.tickOptionComputation(tickerId,
+        if (logMarketData) {
+			log.info(EWrapperMsgGenerator.tickOptionComputation(tickerId,
                     field, impliedVol, delta, optPrice, pvDividend, gamma,
                     vega, theta, undPrice));
+		}
 
     }
 
     @Override
     public void tickGeneric(int tickerId, int tickType, double value) {
-        if (logMarketData)
-            log.info(EWrapperMsgGenerator
+        if (logMarketData) {
+			log.info(EWrapperMsgGenerator
                     .tickGeneric(tickerId, tickType, value));
+		}
     }
 
     @Override
     public void tickString(int tickerId, int tickType, String value) {
-        if (logMarketData)
-            log.info(EWrapperMsgGenerator.tickString(tickerId, tickType, value));
+        if (logMarketData) {
+			log.info(EWrapperMsgGenerator.tickString(tickerId, tickType, value));
+		}
     }
 
     @Override
     public void tickEFP(int tickerId, int tickType, double basisPoints,
                         String formattedBasisPoints, double impliedFuture, int holdDays,
                         String futureExpiry, double dividendImpact, double dividendsToExpiry) {
-        if (logMarketData)
-            log.info(EWrapperMsgGenerator.tickEFP(tickerId, tickType,
+        if (logMarketData) {
+			log.info(EWrapperMsgGenerator.tickEFP(tickerId, tickType,
                     basisPoints, formattedBasisPoints, impliedFuture, holdDays,
                     futureExpiry, dividendImpact, dividendsToExpiry));
+		}
     }
 
     @Override
     public void tickSnapshotEnd(int reqId) {
-        if (logMarketData)
-            log.info(EWrapperMsgGenerator.tickSnapshotEnd(reqId));
+        if (logMarketData) {
+			log.info(EWrapperMsgGenerator.tickSnapshotEnd(reqId));
+		}
     }
 
     public OrdStatus autoStatus(ChildOrder order) {
@@ -911,11 +948,13 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
             return OrdStatus.REJECTED;
         }
 
-        if (PriceUtils.EqualLessThan(order.getQuantity(), order.getCumQty()))
-            return OrdStatus.FILLED;
+        if (PriceUtils.EqualLessThan(order.getQuantity(), order.getCumQty())) {
+			return OrdStatus.FILLED;
+		}
 
-        if (PriceUtils.EqualGreaterThan(0, order.getCumQty()))
-            return OrdStatus.NEW;
+        if (PriceUtils.EqualGreaterThan(0, order.getCumQty())) {
+			return OrdStatus.NEW;
+		}
 
         return OrdStatus.PARTIALLY_FILLED;
     }
@@ -967,31 +1006,44 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
                 order.setOrdStatus(OrdStatus.PARTIALLY_FILLED);
             }
 
-            // add defensive logic for a deadly IB bug where lastFillPrice some times  
+            // add defensive logic for a deadly IB bug where lastFillPrice some times
             // can be 0 when there is a fill
-            if(PriceUtils.isZero(lastFillPrice))
-            	lastFillPrice = avgFillPrice;
-            
+            if (PriceUtils.isZero(lastFillPrice)) {
+				lastFillPrice = avgFillPrice;
+			}
+
+            Date tradeDate = Calendar.getInstance().getTime();
+    		String symbol = order.getSymbol();
+    		if (marketSessionUtil != null) {
+    			try {
+    				tradeDate = marketSessionUtil.getCurrentMarketSession(symbol).getTradeDateByDate();
+    			} catch (Exception e) {
+    				log.error(e.getMessage());
+    				log.error("Can't find market session or trade date for symbol " + symbol);
+    				log.error("Set trade date to current time " + tradeDate);
+    			}
+    		}
+
             try {
 				execution = new com.cyanspring.common.business.Execution(
 				        order.getSymbol(), order.getSide(), filled - oldFilled,
 				        lastFillPrice, order.getId(), order.getParentOrderId(),
 				        order.getStrategyId(), IdGenerator.getInstance()
 				        .getNextID() + "E", order.getUser(),
-				        order.getAccount(), order.getRoute());
+				        order.getAccount(), order.getRoute(), tradeDate);
 			} catch (OrderException e) {
 				log.error(e.getMessage(), e);
 				return;
 			}
             downStreamListener.onOrder(execType, order, execution, "");
-        } 
-        
+        }
+
         if (priceHasChanged || qtyHasChanged) {
             order.setOrdStatus(autoStatus(order));
             downStreamListener.onOrder(ExecType.REPLACE, order, null, "");
         }
 
-        if ((status.equals("Cancelled") || status.equals("ApiCancelled")) && 
+        if ((status.equals("Cancelled") || status.equals("ApiCancelled")) &&
         	(!order.getOrdStatus().isCompleted() || oldFilled != filled)) {
             execType = ExecType.CANCELED;
             order.setOrdStatus(OrdStatus.CANCELED);
@@ -1033,14 +1085,14 @@ public class IbAdaptor implements EWrapper, IMarketDataAdaptor,
         // assuming IB will reject through the error method, we don't need this
         // logic for now
         // Map<String, Object> fields = pendingAmends.get(orderId);
-        // if(null != fields) {
+        // if (null != fields) {
         // Double qtyChange = (Double)fields.get(OrderField.QUANTITY.value());
         // boolean qtyChangeFailed = (qtyChange != null) &&
         // (order.m_totalQuantity != qtyChange.intValue());
         // Double priceChange = (Double)fields.get(OrderField.PRICE.value());
         // boolean priceChangeFailed = (priceChange != null) &&
         // (order.m_lmtPrice != priceChange.intValue());
-        // if(qtyChangeFailed || priceChangeFailed)
+        // if (qtyChangeFailed || priceChangeFailed)
         // downStreamListener.onOrder(ExecType.REJECTED, child, null,
         // "Qty/Price change failed: " + qtyChangeFailed + ", " +
         // priceChangeFailed);

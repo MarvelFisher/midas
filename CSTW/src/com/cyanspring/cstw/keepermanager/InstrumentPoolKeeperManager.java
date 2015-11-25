@@ -1,6 +1,8 @@
 package com.cyanspring.cstw.keepermanager;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.cyanspring.common.account.AccountKeeper;
 import com.cyanspring.common.account.User;
@@ -31,10 +33,10 @@ public final class InstrumentPoolKeeperManager {
 	private static InstrumentPoolKeeperManager instance;
 
 	private InstrumentPoolKeeper instrumentPoolKeeper;
-
-	private AccountKeeper accountKeeper;
 	
 	private List<User> riskManagerNGroupUser;
+	
+	private Map<String, User> riskManagerNGroupUserMap = new HashMap<String, User>();;
 
 	private IAsyncEventListener listener;
 
@@ -114,14 +116,6 @@ public final class InstrumentPoolKeeperManager {
 		sendUpdateEvent();
 	}
 
-	public AccountKeeper getAccountKeeper() {
-		return accountKeeper;
-	}
-
-	public void setAccountKeeper(AccountKeeper accountKeeper) {
-		this.accountKeeper = accountKeeper;
-	}
-
 	public IInstrumentPoolKeeper getInstrumentPoolKeeper() {
 		return instrumentPoolKeeper;
 	}
@@ -134,9 +128,19 @@ public final class InstrumentPoolKeeperManager {
 	public List<User> getRiskManagerNGroupUser() {
 		return riskManagerNGroupUser;
 	}
+	
+	public User getRiskManagerOrGroupUser(String userId) {
+		return riskManagerNGroupUserMap.get(userId);
+	}
 
 	public void setRiskManagerNGroupUser(List<User> riskManagerNGroupUser) {
 		this.riskManagerNGroupUser = riskManagerNGroupUser;
+		if (this.riskManagerNGroupUser != null) {
+			riskManagerNGroupUserMap.clear();
+			for (User usr : this.riskManagerNGroupUser) {
+				riskManagerNGroupUserMap.put(usr.getId(), usr);
+			}
+		}
 	}
 
 	private void sendUpdateEvent() {

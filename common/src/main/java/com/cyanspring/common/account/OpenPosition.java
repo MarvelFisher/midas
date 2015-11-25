@@ -22,7 +22,7 @@ public class OpenPosition extends Position implements Cloneable {
 	private double availableQty;
 	private double lastPnL;
 	private double acLastPnL;
-	
+
 	public double getPrice() {
 		return price;
 	}
@@ -30,7 +30,7 @@ public class OpenPosition extends Position implements Cloneable {
 	public void setPrice(double price) {
 		this.price = price;
 	}
-	
+
 	public double getMargin() {
 		return margin;
 	}
@@ -46,7 +46,7 @@ public class OpenPosition extends Position implements Cloneable {
 	public void setAvailableQty(double availableQty) {
 		this.availableQty = availableQty;
 	}
-	
+
 	public double getLastPnL() {
 		return lastPnL;
 	}
@@ -62,12 +62,14 @@ public class OpenPosition extends Position implements Cloneable {
 	public void setAcLastPnL(double acLastPnL) {
 		this.acLastPnL = acLastPnL;
 	}
-	
+
 	public double getDetailAvailableQty(RefData refData) {
-		if (refData != null && refData.getTradableDays() == 0)
+		if (refData != null && refData.getTradableDays() == 0) {
 			return getQty();
-		if (Default.getSettlementDays() == 0)
+		}
+		if (Default.getSettlementDays() == 0) {
 			return getQty();
+		}
 
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(TimeUtil.getOnlyDate(getCreated()));
@@ -84,20 +86,21 @@ public class OpenPosition extends Position implements Cloneable {
 	protected OpenPosition() {
 		super();
 	}
-	
+
 	// this one is used by overall position
 	public OpenPosition(String user, String account, String symbol, double qty, double price, double margin) {
 		super(account + "-" + symbol, user, account, symbol, qty);
 		this.price = price;
 		this.margin = margin;
 	}
-	
+
 	// this one is used by detail position
 	public OpenPosition(double qty, Execution execution, double margin) {
 		super(execution.getId(), execution.getUser(), execution.getAccount(), execution.getSymbol(),
 				execution.getSide().isBuy()?qty:-qty);
 		this.price = execution.getPrice();
 		this.margin = margin;
+		this.setTradeDate(execution.getTradeDate());
 	}
 
 	public OpenPosition split(double qty) { // qty + for buy, - for sell
@@ -108,8 +111,8 @@ public class OpenPosition extends Position implements Cloneable {
 		this.setMargin(this.getMargin() - pos.getMargin());
 		return pos;
 	}
-	
-	 
+
+
 	@Override
 	protected String formatString() {
 		 return super.formatString() + ", " + this.price + ", " + this.getAvailableQty();
@@ -124,5 +127,5 @@ public class OpenPosition extends Position implements Cloneable {
 		}
 		return null;
 	}
-	
+
 }
