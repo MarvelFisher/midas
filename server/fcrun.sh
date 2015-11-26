@@ -3,9 +3,15 @@
 # fix Apps could not login between LTS restart - AppServer restart
 export LC_ALL="en_US.UTF-8"
 WORKDIR=$PWD
+
+if [ "$1" == '-a' ]; then
+
+echo "Stop AppServer"
 cd ../appServer.fc
 ./run.sh stop
 cd $WORKDIR
+
+fi
 
 if [ -s LTS_PID ]; then
 LTS_PID=`cat LTS_PID`
