@@ -39,7 +39,7 @@
 			</entry>
 			<entry>
 				<string>CNName</string>
-				<string>沪深300-${YYMM}</string>
+				<string>沪深${YYMM}</string>
 			</entry>
 			<entry>
 				<string>Numerator DP</string>
@@ -107,7 +107,7 @@
 			</entry>
 			<entry>
 				<string>TWName</string>
-				<string>滬深300-${YYMM}</string>
+				<string>滬深${YYMM}</string>
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
@@ -163,7 +163,7 @@
 			</entry>
 			<entry>
 				<string>CNName</string>
-				<string>上证50-${YYMM}</string>
+				<string>上证${YYMM}</string>
 			</entry>
 			<entry>
 				<string>Numerator DP</string>
@@ -231,7 +231,7 @@
 			</entry>
 			<entry>
 				<string>TWName</string>
-				<string>上證50-${YYMM}</string>
+				<string>上證${YYMM}</string>
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
@@ -287,7 +287,7 @@
 			</entry>
 			<entry>
 				<string>CNName</string>
-				<string>中证500-${YYMM}</string>
+				<string>中证${YYMM}</string>
 			</entry>
 			<entry>
 				<string>Numerator DP</string>
@@ -355,7 +355,7 @@
 			</entry>
 			<entry>
 				<string>TWName</string>
-				<string>中證500-${YYMM}</string>
+				<string>中證${YYMM}</string>
 			</entry>
 			<entry>
 				<string>Ref symbol</string>
