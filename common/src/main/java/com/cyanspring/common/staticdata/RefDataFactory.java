@@ -40,8 +40,9 @@ public class RefDataFactory extends RefDataService {
 	public void init() throws Exception {
 		if (this.quoteFile != null) {
 			File quoteFile = new File (this.quoteFile);
-			if (!quoteFile.exists())
+			if (!quoteFile.exists()) {
 				throw new Exception("Miss quote file: " + this.quoteFile);
+			}
 			qMap = (Map<String, Quote>) xstream.fromXML(quoteFile);
 		}
 		log.info("initialising with " + refDataTemplatePath);
@@ -71,7 +72,7 @@ public class RefDataFactory extends RefDataService {
 				log.warn("Template category is null, skip it, symbol:{}", symbol);
 				continue;
 			}
-			
+
 			Map<String, List<RefData>> exchangeMap = templateMap.get(exchange);
 			if (exchangeMap == null) {
 				exchangeMap = new HashMap<>();
@@ -82,11 +83,11 @@ public class RefDataFactory extends RefDataService {
 				categoryList = new ArrayList<>();
 				exchangeMap.put(category, categoryList);
 			}
-			
+
 			if (!categoryList.contains(ref)) {
-				log.info("build template, excahnge: " + exchange + ", category: " 
-			 + category + ", symbol: " + symbol + ", strategy: " +  ref.getStrategy());				
-				categoryList.add(ref);			
+				log.info("build template, excahnge: " + exchange + ", category: "
+			 + category + ", symbol: " + symbol + ", strategy: " +  ref.getStrategy());
+				categoryList.add(ref);
 			}
 		}
 	}
@@ -97,7 +98,7 @@ public class RefDataFactory extends RefDataService {
 		List<RefData> addList = new ArrayList<>();
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(getSettlementDateFormat().parse(tradeDate));
-		
+
 		for (Entry<String, Map<String, List<RefData>>> eMap : templateMap.entrySet()) {
 			for (Entry<String, List<RefData>> cateMap : eMap.getValue().entrySet()) {
 				for (RefData refData : cateMap.getValue()) {
@@ -231,7 +232,7 @@ public class RefDataFactory extends RefDataService {
 
 		return ret;
 	}
-	
+
 	private List<RefData> searchTemplate(String index) {
 		List<RefData> list = new ArrayList<>();
 		Map<String, List<RefData>> exchangeMap = templateMap.get(index);
@@ -241,15 +242,19 @@ public class RefDataFactory extends RefDataService {
 			}
 			return list;
 		}
-		
+
+		// category is NOT unique in template anymore, thus iterate through all entries
 		for (Entry<String, Map<String, List<RefData>>> eMap : templateMap.entrySet()) {
 			List<RefData> tempList = eMap.getValue().get(index);
 			if (tempList != null) {
 				list.addAll(tempList);
-				return list;
 			}
 		}
-		
+
+		if (list.size() > 0) {
+			return list;
+		}
+
 		for (Entry<String, Map<String, List<RefData>>> eMap : templateMap.entrySet()) {
 			for (Entry<String, List<RefData>> cateMap : eMap.getValue().entrySet()) {
 				for (RefData refData : cateMap.getValue()) {
@@ -260,7 +265,7 @@ public class RefDataFactory extends RefDataService {
 				}
 			}
 		}
-		
+
 		log.warn("No refData template found, index: " + index);
 		return list;
 	}
@@ -289,9 +294,10 @@ public class RefDataFactory extends RefDataService {
 	@Override
 	public void saveRefDataToFile() {
 		if (refDataList != null && refDataList.size() > 0) {
-			if (refDataFile == null)
+			if (refDataFile == null) {
 				refDataFile = "refdata/refData_gen.xml";
-			
+			}
+
 			File of = new File(refDataFile);
 			try(FileOutputStream ofs = new FileOutputStream(of)) {
 				of.createNewFile();
