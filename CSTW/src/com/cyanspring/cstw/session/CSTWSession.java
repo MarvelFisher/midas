@@ -13,6 +13,10 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  */
 public class CSTWSession {
 
+	private String inbox;
+	private String channel;
+	private String nodeInfoChannel;
+
 	private String configPath;
 
 	private XStream xstream = new XStream(new DomDriver());
@@ -46,6 +50,30 @@ public class CSTWSession {
 
 	public void setAccountSetting(AccountSetting accountSetting) {
 		this.accountSetting = accountSetting;
+	}
+
+	public String getInbox() {
+		return inbox;
+	}
+
+	public void setInbox(String inbox) {
+		this.inbox = inbox;
+	}
+
+	public String getChannel() {
+		return channel;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
+
+	public String getNodeInfoChannel() {
+		return nodeInfoChannel;
+	}
+
+	public void setNodeInfoChannel(String nodeInfoChannel) {
+		this.nodeInfoChannel = nodeInfoChannel;
 	}
 
 }

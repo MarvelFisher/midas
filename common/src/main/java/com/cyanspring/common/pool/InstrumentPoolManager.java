@@ -132,10 +132,11 @@ public class InstrumentPoolManager implements IPlugin {
 		log.info("Received ExchangeAccountOperationRequestEvent: "
 				+ exchangeAccount + ", " + type);
 
-		boolean ifExists = instrumentPoolKeeper.ifExists(exchangeAccount);
 		switch (type) {
 		case CREATE:
-			if (!ifExists) {
+			if (!instrumentPoolKeeper.ifNameExists(exchangeAccount)) {
+				exchangeAccount.setId(instrumentPoolKeeper
+						.genNextExchangeAccountId());
 				PmExchangeAccountInsertEvent insertEvent = new PmExchangeAccountInsertEvent(
 						exchangeAccount);
 				eventManager.sendEvent(insertEvent);
@@ -148,7 +149,7 @@ public class InstrumentPoolManager implements IPlugin {
 			}
 			break;
 		case UPDATE:
-			if (ifExists) {
+			if (instrumentPoolKeeper.ifIdExists(exchangeAccount)) {
 				PmExchangeAccountUpdateEvent updateEvent = new PmExchangeAccountUpdateEvent(
 						exchangeAccount);
 				eventManager.sendEvent(updateEvent);
@@ -161,7 +162,7 @@ public class InstrumentPoolManager implements IPlugin {
 			}
 			break;
 		case DELETE:
-			if (ifExists) {
+			if (instrumentPoolKeeper.ifIdExists(exchangeAccount)) {
 				List<ExchangeSubAccount> subAccounts = instrumentPoolKeeper
 						.getExchangeSubAccountList(exchangeAccount.getId());
 				if (subAccounts != null && !subAccounts.isEmpty()) {
@@ -207,10 +208,11 @@ public class InstrumentPoolManager implements IPlugin {
 		log.info("Received ExchangeSubAccountOperationRequestEvent: "
 				+ exchangeSubAccount + ", " + type);
 
-		boolean ifExists = instrumentPoolKeeper.ifExists(exchangeSubAccount);
 		switch (type) {
 		case CREATE:
-			if (!ifExists) {
+			if (!instrumentPoolKeeper.ifNameExists(exchangeSubAccount)) {
+				exchangeSubAccount.setId(instrumentPoolKeeper
+						.genNextExchangeSubAccountId());
 				PmExchangeSubAccountInsertEvent insertEvent = new PmExchangeSubAccountInsertEvent(
 						exchangeSubAccount);
 				eventManager.sendEvent(insertEvent);
@@ -218,12 +220,12 @@ public class InstrumentPoolManager implements IPlugin {
 				ok = false;
 				errorMessage = MessageLookup.buildEventMessage(
 						ErrorMessage.EXCHANGE_ACCOUNT_ALREADY_EXISTS,
-						"ExchangeSubAccount already exists"
+						"ExchangeSubAccount already exists "
 								+ exchangeSubAccount.getName());
 			}
 			break;
 		case UPDATE:
-			if (ifExists) {
+			if (instrumentPoolKeeper.ifIdExists(exchangeSubAccount)) {
 				PmExchangeSubAccountUpdateEvent updateEvent = new PmExchangeSubAccountUpdateEvent(
 						exchangeSubAccount);
 				eventManager.sendEvent(updateEvent);
@@ -231,12 +233,12 @@ public class InstrumentPoolManager implements IPlugin {
 				ok = false;
 				errorMessage = MessageLookup.buildEventMessage(
 						ErrorMessage.EXCHANGE_ACCOUNT_NOT_FOUND,
-						"ExchangeSubAccount doesn't exist"
+						"ExchangeSubAccount doesn't exist "
 								+ exchangeSubAccount.getName());
 			}
 			break;
 		case DELETE:
-			if (ifExists) {
+			if (instrumentPoolKeeper.ifIdExists(exchangeSubAccount)) {
 				if (!instrumentPoolKeeper.getInstrumentPoolList(
 						exchangeSubAccount.getId()).isEmpty()) {
 					ok = false;
@@ -253,7 +255,7 @@ public class InstrumentPoolManager implements IPlugin {
 				ok = false;
 				errorMessage = MessageLookup.buildEventMessage(
 						ErrorMessage.EXCHANGE_ACCOUNT_NOT_FOUND,
-						"ExchangeSubAccount doesn't exist"
+						"ExchangeSubAccount doesn't exist "
 								+ exchangeSubAccount.getName());
 			}
 			break;
@@ -282,10 +284,9 @@ public class InstrumentPoolManager implements IPlugin {
 		log.info("Received InstrumentPoolOperationRequestEvent: "
 				+ instrumentPool + ", " + type);
 
-		boolean ifExists = instrumentPoolKeeper.ifExists(instrumentPool);
 		switch (type) {
 		case CREATE:
-			if (!ifExists) {
+			if (!instrumentPoolKeeper.ifNameExists(instrumentPool)) {
 				instrumentPool.setId(instrumentPoolKeeper
 						.genNextInstrumentPoolId());
 				PmInstrumentPoolInsertEvent insertEvent = new PmInstrumentPoolInsertEvent(
@@ -302,7 +303,7 @@ public class InstrumentPoolManager implements IPlugin {
 		case UPDATE:
 			break;
 		case DELETE:
-			if (ifExists) {
+			if (instrumentPoolKeeper.ifIdExists(instrumentPool)) {
 				List<InstrumentPoolRecord> records = instrumentPoolKeeper
 						.getInstrumentPoolRecordList(instrumentPool.getId(),
 								ModelType.INSTRUMENT_POOL);

@@ -57,6 +57,7 @@ import com.cyanspring.cstw.localevent.GuiSingleInstrumentStrategyUpdateLocalEven
 import com.cyanspring.cstw.localevent.OrderCacheReadyLocalEvent;
 import com.cyanspring.cstw.localevent.SingleInstrumentStrategySelectionLocalEvent;
 import com.cyanspring.cstw.session.CSTWSession;
+import com.cyanspring.cstw.session.TraderSession;
 
 public class SingleInstrumentStrategyView extends ViewPart implements
 		IAsyncEventListener {
@@ -157,7 +158,8 @@ public class SingleInstrumentStrategyView extends ViewPart implements
 							.sendEvent(
 									new SingleInstrumentStrategySelectionLocalEvent(
 											map,
-											Business.getInstance()
+											TraderSession
+													.getInstance()
 													.getSingleInstrumentAmendableFields(
 															strategyName)));
 				}
@@ -169,8 +171,10 @@ public class SingleInstrumentStrategyView extends ViewPart implements
 		// business logic goes here
 		Business.getInstance().getEventManager()
 				.subscribe(OrderCacheReadyLocalEvent.class, this);
-		Business.getInstance().getEventManager()
-				.subscribe(GuiSingleInstrumentStrategyUpdateLocalEvent.class, this);
+		Business.getInstance()
+				.getEventManager()
+				.subscribe(GuiSingleInstrumentStrategyUpdateLocalEvent.class,
+						this);
 		showInstruments();
 	}
 
@@ -180,7 +184,8 @@ public class SingleInstrumentStrategyView extends ViewPart implements
 				.unsubscribe(OrderCacheReadyLocalEvent.class, this);
 		Business.getInstance()
 				.getEventManager()
-				.unsubscribe(GuiSingleInstrumentStrategyUpdateLocalEvent.class, this);
+				.unsubscribe(GuiSingleInstrumentStrategyUpdateLocalEvent.class,
+						this);
 		super.dispose();
 	}
 
@@ -587,8 +592,8 @@ public class SingleInstrumentStrategyView extends ViewPart implements
 				return;
 
 			ArrayList<ColumnProperty> columnProperties = new ArrayList<ColumnProperty>();
-			List<String> displayFields = Business.getInstance()
-					.getSingleInstrumentDisplayFields();
+			List<String> displayFields = TraderSession.getInstance()
+					.getSingleInstrumentDisplayFieldList();
 
 			// add fields exists in both list
 			for (String field : displayFields) {

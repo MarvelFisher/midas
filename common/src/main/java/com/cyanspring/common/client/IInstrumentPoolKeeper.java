@@ -99,4 +99,19 @@ public interface IInstrumentPoolKeeper {
 	 */
 	List<String> getAssignedAdminsBySubAccount(String subAccount);
 
+	/**
+	 * 获取系统所有的的ExchangeSubAccount List
+	 * 
+	 * @return
+	 */
+	List<ExchangeSubAccount> getAllSubAccountList();
+
+	/**
+	 * 根据ExchangeSubAccount id获取对应的ExchangeSubAccount
+	 * 
+	 * @param subAccountId
+	 * @return
+	 */
+	ExchangeSubAccount getSubAccountById(String subAccountId);
+
 }

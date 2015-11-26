@@ -1,7 +1,11 @@
 package com.cyanspring.cstw.business;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
+import com.cyanspring.common.event.RemoteAsyncEvent;
 
 /**
  * 
@@ -12,8 +16,21 @@ import com.cyanspring.common.event.IAsyncEventListener;
  */
 public final class CSTWEventManager {
 
+	private static final Logger log = LoggerFactory
+			.getLogger(CSTWEventManager.class);
+
 	public static void sendEvent(AsyncEvent event) {
-		Business.getInstance().getEventManager().sendEvent(event);
+		if (event instanceof RemoteAsyncEvent) {
+			RemoteAsyncEvent remoteEvent = (RemoteAsyncEvent) event;
+			try {
+				Business.getInstance().getEventManager()
+						.sendRemoteEvent(remoteEvent);
+			} catch (Exception e) {
+				log.error("Remote Event Send Error:" + e);
+			}
+		} else {
+			Business.getInstance().getEventManager().sendEvent(event);
+		}
 	}
 
 	public static void subscribe(Class<? extends AsyncEvent> event,

@@ -17,10 +17,10 @@ public interface ISubAccountManagerService extends IBasicService {
 	
 	void query();
 	
-	/**
-	 * 
-	 * @return
-	 */
+	ExchangeAccountModel getExchangeAccoutById(String id);
+	
+	SubAccountModel getSubAccountById(String id);
+	
 	List<ExchangeAccountModel> getExchangeAccountList();
 	
 	List<SubAccountModel> getSubAccountListByExchangeAccountId(String id);
@@ -35,7 +35,7 @@ public interface ISubAccountManagerService extends IBasicService {
 	
 	void createNewExchangeAccount(String name);
 	
-	void createNewSubAccount(String exchangeId);
+	void createNewSubAccount(String exchangeId, String name);
 	
 	void createNewAssignedModel(SubAccountModel subAccount, AssignedModel assigned, int index);
 	
@@ -45,6 +45,10 @@ public interface ISubAccountManagerService extends IBasicService {
 	
 	void removeAssignedUser(SubAccountModel subAccount, AssignedModel assign);
 	
+	void updateExchangeAccountName(ExchangeAccountModel exchange, String name);
+	
+	void updateSubAccountName(SubAccountModel subAccount, String name);
+	
 	void moveUpExchangeAccount(ExchangeAccountModel exchange);
 	
 	void moveDownExchangeAccount(ExchangeAccountModel exchange);
@@ -52,5 +56,9 @@ public interface ISubAccountManagerService extends IBasicService {
 	void moveUpSubAccount(SubAccountModel subAccount);
 	
 	void moveDownSubAccount(SubAccountModel subAccount);
+	
+	void addExchangeInputChangeListener(IInputChangeListener listener);
+	
+	void addSubAccInputChangeListener(IInputChangeListener listener);
 	
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cyanspring.common.cstw.kdb.SignalType;
 import com.cyanspring.common.cstw.tick.Ticker;
+import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.staticdata.RefData;
 
 /**
@@ -26,5 +27,7 @@ public interface IBusinessService {
 	Ticker getTicker(String symbol);
 
 	List<String> getSymbolList();
+	
+	IFxConverter getRateConverter();
 
 }

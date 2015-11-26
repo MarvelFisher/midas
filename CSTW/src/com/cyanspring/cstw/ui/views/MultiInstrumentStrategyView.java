@@ -69,6 +69,7 @@ import com.cyanspring.cstw.localevent.InstrumentSelectionLocalEvent;
 import com.cyanspring.cstw.localevent.MultiInstrumentStrategySelectionLocalEvent;
 import com.cyanspring.cstw.localevent.OrderCacheReadyLocalEvent;
 import com.cyanspring.cstw.session.CSTWSession;
+import com.cyanspring.cstw.session.TraderSession;
 
 public class MultiInstrumentStrategyView extends ViewPart implements
 		IAsyncEventListener {
@@ -192,8 +193,8 @@ public class MultiInstrumentStrategyView extends ViewPart implements
 					currentStrategyType = (String) map.get(OrderField.STRATEGY
 							.value());
 					currentStrategyId = (String) map.get(OrderField.ID.value());
-					MultiInstrumentStrategyDisplayConfig config = Business
-							.getInstance().getMultiInstrumentFieldDefs()
+					MultiInstrumentStrategyDisplayConfig config = TraderSession
+							.getInstance().getMultiInstrumentFieldDefMap()
 							.get(currentStrategyType);
 					List<String> editableFields = config == null ? null
 							: config.getStrategyAmendable();
@@ -217,8 +218,8 @@ public class MultiInstrumentStrategyView extends ViewPart implements
 				if (obj instanceof Map) {
 					@SuppressWarnings("unchecked")
 					Map<String, Object> map = (HashMap<String, Object>) obj;
-					MultiInstrumentStrategyDisplayConfig config = Business
-							.getInstance().getMultiInstrumentFieldDefs()
+					MultiInstrumentStrategyDisplayConfig config = TraderSession
+							.getInstance().getMultiInstrumentFieldDefMap()
 							.get(currentStrategyType);
 					List<String> editableFields = config == null ? null
 							: config.getInstrumentAmendable();
@@ -236,8 +237,10 @@ public class MultiInstrumentStrategyView extends ViewPart implements
 		// business logic goes here
 		Business.getInstance().getEventManager()
 				.subscribe(OrderCacheReadyLocalEvent.class, this);
-		Business.getInstance().getEventManager()
-				.subscribe(GuiMultiInstrumentStrategyUpdateLocalEvent.class, this);
+		Business.getInstance()
+				.getEventManager()
+				.subscribe(GuiMultiInstrumentStrategyUpdateLocalEvent.class,
+						this);
 		showOrders();
 	}
 
@@ -245,8 +248,10 @@ public class MultiInstrumentStrategyView extends ViewPart implements
 	public void dispose() {
 		Business.getInstance().getEventManager()
 				.unsubscribe(OrderCacheReadyLocalEvent.class, this);
-		Business.getInstance().getEventManager()
-				.unsubscribe(GuiMultiInstrumentStrategyUpdateLocalEvent.class, this);
+		Business.getInstance()
+				.getEventManager()
+				.unsubscribe(GuiMultiInstrumentStrategyUpdateLocalEvent.class,
+						this);
 		super.dispose();
 	}
 
@@ -601,8 +606,8 @@ public class MultiInstrumentStrategyView extends ViewPart implements
 		Map<String, Object> map = (Map<String, Object>) Business.getInstance()
 				.getOrderManager().getMultiInstrumentStrategy(strategyId);
 		String strategy = (String) map.get(OrderField.STRATEGY.value());
-		MultiInstrumentStrategyDisplayConfig config = Business.getInstance()
-				.getMultiInstrumentFieldDefs().get(strategy);
+		MultiInstrumentStrategyDisplayConfig config = TraderSession
+				.getInstance().getMultiInstrumentFieldDefMap().get(strategy);
 		List<Map<String, Object>> instruments = Business.getInstance()
 				.getOrderManager().getMultiInstruments(strategyId);
 		if (null == instruments || instruments.size() == 0)
@@ -640,8 +645,8 @@ public class MultiInstrumentStrategyView extends ViewPart implements
 				return;
 
 			ArrayList<ColumnProperty> columnProperties = new ArrayList<ColumnProperty>();
-			List<String> displayFields = Business.getInstance()
-					.getMultiInstrumentDisplayFields();
+			List<String> displayFields = TraderSession.getInstance()
+					.getMultiInstrumentDisplayFieldList();
 
 			for (String field : displayFields) {
 				columnProperties.add(new ColumnProperty(field, 100));

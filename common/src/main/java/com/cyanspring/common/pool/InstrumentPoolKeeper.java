@@ -84,6 +84,11 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 	}
 
 	@Override
+	public List<ExchangeSubAccount> getAllSubAccountList() {
+		return new ArrayList<ExchangeSubAccount>(subAccountMap.values());
+	}
+
+	@Override
 	public List<InstrumentPool> getInstrumentPoolList(String exchangeSubAccount) {
 		return new ArrayList<InstrumentPool>(poolSubAccountMap.getMap(
 				exchangeSubAccount).values());
@@ -167,8 +172,18 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 				.put(instrumentPoolRecord.getSymbol(), instrumentPoolRecord);
 	}
 
-	public boolean ifExists(ExchangeAccount exchangeAccount) {
+	public boolean ifIdExists(ExchangeAccount exchangeAccount) {
 		return exchAccMap.containsKey(exchangeAccount.getId());
+	}
+
+	public boolean ifNameExists(ExchangeAccount exchangeAccount) {
+		for (ExchangeAccount tempExchangeAccount : exchAccMap.values()) {
+			if (tempExchangeAccount.getName().equals(
+					exchangeAccount.getName().trim())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void add(ExchangeAccount exchangeAccount) {
@@ -183,13 +198,23 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 		exchAccMap.put(exchangeAccount.getId(), exchangeAccount);
 	}
 
-	public boolean ifExists(ExchangeSubAccount exchangeSubAccount) {
+	public boolean ifIdExists(ExchangeSubAccount exchangeSubAccount) {
+		return subAccountMap.containsKey(exchangeSubAccount.getId());
+	}
+
+	public boolean ifNameExists(ExchangeSubAccount exchangeSubAccount) {
 		for (ExchangeSubAccount tempSubAccount : subAccountMap.values()) {
-			if (tempSubAccount.getName().equals(exchangeSubAccount.getName())) {
+			if (tempSubAccount.getName().equals(
+					exchangeSubAccount.getName().trim())) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public ExchangeSubAccount getSubAccountById(String subAccountId) {
+		return subAccountMap.get(subAccountId);
 	}
 
 	public void add(ExchangeSubAccount exchangeSubAccount) {
@@ -207,7 +232,11 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 				exchangeSubAccount.getExchangeAccount());
 	}
 
-	public boolean ifExists(InstrumentPool instrumentPool) {
+	public boolean ifIdExists(InstrumentPool instrumentPool) {
+		return poolSubAccountMap.containsKey(instrumentPool.getId());
+	}
+
+	public boolean ifNameExists(InstrumentPool instrumentPool) {
 		for (InstrumentPool tempInstrumentPool : poolSubAccountMap.getMap(
 				instrumentPool.getExchangeSubAccount()).values()) {
 			if (tempInstrumentPool.getName().equals(instrumentPool.getName())) {
@@ -342,7 +371,16 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 		}
 	}
 
-	public String genNextInstrumentPoolId() {
-		return "P" + IdGenerator.getInstance().getNextID();
+	public String genNextExchangeAccountId() {
+		return "EX" + IdGenerator.getInstance().getNextID();
 	}
+
+	public String genNextExchangeSubAccountId() {
+		return "SA" + IdGenerator.getInstance().getNextID();
+	}
+
+	public String genNextInstrumentPoolId() {
+		return "PO" + IdGenerator.getInstance().getNextID();
+	}
+
 }

@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.forms.DetailsPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.MasterDetailsBlock;
@@ -97,7 +96,7 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 		editTree.setContentProvider(new EditTreeContentProvider(service));
 		editTree.setLabelProvider(new EditTreeLabelProvider());
 		initTreeMenu(sectionClient);
-		refreshTree();
+		refresh();
 		
 		// create buttons
 		Composite btnComposite = toolkit.createComposite(sectionClient, SWT.NONE);
@@ -207,14 +206,13 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 		addExchAction = new Action() {
 			@Override
 			public void run() {
-				Object obj = ((IStructuredSelection)editTree.getSelection()).getFirstElement();
-				if (obj instanceof ExchangeAccountModel) {
-					InputNameDialog inputDialog = new InputNameDialog(editTree.getTree().getShell());
-					if ( TrayDialog.OK == inputDialog.open() ) {
-						service.createNewExchangeAccount(inputDialog.getSelectText());
-					}
+				InputNameDialog inputDialog = new InputNameDialog(editTree.getTree().getShell());
+				inputDialog.setInputTitle("Exchange Account: ");
+				if ( TrayDialog.OK == inputDialog.open() ) {
+					service.createNewExchangeAccount(inputDialog.getSelectText());
 				}
-				refreshTree();
+				
+				refresh();
 				changeUiElementState();
 			}
 		};
@@ -224,15 +222,21 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 			public void run() {
 				Object obj = ((IStructuredSelection) editTree.getSelection())
 						.getFirstElement();
+				InputNameDialog inputDialog = new InputNameDialog(editTree.getTree().getShell());
+				inputDialog.setInputTitle("Sub Account: ");
+				if ( TrayDialog.OK != inputDialog.open() ) {
+					return;
+				}
+				String selectTxt = inputDialog.getSelectText();
 				if (obj instanceof SubAccountModel) {
 					SubAccountModel subAccountModel = (SubAccountModel) obj;
 					service.createNewSubAccount(subAccountModel
-							.getExchangeAccountName());
+							.getExchangeAccountName(), selectTxt);
 				} else if (obj instanceof ExchangeAccountModel) {
 					ExchangeAccountModel exchangeAccountModel = (ExchangeAccountModel) obj;
-					service.createNewSubAccount(exchangeAccountModel.getName());
+					service.createNewSubAccount(exchangeAccountModel.getName(), selectTxt);
 				}
-				refreshTree();
+				refresh();
 				changeUiElementState();
 			}
 		};
@@ -247,14 +251,14 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 				} else if (obj instanceof SubAccountModel) {
 					service.removeSubAccount((SubAccountModel) obj);
 				}
-				refreshTree();
+				refresh();
 				changeUiElementState();
 			}
 		};
 		
 	}
 
-	private void refreshTree() {
+	public void refresh() {
 		editTree.setInput(service.getExchangeAccountList());	
 		editTree.expandAll();
 		editTree.refresh();
@@ -301,60 +305,73 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 		// Do Nothing
 	}
 	
-	class InputNameDialog extends TrayDialog {
+}
+
+class InputNameDialog extends TrayDialog {
+	
+	private String selectText;
+	private String inputTitle;
+	private Text txt;
+	
+	public InputNameDialog(Shell shell) {
+		super(shell);
+	}
+	
+	@Override
+	protected void configureShell(Shell newShell) {
+		newShell.setText("Please input a name");
+		super.configureShell(newShell);
+	}
+	
+	@Override
+	protected Point getInitialSize() {
+		return new Point(300, 150);
+	}
+	
+	@Override
+	protected Control createDialogArea(Composite parent) {
+		Composite container = (Composite) super.createDialogArea(parent);
+		GridLayout gridLayout = new GridLayout(2, false);
+		gridLayout.marginWidth = 5;
+		gridLayout.marginHeight = 5;
+		gridLayout.verticalSpacing = 0;
+		gridLayout.horizontalSpacing = 0;
+		container.setLayout(gridLayout);
 		
-		private String selectText;
+		GridData gridData = new GridData(SWT.RIGHT, SWT.FILL, true, false);
+		gridData.widthHint = 200;
+		gridData.heightHint = SWT.DEFAULT;
 		
-		private Text txt;
-		
-		public InputNameDialog(Shell shell) {
-			super(shell);
+		Label lblSelectUser = new Label(container, SWT.NONE);
+		if ( inputTitle != null ) {
+			lblSelectUser.setText(inputTitle);
+		}
+		txt = new Text(container, SWT.BORDER);
+		txt.setLayoutData(gridData);
+		if (selectText != null) {
+			txt.setText(selectText);
 		}
 		
-		@Override
-		protected void configureShell(Shell newShell) {
-			newShell.setText("Please input a name");
-			super.configureShell(newShell);
-		}
-		
-		@Override
-		protected Point getInitialSize() {
-			return new Point(300, 150);
-		}
-		
-		@Override
-		protected Control createDialogArea(Composite parent) {
-			Composite container = (Composite) super.createDialogArea(parent);
-			GridLayout gridLayout = new GridLayout(2, false);
-			gridLayout.marginWidth = 5;
-			gridLayout.marginHeight = 5;
-			gridLayout.verticalSpacing = 0;
-			gridLayout.horizontalSpacing = 0;
-			container.setLayout(gridLayout);
-			
-			GridData gridData = new GridData(SWT.RIGHT, SWT.FILL, true, false);
-			gridData.widthHint = 200;
-			gridData.heightHint = SWT.DEFAULT;
-			
-			Label lblSelectUser = new Label(container, SWT.NONE);
-			lblSelectUser.setText("Exchange Account: ");
-			txt = new Text(container, SWT.BORDER);
-			txt.setLayoutData(gridData);
-			
-			return container;
-		}
-		
-		public String getSelectText() {
-			return selectText;
-		}
-		
-		@Override
-		protected void okPressed() {
-			selectText = txt.getText();
-			super.okPressed();
-		}
+		return container;
+	}
+	
+	public String getSelectText() {
+		return selectText;
+	}
+	
+	public void setSelectText(String txt)	{
+		this.selectText = txt;
+	}
+	
+	public void setInputTitle(String title) {
 		
 	}
-
+	
+	@Override
+	protected void okPressed() {
+		selectText = txt.getText();
+		super.okPressed();
+	}
+	
 }
 

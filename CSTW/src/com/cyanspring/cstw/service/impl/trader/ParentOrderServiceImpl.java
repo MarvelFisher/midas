@@ -16,6 +16,7 @@ import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.common.CustomOrderType;
 import com.cyanspring.cstw.model.trader.ParentOrderModel;
 import com.cyanspring.cstw.service.iservice.trader.IParentOrderService;
+import com.cyanspring.cstw.session.CSTWSession;
 
 /**
  * 
@@ -48,7 +49,7 @@ public final class ParentOrderServiceImpl implements IParentOrderService {
 			fields.put(OrderField.PRICE.value(), model.getPrice());
 			fields.put(OrderField.TYPE.value(), type.name());
 		}
-		EnterParentOrderEvent event = new EnterParentOrderEvent(Business
+		EnterParentOrderEvent event = new EnterParentOrderEvent(CSTWSession
 				.getInstance().getInbox(), Business.getInstance()
 				.getFirstServer(), fields, model.getReceiverId(), false);
 		try {
