@@ -51,6 +51,7 @@ import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.gui.common.PropertyTableViewer;
+import com.cyanspring.cstw.session.CSTWSession;
 
 public class OrderDialog extends Dialog implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory.getLogger(OrderDialog.class);
@@ -386,7 +387,7 @@ public class OrderDialog extends Dialog implements IAsyncEventListener {
 		// setting default data
 		populateData();
 		
-		Business.getInstance().getEventManager().subscribe(EnterParentOrderReplyEvent.class, Business.getInstance().getInbox(), this);
+		Business.getInstance().getEventManager().subscribe(EnterParentOrderReplyEvent.class, CSTWSession.getInstance().getInbox(), this);
 
 	}
 
@@ -419,7 +420,7 @@ public class OrderDialog extends Dialog implements IAsyncEventListener {
 		}
 			
 		EnterParentOrderEvent event = 
-			new EnterParentOrderEvent(Business.getInstance().getInbox(), cbServer.getText(), fields, null, false);
+			new EnterParentOrderEvent(CSTWSession.getInstance().getInbox(), cbServer.getText(), fields, null, false);
 		try {
 			Business.getInstance().getEventManager().sendRemoteEvent(event);
 		} catch (Exception e) {

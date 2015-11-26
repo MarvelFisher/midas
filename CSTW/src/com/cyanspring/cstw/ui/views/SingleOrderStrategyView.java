@@ -820,7 +820,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 		changeStrategyByType(fields);
 		logOrder(fields, LogType.Enter);
-		EnterParentOrderEvent event = new EnterParentOrderEvent(Business
+		EnterParentOrderEvent event = new EnterParentOrderEvent(CSTWSession
 				.getInstance().getInbox(), cbServer.getText(), fields, null,
 				false);
 		try {

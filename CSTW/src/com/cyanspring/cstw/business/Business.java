@@ -81,6 +81,7 @@ import com.cyanspring.cstw.ui.views.ServerStatusDisplay;
  * to visit common service and bean.
  */
 public final class Business {
+
 	private static Logger log = LoggerFactory.getLogger(Business.class);
 	private static Business instance; // Singleton
 
@@ -91,10 +92,6 @@ public final class Business {
 	private OrderCachingManager orderManager;
 	private AllPositionManager allPositionManager;
 
-	private SystemInfo systemInfo;
-	private String inbox;
-	private String channel;
-	private String nodeInfoChannel;
 	private HashMap<String, Boolean> servers;
 
 	private List<String> singleOrderDisplayFieldList;
@@ -119,7 +116,6 @@ public final class Business {
 	private List<String> accountGroupList;
 	private List<Account> accountList;
 
-	private TraderInfoListener traderInfoListener;
 	private DataReceiver quoteDataReceiver;
 	private IFxConverter rateConverter;
 
@@ -151,20 +147,23 @@ public final class Business {
 		Version ver = new Version();
 		log.info(ver.getVersionDetails());
 		log.info("Initializing business obj...");
-		this.systemInfo = BeanHolder.getInstance().getSystemInfo();
+		SystemInfo systemInfo = BeanHolder.getInstance().getSystemInfo();
 		// create node.info subscriber and publisher
-		this.channel = systemInfo.getEnv() + "." + systemInfo.getCategory()
-				+ "." + "channel";
-		this.nodeInfoChannel = systemInfo.getEnv() + "."
-				+ systemInfo.getCategory() + "." + "node";
+		CSTWSession.getInstance().setChannel(
+				systemInfo.getEnv() + "." + systemInfo.getCategory() + "."
+						+ "channel");
+		CSTWSession.getInstance().setNodeInfoChannel(
+				systemInfo.getEnv() + "." + systemInfo.getCategory() + "."
+						+ "node");
 		InetAddress addr = InetAddress.getLocalHost();
 		String hostName = addr.getHostName();
 		String userName = System.getProperty("user.name");
 		if (userName == null) {
 			userName = "";
 		}
-		this.inbox = hostName + "." + userName + "."
-				+ IdGenerator.getInstance().getNextID();
+		CSTWSession.getInstance().setInbox(
+				hostName + "." + userName + "."
+						+ IdGenerator.getInstance().getNextID());
 		BeanHolder beanHolder = BeanHolder.getInstance();
 		if (beanHolder == null) {
 			throw new Exception("BeanHolder is not yet initialised");
@@ -178,7 +177,8 @@ public final class Business {
 		boolean ok = false;
 		while (!ok) {
 			try {
-				eventManager.init(channel, inbox);
+				eventManager.init(CSTWSession.getInstance().getChannel(),
+						CSTWSession.getInstance().getInbox());
 			} catch (Exception e) {
 				log.error(e.getMessage());
 				log.debug("Retrying in 3 seconds...");
@@ -189,8 +189,9 @@ public final class Business {
 			ok = true;
 		}
 
-		eventManager.addEventChannel(this.channel);
-		eventManager.addEventChannel(this.nodeInfoChannel);
+		eventManager.addEventChannel(CSTWSession.getInstance().getChannel());
+		eventManager.addEventChannel(CSTWSession.getInstance()
+				.getNodeInfoChannel());
 
 		orderManager = new OrderCachingManager(eventManager);
 
@@ -224,8 +225,10 @@ public final class Business {
 	public void start() throws Exception {
 		// publish my node info
 		NodeInfoEvent nodeInfo = new NodeInfoEvent(null, null, false, true,
-				inbox, inbox);
-		eventManager.publishRemoteEvent(nodeInfoChannel, nodeInfo);
+				CSTWSession.getInstance().getInbox(), CSTWSession.getInstance()
+						.getInbox());
+		eventManager.publishRemoteEvent(CSTWSession.getInstance()
+				.getNodeInfoChannel(), nodeInfo);
 		log.info("Published my node info");
 
 	}
@@ -380,15 +383,15 @@ public final class Business {
 			if (TimeUtil.getTimePass(entry.getValue()) > heartBeatInterval) {
 				log.debug("Sending server down event: " + entry.getKey());
 				servers.put(entry.getKey(), false);
-				eventManager.sendEvent(new ServerStatusLocalEvent(entry.getKey(),
-						false));
+				eventManager.sendEvent(new ServerStatusLocalEvent(entry
+						.getKey(), false));
 			} else { // server heart beat can go back up
 				Boolean up = servers.get(entry.getKey());
 				if (null != up && !up) {
 					log.debug("Sending server up event: " + entry.getKey());
 					servers.put(entry.getKey(), true);
-					eventManager.sendEvent(new ServerStatusLocalEvent(
-							entry.getKey(), true));
+					eventManager.sendEvent(new ServerStatusLocalEvent(entry
+							.getKey(), true));
 				}
 			}
 		}
@@ -419,10 +422,6 @@ public final class Business {
 
 	public ScheduleManager getScheduleManager() {
 		return scheduleManager;
-	}
-
-	public String getInbox() {
-		return inbox;
 	}
 
 	synchronized public List<String> getParentOrderDisplayFields() {
@@ -507,7 +506,8 @@ public final class Business {
 		}
 	}
 
-	private boolean processCSTWUserLoginReplyEvent(CSTWUserLoginReplyEvent loginReplyEvent) {
+	private boolean processCSTWUserLoginReplyEvent(
+			CSTWUserLoginReplyEvent loginReplyEvent) {
 		if (!loginReplyEvent.isOk())
 			return false;
 
@@ -517,7 +517,8 @@ public final class Business {
 			log.info("loginAccount:{}", loginAccount.getId());
 			sendAccountSettingRequestEvent(loginAccount.getId());
 		}
-		Map<String, Account> user2AccoutMap = loginReplyEvent.getUser2AccountMap();
+		Map<String, Account> user2AccoutMap = loginReplyEvent
+				.getUser2AccountMap();
 		if (null != user2AccoutMap && !user2AccoutMap.isEmpty()) {
 			accountList.addAll(user2AccoutMap.values());
 			for (Account acc : user2AccoutMap.values()) {
