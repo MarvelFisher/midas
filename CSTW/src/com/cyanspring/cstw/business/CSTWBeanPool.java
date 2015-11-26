@@ -14,6 +14,7 @@ import com.cyanspring.common.cstw.kdb.SignalManager;
 import com.cyanspring.common.cstw.kdb.SignalType;
 import com.cyanspring.common.cstw.tick.TickManager;
 import com.cyanspring.common.cstw.tick.Ticker;
+import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.staticdata.RefData;
 
 /**
@@ -30,6 +31,8 @@ public final class CSTWBeanPool implements IBusinessService {
 	private IAuthChecker authManager;
 	private TickManager tickManager;
 	private SignalManager signalManager;
+
+	private IFxConverter rateConverter;
 
 	private List<String> symbolList = new ArrayList<String>();
 
@@ -97,6 +100,14 @@ public final class CSTWBeanPool implements IBusinessService {
 
 	public boolean hasViewAuth(String view) {
 		return this.authManager.hasViewAuth(userGroup.getRole(), view);
+	}
+
+	public IFxConverter getRateConverter() {
+		return rateConverter;
+	}
+
+	public void setRateConverter(IFxConverter rateConverter) {
+		this.rateConverter = rateConverter;
 	}
 
 }

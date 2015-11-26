@@ -26,7 +26,6 @@ import com.cyanspring.common.Clock;
 import com.cyanspring.common.Default;
 import com.cyanspring.common.SystemInfo;
 import com.cyanspring.common.account.Account;
-import com.cyanspring.common.account.OverallPosition;
 import com.cyanspring.common.account.UserGroup;
 import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.business.FieldDef;
@@ -53,7 +52,6 @@ import com.cyanspring.common.event.strategy.SingleInstrumentStrategyFieldDefUpda
 import com.cyanspring.common.event.strategy.SingleOrderStrategyFieldDefUpdateEvent;
 import com.cyanspring.common.event.system.NodeInfoEvent;
 import com.cyanspring.common.event.system.ServerHeartBeatEvent;
-import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.marketdata.DataReceiver;
 import com.cyanspring.common.marketsession.DefaultStartEndTime;
 import com.cyanspring.common.server.event.ServerReadyEvent;
@@ -117,7 +115,6 @@ public final class Business {
 	private List<Account> accountList;
 
 	private DataReceiver quoteDataReceiver;
-	private IFxConverter rateConverter;
 
 	public static Business getInstance() {
 		if (null == instance) {
@@ -317,7 +314,7 @@ public final class Business {
 				processAccountInstrumentSnapshotReplyEvent((AccountInstrumentSnapshotReplyEvent) event);
 			} else if (event instanceof RateConverterReplyEvent) {
 				RateConverterReplyEvent e = (RateConverterReplyEvent) event;
-				rateConverter = e.getConverter();
+				beanPool.setRateConverter(e.getConverter());
 			} else {
 				log.error("I dont expect this event: " + event);
 			}
@@ -637,14 +634,6 @@ public final class Business {
 
 	public AllPositionManager getAllPositionManager() {
 		return allPositionManager;
-	}
-
-	public IFxConverter getRateConverter() {
-		return rateConverter;
-	}
-
-	public List<OverallPosition> getOverallPositionList() {
-		return allPositionManager.getOverAllPositionList();
 	}
 
 	public List<Account> getAccountList() {
