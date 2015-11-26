@@ -164,20 +164,20 @@ public final class TraderSession {
 		}
 	}
 
-	private void processingSingleOrderStrategyFieldDefUpdateEvent(
+	private synchronized void processingSingleOrderStrategyFieldDefUpdateEvent(
 			SingleOrderStrategyFieldDefUpdateEvent event) {
 		singleOrderFieldDefMap.put(event.getName(), event.getFieldDefs());
 		log.info("Single-order strategy field def update: " + event.getName());
 	}
 
-	private void processingSingleInstrumentStrategyFieldDefUpdateEvent(
+	private synchronized void processingSingleInstrumentStrategyFieldDefUpdateEvent(
 			SingleInstrumentStrategyFieldDefUpdateEvent event) {
 		singleInstrumentFieldDefMap.put(event.getName(), event.getFieldDefs());
 		log.info("Single-instrument strategy field def update: "
 				+ event.getName());
 	}
 
-	private void processingMultiInstrumentStrategyFieldDefUpdateEvent(
+	private synchronized void processingMultiInstrumentStrategyFieldDefUpdateEvent(
 			MultiInstrumentStrategyFieldDefUpdateEvent event) {
 		multiInstrumentFieldDefMap.put(event.getConfig().getStrategy(),
 				event.getConfig());

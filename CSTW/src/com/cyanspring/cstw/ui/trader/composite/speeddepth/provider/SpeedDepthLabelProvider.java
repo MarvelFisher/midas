@@ -1,5 +1,8 @@
 package com.cyanspring.cstw.ui.trader.composite.speeddepth.provider;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -20,6 +23,8 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 	private int mouseselectIndex = -1;
 
 	private int keyselectIndex = -1;
+
+	private Set<Integer> selectIndexSet = new HashSet<Integer>();
 
 	@Override
 	public String getColumnText(Object element, int columnIndex) {
@@ -96,14 +101,16 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 		switch (columnIndex) {
 		case 1:
 			if (model.getIndex() == mouseselectIndex
-					|| model.getIndex() == keyselectIndex) {
+					|| model.getIndex() == keyselectIndex
+					|| selectIndexSet.contains(new Integer(model.getIndex()))) {
 				return SWTResourceManager.getColor(SWT.COLOR_BLACK);
 			} else {
 				return SWTResourceManager.getColor(SWT.COLOR_WHITE);
 			}
 		case 3:
 			if (model.getIndex() == mouseselectIndex
-					|| model.getIndex() == keyselectIndex) {
+					|| model.getIndex() == keyselectIndex
+					|| selectIndexSet.contains(new Integer(model.getIndex()))) {
 				return SWTResourceManager.getColor(SWT.COLOR_BLACK);
 			} else {
 				return SWTResourceManager.getColor(SWT.COLOR_WHITE);
@@ -118,6 +125,14 @@ public final class SpeedDepthLabelProvider extends DefaultLabelProviderAdapter
 
 	public void setKeyselectIndex(int keyselectIndex) {
 		this.keyselectIndex = keyselectIndex;
+	}
+
+	public void clearSelectedIndex() {
+		selectIndexSet.clear();
+	}
+
+	public void addSelectedIndex(int selectedIndex) {
+		selectIndexSet.add(new Integer(selectedIndex));
 	}
 
 }
