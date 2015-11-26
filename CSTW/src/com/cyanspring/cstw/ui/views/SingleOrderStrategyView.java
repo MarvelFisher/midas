@@ -104,6 +104,7 @@ import com.cyanspring.cstw.localevent.SingleOrderStrategySelectionLocalEvent;
 import com.cyanspring.cstw.service.iservice.ServiceFactory;
 import com.cyanspring.cstw.session.CSTWSession;
 import com.cyanspring.cstw.session.GuiSession;
+import com.cyanspring.cstw.session.TraderSession;
 
 public class SingleOrderStrategyView extends ViewPart implements
 		IAsyncEventListener {
@@ -306,7 +307,8 @@ public class SingleOrderStrategyView extends ViewPart implements
 	public void dispose() {
 		Business.getInstance().getEventManager()
 				.unsubscribe(OrderCacheReadyLocalEvent.class, this);
-		Business.getInstance().getEventManager()
+		Business.getInstance()
+				.getEventManager()
 				.unsubscribe(GuiSingleOrderStrategyUpdateLocalEvent.class, this);
 		Business.getInstance().getEventManager()
 				.unsubscribe(EnterParentOrderReplyEvent.class, this);
@@ -351,7 +353,8 @@ public class SingleOrderStrategyView extends ViewPart implements
 
 	private void sendMarketDataRequestEvent(String symbol) {
 		// if null , send now market data view quote
-		MarketDataRequestLocalEvent requestEvent = new MarketDataRequestLocalEvent(symbol);
+		MarketDataRequestLocalEvent requestEvent = new MarketDataRequestLocalEvent(
+				symbol);
 		Business.getInstance().getEventManager().sendEvent(requestEvent);
 	}
 
@@ -452,8 +455,9 @@ public class SingleOrderStrategyView extends ViewPart implements
 							.sendEvent(
 									new SingleOrderStrategySelectionLocalEvent(
 											map,
-											Business.getInstance()
-													.getSingleOrderAmendableFields(
+											TraderSession
+													.getInstance()
+													.getSingleInstrumentAmendableFields(
 															strategyName)));
 					clearStatus();
 				}
@@ -1597,8 +1601,8 @@ public class SingleOrderStrategyView extends ViewPart implements
 				return;
 
 			ArrayList<ColumnProperty> columnProperties = new ArrayList<ColumnProperty>();
-			List<String> displayFields = Business.getInstance()
-					.getParentOrderDisplayFields();
+			List<String> displayFields = TraderSession.getInstance()
+					.getSingleOrderDisplayFieldList();
 
 			// add fields exists in both list
 			for (String field : displayFields) {

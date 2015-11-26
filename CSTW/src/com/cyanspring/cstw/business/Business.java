@@ -28,8 +28,6 @@ import com.cyanspring.common.SystemInfo;
 import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.UserGroup;
 import com.cyanspring.common.account.UserRole;
-import com.cyanspring.common.business.FieldDef;
-import com.cyanspring.common.business.MultiInstrumentStrategyDisplayConfig;
 import com.cyanspring.common.cstw.position.AllPositionManager;
 import com.cyanspring.common.data.AlertType;
 import com.cyanspring.common.event.AsyncEvent;
@@ -47,9 +45,6 @@ import com.cyanspring.common.event.order.InitClientEvent;
 import com.cyanspring.common.event.order.InitClientRequestEvent;
 import com.cyanspring.common.event.pool.AccountInstrumentSnapshotReplyEvent;
 import com.cyanspring.common.event.pool.AccountInstrumentSnapshotRequestEvent;
-import com.cyanspring.common.event.strategy.MultiInstrumentStrategyFieldDefUpdateEvent;
-import com.cyanspring.common.event.strategy.SingleInstrumentStrategyFieldDefUpdateEvent;
-import com.cyanspring.common.event.strategy.SingleOrderStrategyFieldDefUpdateEvent;
 import com.cyanspring.common.event.system.NodeInfoEvent;
 import com.cyanspring.common.event.system.ServerHeartBeatEvent;
 import com.cyanspring.common.marketsession.DefaultStartEndTime;
@@ -71,6 +66,7 @@ import com.cyanspring.cstw.keepermanager.InstrumentPoolKeeperManager;
 import com.cyanspring.cstw.localevent.SelectUserAccountLocalEvent;
 import com.cyanspring.cstw.localevent.ServerStatusLocalEvent;
 import com.cyanspring.cstw.session.CSTWSession;
+import com.cyanspring.cstw.session.TraderSession;
 import com.cyanspring.cstw.ui.views.ServerStatusDisplay;
 
 /**
@@ -90,14 +86,6 @@ public final class Business {
 	private AllPositionManager allPositionManager;
 
 	private HashMap<String, Boolean> servers;
-
-	private List<String> singleOrderDisplayFieldList;
-	private List<String> singleInstrumentDisplayFieldList;
-	private List<String> multiInstrumentDisplayFieldList;
-
-	private Map<String, Map<String, FieldDef>> singleOrderFieldDefMap;
-	private Map<String, Map<String, FieldDef>> singleInstrumentFieldDefMap;
-	private Map<String, MultiInstrumentStrategyDisplayConfig> multiInstrumentFieldDefMap;
 
 	private ScheduleManager scheduleManager;
 	private AsyncTimerEvent timerEvent;
@@ -185,8 +173,6 @@ public final class Business {
 		eventManager.addEventChannel(CSTWSession.getInstance()
 				.getNodeInfoChannel());
 
-		orderManager = new OrderCachingManager();
-
 		ServerStatusDisplay.getInstance().init();
 
 		eventManager.subscribe(NodeInfoEvent.class, listener);
@@ -195,10 +181,6 @@ public final class Business {
 		eventManager.subscribe(SelectUserAccountLocalEvent.class, listener);
 		eventManager.subscribe(ServerHeartBeatEvent.class, listener);
 		eventManager.subscribe(ServerReadyEvent.class, listener);
-		eventManager.subscribe(SingleOrderStrategyFieldDefUpdateEvent.class,
-				listener);
-		eventManager.subscribe(
-				MultiInstrumentStrategyFieldDefUpdateEvent.class, listener);
 		eventManager.subscribe(CSTWUserLoginReplyEvent.class, listener);
 		eventManager
 				.subscribe(AccountSettingSnapshotReplyEvent.class, listener);
@@ -209,9 +191,8 @@ public final class Business {
 		scheduleManager.scheduleRepeatTimerEvent(heartBeatInterval, listener,
 				timerEvent);
 		log.info("TraderInfoListener not init version");
-		// traderInfoListener = new TraderInfoListener();
-		// initSessionListener();
 
+		orderManager = new OrderCachingManager();
 	}
 
 	public void start() throws Exception {
@@ -246,20 +227,8 @@ public final class Business {
 			} else if (event instanceof InitClientEvent) {
 				log.debug("Received event: " + event);
 				InitClientEvent initClientEvent = (InitClientEvent) event;
-				singleOrderFieldDefMap = initClientEvent
-						.getSingleOrderFieldDefs();
-				singleOrderDisplayFieldList = initClientEvent
-						.getSingleOrderDisplayFields();
-				singleInstrumentFieldDefMap = initClientEvent
-						.getSingleInstrumentFieldDefs();
-				singleInstrumentDisplayFieldList = initClientEvent
-						.getSingleInstrumentDisplayFields();
 				defaultStartEndTime = initClientEvent.getDefaultStartEndTime();
-				multiInstrumentDisplayFieldList = initClientEvent
-						.getMultiInstrumentDisplayFields();
-				multiInstrumentFieldDefMap = initClientEvent
-						.getMultiInstrumentStrategyFieldDefs();
-
+				TraderSession.getInstance().initByEvnet(initClientEvent);
 			} else if (event instanceof CSTWUserLoginReplyEvent) {
 				CSTWUserLoginReplyEvent evt = (CSTWUserLoginReplyEvent) event;
 				processCSTWUserLoginReplyEvent(evt);
@@ -267,13 +236,9 @@ public final class Business {
 					beanPool.getTickManager().init(getFirstServer());
 					requestRateConverter();
 					requestStrategyInfo(evt.getSender());
-					// if(null != loginAccount);
-					// traderInfoListener.init(loginAccount);
-
 				}
 
 			} else if (event instanceof AccountSettingSnapshotReplyEvent) {
-
 				AccountSettingSnapshotReplyEvent evt = (AccountSettingSnapshotReplyEvent) event;
 				processAccountSettingSnapshotReplyEvent(evt);
 			} else if (event instanceof UserLoginReplyEvent) {
@@ -295,12 +260,6 @@ public final class Business {
 				}
 			} else if (event instanceof ServerHeartBeatEvent) {
 				processServerHeartBeatEvent((ServerHeartBeatEvent) event);
-			} else if (event instanceof SingleOrderStrategyFieldDefUpdateEvent) {
-				processingSingleOrderStrategyFieldDefUpdateEvent((SingleOrderStrategyFieldDefUpdateEvent) event);
-			} else if (event instanceof SingleInstrumentStrategyFieldDefUpdateEvent) {
-				processingSingleInstrumentStrategyFieldDefUpdateEvent((SingleInstrumentStrategyFieldDefUpdateEvent) event);
-			} else if (event instanceof MultiInstrumentStrategyFieldDefUpdateEvent) {
-				processingMultiInstrumentStrategyFieldDefUpdateEvent((MultiInstrumentStrategyFieldDefUpdateEvent) event);
 			} else if (event instanceof AsyncTimerEvent) {
 				processAsyncTimerEvent((AsyncTimerEvent) event);
 			} else if (event instanceof SelectUserAccountLocalEvent) {
@@ -343,27 +302,6 @@ public final class Business {
 			e.printStackTrace();
 		}
 
-	}
-
-	synchronized private void processingSingleOrderStrategyFieldDefUpdateEvent(
-			SingleOrderStrategyFieldDefUpdateEvent event) {
-		singleOrderFieldDefMap.put(event.getName(), event.getFieldDefs());
-		log.info("Single-order strategy field def update: " + event.getName());
-	}
-
-	private void processingSingleInstrumentStrategyFieldDefUpdateEvent(
-			SingleInstrumentStrategyFieldDefUpdateEvent event) {
-		singleInstrumentFieldDefMap.put(event.getName(), event.getFieldDefs());
-		log.info("Single-instrument strategy field def update: "
-				+ event.getName());
-	}
-
-	synchronized private void processingMultiInstrumentStrategyFieldDefUpdateEvent(
-			MultiInstrumentStrategyFieldDefUpdateEvent event) {
-		multiInstrumentFieldDefMap.put(event.getConfig().getStrategy(),
-				event.getConfig());
-		log.info("Multi-Instrument strategy field def update: "
-				+ event.getConfig().getStrategy());
 	}
 
 	private void processServerHeartBeatEvent(ServerHeartBeatEvent event) {
@@ -416,61 +354,8 @@ public final class Business {
 		return scheduleManager;
 	}
 
-	synchronized public List<String> getParentOrderDisplayFields() {
-		return singleOrderDisplayFieldList;
-	}
-
-	synchronized public DefaultStartEndTime getDefaultStartEndTime() {
+	public DefaultStartEndTime getDefaultStartEndTime() {
 		return defaultStartEndTime;
-	}
-
-	synchronized public List<String> getSingleOrderDisplayFields() {
-		return singleOrderDisplayFieldList;
-	}
-
-	synchronized public Map<String, Map<String, FieldDef>> getSingleOrderFieldDefs() {
-		return singleOrderFieldDefMap;
-	}
-
-	synchronized public List<String> getSingleInstrumentDisplayFields() {
-		return singleInstrumentDisplayFieldList;
-	}
-
-	synchronized public Map<String, Map<String, FieldDef>> getSingleInstrumentFieldDefs() {
-		return singleInstrumentFieldDefMap;
-	}
-
-	synchronized public Map<String, MultiInstrumentStrategyDisplayConfig> getMultiInstrumentFieldDefs() {
-		return multiInstrumentFieldDefMap;
-	}
-
-	synchronized public List<String> getMultiInstrumentDisplayFields() {
-		return multiInstrumentDisplayFieldList;
-	}
-
-	synchronized public List<String> getSingleOrderAmendableFields(String key) {
-		List<String> result = new ArrayList<String>();
-		Map<String, FieldDef> fieldDefs = singleOrderFieldDefMap.get(key);
-		if (null != fieldDefs) {
-			for (FieldDef fieldDef : fieldDefs.values()) {
-				if (fieldDef.isAmendable())
-					result.add(fieldDef.getName());
-			}
-		}
-		return result;
-	}
-
-	synchronized public List<String> getSingleInstrumentAmendableFields(
-			String key) {
-		List<String> result = new ArrayList<String>();
-		Map<String, FieldDef> fieldDefs = singleInstrumentFieldDefMap.get(key);
-		if (null != fieldDefs) {
-			for (FieldDef fieldDef : fieldDefs.values()) {
-				if (fieldDef.isAmendable())
-					result.add(fieldDef.getName());
-			}
-		}
-		return result;
 	}
 
 	public Map<AlertType, Integer> getAlertColorConfig() {

@@ -47,8 +47,8 @@ import com.cyanspring.cstw.localevent.OrderCacheReadyLocalEvent;
 public class OrderCachingManager implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
 			.getLogger(OrderCachingManager.class);
-	SingleOrderStrategyCache singleOrderStrategyCache = new SingleOrderStrategyCache();
-	SingleInstrumentStrategyCache singleInstrumentStrategyCache = new SingleInstrumentStrategyCache();
+	private SingleOrderStrategyCache singleOrderStrategyCache = new SingleOrderStrategyCache();
+	private SingleInstrumentStrategyCache singleInstrumentStrategyCache = new SingleInstrumentStrategyCache();
 	private ArrayList<String> servers = new ArrayList<String>();
 	private Queue<ParentOrder> singleOrderStrategyQueue = new LinkedList<ParentOrder>();
 	private Queue<Instrument> singleInstrumentStrategyQueue = new LinkedList<Instrument>();
