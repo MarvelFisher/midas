@@ -84,6 +84,11 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 	}
 
 	@Override
+	public List<ExchangeSubAccount> getAllSubAccountList() {
+		return new ArrayList<ExchangeSubAccount>(subAccountMap.values());
+	}
+
+	@Override
 	public List<InstrumentPool> getInstrumentPoolList(String exchangeSubAccount) {
 		return new ArrayList<InstrumentPool>(poolSubAccountMap.getMap(
 				exchangeSubAccount).values());
@@ -205,6 +210,11 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public ExchangeSubAccount getSubAccountById(String subAccountId) {
+		return subAccountMap.get(subAccountId);
 	}
 
 	public void add(ExchangeSubAccount exchangeSubAccount) {
