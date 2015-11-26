@@ -90,6 +90,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -182,6 +190,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -276,6 +292,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -368,6 +392,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -462,6 +494,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -554,6 +594,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -648,6 +696,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -740,6 +796,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -834,6 +898,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -926,6 +998,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -1020,6 +1100,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -1112,6 +1200,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -1206,6 +1302,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -1298,6 +1402,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -1392,6 +1504,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -1484,6 +1604,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -1578,6 +1706,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -1670,6 +1806,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -1764,6 +1908,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -1856,6 +2008,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -1950,6 +2110,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -2042,6 +2210,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -2136,6 +2312,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -2228,6 +2412,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -2322,6 +2514,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -2414,6 +2614,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -2508,6 +2716,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -2600,6 +2816,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -2694,6 +2918,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -2786,6 +3018,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -2880,6 +3120,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -2972,6 +3220,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -3066,6 +3322,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -3158,6 +3422,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -3252,6 +3524,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -3344,6 +3624,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -3438,6 +3726,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -3530,6 +3826,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -3624,6 +3928,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -3716,6 +4028,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -3810,6 +4130,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -3902,6 +4230,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -3996,6 +4332,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -4088,6 +4432,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -4182,6 +4534,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -4274,6 +4634,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -4368,6 +4736,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -4460,6 +4836,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -4554,6 +4938,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -4646,6 +5038,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -4740,6 +5140,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -4832,6 +5240,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -4926,6 +5342,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -5018,6 +5442,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -5112,6 +5544,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -5204,6 +5644,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -5298,6 +5746,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -5390,6 +5846,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -5484,6 +5948,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -5576,6 +6048,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -5670,6 +6150,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -5762,6 +6250,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -5856,6 +6352,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -5948,6 +6452,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -6042,6 +6554,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -6134,6 +6654,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
@@ -6228,6 +6756,14 @@
           <m__comboLegs/>
         </com.ib.client.Contract>
       </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
+      </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
   <com.cyanspring.common.staticdata.RefData>
@@ -6320,6 +6856,14 @@
           <m__includeExpired>false</m__includeExpired>
           <m__comboLegs/>
         </com.ib.client.Contract>
+      </entry>
+      <entry>
+        <string>Instrument type</string>
+        <long>0x0404</long>
+      </entry>
+      <entry>
+        <string>Tradable days</string>
+        <int>0</int>
       </entry>
     </fields>
   </com.cyanspring.common.staticdata.RefData>
