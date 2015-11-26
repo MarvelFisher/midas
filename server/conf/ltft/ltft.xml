@@ -276,6 +276,9 @@
 		<property name="sendDynamicPositionUpdate">
 			<value>true</value>
 		</property>
+		<property name="jobInterval">
+			<value>100</value>
+		</property>
 	</bean>
 
 	<bean id="userKeeper" class="com.cyanspring.server.account.UserKeeper">
