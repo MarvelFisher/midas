@@ -27,7 +27,6 @@ import com.cyanspring.common.business.ParentOrder;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
-import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.order.AllStrategySnapshotReplyEvent;
 import com.cyanspring.common.event.order.AllStrategySnapshotRequestEvent;
 import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
@@ -38,6 +37,7 @@ import com.cyanspring.common.event.strategy.SingleInstrumentStrategyUpdateEvent;
 import com.cyanspring.common.event.strategy.StrategyLogEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.business.CSTWEventManager;
 import com.cyanspring.cstw.localevent.AccountSelectionLocalEvent;
 import com.cyanspring.cstw.localevent.GuiMultiInstrumentStrategyUpdateLocalEvent;
 import com.cyanspring.cstw.localevent.GuiSingleInstrumentStrategyUpdateLocalEvent;
@@ -49,7 +49,6 @@ public class OrderCachingManager implements IAsyncEventListener {
 			.getLogger(OrderCachingManager.class);
 	SingleOrderStrategyCache singleOrderStrategyCache = new SingleOrderStrategyCache();
 	SingleInstrumentStrategyCache singleInstrumentStrategyCache = new SingleInstrumentStrategyCache();
-	IRemoteEventManager eventManager;
 	private ArrayList<String> servers = new ArrayList<String>();
 	private Queue<ParentOrder> singleOrderStrategyQueue = new LinkedList<ParentOrder>();
 	private Queue<Instrument> singleInstrumentStrategyQueue = new LinkedList<Instrument>();
@@ -61,10 +60,6 @@ public class OrderCachingManager implements IAsyncEventListener {
 	private String currentAccount;
 
 	private GroupOrderCache groupOrderCache = new GroupOrderCache();
-
-	public OrderCachingManager(IRemoteEventManager eventManager) {
-		this.eventManager = eventManager;
-	}
 
 	public synchronized void processStrategySnapshotEvent(
 			StrategySnapshotEvent event) {
@@ -99,7 +94,7 @@ public class OrderCachingManager implements IAsyncEventListener {
 
 		// setting ready
 		setReady(true);
-		eventManager.sendEvent(new OrderCacheReadyLocalEvent(null));
+		CSTWEventManager.sendEvent(new OrderCacheReadyLocalEvent(null));
 	}
 
 	private void clearLogs(String sender) {
@@ -194,8 +189,9 @@ public class OrderCachingManager implements IAsyncEventListener {
 					parentOrder.getId());
 
 			groupOrderCache.updateOrder(parentOrder);
-			eventManager.sendEvent(new GuiSingleOrderStrategyUpdateLocalEvent(
-					parentOrder));
+			CSTWEventManager
+					.sendEvent(new GuiSingleOrderStrategyUpdateLocalEvent(
+							parentOrder));
 		} else {
 			singleOrderStrategyQueue.add(parentOrder);
 		}
@@ -262,31 +258,29 @@ public class OrderCachingManager implements IAsyncEventListener {
 	}
 
 	public void init() {
-		eventManager.subscribe(AccountSelectionLocalEvent.class, this);
-		eventManager.subscribe(StrategySnapshotEvent.class, this);
-		eventManager.subscribe(StrategyLogEvent.class, this);
+		CSTWEventManager.subscribe(AccountSelectionLocalEvent.class, this);
+		CSTWEventManager.subscribe(StrategySnapshotEvent.class, this);
+		CSTWEventManager.subscribe(StrategyLogEvent.class, this);
 		subscribeAccountOrder(Business.getInstance().getAccount());
-		eventManager.subscribe(SingleInstrumentStrategyUpdateEvent.class,
+		CSTWEventManager.subscribe(SingleInstrumentStrategyUpdateEvent.class,
 				Business.getInstance().getAccount(), this);
-		eventManager.subscribe(MultiInstrumentStrategyUpdateEvent.class,
+		CSTWEventManager.subscribe(MultiInstrumentStrategyUpdateEvent.class,
 				Business.getInstance().getAccount(), this);
-		eventManager.subscribe(AllStrategySnapshotReplyEvent.class, this);
+		CSTWEventManager.subscribe(AllStrategySnapshotReplyEvent.class, this);
 
 		try {
 			if (Business.getInstance().getUserGroup().isAdmin()) {
-				eventManager
-						.sendRemoteEvent(new AllStrategySnapshotRequestEvent(
-								IdGenerator.getInstance().getNextID(), Business
-										.getInstance().getFirstServer(), null));
+				CSTWEventManager.sendEvent(new AllStrategySnapshotRequestEvent(
+						IdGenerator.getInstance().getNextID(), Business
+								.getInstance().getFirstServer(), null));
 			} else if (Business.getInstance().getUserGroup().getRole()
 					.isManagerLevel()) {
-				eventManager
-						.sendRemoteEvent(new AllStrategySnapshotRequestEvent(
-								IdGenerator.getInstance().getNextID(), Business
-										.getInstance().getFirstServer(),
-								Business.getInstance().getAccountGroup()));
+				CSTWEventManager.sendEvent(new AllStrategySnapshotRequestEvent(
+						IdGenerator.getInstance().getNextID(), Business
+								.getInstance().getFirstServer(), Business
+								.getInstance().getAccountGroup()));
 			} else {
-				eventManager.sendRemoteEvent(new StrategySnapshotRequestEvent(
+				CSTWEventManager.sendEvent(new StrategySnapshotRequestEvent(
 						Business.getInstance().getAccount(), Business
 								.getInstance().getFirstServer(), null));
 			}
@@ -296,24 +290,24 @@ public class OrderCachingManager implements IAsyncEventListener {
 	}
 
 	private void subscribeAccountOrder(String account) {
-		eventManager.unsubscribe(ParentOrderUpdateEvent.class, currentAccount,
-				this);
+		CSTWEventManager.unsubscribe(ParentOrderUpdateEvent.class,
+				currentAccount, this);
 		currentAccount = account;
-		eventManager.subscribe(ParentOrderUpdateEvent.class, currentAccount,
-				this);
+		CSTWEventManager.subscribe(ParentOrderUpdateEvent.class,
+				currentAccount, this);
 	}
 
 	public void uninit() {
-		eventManager.unsubscribe(StrategySnapshotEvent.class, this);
-		eventManager.unsubscribe(StrategyLogEvent.class, this);
-		eventManager.unsubscribe(ParentOrderUpdateEvent.class, Business
+		CSTWEventManager.unsubscribe(StrategySnapshotEvent.class, this);
+		CSTWEventManager.unsubscribe(StrategyLogEvent.class, this);
+		CSTWEventManager.unsubscribe(ParentOrderUpdateEvent.class, Business
 				.getInstance().getAccount(), this);
-		eventManager.unsubscribe(SingleInstrumentStrategyUpdateEvent.class,
+		CSTWEventManager.unsubscribe(SingleInstrumentStrategyUpdateEvent.class,
 				Business.getInstance().getAccount(), this);
-		eventManager.unsubscribe(MultiInstrumentStrategyUpdateEvent.class,
+		CSTWEventManager.unsubscribe(MultiInstrumentStrategyUpdateEvent.class,
 				Business.getInstance().getAccount(), this);
-		eventManager.unsubscribe(AllStrategySnapshotReplyEvent.class, Business
-				.getInstance().getAccount(), this);
+		CSTWEventManager.unsubscribe(AllStrategySnapshotReplyEvent.class,
+				Business.getInstance().getAccount(), this);
 
 	}
 
@@ -345,8 +339,9 @@ public class OrderCachingManager implements IAsyncEventListener {
 		String server = event.getSender();
 		if (server == null || server.equals("") || servers.contains(server)) {
 			multiInstrumentStrategyCache.update(data);
-			eventManager.sendEvent(new GuiMultiInstrumentStrategyUpdateLocalEvent(
-					event.getStrategyData().getId()));
+			CSTWEventManager
+					.sendEvent(new GuiMultiInstrumentStrategyUpdateLocalEvent(
+							event.getStrategyData().getId()));
 		} else {
 			multiInstrumentStrategyQueue.add(data);
 		}
@@ -357,8 +352,9 @@ public class OrderCachingManager implements IAsyncEventListener {
 		String server = event.getSender();
 		if (server == null || server.equals("") || servers.contains(server)) {
 			singleInstrumentStrategyCache.update(event.getInstrument());
-			eventManager.sendEvent(new GuiSingleInstrumentStrategyUpdateLocalEvent(
-					event.getInstrument()));
+			CSTWEventManager
+					.sendEvent(new GuiSingleInstrumentStrategyUpdateLocalEvent(
+							event.getInstrument()));
 		} else {
 			singleInstrumentStrategyQueue.add(event.getInstrument());
 		}
@@ -369,7 +365,8 @@ public class OrderCachingManager implements IAsyncEventListener {
 		if (event instanceof StrategySnapshotEvent) {
 			processStrategySnapshotEvent((StrategySnapshotEvent) event);
 		} else if (event instanceof AccountSelectionLocalEvent) {
-			subscribeAccountOrder(((AccountSelectionLocalEvent) event).getAccount());
+			subscribeAccountOrder(((AccountSelectionLocalEvent) event)
+					.getAccount());
 		} else if (event instanceof StrategyLogEvent) {
 			processStrategyLogEvent((StrategyLogEvent) event);
 		} else if (event instanceof ParentOrderUpdateEvent) {
@@ -395,20 +392,21 @@ public class OrderCachingManager implements IAsyncEventListener {
 		groupOrderCache.updateMultiInstrumentStrategyData(event
 				.getStrategyData());
 		if (Business.getInstance().getUserGroup().isAdmin()) {
-			eventManager.subscribe(ParentOrderUpdateEvent.class, this);
+			CSTWEventManager.subscribe(ParentOrderUpdateEvent.class, this);
 		} else {
 			subGroupEvent(Business.getInstance().getAccountGroup());
 		}
 
 		// setting ready
 		setReady(true);
-		eventManager.sendEvent(new OrderCacheReadyLocalEvent(null));
+		CSTWEventManager.sendEvent(new OrderCacheReadyLocalEvent(null));
 	}
 
 	private void subGroupEvent(List<String> accountList) {
 		for (String id : accountList) {
-			eventManager.unsubscribe(ParentOrderUpdateEvent.class, id, this);
-			eventManager.subscribe(ParentOrderUpdateEvent.class, id, this);
+			CSTWEventManager
+					.unsubscribe(ParentOrderUpdateEvent.class, id, this);
+			CSTWEventManager.subscribe(ParentOrderUpdateEvent.class, id, this);
 			log.info("sub ParentOrderUpdateEvent:{}", id);
 		}
 	}

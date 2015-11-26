@@ -52,7 +52,6 @@ import com.cyanspring.common.event.strategy.SingleInstrumentStrategyFieldDefUpda
 import com.cyanspring.common.event.strategy.SingleOrderStrategyFieldDefUpdateEvent;
 import com.cyanspring.common.event.system.NodeInfoEvent;
 import com.cyanspring.common.event.system.ServerHeartBeatEvent;
-import com.cyanspring.common.marketdata.DataReceiver;
 import com.cyanspring.common.marketsession.DefaultStartEndTime;
 import com.cyanspring.common.server.event.ServerReadyEvent;
 import com.cyanspring.common.util.IdGenerator;
@@ -114,8 +113,6 @@ public final class Business {
 	private List<String> accountGroupList;
 	private List<Account> accountList;
 
-	private DataReceiver quoteDataReceiver;
-
 	public static Business getInstance() {
 		if (null == instance) {
 			instance = new Business();
@@ -166,11 +163,9 @@ public final class Business {
 			throw new Exception("BeanHolder is not yet initialised");
 		}
 		beanPool = new CSTWBeanPool(beanHolder);
-
-		eventManager = beanHolder.getEventManager();
 		alertColorConfig = beanHolder.getAlertColorConfig();
-		quoteDataReceiver = beanHolder.getDataReceiver();
 		allPositionManager = beanHolder.getAllPositionManager();
+		eventManager = beanHolder.getEventManager();
 		boolean ok = false;
 		while (!ok) {
 			try {
@@ -190,7 +185,7 @@ public final class Business {
 		eventManager.addEventChannel(CSTWSession.getInstance()
 				.getNodeInfoChannel());
 
-		orderManager = new OrderCachingManager(eventManager);
+		orderManager = new OrderCachingManager();
 
 		ServerStatusDisplay.getInstance().init();
 
@@ -626,10 +621,6 @@ public final class Business {
 
 	public Account getLoginAccount() {
 		return loginAccount;
-	}
-
-	public DataReceiver getQuoteDataReceiver() {
-		return quoteDataReceiver;
 	}
 
 	public AllPositionManager getAllPositionManager() {
