@@ -284,8 +284,11 @@ public class WindGateWayAdapter implements IMarketDataAdaptor
                     return false;
                 }
                 if (tradingDay != indexSessionCheckDataByIndexMap.get(index).getTradeDateForWindFormat()) {
-                    log.debug(String.format("%s %s,%s", title,
-                            WindDef.WARN_TRADEDATE_NOT_MATCH, symbol));
+//                    log.debug(String.format("%s %s,%s", title,
+//                            WindDef.WARN_TRADEDATE_NOT_MATCH, symbol));
+                	log.debug(String.format("%s %s,%s,%d,%d", title,
+                            WindDef.WARN_TRADEDATE_NOT_MATCH, symbol, tradingDay, 
+                            indexSessionCheckDataByIndexMap.get(index).getTradeDateForWindFormat()));
                     return false;
                 }
             }

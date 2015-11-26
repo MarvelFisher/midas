@@ -155,7 +155,7 @@ public class AlertManager extends Compute {
 		receiveQueryOrderAlertRequestEvent(event, computes) ;
 	}
 
-	synchronized private void ResetUser(ResetAccountRequestEvent event) {
+	private void ResetUser(ResetAccountRequestEvent event) {
 		String UserId = event.getUserId();
 		String strCmd = "";
 		try {
@@ -195,7 +195,7 @@ public class AlertManager extends Compute {
 		}
 	}
 
-    synchronized private void receiveParentOrderUpdateEvent(ParentOrderUpdateEvent parentOrderUpdateEvent) {
+    private void receiveParentOrderUpdateEvent(ParentOrderUpdateEvent parentOrderUpdateEvent) {
         Session session = null;
         try {
             ExecType execType = parentOrderUpdateEvent.getExecType();
@@ -334,7 +334,7 @@ public class AlertManager extends Compute {
         }
     }
 
-	synchronized private void receiveChildOrderUpdateEvent(Execution execution) {
+	private void receiveChildOrderUpdateEvent(Execution execution) {
 		Session session = null;
 		RefData refdata = getGateway().getRefData(execution.getSymbol());
 		if (refdata == null)
@@ -563,7 +563,7 @@ public class AlertManager extends Compute {
 		}
 	}
 	
-	synchronized private boolean checkSendFlag(BasePriceAlert alert)
+	private boolean checkSendFlag(BasePriceAlert alert)
 	{
 		if (alert.isSendFlag())
 		{
