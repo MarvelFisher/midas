@@ -35,7 +35,7 @@ public interface ISubAccountManagerService extends IBasicService {
 	
 	void createNewExchangeAccount(String name);
 	
-	void createNewSubAccount(String exchangeId);
+	void createNewSubAccount(String exchangeId, String name);
 	
 	void createNewAssignedModel(SubAccountModel subAccount, AssignedModel assigned, int index);
 	

@@ -136,6 +136,8 @@ public class InstrumentPoolManager implements IPlugin {
 		switch (type) {
 		case CREATE:
 			if (!ifExists) {
+				exchangeAccount.setId(instrumentPoolKeeper
+						.genNextExchangeAccountId());
 				PmExchangeAccountInsertEvent insertEvent = new PmExchangeAccountInsertEvent(
 						exchangeAccount);
 				eventManager.sendEvent(insertEvent);

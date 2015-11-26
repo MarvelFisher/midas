@@ -38,8 +38,9 @@ public class SubAccountManageComposite extends BasicComposite {
 
 	@Override
 	protected void processByType(RefreshEventType type) {
-		// TODO Auto-generated method stub
-
+		if (RefreshEventType.InstrumentPoolUpdate == type) {
+			masterDetailBlock.refresh();
+		}
 	}
 
 	@Override

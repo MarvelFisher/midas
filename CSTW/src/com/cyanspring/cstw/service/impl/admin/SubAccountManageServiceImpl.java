@@ -9,13 +9,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.account.User;
-import com.cyanspring.common.account.UserGroup;
 import com.cyanspring.common.client.IInstrumentPoolKeeper;
 import com.cyanspring.common.client.IInstrumentPoolKeeper.ModelType;
 import com.cyanspring.common.event.AsyncEvent;
+import com.cyanspring.common.event.OperationType;
+import com.cyanspring.common.event.pool.ExchangeAccountOperationRequestEvent;
 import com.cyanspring.common.pool.ExchangeAccount;
 import com.cyanspring.common.pool.ExchangeSubAccount;
 import com.cyanspring.common.pool.InstrumentPoolRecord;
+import com.cyanspring.common.util.IdGenerator;
+import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.business.CSTWEventManager;
 import com.cyanspring.cstw.keepermanager.InstrumentPoolKeeperManager;
 import com.cyanspring.cstw.localevent.InstrumentPoolUpdateLocalEvent;
 import com.cyanspring.cstw.model.admin.AssignedModel;
@@ -139,11 +143,20 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 
 	@Override
 	public void createNewExchangeAccount(String name) {
+		ExchangeAccountOperationRequestEvent request = new ExchangeAccountOperationRequestEvent(
+				IdGenerator.getInstance().getNextID(), Business.getInstance()
+						.getFirstServer(), IdGenerator.getInstance()
+						.getNextID());
+		ExchangeAccount ex = new ExchangeAccount();
+		ex.setName(name);
+		request.setExchangeAccount(ex);
+		request.setOperationType(OperationType.CREATE);
 		
+		CSTWEventManager.sendEvent(request);
 	}
 
 	@Override
-	public void createNewSubAccount(String exchange) {
+	public void createNewSubAccount(String exchange, String name) {
 		
 	}
 

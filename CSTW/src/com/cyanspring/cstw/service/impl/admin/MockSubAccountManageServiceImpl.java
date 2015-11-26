@@ -172,7 +172,7 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 	}
 
 	@Override
-	public void createNewSubAccount(String exchange) {
+	public void createNewSubAccount(String exchange, String name) {
 		if (exchange.equals("id1")) {
 			sub1list.add(new SubAccountModel.Builder().id("sub1.3")
 					.name("account1.3").exchangeAccountName("ex1")

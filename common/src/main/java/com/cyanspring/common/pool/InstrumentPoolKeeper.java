@@ -168,7 +168,13 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 	}
 
 	public boolean ifExists(ExchangeAccount exchangeAccount) {
-		return exchAccMap.containsKey(exchangeAccount.getId());
+		for (ExchangeAccount tempExchangeAccount : exchAccMap.values()) {
+			if (tempExchangeAccount.getName().equals(
+					exchangeAccount.getName().trim())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void add(ExchangeAccount exchangeAccount) {
@@ -342,6 +348,10 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 		}
 	}
 
+	public String genNextExchangeAccountId() {
+		return "EX" + IdGenerator.getInstance().getNextID();
+	}
+	
 	public String genNextInstrumentPoolId() {
 		return "P" + IdGenerator.getInstance().getNextID();
 	}
