@@ -4,11 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.transport.ISerialization;
-
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 
 /**
  * 
@@ -17,42 +13,48 @@ import com.google.gson.JsonPrimitive;
  */
 public class GsonSerialization implements ISerialization {
 
-	Gson gson = new Gson();
-
-	JsonParser jsonParser = new JsonParser();
+	private Gson gson = new Gson();
 
 	private Logger log = LoggerFactory.getLogger(FastSerialization.class);
+
+	private class InnerWrapObj {
+		String className;
+		String jsonStr;
+	}
 
 	@Override
 	public Object serialize(Object obj) throws IllegalArgumentException {
 		String className = obj.getClass().getName();
 		log.debug("serialize class is : " + className);
-		JsonElement jsonTemp = new JsonPrimitive(className);
-		JsonElement jsonTree = gson.toJsonTree(obj);
-		jsonTree.getAsJsonObject().add("class", jsonTemp);
-		return jsonTree.toString();
+		String jsonStr = gson.toJson(obj);
+		InnerWrapObj innerWrapObj = new InnerWrapObj();
+		innerWrapObj.className = className;
+		innerWrapObj.jsonStr = jsonStr;
+		return gson.toJson(innerWrapObj);
 	}
 
 	@Override
-	public Object deSerialize(Object obj) throws IllegalArgumentException {
+	public Object deSerialize(Object obj) throws IllegalArgumentException,
+			ClassNotFoundException {
 		if (obj == null) {
 			throw new IllegalArgumentException(
-					"flex deSerialize object is null !");
+					"Gson deSerialize object is null !");
 		} else if (obj instanceof String) {
 			String json = (String) obj;
 			if ("".equals(json)) {
-				return null;
+				throw new IllegalArgumentException(
+						"Gson deSerialize json is empty string !");
 			}
-			JsonElement jsonElement = jsonParser.parse(json);
-			JsonElement className = jsonElement.getAsJsonObject().get("class");
-			jsonElement.getAsJsonObject().remove("class");
+			InnerWrapObj innerWrapObj = gson.fromJson(json, InnerWrapObj.class);
 			Class<?> clazz = null;
 			try {
-				clazz = Class.forName(className.getAsString());
+				clazz = Class.forName(innerWrapObj.className);
 			} catch (ClassNotFoundException e) {
-				log.error(className.getAsString() + "is not find!");
+				log.error(innerWrapObj.className + "is not find!");
+				throw new ClassNotFoundException(
+						"Gson deSerialize class is null !");
 			}
-			return gson.fromJson(json, clazz);
+			return gson.fromJson(innerWrapObj.jsonStr, clazz);
 		} else {
 			throw new IllegalArgumentException(
 					"flex deSerialize object is not string !");
