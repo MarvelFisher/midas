@@ -41,7 +41,11 @@ public class QuoteMgr {
                 	int min = 1000;
                     while(true){
                     	qList.clear();
-                    	qList.add(queue.poll());
+                        try {
+                            qList.add(queue.take());
+                        } catch (InterruptedException e) {
+                            continue;
+                        }
                     	cnt = queue.drainTo(qList) + 1;   	
                     	for (Object obj : qList) {
                     		try {

@@ -43,7 +43,11 @@ public class QuoteMgr {
 					int max = 50;
 					while (true) {
 						qList.clear();
-						qList.add(queue.poll());
+						try {
+							qList.add(queue.take());
+						} catch (InterruptedException e) {
+							continue;
+						}
 						cnt = queue.drainTo(qList) + 1;
 						for (Object obj : qList) {
 							processGateWayMessage((HashMap<Integer, Object>) obj);
