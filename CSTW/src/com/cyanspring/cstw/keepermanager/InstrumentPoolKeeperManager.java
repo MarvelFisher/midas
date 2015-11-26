@@ -4,13 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.cyanspring.common.account.AccountKeeper;
 import com.cyanspring.common.account.User;
 import com.cyanspring.common.client.IInstrumentPoolKeeper;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.pool.AccountPoolsUpdateEvent;
+import com.cyanspring.common.event.pool.ExchangeAccountOperationReplyEvent;
 import com.cyanspring.common.event.pool.ExchangeAccountUpdateEvent;
+import com.cyanspring.common.event.pool.ExchangeSubAccountOperationReplyEvent;
 import com.cyanspring.common.event.pool.ExchangeSubAccountUpdateEvent;
 import com.cyanspring.common.event.pool.InstrumentPoolRecordUpdateEvent;
 import com.cyanspring.common.event.pool.InstrumentPoolRecordsUpdateEvent;
@@ -20,6 +21,7 @@ import com.cyanspring.common.pool.InstrumentPoolKeeper;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.CSTWEventManager;
 import com.cyanspring.cstw.localevent.InstrumentPoolUpdateLocalEvent;
+import com.cyanspring.cstw.localevent.SubAccountStructureUpdateLocalEvent;
 
 /**
  * 
@@ -66,9 +68,12 @@ public final class InstrumentPoolKeeperManager {
 				}
 			}
 		};
+		CSTWEventManager.subscribe(ExchangeAccountOperationReplyEvent.class, listener);
 		CSTWEventManager.subscribe(ExchangeAccountUpdateEvent.class, listener);
-		CSTWEventManager.subscribe(ExchangeSubAccountUpdateEvent.class,
-				listener);
+		
+		CSTWEventManager.subscribe(ExchangeSubAccountOperationReplyEvent.class, listener);
+		CSTWEventManager.subscribe(ExchangeSubAccountUpdateEvent.class,listener);
+		
 		CSTWEventManager.subscribe(InstrumentPoolUpdateEvent.class, listener);
 		CSTWEventManager.subscribe(InstrumentPoolRecordsUpdateEvent.class,
 				listener);
@@ -81,39 +86,39 @@ public final class InstrumentPoolKeeperManager {
 			ExchangeAccountUpdateEvent event) {
 		InstrumentPoolHelper.updateExchangeAccount(instrumentPoolKeeper,
 				event.getExchangeAccount(), event.getOperationType());
-		sendUpdateEvent();
+		sendSubAccountStructureUpdateEvent();
 	}
 
 	public void processExchangeSubAccountUpdateEvent(
 			ExchangeSubAccountUpdateEvent event) {
 		InstrumentPoolHelper.updateExchangeSubAccount(instrumentPoolKeeper,
 				event.getExchangeSubAccount(), event.getOperationType());
-		sendUpdateEvent();
+		sendSubAccountStructureUpdateEvent();
 	}
 
 	public void processInstrumentPoolUpdateEvent(InstrumentPoolUpdateEvent event) {
 		InstrumentPoolHelper.updateInstrumentPool(instrumentPoolKeeper,
 				event.getInstrumentPool(), event.getOperationType());
-		sendUpdateEvent();
+		sendInstrumentPoolUpdateEvent();
 	}
 
 	public void processInstrumentPoolRecordsUpdateEvent(
 			InstrumentPoolRecordsUpdateEvent event) {
 		InstrumentPoolHelper.updateInstrumentPoolRecords(instrumentPoolKeeper,
 				event.getInstrumentPoolRecords(), event.getOperationType());
-		sendUpdateEvent();
+		sendInstrumentPoolUpdateEvent();
 	}
 
 	public void processInstrumentPoolRecordUpdateEvent(
 			InstrumentPoolRecordUpdateEvent event) {
 		instrumentPoolKeeper.update(event.getInstrumentPoolRecord());
-		sendUpdateEvent();
+		sendInstrumentPoolUpdateEvent();
 	}
 
 	public void processAccountPoolsUpdateEvent(AccountPoolsUpdateEvent event) {
 		InstrumentPoolHelper.updateAccountPools(null, instrumentPoolKeeper,
 				event.getAccountPools(), event.getOperationType());
-		sendUpdateEvent();
+		sendInstrumentPoolUpdateEvent();
 	}
 
 	public IInstrumentPoolKeeper getInstrumentPoolKeeper() {
@@ -143,8 +148,15 @@ public final class InstrumentPoolKeeperManager {
 		}
 	}
 
-	private void sendUpdateEvent() {
+	private void sendInstrumentPoolUpdateEvent() {
 		InstrumentPoolUpdateLocalEvent event = new InstrumentPoolUpdateLocalEvent(
+				IdGenerator.getInstance().getNextID());
+		CSTWEventManager.sendEvent(event);
+
+	}
+	
+	private void sendSubAccountStructureUpdateEvent() {
+		SubAccountStructureUpdateLocalEvent event = new SubAccountStructureUpdateLocalEvent(
 				IdGenerator.getInstance().getNextID());
 		CSTWEventManager.sendEvent(event);
 

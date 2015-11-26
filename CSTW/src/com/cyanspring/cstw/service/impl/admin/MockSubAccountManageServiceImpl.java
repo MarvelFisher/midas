@@ -24,7 +24,7 @@ import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
  * @author Junfeng
  * @create 16 Nov 2015
  */
-public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
+public abstract class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 		ISubAccountManagerService {
 	private static final Logger log = LoggerFactory.getLogger(MockSubAccountManageServiceImpl.class);
 	
@@ -265,6 +265,19 @@ public class MockSubAccountManageServiceImpl extends BasicServiceImpl implements
 	public List<User> getAvailableAssigneeList(SubAccountModel subAccount) {
 		List<User> usrGroups = new ArrayList<User>();
 		return usrGroups;
+	}
+
+	@Override
+	public void updateExchangeAccountName(ExchangeAccountModel exchange,
+			String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateSubAccountName(SubAccountModel subAccount, String name) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	

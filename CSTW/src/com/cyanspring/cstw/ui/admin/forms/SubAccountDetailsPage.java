@@ -27,7 +27,8 @@ import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
  */
 public class SubAccountDetailsPage implements IDetailsPage {
 	
-	private static final int TEXT_WIDTH_HINT = 150;
+	private static final int TEXT_WIDTH_HINT = 250;
+	private static final int BUTTON_WIDTH_HINT = 80;
 	private static final int TABLE_WIDTH_HINT = 400;
 	private static final int TABLE_HEIGHT_HINT = 150;
 	
@@ -93,9 +94,9 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		Composite client2 = toolkit.createComposite(dataSection2);
 		GridLayout gLayout2 = new GridLayout();
 		gLayout2.marginWidth = gLayout2.marginHeight = 0;
-		gLayout2.numColumns = 2;
+		gLayout2.numColumns = 3;
 		client2.setLayout(gLayout2);
-		createSpacer(toolkit, client2, 2);
+		createSpacer(toolkit, client2, 3);
 		createComponent2(toolkit, client2);
 		toolkit.paintBordersFor(dataSection2);
 		dataSection2.setClient(client2);
@@ -109,12 +110,6 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		txtName1.setLayoutData(gd1);
 		txtName1.setEditable(false);
 		txtName1.setTextLimit(1023);		
-		btnEdit2 = toolkit.createButton(client, "Edit", SWT.NONE);
-		GridData gd4 = new GridData(SWT.FILL, SWT.FILL, true, false);
-		gd4.widthHint = SWT.DEFAULT;
-		gd4.heightHint = SWT.DEFAULT;
-		gd4.horizontalIndent = 2;
-		btnEdit2.setLayoutData(gd4);
 		
 		createSpacer(toolkit, client, 2);
 		
@@ -138,31 +133,35 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		GridData gd1 = new GridData();
 		gd1.widthHint = TEXT_WIDTH_HINT;
 		txtName2.setLayoutData(gd1);
-		txtName2.setEditable(true);
+		txtName2.setEditable(false);
 		txtName2.setTextLimit(1023);
 		
+		btnEdit2 = toolkit.createButton(client, "Edit...", SWT.NONE);
+		GridData gd5 = new GridData();
+		gd5.widthHint = BUTTON_WIDTH_HINT;
+		btnEdit2.setLayoutData(gd5);
 		
-		createSpacer(toolkit, client, 2);
+		createSpacer(toolkit, client, 3);
 		
 		GridData gd2 = new GridData(GridData.FILL_HORIZONTAL|GridData.VERTICAL_ALIGN_BEGINNING);
-		gd2.horizontalSpan = 2;
+		gd2.horizontalSpan = 3;
 		Label lblTable = toolkit.createLabel(client, "Summary of symbol: ");
 		lblTable.setLayoutData(gd2);
 		subTableComposite = new InstrumentInfoTableComposite(client, SWT.NONE);
 		GridData gd3 = new GridData(); //SWT.LEFT, SWT.FILL, false, true
-		gd3.horizontalSpan = 2;
+		gd3.horizontalSpan = 3;
 		gd3.heightHint = TABLE_HEIGHT_HINT;
 		gd3.widthHint = TABLE_WIDTH_HINT;
 		subTableComposite.setLayoutData(gd3);
 		toolkit.adapt(subTableComposite);
 		
-		createSpacer(toolkit, client, 2);
+		createSpacer(toolkit, client, 3);
 		
 		Label lblAssign = toolkit.createLabel(client, "Assign to RW / Group: ");
 		lblAssign.setLayoutData(gd2);
 		assTableComposite = new AssignedTableComposite(client, service, SWT.NONE);
 		GridData gd4 = new GridData(); //SWT.LEFT, SWT.FILL, false, true
-		gd4.horizontalSpan = 2;
+		gd4.horizontalSpan = 3;
 		gd4.heightHint = TABLE_HEIGHT_HINT;
 		gd4.widthHint = TABLE_WIDTH_HINT;
 		assTableComposite.setLayoutData(gd4);

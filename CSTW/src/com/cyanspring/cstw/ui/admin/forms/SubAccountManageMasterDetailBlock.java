@@ -206,9 +206,8 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 		addExchAction = new Action() {
 			@Override
 			public void run() {
-				Object obj = ((IStructuredSelection)editTree.getSelection()).getFirstElement();
-				
 				InputNameDialog inputDialog = new InputNameDialog(editTree.getTree().getShell());
+				inputDialog.setInputTitle("Exchange Account: ");
 				if ( TrayDialog.OK == inputDialog.open() ) {
 					service.createNewExchangeAccount(inputDialog.getSelectText());
 				}
@@ -224,6 +223,7 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 				Object obj = ((IStructuredSelection) editTree.getSelection())
 						.getFirstElement();
 				InputNameDialog inputDialog = new InputNameDialog(editTree.getTree().getShell());
+				inputDialog.setInputTitle("Sub Account: ");
 				if ( TrayDialog.OK != inputDialog.open() ) {
 					return;
 				}
@@ -310,7 +310,7 @@ public class SubAccountManageMasterDetailBlock extends MasterDetailsBlock {
 class InputNameDialog extends TrayDialog {
 	
 	private String selectText;
-	
+	private String inputTitle;
 	private Text txt;
 	
 	public InputNameDialog(Shell shell) {
@@ -343,9 +343,14 @@ class InputNameDialog extends TrayDialog {
 		gridData.heightHint = SWT.DEFAULT;
 		
 		Label lblSelectUser = new Label(container, SWT.NONE);
-		lblSelectUser.setText("Exchange Account: ");
+		if ( inputTitle != null ) {
+			lblSelectUser.setText(inputTitle);
+		}
 		txt = new Text(container, SWT.BORDER);
 		txt.setLayoutData(gridData);
+		if (selectText != null) {
+			txt.setText(selectText);
+		}
 		
 		return container;
 	}
@@ -356,6 +361,10 @@ class InputNameDialog extends TrayDialog {
 	
 	public void setSelectText(String txt)	{
 		this.selectText = txt;
+	}
+	
+	public void setInputTitle(String title) {
+		
 	}
 	
 	@Override
