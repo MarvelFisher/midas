@@ -6,6 +6,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -38,6 +39,7 @@ public class SubAccountDetailsPage implements IDetailsPage {
 	private Section dataSection2;
 	private Text txtName1;
 	private Text txtName2;
+	private Button btnEdit2;
 	private InstrumentInfoTableComposite exTableComposite;
 	private InstrumentInfoTableComposite subTableComposite;
 	private AssignedTableComposite assTableComposite;
@@ -105,8 +107,14 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		GridData gd1 = new GridData();
 		gd1.widthHint = TEXT_WIDTH_HINT;
 		txtName1.setLayoutData(gd1);
-		txtName1.setEditable(true);
-		txtName1.setTextLimit(1023);
+		txtName1.setEditable(false);
+		txtName1.setTextLimit(1023);		
+		btnEdit2 = toolkit.createButton(client, "Edit", SWT.NONE);
+		GridData gd4 = new GridData(SWT.FILL, SWT.FILL, true, false);
+		gd4.widthHint = SWT.DEFAULT;
+		gd4.heightHint = SWT.DEFAULT;
+		gd4.horizontalIndent = 2;
+		btnEdit2.setLayoutData(gd4);
 		
 		createSpacer(toolkit, client, 2);
 		
@@ -132,6 +140,7 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		txtName2.setLayoutData(gd1);
 		txtName2.setEditable(true);
 		txtName2.setTextLimit(1023);
+		
 		
 		createSpacer(toolkit, client, 2);
 		
