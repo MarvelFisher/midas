@@ -97,7 +97,9 @@ public class DBHandler
         	return ;
         }
     	String prefix = (market.equals("FX")) ? "0040" : market;
-		String sqlcmd = String.format("SELECT * FROM %s_W WHERE SYMBOL='%s' ORDER BY KEYTIME desc LIMIT 52;", 
+//		String sqlcmd = String.format("SELECT * FROM %s_W WHERE SYMBOL='%s' ORDER BY KEYTIME desc LIMIT 52;", 
+//				prefix, symbol) ;
+    	String sqlcmd = String.format("SELECT max(HIGH_PRICE),min(LOW_PRICE) FROM %s_W WHERE SYMBOL='%s' AND TRADEDATE>=DATE_SUB(CURDATE(),INTERVAL 1 year);", 
 				prefix, symbol) ;
         ResultSet rs = null;
         Statement stat = null ;
@@ -120,8 +122,10 @@ public class DBHandler
 			double dLow = 0 ;
 			while(rs.next())
 			{
-				dHigh = rs.getDouble("HIGH_PRICE") ;
-				dLow = rs.getDouble("LOW_PRICE") ;
+//				dHigh = rs.getDouble("HIGH_PRICE") ;
+//				dLow = rs.getDouble("LOW_PRICE") ;
+				dHigh = rs.getDouble("max(HIGH_PRICE)") ;
+				dLow = rs.getDouble("min(LOW_PRICE)") ;
 				if (symboldata.getD52WHigh() < dHigh)
 				{
 					symboldata.setD52WHigh(dHigh) ;
