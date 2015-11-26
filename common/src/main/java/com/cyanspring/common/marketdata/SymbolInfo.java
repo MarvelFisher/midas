@@ -83,7 +83,7 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 	public void updateByRefData(RefData refdata)
 	{
 		setExchange(refdata.getExchange());
-		setWindCode(null);
+		setWindCode(RefDataBitUtil.isHot(refdata.getInstrumentType()) ? "HOT" : null);
 		setHint(refdata.getRefSymbol());
 		setCategory(refdata.getCategory());
 		String strTmp = (refdata.getENDisplayName() == null) ? refdata.getSymbol() : refdata.getENDisplayName();
@@ -461,7 +461,7 @@ public class SymbolInfo implements Cloneable, Serializable, Comparable<SymbolInf
 		else
 		{
 			String sub = hint.replaceAll(Category, "");
-			if (sub.isEmpty()) sub = "HOT";
+			if (windCode != null && windCode.equals("HOT")) sub = "HOT";
 			this.enSubName = sub;
 			this.cnSubName = sub;
 			this.twSubName = sub;

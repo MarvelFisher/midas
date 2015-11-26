@@ -187,6 +187,7 @@ public class DBHandler
 				else
 				{
 					symbolinfo = new SymbolInfo(rs.getString("MARKET"), rs.getString("CODE"));
+					symbolinfo.setWindCode(rs.getString("WINDCODE"));
 					symbolinfo.setHint(rs.getString("HINT"));
 					retsymbollist.add(symbolinfo);
 				}

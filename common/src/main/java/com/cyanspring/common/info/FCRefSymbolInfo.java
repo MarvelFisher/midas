@@ -49,6 +49,18 @@ public class FCRefSymbolInfo extends IRefSymbolInfo
 				infoList.remove(index);
 				infoList.add(index, symbolinfo);
 			}
+			else if (symbolinfo.getWindCode() != null 
+					&& symbolinfo.getWindCode().equals("HOT")
+					&& symbolListClr.contains(symbolinfo.getCategory()))
+			{
+				index = symbolListClr.indexOf(symbolinfo.getCategory());
+				if (index < 0)
+				{
+					index = symbolListClr.indexOf(symbolinfo.getHint() + "." + symbolinfo.getExchange());
+				}
+				infoList.remove(index);
+				infoList.add(index, symbolinfo);
+			}
 		}
 		while (infoList.contains(null)) infoList.remove(null);
 		return infoList;
@@ -61,7 +73,13 @@ public class FCRefSymbolInfo extends IRefSymbolInfo
 		{
 			for (SymbolInfo symbolinfo : refSymbolInfo)
 			{
-				if (symbolinfo.getHintOrCode().equals(inputinfo.getHintOrCode()))
+				if (symbolinfo.getWindCode().equals("HOT") && 
+						symbolinfo.getCategory().equals(inputinfo.getCategory()))
+				{
+					infoList.add(symbolinfo);
+					break;
+				}
+				else if (symbolinfo.getHintOrCode().equals(inputinfo.getHintOrCode()))
 				{
 					infoList.add(symbolinfo);
 					break;
