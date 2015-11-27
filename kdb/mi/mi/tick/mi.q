@@ -10,12 +10,15 @@
 
 / get the ticker plant, rdb and history ports, defaults are 5010,5011,5012
 / .u.x:.z.x,(count .z.x)_(":5010";":5011";":5012")
-.u.x:(":5010";":5011";":5012")
+/ .u.x:(":5010";":5011";":5012")
+.u.x:.z.x,(count .z.x)_("hdb";":5011";":5012")
 
 if[not system"p";system"p 5013"]
 
 hdb:hopen `$":",.u.x 2
 rdb:hopen `$":",.u.x 1
+
+HDBDIR:.u.x 0
 
 getUmiB:{[fs;fm;fl;v;cmfr] ?[(fs>fm)&(fm>fl)&(fl>0)&((abs fs)>(0.65 * v))&(cmfr<0.3);(fs%fm)+(fm%fl);0f]}
 
@@ -33,13 +36,13 @@ init:{[params]
     (`$("data",string TI)) set (hdb "" sv ("select[<time] time, sym, ask, bid, sprice, eprice, hprice, lprice, v:(abs sprice-eprice) % sprice from select last time, last ask, last bid, sprice:first price, eprice:last price, hprice:max price, lprice:min price by sym, "; string TI; " xbar time.second from quote where time > .z.D-"; string DATADAYS));
     (`$("data",string TI)) set (get (`$("data",string TI))) , (rdb "" sv ("select from (select[<time] time, sym, ask, bid, sprice, eprice, hprice, lprice, v:(abs sprice-eprice) % sprice from select last time, last ask, last bid, sprice:first price, eprice:last price, hprice:max price, lprice:min price by sym, "; string TI; " xbar time.second from quote) where ({x in -1_x};i) fby sym"));
     
-    if[() ~ (key hsym `$ "hdb/index",string TI);
+    if[() ~ (key hsym `$ HDBDIR,"/index",string TI);
     (`$("hidx",string TI)) set ([]time:`timestamp$(); sym:`g#`symbol$(); ask:`float$(); bid:`float$(); vis:`float$(); vil:`float$(); rvi:`float$(); minrvi:`float$(); maxrvi:`float$(); cvi:`float$(); mincvi:`float$(); maxcvi:`float$(); mi:`float$(); minmi:`float$(); maxmi:`float$(); umib:`float$(); maxumib:`float$(); umis:`float$(); maxumis:`float$(); cmfr:`float$(); cmff:`float$(); absfs:`float$(); grvl:`float$(); cr1:`boolean$(); cr2:`boolean$(); cr3:`boolean$(); cf1:`boolean$(); cf2:`boolean$(); cf3:`boolean$());
     (`$("minmax",string TI)) set ([]sym:`g#`symbol$(); minrvi:`float$(); maxrvi:`float$(); mincvi:`float$(); maxcvi:`float$(); minmi:`float$(); maxmi:`float$(); maxumib:`float$(); maxumis:`float$());
     :0
     ];
     
-    system "l hdb/index",string TI;
+    system "l ",HDBDIR,"/index",string TI;
     
     n::`int$(86400%TI); / must be global to be used in fby
     tmph:select from get (`$("indexes",string TI)) where time.date>=.z.D-3;
@@ -53,7 +56,11 @@ init:{[params]
 getnew:{[funcs;TI;TPS;TPM;TPL;DATADAYS;TIBUFFER]
 
     new:rdb "" sv ("select from (select[<time] time, sym, ask, bid, sprice, eprice, hprice, lprice, v:(abs sprice-eprice) % sprice from select last time, last ask, last bid, sprice:first price, eprice:last price, hprice:max price, lprice:min price by sym, "; string TI; " xbar time.second from quote where time > .z.P  - "; string TIBUFFER;") where ({x in -1_x};i) fby sym");
-    if[(count new)=0;:0]
+    
+    if[(count new)=0;
+    if[(count select from (get (`$("idx",string TI))) where time.date=.z.D-1)>0; endday[TI]];
+    :0];
+    
     lasttime:select lasttime:(last time) by sym from get (`$("data",string TI));
     (`$("data",string TI)) set (get (`$("data",string TI))) , (select time,sym,ask,bid,sprice,eprice,hprice,lprice,v from aj[`sym;new;lasttime] where time>lasttime);
     / show count data;
@@ -110,7 +117,7 @@ endday:{[TI]
     (`$("minmax",string TI)) set (select sym, minrvi:?[(avgrvi-(2*sdevrvi))<0;0f;avgrvi-(2*sdevrvi)], maxrvi:avgrvi+(2*sdevrvi), mincvi:?[(avgcvi-(2*sdevcvi))<0;0f;avgcvi-(2*sdevcvi)], maxcvi:avgcvi+(2*sdevcvi), minmi:avgmi-(2*sdevmi), maxmi:avgmi+(2*sdevmi), maxumib, maxumis from tmp);
 
     (`$("indexes",string TI)) set (select from (get (`$("idx",string TI))) where time.date=.z.D-1);
-    .Q.dpft[`$":hdb/index",string TI;.z.D-1;`sym;(`$("indexes",string TI))];
+    .Q.dpft[`$":",HDBDIR,"/index",string TI;.z.D-1;`sym;(`$("indexes",string TI))];
     (`$("idx",string TI)) set (select from (get (`$("idx",string TI))) where time.date=.z.D);
     }
 
