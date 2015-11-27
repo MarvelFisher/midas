@@ -270,9 +270,6 @@
 			<value>refdata/template/template_LiveFC.xml</value>
 			<!-- <value>refdata/refData_livefc.xml</value> -->
 		</property>
-		<property name="quoteFile">
-			<value>ticks/last.xml</value>
-		</property>
 	</bean>
 
 	<bean id="refDataUtil" class="com.cyanspring.common.staticdata.RefDataUtil">
