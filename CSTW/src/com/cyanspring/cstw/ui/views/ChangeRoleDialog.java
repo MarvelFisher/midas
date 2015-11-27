@@ -125,7 +125,7 @@ public class ChangeRoleDialog extends Dialog implements IAsyncEventListener{
 					return;
 				}
 				
-				ChangeUserRoleEvent event = new ChangeUserRoleEvent(ID, Business.getInstance().getFirstServer(),user.getId(),newRole);
+				ChangeUserRoleEvent event = new ChangeUserRoleEvent(ID, Business.getBusinessService().getFirstServer(),user.getId(),newRole);
 				sendRemoteEvent(event);
 			}
 		});

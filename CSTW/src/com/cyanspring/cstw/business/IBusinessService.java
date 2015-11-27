@@ -27,7 +27,11 @@ public interface IBusinessService {
 	Ticker getTicker(String symbol);
 
 	List<String> getSymbolList();
-	
+
 	IFxConverter getRateConverter();
+
+	String getFirstServer();
+
+	boolean isFirstServerReady();
 
 }

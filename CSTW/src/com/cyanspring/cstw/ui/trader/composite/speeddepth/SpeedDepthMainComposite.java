@@ -171,7 +171,7 @@ public final class SpeedDepthMainComposite extends Composite implements
 					tableComposite.clear();
 
 					QuoteSubEvent quoteSubEvent = new QuoteSubEvent(receiverId,
-							Business.getInstance().getFirstServer(), symbol);
+							Business.getBusinessService().getFirstServer(), symbol);
 					try {
 						Business.getInstance().getEventManager()
 								.sendRemoteEvent(quoteSubEvent);

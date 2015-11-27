@@ -63,7 +63,7 @@ public final class UserLoginAssist {
 				if (evt.isOk()) {
 					processCSTWUserLoginReplyEvent(evt);
 					Business.getCSTWBeanPool().getTickManager()
-							.init(Business.getInstance().getFirstServer());
+							.init(Business.getBusinessService().getFirstServer());
 					requestRateConverter();
 					requestStrategyInfo(evt.getSender());
 				}
@@ -112,7 +112,7 @@ public final class UserLoginAssist {
 			Business.getInstance()
 					.getAllPositionManager()
 					.init(Business.getInstance().getEventManager(),
-							Business.getInstance().getFirstServer(),
+							Business.getBusinessService().getFirstServer(),
 							accountList,
 							CSTWSession.getInstance().getUserGroup());
 			FrontRCPositionCachingManager.getInstance().init();
@@ -134,7 +134,7 @@ public final class UserLoginAssist {
 				loginReplyEvent.getRiskManagerNGroupUsers());
 
 		AccountInstrumentSnapshotRequestEvent request = new AccountInstrumentSnapshotRequestEvent(
-				IdGenerator.getInstance().getNextID(), Business.getInstance()
+				IdGenerator.getInstance().getNextID(), Business.getBusinessService()
 						.getFirstServer(), IdGenerator.getInstance()
 						.getNextID());
 		CSTWEventManager.sendEvent(request);
@@ -143,7 +143,7 @@ public final class UserLoginAssist {
 
 	private void requestRateConverter() {
 		RateConverterRequestEvent request = new RateConverterRequestEvent(
-				IdGenerator.getInstance().getNextID(), Business.getInstance()
+				IdGenerator.getInstance().getNextID(), Business.getBusinessService()
 						.getFirstServer());
 		try {
 			CSTWEventManager.sendEvent(request);
@@ -166,7 +166,7 @@ public final class UserLoginAssist {
 
 	private void sendAccountSettingRequestEvent(String accountId) {
 		AccountSettingSnapshotRequestEvent settingRequestEvent = new AccountSettingSnapshotRequestEvent(
-				IdGenerator.getInstance().getNextID(), Business.getInstance()
+				IdGenerator.getInstance().getNextID(), Business.getBusinessService()
 						.getFirstServer(), accountId, null);
 		try {
 			CSTWEventManager.sendEvent(settingRequestEvent);

@@ -382,7 +382,8 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 						OpenPosition position = (OpenPosition) obj;
 						// TODO: we need to change when CSTW talks to multip
 						// servers
-						String server = Business.getInstance().getFirstServer();
+						String server = Business.getBusinessService()
+								.getFirstServer();
 						log.info(
 								"Close Position: Account:{}, Symbol:{}, Qty:{}, AcPnl:{}, Price:{}",
 								new Object[] { position.getAccount(),
@@ -730,8 +731,8 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 				.subscribe(ClosePositionReplyEvent.class, currentAccount, this);
 
 		AccountSnapshotRequestEvent request = new AccountSnapshotRequestEvent(
-				ID, Business.getInstance().getFirstServer(), currentAccount,
-				null);
+				ID, Business.getBusinessService().getFirstServer(),
+				currentAccount, null);
 
 		log.debug("AccountSnapshotRequestEvent sent: " + currentAccount);
 		try {

@@ -539,7 +539,7 @@ public class MarketDataView extends ViewPart implements IAsyncEventListener {
 		this.symbol = symbol;
 
 		if (!StringUtils.hasText(server))
-			server = Business.getInstance().getFirstServer();
+			server = Business.getBusinessService().getFirstServer();
 
 		QuoteSubEvent request = new QuoteSubEvent(ID, server, symbol);
 		try {

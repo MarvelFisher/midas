@@ -132,7 +132,7 @@ public class AccountStatisticView extends ViewPart implements
 
 	private void sendAccountStatisticRequest() {
 		AccountStatisticRequestEvent evt = new AccountStatisticRequestEvent(ID,
-				Business.getInstance().getFirstServer());
+				Business.getBusinessService().getFirstServer());
 		sendRemoteEvent(evt);
 	}
 

@@ -106,7 +106,7 @@ public class ExecutionView extends ViewPart implements IAsyncEventListener {
 		}
 
 		AllExecutionSnapshotRequestEvent event = new AllExecutionSnapshotRequestEvent(
-				ID, Business.getInstance().getFirstServer(), id);
+				ID, Business.getBusinessService().getFirstServer(), id);
 		try {
 			Business.getInstance().getEventManager().sendRemoteEvent(event);
 		} catch (Exception e) {

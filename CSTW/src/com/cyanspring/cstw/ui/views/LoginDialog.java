@@ -117,7 +117,7 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 
 	private void doLogin() {
 
-		if(!Business.getInstance().isFirstServerReady()){
+		if(!Business.getBusinessService().isFirstServerReady()){
 			lblMessage.setText("Server not ready");
 			return;
 		}
@@ -125,7 +125,7 @@ public class LoginDialog extends Dialog implements IAsyncEventListener {
 		lblMessage.setText("");
 		Business business = Business.getInstance();
 		// need to review which server to get login
-		String server = business.getFirstServer();
+		String server = Business.getBusinessService().getFirstServer();
 		CSTWUserLoginEvent event = new CSTWUserLoginEvent(id, server,
 				txtUser.getText(), txtPassword.getText());
 		try {

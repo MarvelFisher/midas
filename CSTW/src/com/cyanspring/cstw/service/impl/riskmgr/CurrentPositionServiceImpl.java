@@ -139,7 +139,7 @@ public class CurrentPositionServiceImpl extends BasicServiceImpl implements
 
 	@Override
 	public void forceClosePosition(String account, String symbol) {
-		String server = Business.getInstance().getFirstServer();
+		String server = Business.getBusinessService().getFirstServer();
 
 		ClosePositionRequestEvent request = new ClosePositionRequestEvent(
 				account, server, account, symbol, 0.0, OrderReason.ManualClose,

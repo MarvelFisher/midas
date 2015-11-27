@@ -205,7 +205,7 @@ public class UserView extends ViewPart implements IAsyncEventListener {
 
 	private void sendAllUserRequest() {
 		AllUserSnapshotRequestEvent request = new AllUserSnapshotRequestEvent(
-				ID, Business.getInstance().getFirstServer());
+				ID, Business.getBusinessService().getFirstServer());
 		sendRemoteEvent(request);
 	}
 

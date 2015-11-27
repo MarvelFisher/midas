@@ -123,7 +123,7 @@ public class ChangeAccountStateDialog extends Dialog implements IAsyncEventListe
 					return;
 				}
 				
-				ChangeAccountStateRequestEvent request = new ChangeAccountStateRequestEvent(ID, Business.getInstance().getFirstServer(),account.getId(),newState);
+				ChangeAccountStateRequestEvent request = new ChangeAccountStateRequestEvent(ID, Business.getBusinessService().getFirstServer(),account.getId(),newState);
 				sendRemoteEvent(request);
 			}
 		});

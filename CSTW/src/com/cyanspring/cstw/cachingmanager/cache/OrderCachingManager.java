@@ -273,17 +273,17 @@ public class OrderCachingManager implements IAsyncEventListener {
 			if (CSTWSession.getInstance().getUserGroup().isAdmin()) {
 				CSTWEventManager.sendEvent(new AllStrategySnapshotRequestEvent(
 						IdGenerator.getInstance().getNextID(), Business
-								.getInstance().getFirstServer(), null));
+								.getBusinessService().getFirstServer(), null));
 			} else if (CSTWSession.getInstance().getUserGroup().getRole()
 					.isManagerLevel()) {
 				CSTWEventManager.sendEvent(new AllStrategySnapshotRequestEvent(
 						IdGenerator.getInstance().getNextID(), Business
-								.getInstance().getFirstServer(), CSTWSession
+								.getBusinessService().getFirstServer(), CSTWSession
 								.getInstance().getAccountGroupList()));
 			} else {
 				CSTWEventManager.sendEvent(new StrategySnapshotRequestEvent(
 						CSTWSession.getInstance().getAccountId(), Business
-								.getInstance().getFirstServer(), null));
+								.getBusinessService().getFirstServer(), null));
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);

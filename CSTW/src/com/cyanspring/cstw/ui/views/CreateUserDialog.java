@@ -209,7 +209,7 @@ public class CreateUserDialog extends Dialog implements IAsyncEventListener {
 			return;
 		}
 		// need to review which server to get login
-		String server = business.getFirstServer();
+		String server = Business.getBusinessService().getFirstServer();
 		User user = new User(txtUser.getText().trim(), txtPassword.getText().trim());
 		user.setEmail(txtEmail.getText().trim());
 		user.setPhone(txtPhone.getText().trim());

@@ -123,7 +123,7 @@ public class ClosedPositionView extends ViewPart implements IAsyncEventListener 
 		createRefreshAction(parent);
 
 		AccountNumberRequestEvent accountNumberEvent = new AccountNumberRequestEvent(
-				ID, Business.getInstance().getFirstServer());
+				ID, Business.getBusinessService().getFirstServer());
 		sendRemoteEvent(accountNumberEvent);
 		try {
 			scheduleJob(refreshEvent, maxRefreshInterval);
@@ -200,7 +200,7 @@ public class ClosedPositionView extends ViewPart implements IAsyncEventListener 
 		symbolCpMap.clear();
 		log.info("send AllPositionSnapshotRequestEvent");
 		AllPositionSnapshotRequestEvent request = new AllPositionSnapshotRequestEvent(
-				ID, Business.getInstance().getFirstServer(),
+				ID, Business.getBusinessService().getFirstServer(),
 				PositionType.ClosedPosition);
 		sendRemoteEvent(request);
 	}

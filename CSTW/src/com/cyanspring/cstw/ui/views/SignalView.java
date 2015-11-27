@@ -77,7 +77,7 @@ public class SignalView extends ViewPart implements IAsyncEventListener {
 			signal = new HashMap<String, Object>();
 			signal.put(OrderField.ID.value(), symbol);
 			signals.put(symbol, signal);
-			String server = Business.getInstance().getFirstServer();
+			String server = Business.getBusinessService().getFirstServer();
 			Business.getInstance().getEventManager()
 					.sendRemoteEvent(new SignalSubEvent(ID, server, symbol));
 		} catch (Exception e) {
@@ -390,7 +390,7 @@ public class SignalView extends ViewPart implements IAsyncEventListener {
 	@Override
 	public void onEvent(AsyncEvent event) {
 		if (event instanceof OrderCacheReadyLocalEvent) {
-			String server = Business.getInstance().getFirstServer();
+			String server = Business.getBusinessService().getFirstServer();
 			if (null == server)
 				return;
 			try {

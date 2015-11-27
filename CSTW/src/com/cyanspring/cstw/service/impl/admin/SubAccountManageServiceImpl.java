@@ -2,7 +2,6 @@ package com.cyanspring.cstw.service.impl.admin;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -40,12 +39,13 @@ import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
  * @author Junfeng
  * @create 11 Nov 2015
  */
-public class SubAccountManageServiceImpl extends BasicServiceImpl
-		implements ISubAccountManagerService {
-	private static final Logger log = LoggerFactory.getLogger(SubAccountManageServiceImpl.class);
-	
+public class SubAccountManageServiceImpl extends BasicServiceImpl implements
+		ISubAccountManagerService {
+	private static final Logger log = LoggerFactory
+			.getLogger(SubAccountManageServiceImpl.class);
+
 	private IInstrumentPoolKeeper instrumentPoolKeeper;
-	
+
 	private List<IInputChangeListener> exchangeInputChange;
 	private List<IInputChangeListener> subInputChange;
 
@@ -56,23 +56,25 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 	}
 
 	public SubAccountManageServiceImpl() {
-		instrumentPoolKeeper = InstrumentPoolKeeperManager.getInstance().getInstrumentPoolKeeper();
+		instrumentPoolKeeper = InstrumentPoolKeeperManager.getInstance()
+				.getInstrumentPoolKeeper();
 		exchangeInputChange = new ArrayList<IInputChangeListener>();
 		subInputChange = new ArrayList<IInputChangeListener>();
 	}
 
 	@Override
 	public ExchangeAccountModel getExchangeAccoutById(String id) {
-		ExchangeAccount exchangeAccount = instrumentPoolKeeper.getExchangeAccount(id);
+		ExchangeAccount exchangeAccount = instrumentPoolKeeper
+				.getExchangeAccount(id);
 		return ModelTransfer.parseExchangeAccountModel(exchangeAccount);
 	}
 
 	@Override
 	public SubAccountModel getSubAccountById(String id) {
-		
+
 		return null;
 	}
-	
+
 	@Override
 	public List<ExchangeAccountModel> getExchangeAccountList() {
 		List<ExchangeAccountModel> exlist = new ArrayList<ExchangeAccountModel>();
@@ -85,12 +87,9 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 		}
 		return exlist;
 	}
-	
-	
 
 	@Override
-	public List<SubAccountModel> getSubAccountListByExchangeAccountId(
-			String id) {
+	public List<SubAccountModel> getSubAccountListByExchangeAccountId(String id) {
 		List<SubAccountModel> sublist = new ArrayList<SubAccountModel>();
 		List<ExchangeSubAccount> exchangeSubAccountList = instrumentPoolKeeper
 				.getExchangeSubAccountList(id);
@@ -126,7 +125,7 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 		}
 		return instrumentInfoModelList;
 	}
-	
+
 	@Override
 	public List<InstrumentInfoModel> getInstrumentInfoModelListBySubAccountId(
 			String id) {
@@ -134,7 +133,7 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 				.getInstrumentPoolRecordList(id, ModelType.EXCHANGE_SUB_ACCOUNT);
 		// merge record
 		Map<String, Double> symbolQtyMap = new HashMap<String, Double>();
-		for(InstrumentPoolRecord record : recordList) {
+		for (InstrumentPoolRecord record : recordList) {
 			if (!symbolQtyMap.containsKey(record.getSymbol())) {
 				symbolQtyMap.put(record.getSymbol(), new Double(0));
 			}
@@ -144,7 +143,9 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 		}
 		List<InstrumentInfoModel> instrumentInfoModelList = new ArrayList<InstrumentInfoModel>();
 		for (Map.Entry<String, Double> entry : symbolQtyMap.entrySet()) {
-			InstrumentInfoModel infoModel = new InstrumentInfoModel.Builder().symbolName(entry.getKey()).symbolName(entry.getKey()).qty(entry.getValue()).build();
+			InstrumentInfoModel infoModel = new InstrumentInfoModel.Builder()
+					.symbolName(entry.getKey()).symbolName(entry.getKey())
+					.qty(entry.getValue()).build();
 			instrumentInfoModelList.add(infoModel);
 		}
 		return instrumentInfoModelList;
@@ -173,9 +174,9 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 	@Override
 	public void createNewExchangeAccount(String name) {
 		ExchangeAccountOperationRequestEvent request = new ExchangeAccountOperationRequestEvent(
-				IdGenerator.getInstance().getNextID(), Business.getInstance()
-						.getFirstServer(), IdGenerator.getInstance()
-						.getNextID());
+				IdGenerator.getInstance().getNextID(), Business
+						.getBusinessService().getFirstServer(), IdGenerator
+						.getInstance().getNextID());
 		ExchangeAccount ex = new ExchangeAccount();
 		ex.setName(name);
 		request.setExchangeAccount(ex);
@@ -186,9 +187,10 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 
 	@Override
 	public void createNewSubAccount(String exchange, String name) {
-		ExchangeSubAccountOperationRequestEvent request = new ExchangeSubAccountOperationRequestEvent(IdGenerator.getInstance().getNextID(), Business.getInstance()
-						.getFirstServer(), IdGenerator.getInstance()
-						.getNextID());
+		ExchangeSubAccountOperationRequestEvent request = new ExchangeSubAccountOperationRequestEvent(
+				IdGenerator.getInstance().getNextID(), Business
+						.getBusinessService().getFirstServer(), IdGenerator
+						.getInstance().getNextID());
 		ExchangeSubAccount sub = new ExchangeSubAccount();
 		sub.setExchangeAccount(exchange);
 		sub.setName(name);
@@ -201,9 +203,9 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 	@Override
 	public void removeExchangeAccount(ExchangeAccountModel exchange) {
 		ExchangeAccountOperationRequestEvent request = new ExchangeAccountOperationRequestEvent(
-				IdGenerator.getInstance().getNextID(), Business.getInstance()
-						.getFirstServer(), IdGenerator.getInstance()
-						.getNextID());
+				IdGenerator.getInstance().getNextID(), Business
+						.getBusinessService().getFirstServer(), IdGenerator
+						.getInstance().getNextID());
 		ExchangeAccount ex = new ExchangeAccount();
 		ex.setId(exchange.getId());
 		ex.setName(exchange.getName());
@@ -216,9 +218,9 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 	@Override
 	public void removeSubAccount(SubAccountModel subAccount) {
 		ExchangeSubAccountOperationRequestEvent request = new ExchangeSubAccountOperationRequestEvent(
-				IdGenerator.getInstance().getNextID(), Business.getInstance()
-						.getFirstServer(), IdGenerator.getInstance()
-						.getNextID());
+				IdGenerator.getInstance().getNextID(), Business
+						.getBusinessService().getFirstServer(), IdGenerator
+						.getInstance().getNextID());
 		ExchangeSubAccount sub = new ExchangeSubAccount();
 		sub.setExchangeAccount(subAccount.getExchangeAccountName());
 		sub.setId(subAccount.getId());
@@ -228,20 +230,20 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 		CSTWEventManager.sendEvent(request);
 
 	}
-	
+
 	@Override
 	public void updateExchangeAccountName(ExchangeAccountModel exchange,
 			String name) {
 		ExchangeAccountOperationRequestEvent request = new ExchangeAccountOperationRequestEvent(
-				IdGenerator.getInstance().getNextID(), Business.getInstance()
-						.getFirstServer(), IdGenerator.getInstance()
-						.getNextID());
+				IdGenerator.getInstance().getNextID(), Business
+						.getBusinessService().getFirstServer(), IdGenerator
+						.getInstance().getNextID());
 		ExchangeAccount ex = new ExchangeAccount();
 		ex.setId(exchange.getId());
 		ex.setName(name);
 		request.setExchangeAccount(ex);
 		request.setOperationType(OperationType.UPDATE);
-		
+
 		log.info("Rename Exchange Accout " + exchange.getName() + " -> " + name);
 		CSTWEventManager.sendEvent(request);
 	}
@@ -249,82 +251,82 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 	@Override
 	public void updateSubAccountName(SubAccountModel subAccount, String name) {
 		ExchangeSubAccountOperationRequestEvent request = new ExchangeSubAccountOperationRequestEvent(
-				IdGenerator.getInstance().getNextID(), Business.getInstance()
-						.getFirstServer(), IdGenerator.getInstance()
-						.getNextID());
+				IdGenerator.getInstance().getNextID(), Business
+						.getBusinessService().getFirstServer(), IdGenerator
+						.getInstance().getNextID());
 		ExchangeSubAccount sub = new ExchangeSubAccount();
 		sub.setExchangeAccount(subAccount.getExchangeAccountName());
 		sub.setId(subAccount.getId());
 		sub.setName(name);
 		request.setExchangeSubAccount(sub);
 		request.setOperationType(OperationType.UPDATE);
-		
+
 		log.info("Rename SubAccount " + subAccount.getName() + " -> " + name);
 		CSTWEventManager.sendEvent(request);
 	}
 
-
 	@Override
 	public List<AssignedModel> getAssignedModelListBySubAccountId(String id) {
 		List<AssignedModel> assList = new ArrayList<AssignedModel>();
-		List<String> userIdList = instrumentPoolKeeper.getAssignedAdminsBySubAccount(id);
+		List<String> userIdList = instrumentPoolKeeper
+				.getAssignedAdminsBySubAccount(id);
 		for (String usrId : userIdList) {
-			User usr = InstrumentPoolKeeperManager.getInstance().getRiskManagerOrGroupUser(usrId);
+			User usr = InstrumentPoolKeeperManager.getInstance()
+					.getRiskManagerOrGroupUser(usrId);
 			if (usr != null) {
 				assList.add(new AssignedModel.Builder().userId(usr.getId())
 						.roleType(usr.getRole().desc()).build());
 			}
 		}
-		
+
 		return assList;
 	}
 
 	@Override
 	public List<User> getAvailableAssigneeList(SubAccountModel subAccount) {
-		return InstrumentPoolKeeperManager.getInstance().getRiskManagerNGroupUser();
+		return InstrumentPoolKeeperManager.getInstance()
+				.getRiskManagerNGroupUser();
 	}
 
 	@Override
 	public void createNewAssignedModel(SubAccountModel subAccount,
 			AssignedModel assigned, int index) {
 		UserExchangeSubAccountOperationRequestEvent request = new UserExchangeSubAccountOperationRequestEvent(
-				IdGenerator.getInstance().getNextID(), Business.getInstance()
-						.getFirstServer(), IdGenerator.getInstance()
-						.getNextID());
-		
-		
-		
+				IdGenerator.getInstance().getNextID(), Business
+						.getBusinessService().getFirstServer(), IdGenerator
+						.getInstance().getNextID());
+
 	}
 
 	@Override
 	public void removeAssignedUser(SubAccountModel subAccount,
 			AssignedModel assign) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void moveUpExchangeAccount(ExchangeAccountModel exchange) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void moveDownExchangeAccount(ExchangeAccountModel exchange) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void moveUpSubAccount(SubAccountModel subAccount) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void moveDownSubAccount(SubAccountModel subAccount) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -336,13 +338,13 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 	public void addSubAccInputChangeListener(IInputChangeListener listener) {
 		subInputChange.add(listener);
 	}
-	
+
 	private void fireExchangeInputChange() {
 		for (IInputChangeListener listener : exchangeInputChange) {
 			listener.inputChanged();
 		}
 	}
-	
+
 	private void fireSubAccInputChange() {
 		for (IInputChangeListener listener : subInputChange) {
 			listener.inputChanged();

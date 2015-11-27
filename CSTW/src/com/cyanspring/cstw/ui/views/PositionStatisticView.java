@@ -235,7 +235,7 @@ public class PositionStatisticView extends ViewPart implements
 		createRefreshAction(parent);
 
 		AccountNumberRequestEvent accountNumberEvent = new AccountNumberRequestEvent(
-				ID, Business.getInstance().getFirstServer());
+				ID, Business.getBusinessService().getFirstServer());
 		sendRemoteEvent(accountNumberEvent);
 		try {
 			scheduleJob(refreshEvent, maxRefreshInterval);
@@ -249,7 +249,7 @@ public class PositionStatisticView extends ViewPart implements
 		symbolOpMap.clear();
 		log.info("send AllPositionSnapshotRequestEvent");
 		AllPositionSnapshotRequestEvent request = new AllPositionSnapshotRequestEvent(
-				ID, Business.getInstance().getFirstServer(),
+				ID, Business.getBusinessService().getFirstServer(),
 				PositionType.OpenPosition);
 		sendRemoteEvent(request);
 	}

@@ -45,7 +45,7 @@ public abstract class BasicCachingManager {
 		eventKeyMap = getEventKeyMap();
 		id = IdGenerator.getInstance().getNextID();
 		txId = IdGenerator.getInstance().getNextID();
-		server = business.getFirstServer();
+		server = Business.getBusinessService().getFirstServer();
 		initAsyncEventListener();
 	}
 

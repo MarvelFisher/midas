@@ -191,7 +191,7 @@ public class ConfirmPasswordDialog extends Dialog implements
 
 	private void doConfirm() {
 
-		if (!Business.getInstance().isFirstServerReady()) {
+		if (!Business.getBusinessService().isFirstServerReady()) {
 			lblMessage.setText("Server not ready");
 			return;
 		}
@@ -204,7 +204,7 @@ public class ConfirmPasswordDialog extends Dialog implements
 		lblMessage.setText("");
 		Business business = Business.getInstance();
 		// need to review which server to get login
-		String server = business.getFirstServer();
+		String server = Business.getBusinessService().getFirstServer();
 		username = txtUser.getText();
 		password = txtPassword.getText();
 		CSTWUserLoginEvent event = new CSTWUserLoginEvent(id, server, username,
@@ -246,7 +246,7 @@ public class ConfirmPasswordDialog extends Dialog implements
 					}
 				});
 				Business business = Business.getInstance();
-				String server = business.getFirstServer();
+				String server = Business.getBusinessService().getFirstServer();
 				try {
 					business.getEventManager().sendRemoteEvent(
 							new ServerShutdownEvent(id, server));

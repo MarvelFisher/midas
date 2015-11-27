@@ -62,8 +62,6 @@ public final class Business {
 	private OrderCachingManager orderManager;
 	private AllPositionManager allPositionManager;
 
-	private HashMap<String, Boolean> servers;
-
 	private ScheduleManager scheduleManager;
 	private AsyncTimerEvent timerEvent;
 	private int heartBeatInterval; // 5 seconds
@@ -84,7 +82,6 @@ public final class Business {
 	 */
 	private Business() {
 		userLoginAssist = new UserLoginAssist();
-		servers = new HashMap<String, Boolean>();
 		listener = new EventListenerImpl();
 		scheduleManager = new ScheduleManager();
 		timerEvent = new AsyncTimerEvent();
@@ -178,13 +175,15 @@ public final class Business {
 				NodeInfoEvent nodeInfo = (NodeInfoEvent) event;
 				if (nodeInfo.getServer()) {
 					log.info("NodeInfoEvent received: " + nodeInfo.getSender());
-					Boolean serverIsUp = servers.get(nodeInfo.getInbox());
+					Boolean serverIsUp = CSTWSession.getInstance().getServers()
+							.get(nodeInfo.getInbox());
 					if (serverIsUp != null && serverIsUp) {
 						log.error("ignore since server " + nodeInfo.getInbox()
 								+ " is still up");
 						return;
 					}
-					servers.put(nodeInfo.getInbox(), true);
+					CSTWSession.getInstance().getServers()
+							.put(nodeInfo.getInbox(), true);
 					lastHeartBeatMap.put(nodeInfo.getInbox(), Clock
 							.getInstance().now());
 				}
@@ -230,14 +229,17 @@ public final class Business {
 		for (Entry<String, Date> entry : lastHeartBeatMap.entrySet()) {
 			if (TimeUtil.getTimePass(entry.getValue()) > heartBeatInterval) {
 				log.debug("Sending server down event: " + entry.getKey());
-				servers.put(entry.getKey(), false);
+				CSTWSession.getInstance().getServers()
+						.put(entry.getKey(), false);
 				eventManager.sendEvent(new ServerStatusLocalEvent(entry
 						.getKey(), false));
 			} else { // server heart beat can go back up
-				Boolean up = servers.get(entry.getKey());
+				Boolean up = CSTWSession.getInstance().getServers()
+						.get(entry.getKey());
 				if (null != up && !up) {
 					log.debug("Sending server up event: " + entry.getKey());
-					servers.put(entry.getKey(), true);
+					CSTWSession.getInstance().getServers()
+							.put(entry.getKey(), true);
 					eventManager.sendEvent(new ServerStatusLocalEvent(entry
 							.getKey(), true));
 				}
@@ -274,19 +276,6 @@ public final class Business {
 
 	public Map<AlertType, Integer> getAlertColorConfig() {
 		return alertColorConfig;
-	}
-
-	public String getFirstServer() {
-		for (Entry<String, Boolean> entry : servers.entrySet()) {
-			if (entry.getValue())
-				return entry.getKey();
-		}
-		return null;
-	}
-
-	public boolean isFirstServerReady() {
-		Boolean result = servers.get(getFirstServer());
-		return result == null ? false : result;
 	}
 
 	private void processAccountSettingSnapshotReplyEvent(

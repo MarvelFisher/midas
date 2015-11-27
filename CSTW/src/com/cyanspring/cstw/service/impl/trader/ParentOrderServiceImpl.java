@@ -51,7 +51,7 @@ public final class ParentOrderServiceImpl implements IParentOrderService {
 			fields.put(OrderField.TYPE.value(), type.name());
 		}
 		EnterParentOrderEvent event = new EnterParentOrderEvent(CSTWSession
-				.getInstance().getInbox(), Business.getInstance()
+				.getInstance().getInbox(), Business.getBusinessService()
 				.getFirstServer(), fields, model.getReceiverId(), false);
 		try {
 			Business.getInstance().getEventManager().sendRemoteEvent(event);
@@ -71,7 +71,7 @@ public final class ParentOrderServiceImpl implements IParentOrderService {
 					.get(OrderField.ORDSTATUS.value());
 			if (!status.isCompleted() && symbol.equals(currentSymbol)) {
 				CancelParentOrderEvent event = new CancelParentOrderEvent(id,
-						Business.getInstance().getFirstServer(), id, false,
+						Business.getBusinessService().getFirstServer(), id, false,
 						null, true);
 				try {
 					Business.getInstance().getEventManager()
@@ -110,7 +110,7 @@ public final class ParentOrderServiceImpl implements IParentOrderService {
 			if (!status.isCompleted() && symbol.equals(currentSymbol)
 					&& isPriceEqual) {
 				CancelParentOrderEvent event = new CancelParentOrderEvent(id,
-						Business.getInstance().getFirstServer(), id, false,
+						Business.getBusinessService().getFirstServer(), id, false,
 						null, true);
 				try {
 					Business.getInstance().getEventManager()

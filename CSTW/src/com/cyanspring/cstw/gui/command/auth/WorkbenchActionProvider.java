@@ -140,8 +140,8 @@ public class WorkbenchActionProvider {
 							.getEventManager()
 							.sendRemoteEvent(
 									new SuspendServerEvent(null, Business
-											.getInstance().getFirstServer(),
-											suspend));
+											.getBusinessService()
+											.getFirstServer(), suspend));
 				} catch (Exception e) {
 					log.error(e.getMessage(), e);
 				}

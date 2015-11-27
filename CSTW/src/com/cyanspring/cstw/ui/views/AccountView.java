@@ -154,7 +154,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 								.sendRemoteEvent(
 										new StrategySnapshotRequestEvent(
 												account.getId(), Business
-														.getInstance()
+														.getBusinessService()
 														.getFirstServer(), null));
 					} catch (Exception e) {
 						log.error(e.getMessage(), e);
@@ -170,8 +170,8 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 		createSearchIdAction(parent);
 		createChangeAccountStateAction(parent);
 
-		if (Business.getInstance().isFirstServerReady())
-			sendSubscriptionRequest(Business.getInstance().getFirstServer());
+		if (Business.getBusinessService().isFirstServerReady())
+			sendSubscriptionRequest(Business.getBusinessService().getFirstServer());
 		else
 			Business.getInstance().getEventManager()
 					.subscribe(ServerStatusLocalEvent.class, this);
@@ -410,7 +410,7 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 								.getEventManager()
 								.sendRemoteEvent(
 										new ResetAccountRequestEvent(ID,
-												Business.getInstance()
+												Business.getBusinessService()
 														.getFirstServer(),
 												account.getId(), IdGenerator
 														.getInstance()

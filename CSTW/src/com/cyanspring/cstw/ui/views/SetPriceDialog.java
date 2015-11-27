@@ -82,7 +82,7 @@ public class SetPriceDialog extends Dialog {
 			@Override
 			public void widgetSelected(SelectionEvent select) {
 				try {
-					String server = Business.getInstance().getFirstServer();
+					String server = Business.getBusinessService().getFirstServer();
 					RemoteAsyncEvent request = null;
 					if (mode == Mode.CLOSE_POSITION)
 						request = new ManualClosePositionRequestEvent(position.getAccount(), server, position,

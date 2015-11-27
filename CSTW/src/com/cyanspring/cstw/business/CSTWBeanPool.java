@@ -3,6 +3,7 @@ package com.cyanspring.cstw.business;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.util.StringUtils;
 
@@ -99,6 +100,21 @@ public final class CSTWBeanPool implements IBusinessService {
 
 	public void setRateConverter(IFxConverter rateConverter) {
 		this.rateConverter = rateConverter;
+	}
+
+	public String getFirstServer() {
+		for (Entry<String, Boolean> entry : CSTWSession.getInstance()
+				.getServers().entrySet()) {
+			if (entry.getValue())
+				return entry.getKey();
+		}
+		return null;
+	}
+
+	public boolean isFirstServerReady() {
+		Boolean result = CSTWSession.getInstance().getServers()
+				.get(getFirstServer());
+		return result == null ? false : result;
 	}
 
 }

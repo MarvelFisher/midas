@@ -1,6 +1,7 @@
 package com.cyanspring.cstw.session;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.cyanspring.common.Default;
@@ -18,11 +19,13 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  * @date 2015.11.05
  *
  */
-public class CSTWSession {
+public final class CSTWSession {
 
 	private String inbox;
 	private String channel;
 	private String nodeInfoChannel;
+
+	private HashMap<String, Boolean> servers;
 
 	private String userId;
 	private String accountId;
@@ -48,6 +51,7 @@ public class CSTWSession {
 	}
 
 	private CSTWSession() {
+		servers = new HashMap<String, Boolean>();
 		userId = Default.getUser();
 		accountId = Default.getAccount();
 		accountGroupList = new ArrayList<String>();
@@ -151,8 +155,8 @@ public class CSTWSession {
 		this.xstream = xstream;
 	}
 
-	public static void setInstance(CSTWSession instance) {
-		CSTWSession.instance = instance;
+	public HashMap<String, Boolean> getServers() {
+		return servers;
 	}
 
 }

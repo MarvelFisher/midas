@@ -32,7 +32,7 @@ public abstract class BasicServiceImpl implements IBasicService {
 
 	protected Business business = Business.getInstance();
 
-	protected String server = business.getFirstServer();
+	protected String server = Business.getBusinessService().getFirstServer();
 
 	protected IUiListener uiListener;
 
@@ -61,7 +61,7 @@ public abstract class BasicServiceImpl implements IBasicService {
 			return;
 		}
 		for (Class<? extends AsyncEvent> event : replyEventList) {
-			Map<Class<? extends AsyncEvent>, String> map = getReplyEventKeyMap();			
+			Map<Class<? extends AsyncEvent>, String> map = getReplyEventKeyMap();
 			if (map.get(event) != null) {
 				Business.getInstance().getEventManager()
 						.subscribe(event, map.get(event), eventListener);
@@ -69,16 +69,16 @@ public abstract class BasicServiceImpl implements IBasicService {
 				Business.getInstance().getEventManager()
 						.subscribe(event, eventListener);
 			}
-			
+
 		}
 
 	}
 
 	public void registerEvent(Class<? extends AsyncEvent> event) {
-			log.info(nameForLogger
-					+ "single register reply event to default server:" + event);
-			Business.getInstance().getEventManager()
-					.subscribe(event, eventListener);
+		log.info(nameForLogger
+				+ "single register reply event to default server:" + event);
+		Business.getInstance().getEventManager()
+				.subscribe(event, eventListener);
 	}
 
 	protected abstract List<Class<? extends AsyncEvent>> getReplyEventList();
@@ -117,10 +117,10 @@ public abstract class BasicServiceImpl implements IBasicService {
 			return;
 		}
 		for (Class<? extends AsyncEvent> event : replyEventList) {
-				Business.getInstance().getEventManager()
-						.unsubscribe(event, eventListener);
-				log.info(nameForLogger + "unsubscribe event "
-						+ "  to default server:" + event);
+			Business.getInstance().getEventManager()
+					.unsubscribe(event, eventListener);
+			log.info(nameForLogger + "unsubscribe event "
+					+ "  to default server:" + event);
 		}
 	}
 

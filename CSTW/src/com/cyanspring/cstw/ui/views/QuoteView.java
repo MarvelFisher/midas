@@ -181,7 +181,7 @@ public class QuoteView extends ViewPart implements IAsyncEventListener {
 		symbolSet.add(symbol);
 
 		QuoteSubEvent subEvent = new QuoteSubEvent(receiverId, Business
-				.getInstance().getFirstServer(), symbol);
+				.getBusinessService().getFirstServer(), symbol);
 		sendRemoteEvent(subEvent);
 	}
 

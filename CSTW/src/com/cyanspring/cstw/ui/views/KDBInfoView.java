@@ -185,7 +185,7 @@ public class KDBInfoView extends ViewPart implements IAsyncEventListener {
 		subEvent(VolatilityListReplyEvent.class);
 		subEvent(VolatilityUpdateEvent.class);
 		VolatilityListRequestEvent request = new VolatilityListRequestEvent(
-				IdGenerator.getInstance().getNextID(), Business.getInstance()
+				IdGenerator.getInstance().getNextID(), Business.getBusinessService()
 						.getFirstServer());
 		sendRemoteEvent(request);
 		scheduleJob(refreshEvent, minRefreshInterval);

@@ -103,7 +103,7 @@ public class AddCashDialog extends Dialog {
 				if (StringUtils.hasText(accountID) && !PriceUtils.isZero(cash)) {
 					IRemoteEventManager eventManager = Business.getInstance().getEventManager();
 					try {
-						String server = Business.getInstance().getFirstServer();
+						String server = Business.getBusinessService().getFirstServer();
 						eventManager.sendRemoteEvent(new AddCashEvent(id, server, accountID, cash));
 					} catch (Exception e) {
 						log.error(e.getMessage(), e);

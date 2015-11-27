@@ -269,7 +269,7 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener 
 
 	private void sendAccountSettingRequestEvent() {
 		AccountSettingSnapshotRequestEvent settingRequestEvent = new AccountSettingSnapshotRequestEvent(
-				ID, Business.getInstance().getFirstServer(), accountId, null);
+				ID, Business.getBusinessService().getFirstServer(), accountId, null);
 		sendRemoteEvent(settingRequestEvent);
 	}
 
@@ -295,7 +295,7 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener 
 		AccountSetting tempSetting = new AccountSetting(accountId);
 		tempSetting.setDefaultQty(defaultQty);
 		ChangeAccountSettingRequestEvent request = new ChangeAccountSettingRequestEvent(
-				ID, Business.getInstance().getFirstServer(), tempSetting);
+				ID, Business.getBusinessService().getFirstServer(), tempSetting);
 		sendRemoteEvent(request);
 	}
 
