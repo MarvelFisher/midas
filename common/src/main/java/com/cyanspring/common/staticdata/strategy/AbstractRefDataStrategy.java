@@ -3,6 +3,7 @@ package com.cyanspring.common.staticdata.strategy;
 import java.lang.reflect.Constructor;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -77,7 +78,7 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 	}
 
 	@Override
-	public List<RefData> updateRefData(RefData refData) {
+	public List<RefData> updateRefData(RefData refData) throws ParseException {
 		DefaultContractPolicy policy;
 		String category = refData.getCategory();
 		String contractPolicy = refData.getContractPolicy();

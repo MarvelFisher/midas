@@ -8,12 +8,74 @@
 >
 
 	<context:annotation-config />
+	<!-- 
+		when modify any session time of market, that need checking modified data whether effecting on business.xml  (bean : availableTimeList)
+	 -->
+	<!-- <bean id="marketSessionManager" class="com.cyanspring.common.marketsession.MarketSessionManager">
+	    <property name="sessionChecker"> 
+        	<ref bean="sessionChecker"/>
+        </property>
+	</bean> -->
 	
-	<bean id="bSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionCheckerXD">
+	<bean id="indexMarketSessionManager" class="com.cyanspring.common.marketsession.IndexMarketSessionManager">
+        <property name="settlementDelay"><value>45</value></property>
+        <property name="eventManager" ref="eventManager"></property>        
+    </bean>
+    
+    <bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
+		<constructor-arg>
+			<list>
+				<ref bean="cfSessionChecker"/>
+				<ref bean="agSessionChecker"/>
+				<ref bean="cuSessionChecker"/>
+				<ref bean="ifSessionChecker"/>
+				<ref bean="tcSessionChecker" />
+                <ref bean="zcSessionChecker" />
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="tcSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionCheckerXD">
+        <property name="stateMap">
+            <map>
+                <entry key="DEFAULT">
+                    <ref bean="defaultSession"/>
+                </entry>
+                <entry key="FIRST_HOLIDAY">
+                    <ref bean="holidaySession"/>
+                </entry>
+                <entry key="HOLIDAY">
+                    <ref bean="holidaySession"/>
+                </entry>
+            </map>
+        </property>
+        <property name="tradeDateManager"><ref bean="tradeDateManager"/></property>
+        <property name="index" value="TC"/>
+    </bean>
+    
+    <bean id="zcSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionCheckerXD">
+        <property name="stateMap">
+            <map>
+                <entry key="DEFAULT">
+                    <ref bean="defaultSession"/>
+                </entry>
+                <entry key="FIRST_HOLIDAY">
+                    <ref bean="holidaySession"/>
+                </entry>
+                <entry key="HOLIDAY">
+                    <ref bean="holidaySession"/>
+                </entry>
+            </map>
+        </property>
+        <property name="tradeDateManager"><ref bean="tradeDateManager"/></property>
+        <property name="index" value="ZC"/>
+    </bean>
+	
+	<bean id="cfSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionCheckerXD">
 		<property name="stateMap">
 			<map>
 				<entry key="DEFAULT">
-					<ref bean="bDefaultSession"/>
+					<ref bean="defaultSession"/>
 				</entry>
 				<entry key="FIRST_HOLIDAY">
 					<ref bean="holidaySession"/>
@@ -23,14 +85,70 @@
 				</entry>
 			</map>
 		</property>
-        <property name="tradeDateManager"><ref bean="bTradeDateManager"/></property>
-        <property name="index" value="B"/>
+		<property name="tradeDateManager"><ref bean="tradeDateManager"/></property>
+		<property name="index" value="Cotton"/>
 	</bean>
 	
-	<bean id="bDefaultSession" class="com.cyanspring.common.marketsession.MarketSession">
+	<bean id="ifSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionCheckerXD">
+		<property name="stateMap">
+			<map>
+				<entry key="DEFAULT">
+					<ref bean="defaultSession"/>
+				</entry>
+				<entry key="FIRST_HOLIDAY">
+					<ref bean="holidaySession"/>
+				</entry>
+				<entry key="HOLIDAY">
+					<ref bean="holidaySession"/>
+				</entry>
+			</map>
+		</property>
+		<property name="tradeDateManager"><ref bean="tradeDateManager"/></property>
+		<property name="index" value="IF"/>
+	</bean>
+	
+	<bean id="agSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionCheckerXD">
+		<property name="stateMap">
+			<map>
+				<entry key="DEFAULT">
+					<ref bean="defaultSession"/>
+				</entry>
+				<entry key="FIRST_HOLIDAY">
+					<ref bean="holidaySession"/>
+				</entry>
+				<entry key="HOLIDAY">
+					<ref bean="holidaySession"/>
+				</entry>
+			</map>
+		</property>
+		<property name="tradeDateManager"><ref bean="tradeDateManager"/></property>
+		<property name="index" value="AG"/>
+	</bean>
+	
+	<bean id="cuSessionChecker" class="com.cyanspring.common.marketsession.MarketSessionCheckerXD">
+		<property name="stateMap">
+			<map>
+				<entry key="DEFAULT">
+					<ref bean="defaultSession"/>
+				</entry>
+				<entry key="FIRST_HOLIDAY">
+					<ref bean="holidaySession"/>
+				</entry>
+				<entry key="HOLIDAY">
+					<ref bean="holidaySession"/>
+				</entry>
+			</map>
+		</property>
+		<property name="tradeDateManager"><ref bean="tradeDateManager"/></property>
+		<property name="index" value="CU"/>
+	</bean>
+	
+	
+	<bean id="defaultSession" class="com.cyanspring.common.marketsession.MarketSession">
+	    <constructor-arg value="20:30:00" />
 		<constructor-arg>
 			<list>
-				<bean class="com.cyanspring.common.marketsession.MarketSessionData">
+			    <bean class="com.cyanspring.common.marketsession.MarketSessionData">
                     <constructor-arg><value>OPEN</value></constructor-arg>
                     <constructor-arg><value>-3:00:00</value></constructor-arg>
                     <constructor-arg><value>02:30:00</value></constructor-arg>
@@ -84,18 +202,16 @@
 			<list>
 		       	<bean class="com.cyanspring.common.marketsession.MarketSessionData">
 		        	<constructor-arg><value>CLOSE</value></constructor-arg>
-		        	<constructor-arg><value>00:00:00</value></constructor-arg>
-		        	<constructor-arg><value>24:00:00</value></constructor-arg>
+		        	<constructor-arg><value>-8:-45:00</value></constructor-arg>
+		        	<constructor-arg><value>32:30:00</value></constructor-arg>
 				</bean>	
 			</list>
 		</constructor-arg>
 	</bean>
 	
-	<bean id="bTradeDateManager" class="com.cyanspring.common.marketsession.TradeDateManager">
+	<bean id="tradeDateManager" class="com.cyanspring.common.marketsession.TradeDateManager">
 		<constructor-arg>
 			<list>
-				<value>2015-09-06</value>
-				<value>2015-10-10</value>
 			</list>
 		</constructor-arg>
 		<constructor-arg>
@@ -110,8 +226,6 @@
 				<value>2015-04-06</value>
 				<value>2015-05-01</value>
 				<value>2015-06-22</value>
-				<value>2015-09-03</value>
-				<value>2015-09-04</value>
 				<value>2015-10-01</value>
 				<value>2015-10-02</value>
 				<value>2015-10-05</value>

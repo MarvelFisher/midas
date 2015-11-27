@@ -6,8 +6,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import com.cyanspring.common.staticdata.IRefDataManager;
-import com.cyanspring.common.staticdata.RefDataManager;
 import com.cyanspring.common.util.TimeUtil;
 
 
@@ -21,10 +19,12 @@ public class TradeDateManager implements ITradeDate {
     public TradeDateManager(List<String> workDays, List<String> holiDays) throws Exception {
         this.workDays = new ArrayList<Date>();
         this.holiDays = new ArrayList<Date>();
-        for (String day : workDays)
-            this.workDays.add(sdf.parse(day));
-        for (String day : holiDays)
-            this.holiDays.add(sdf.parse(day));
+        for (String day : workDays) {
+			this.workDays.add(sdf.parse(day));
+		}
+        for (String day : holiDays) {
+			this.holiDays.add(sdf.parse(day));
+		}
     }
 
     @Override
@@ -53,19 +53,32 @@ public class TradeDateManager implements ITradeDate {
     }
 
     @Override
+    public Date currTradeDate(Date date) {
+        Date pDate = date;
+        while (isHoliday(pDate)) {
+            pDate = TimeUtil.getPreviousDay(pDate);
+        }
+        return pDate;
+    }
+
+    @Override
     public boolean isHoliday(Date date) {
         for (Date wDate : workDays) {
-            if (TimeUtil.sameDate(date, wDate))
-                return false;
+            if (TimeUtil.sameDate(date, wDate)) {
+				return false;
+			}
         }
-        for (Date hDate : holiDays)
-            if (TimeUtil.sameDate(date, hDate))
-                return true;
+        for (Date hDate : holiDays) {
+			if (TimeUtil.sameDate(date, hDate)) {
+				return true;
+			}
+		}
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        if (cal.get(Calendar.DAY_OF_WEEK) == 1 || cal.get(Calendar.DAY_OF_WEEK) == 7)
-            return true;
+        if (cal.get(Calendar.DAY_OF_WEEK) == 1 || cal.get(Calendar.DAY_OF_WEEK) == 7) {
+			return true;
+		}
         return false;
     }
 
