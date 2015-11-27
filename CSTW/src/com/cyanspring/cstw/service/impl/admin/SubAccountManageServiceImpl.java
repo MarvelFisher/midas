@@ -19,6 +19,7 @@ import com.cyanspring.common.event.pool.UserExchangeSubAccountOperationRequestEv
 import com.cyanspring.common.pool.ExchangeAccount;
 import com.cyanspring.common.pool.ExchangeSubAccount;
 import com.cyanspring.common.pool.InstrumentPoolRecord;
+import com.cyanspring.common.pool.UserExchangeSubAccount;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.cstw.business.Business;
 import com.cyanspring.cstw.business.CSTWEventManager;
@@ -163,6 +164,7 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl implements
 	protected RefreshEventType handleEvent(AsyncEvent event) {
 		if (event instanceof InstrumentPoolUpdateLocalEvent) {
 			fireExchangeInputChange();
+			fireSubAccInputChange();
 			return RefreshEventType.Default;
 		}
 		if (event instanceof SubAccountStructureUpdateLocalEvent) {
@@ -295,7 +297,17 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl implements
 				IdGenerator.getInstance().getNextID(), Business
 						.getBusinessService().getFirstServer(), IdGenerator
 						.getInstance().getNextID());
-
+		
+		List<UserExchangeSubAccount> list = new ArrayList<UserExchangeSubAccount>();
+		UserExchangeSubAccount binding = new UserExchangeSubAccount();
+		binding.setUser(assigned.getUserId());
+		binding.setExchangeSubAccount(subAccount.getRelativeExchAccount());
+		list.add(binding);		
+		request.setUserExchangeSubAccounts(list);
+		request.setOperationType(OperationType.CREATE);
+		
+		log.info("New Assigned binding " + subAccount.getName() + " -> " + assigned.getUserId());
+		CSTWEventManager.sendEvent(request);
 	}
 
 	@Override
