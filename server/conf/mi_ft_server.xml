@@ -7,7 +7,8 @@
 
     <context:annotation-config />
 
-    <import resource="mi/*" />
+    <import resource="mi_ft/*" />
+    <import resource="ft/marketSession/*.xml" />
     <import resource="classpath*:conf/common.xml" />
 
     <bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
@@ -27,7 +28,7 @@
             <value>GLOBAL</value>
         </property>
         <property name="category">
-            <value>FX-MQ</value>
+            <value>FT-MQ</value>
         </property>
         <property name="id">
             <value>S1</value>
@@ -35,7 +36,7 @@
     </bean>
 
     <bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
-        <property name="url" value="nio://0.0.0.0:61616"/>
+        <property name="url" value="nio://0.0.0.0:61656"/>
     </bean>
 
     <bean id="globalTransportService" class="com.cyanspring.transport.ActiveMQObjectService">
@@ -48,50 +49,57 @@
         <property name="quoteThrottlingInterval">
             <value>100</value>
         </property>
-        <property name="kdbThrottling">
-            <ref bean="kdbThrottling" />
-        </property>
+        <!--<property name="kdbThrottling">-->
+            <!--<ref bean="kdbThrottling" />-->
+        <!--</property>-->
     </bean>
 
     <!-- MarketDataManager setting -->
     <bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
         <constructor-arg>
             <list>
-                <ref bean="ibAdaptor" />
+                <ref bean="windAdaptorFT" />
             </list>
         </constructor-arg>
-        <property name="quoteThrottle" value="100"/>
-        <property name="timerInterval" value="100"/>
+        <property name="quoteThrottle" value="20"/>
+        <property name="timerInterval" value="20"/>
         <property name="quoteLogIsOpen" value="false"/>
-        <property name="quoteExtendEventIsSend" value="false"/>
+        <property name="quoteExtendEventIsSend" value="true"/>
         <property name="quoteExtendSegmentSize" value="300"/>
-
-        <property name="aggregator" >
-            <ref bean="quoteAggregator" />
-        </property>
-
         <property name="preSubscriptionList">
             <ref bean="preSubscriptionList" />
+        </property>
+        <property name="eventListeners">
+            <list>
+                <ref bean="windAdaptorFT" />
+            </list>
         </property>
         <property name="quoteChecker" ref="quoteChecker"/>
         <property name="quoteSaver" ref="quoteSaver"/>
         <property name="quoteCleaner" ref="quoteCleaner"/>
+        <property name="quoteExtendCleaner" ref="quoteExtendCleaner"/>
         <property name="broadcastQuote" value="true"/>
         <property name="quoteListener" ref="kdbQuoteListener"/>
     </bean>
+    <!-- WindAdaptor setting (Setting can be marked if not used) -->
 
-    <!-- IBAdaptor setting (Setting can be marked if not used) -->
-
-    <bean id="ibAdaptor" class="com.cyanspring.adaptor.ib.IbAdaptor">
-        <property name="id" value="IB01" />
-        <property name="host" value="10.0.0.30" />
-        <property name="port" value="4001" />
-        <property name="clientId" value="277" />
-        <property name="reqMarketDepth" value="false" />
-        <property name="logMarketData" value="false" />
-        <property name="newsIsSubCurrentDay" value="false" />
-        <property name="checkLastTimeInterval" value="15000" />
-        <!--<property name="cancelOpenOrders" value="true" /> -->
+    <bean id="windAdaptorFT"
+          class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
+        <property name="id" value="W01"/>
+        <property name="showGui" value="true"/>
+        <property name="gatewayIp" value="10.0.0.32"/>
+        <property name="gatewayPort" value="10038"/>
+        <property name="marketDataLog" value="false"/>
+        <property name="tradeDateCheckIsOpen" value="true"/>
+        <property name="closeOverTimeControlIsOpen" value="true"/>
+        <property name="msgPack" value="true"/>
+        <property name="isSubTrans" value="false"/>
+        <property name="useRefDataCodeSubscribe" value="true"/>
+        <property name="marketsList">
+            <list>
+                <value>TWF</value>
+            </list>
+        </property>
     </bean>
 
 </beans>
