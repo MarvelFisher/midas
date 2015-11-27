@@ -21,17 +21,19 @@ import com.exxeleron.qjava.QTimestamp;
 
 public class KDBPersistenceManager implements IPlugin {
 	public static final Logger log = LoggerFactory.getLogger(KDBPersistenceManager.class);
-	private String ip = "localhost";
-	private int port = 5010;
+	private String ip;
+	private int port;
 	private String user = "";
 	private String pwd = "";
-	private final QConnection con = new QBasicConnection(ip, port, user, pwd);
+	private QConnection con;
 	private boolean cleanCache = true;
 	private int writeFileInterval = 60;
 	private TimeThrottler throttler;
 	
 	@Override
 	public void init() throws Exception {
+		con = new QBasicConnection(ip, port, user, pwd);
+
 		con.open();
 		throttler = new TimeThrottler(writeFileInterval * 1000);
 	}
