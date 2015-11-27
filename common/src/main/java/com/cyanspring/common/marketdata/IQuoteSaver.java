@@ -28,7 +28,7 @@ public interface IQuoteSaver {
 
     void saveLastQuoteToFile(String fileName, Map<String, Quote> quotes);
 
-    void saveLastTradeDateQuoteToFile(String fileName, Map<String, Quote> quotes, Map<String, Quote> lastTradeDateQuotes);
+    void saveLastTradeDateQuoteToFile(String lastTdqName,String lastQuoteFileName, Map<String, Quote> quotes);
 
     void saveLastQuoteExtendToFile(String fileName, Map<String, DataObject> quoteExtends);
 

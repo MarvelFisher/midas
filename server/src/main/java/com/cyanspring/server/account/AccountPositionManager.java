@@ -123,6 +123,7 @@ import com.cyanspring.common.event.info.RateConverterRequestEvent;
 import com.cyanspring.common.event.marketdata.QuoteEvent;
 import com.cyanspring.common.event.marketdata.QuoteExtEvent;
 import com.cyanspring.common.event.marketdata.QuoteSubEvent;
+import com.cyanspring.common.event.marketsession.EndOfDayEvent;
 import com.cyanspring.common.event.marketsession.IndexSessionEvent;
 import com.cyanspring.common.event.marketsession.SettlementEvent;
 import com.cyanspring.common.event.marketsession.TradeDateEvent;
@@ -2347,7 +2348,7 @@ public class AccountPositionManager implements IPlugin {
 			}
 			account.resetDailyPnL();
 		}
-
+		eventManager.sendEvent(new EndOfDayEvent(null, null, tradeDate));
 		eventManager.sendEvent(new PmEndOfDayRollEvent(null, null, tradeDate));
 	}
 

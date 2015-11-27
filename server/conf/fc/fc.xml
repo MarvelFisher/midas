@@ -363,7 +363,7 @@
 			<value>refdata/template/template_FC.xml</value>
 		</property>
 		<property name="quoteFile">
-			<value>ticks/last.xml</value>
+			<value>ticks/last_tdq.xml</value>
 		</property>
 	</bean>
 
