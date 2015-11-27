@@ -301,7 +301,7 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl implements
 		List<UserExchangeSubAccount> list = new ArrayList<UserExchangeSubAccount>();
 		UserExchangeSubAccount binding = new UserExchangeSubAccount();
 		binding.setUser(assigned.getUserId());
-		binding.setExchangeSubAccount(subAccount.getRelativeExchAccount());
+		binding.setExchangeSubAccount(subAccount.getId());
 		list.add(binding);		
 		request.setUserExchangeSubAccounts(list);
 		request.setOperationType(OperationType.CREATE);
