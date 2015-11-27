@@ -15,6 +15,6 @@ cd $MI_HOME
 nohup $Q r.q -p 5011 < /dev/null >> ./rdb.log 2>&1&
 echo $! > ./pid_rdb
 
-# cd $MI_HOME
-# echo $! > ./mi_tick
-
+cd $MI_HOME
+nohup $Q mi.q hdb :5011 :5012 -p 5013 < /dev/null >> ./mi.log 2>&1&
+echo $! > ./pid_mi
