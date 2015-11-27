@@ -13,6 +13,8 @@ import com.cyanspring.common.staticdata.BaseDBData;
 import com.cyanspring.common.staticdata.RefDataBitUtil;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.PriceUtils;
+import com.cyanspring.common.util.TimeThrottler;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +42,10 @@ public class MarketDataManager extends MarketDataReceiver {
     private String lastTradeDateQuoteExtendFile = "lastExtend_tdq.xml";
     private boolean broadcastQuote;
     protected HashMap<String, String> tradeDateByIndex = new HashMap<>(); //TradeDateByIndex
+	private TimeThrottler saveQuoteFileThrottler;
+	private long saveQuoteFileInterval = 0;
 
-    public MarketDataManager(List<IMarketDataAdaptor> adaptors) {
+	public MarketDataManager(List<IMarketDataAdaptor> adaptors) {
         super(adaptors);
     }
 
@@ -58,6 +62,7 @@ public class MarketDataManager extends MarketDataReceiver {
 
     @Override
     public void init() throws Exception {
+    	saveQuoteFileThrottler = new TimeThrottler(saveQuoteFileInterval);
         requestDataEventkey = IdGenerator.getInstance().getNextID();
         if (quoteSaver != null) {
             // create tick directory
@@ -152,6 +157,17 @@ public class MarketDataManager extends MarketDataReceiver {
         }
     }
 
+	@Override
+	public void processEndOfDayEvent(EndOfDayEvent event) {
+		log.info("receive end of day event, save LastTradeDateQuoteFile");
+        if (quoteSaver != null) {
+            quoteSaver.saveLastTradeDateQuoteToFile(
+            		tickDir + "/" + lastTradeDateQuoteFile,
+            		tickDir + "/" + lastQuoteFile,
+            		quotes);
+        }
+	}
+    
     public void processRefDataEvent(RefDataEvent event) {
         if(event != null && (event.getKey() != null && !event.getKey().equals(requestDataEventkey))){
             log.debug("refData event Key not send self:" + event.getKey());
@@ -348,7 +364,7 @@ public class MarketDataManager extends MarketDataReceiver {
         }else {
             super.processAsyncTimerEvent(event);
         }
-        if (quoteSaver != null) {
+        if (quoteSaver != null && saveQuoteFileThrottler.check()) {
             quoteSaver.saveLastQuoteToFile(tickDir + "/" + lastQuoteFile, quotes);
             quoteSaver.saveLastQuoteExtendToFile(tickDir + "/" + lastQuoteExtendFile, quoteExtends);
         }
@@ -451,6 +467,10 @@ public class MarketDataManager extends MarketDataReceiver {
         eventManager.sendEvent(new IndexSessionRequestEvent(requestDataEventkey, null, null));
         eventManager.sendEvent(new RefDataRequestEvent(requestDataEventkey, null));
     }
+    
+	public void setSaveQuoteFileInterval(long saveQuoteFileInterval) {
+		this.saveQuoteFileInterval = saveQuoteFileInterval;
+	}
 
     public void setQuoteSaver(IQuoteSaver quoteSaver) {
         this.quoteSaver = quoteSaver;

@@ -58,9 +58,12 @@
 	<bean id="quoteAggregator" class="com.cyanspring.common.marketdata.QuoteAggregatorSimple">
 	</bean>
 
-	<bean id="kdbPersistenceManager" class="com.cyanspring.server.persistence.KDBPersistenceManager"></bean>
+	<bean id="kdbPersistenceManager" class="com.cyanspring.server.persistence.KDBPersistenceManager">
+		<property name="ip" value="localhost" />
+		<property name="port" value="5010" />
+	</bean>
 	
-	<bean id="kdbEventManager" class="com.cyanspring.server.kdb.KdbEventManager"></bean>
+	<bean id="kdbEventManager" class="com.cyanspring.server.kdb.KdbEventManager" />
 
 	<bean id="preSubscriptionList" class="java.util.ArrayList">
 		<constructor-arg>

@@ -1,0 +1,99 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<context:annotation-config />
+
+	<bean id="mdServer" class="com.cyanspring.server.MarketDataServer">
+		<property name="plugins">
+			<list>
+				<ref bean="kdbPersistenceManager"/>
+				<ref bean="marketSessionUtil"/>
+                <ref bean="refDataHandler" />
+                <ref bean="indexMarketSessionManager" />
+				<ref bean="mdManager" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="eventManager" class="com.cyanspring.event.RemoteEventManager">
+		<constructor-arg>
+			<ref bean="transportService" />
+		</constructor-arg>
+		<property name="embedBroker" value="true"/>
+	</bean>
+	
+	<bean id="globalEventManager" class="com.cyanspring.event.RemoteEventManager">
+		<constructor-arg>
+			<ref bean="globalTransportService" />
+		</constructor-arg>
+		<property name="embedBroker" value="false"/>
+	</bean>
+
+	<bean id="quoteSaver" class="com.cyanspring.common.marketdata.QuoteSaver"/>
+	<bean id="quoteChecker" class="com.cyanspring.common.marketdata.QuoteChecker">
+		<property name="quotePriceWarningIsOpen" value="true"/>
+		<property name="quotePriceWarningPercent" value="50"/>
+	</bean>
+
+	<bean id="scheduleManager" class="com.cyanspring.common.event.ScheduleManager">
+	</bean>
+
+	<bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler">
+		<property name="eventManager" ref="eventManager"/>
+		<property name="saveRefDataList" value="true"></property>
+	</bean>
+
+	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
+		<property name="refDataTemplatePath">
+			<value>refdata/template/template_FT.xml</value>
+		</property>
+		<property name="quoteFile">
+			<value>ticks/last.xml</value>
+		</property>
+	</bean>
+
+	<bean id="refDataUtil" class="com.cyanspring.common.staticdata.RefDataUtil"></bean>
+
+    <bean id="priceQuoteChecker" class="com.cyanspring.common.marketdata.PriceQuoteChecker"/>
+
+	<bean id="quoteAggregator" class="com.cyanspring.common.marketdata.QuoteAggregatorSimple">
+	</bean>
+
+	<bean id="kdbPersistenceManager" class="com.cyanspring.server.persistence.KDBPersistenceManager">
+		<property name="ip" value="localhost" />
+		<property name="port" value="5110" />
+	</bean>
+
+	<bean id="preSubscriptionList" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="quoteCleaner" class="com.cyanspring.common.marketdata.ForexQuoteCleaner"/>
+	<bean id="quoteExtendCleaner" class="com.cyanspring.common.marketdata.QuoteExtendCleaner" />
+
+	<bean id="indexMarketSessionManager"
+		  class="com.cyanspring.common.marketsession.IndexMarketSessionManager">
+		<property name="settlementDelay">
+			<value>45</value>
+		</property>
+		<property name="eventManager" ref="eventManager"></property>
+	</bean>
+
+	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
+		<constructor-arg>
+			<list>
+				<ref bean="fitxSessionChecker" />
+				<ref bean="fimtxSessionChecker" />
+				<ref bean="indexSessionChecker" />
+			</list>
+		</constructor-arg>
+	</bean>
+
+</beans>

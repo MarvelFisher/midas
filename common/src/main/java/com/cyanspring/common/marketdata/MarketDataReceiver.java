@@ -96,6 +96,7 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         public void subscribeToEvents() {
             subscribeToEvent(IndexSessionEvent.class, null);
             subscribeToEvent(RefDataEvent.class, null);
+            subscribeToEvent(EndOfDayEvent.class,null);
         }
 
         @Override
@@ -104,6 +105,10 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
         }
     };
 
+    public void processEndOfDayEvent(EndOfDayEvent event){
+    	
+    }
+    
     public void processRefDataEvent(RefDataEvent event) {
         if(event != null && (event.getKey() != null && !event.getKey().equals(requestDataEventkey))){
             log.debug("refData event Key not send self:" + event.getKey());
@@ -256,7 +261,6 @@ public class MarketDataReceiver implements IPlugin, IMarketDataListener,
     public void processInnerQuoteEvent(InnerQuoteEvent inEvent) throws ParseException {
         Quote quote = inEvent.getQuote();
         Quote prev = quotes.get(quote.getSymbol());
-
         //Calculate Future Quote last Volume
         if (inEvent.getQuoteSource() == QuoteSource.WIND_GENERAL
                 || inEvent.getQuoteSource() == QuoteSource.WIND_INDEX) {

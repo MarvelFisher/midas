@@ -1,0 +1,105 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <context:annotation-config />
+
+    <import resource="mi_ft/*" />
+    <import resource="ft/marketSession/*.xml" />
+    <import resource="classpath*:conf/common.xml" />
+
+    <bean id="systemInfo" class="com.cyanspring.common.SystemInfo">
+        <property name="env">
+            <value>DEV</value>
+        </property>
+        <property name="category">
+            <value>MI</value>
+        </property>
+        <property name="id">
+            <value>S1</value>
+        </property>
+    </bean>
+
+    <bean id="globalMQInfo" class="com.cyanspring.common.SystemInfo">
+        <property name="env">
+            <value>GLOBAL</value>
+        </property>
+        <property name="category">
+            <value>FT-MQ</value>
+        </property>
+        <property name="id">
+            <value>S1</value>
+        </property>
+    </bean>
+
+    <bean id="transportService" class="com.cyanspring.transport.ActiveMQObjectService">
+        <property name="url" value="nio://0.0.0.0:61656"/>
+    </bean>
+
+    <bean id="globalTransportService" class="com.cyanspring.transport.ActiveMQObjectService">
+        <property name="url" value="failover:(nio://10.0.0.51:60006)?initialReconnectDelay=2000&amp;maxReconnectDelay=5000&amp;maxReconnectAttempts=100"/>
+    </bean>
+
+    <bean id="kdbThrottling" class="com.cyanspring.common.marketdata.KdbFxThrottling"></bean>
+
+    <bean id="kdbQuoteListener" class="com.cyanspring.server.marketdata.KDBQuoteListener">
+        <property name="quoteThrottlingInterval">
+            <value>100</value>
+        </property>
+        <!--<property name="kdbThrottling">-->
+            <!--<ref bean="kdbThrottling" />-->
+        <!--</property>-->
+    </bean>
+
+    <!-- MarketDataManager setting -->
+    <bean id="mdManager" class="com.cyanspring.common.marketdata.MarketDataManager">
+        <constructor-arg>
+            <list>
+                <ref bean="windAdaptorFT" />
+            </list>
+        </constructor-arg>
+        <property name="quoteThrottle" value="20"/>
+        <property name="timerInterval" value="20"/>
+        <property name="quoteLogIsOpen" value="false"/>
+        <property name="quoteExtendEventIsSend" value="true"/>
+        <property name="quoteExtendSegmentSize" value="300"/>
+        <property name="preSubscriptionList">
+            <ref bean="preSubscriptionList" />
+        </property>
+        <property name="eventListeners">
+            <list>
+                <ref bean="windAdaptorFT" />
+            </list>
+        </property>
+        <property name="quoteChecker" ref="quoteChecker"/>
+        <property name="quoteSaver" ref="quoteSaver"/>
+        <property name="quoteCleaner" ref="quoteCleaner"/>
+        <property name="quoteExtendCleaner" ref="quoteExtendCleaner"/>
+        <property name="broadcastQuote" value="true"/>
+        <property name="quoteListener" ref="kdbQuoteListener"/>
+    </bean>
+    <!-- WindAdaptor setting (Setting can be marked if not used) -->
+
+    <bean id="windAdaptorFT"
+          class="com.cyanspring.adaptor.future.wind.WindGateWayAdapter">
+        <property name="id" value="W01"/>
+        <property name="showGui" value="true"/>
+        <property name="gatewayIp" value="10.0.0.32"/>
+        <property name="gatewayPort" value="10038"/>
+        <property name="marketDataLog" value="false"/>
+        <property name="tradeDateCheckIsOpen" value="true"/>
+        <property name="closeOverTimeControlIsOpen" value="true"/>
+        <property name="msgPack" value="true"/>
+        <property name="isSubTrans" value="false"/>
+        <property name="useRefDataCodeSubscribe" value="true"/>
+        <property name="marketsList">
+            <list>
+                <value>TWF</value>
+            </list>
+        </property>
+    </bean>
+
+</beans>

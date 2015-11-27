@@ -1,18 +1,24 @@
 package com.cyanspring.common.marketdata;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
+
 import com.cyanspring.common.Clock;
 import com.cyanspring.common.data.DataObject;
 import com.cyanspring.common.util.TimeUtil;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Description....
@@ -89,23 +95,23 @@ public class QuoteSaver implements IQuoteSaver {
     }
 
     @Override
-    public void saveLastQuoteToFile(String fileName, Map<String, Quote> quotes) {
+    public void saveLastQuoteToFile(String fileName, Map<String, Quote> quotes) {    	
         if (TimeUtil.getTimePass(lastQuoteSaveTime) < lastQuoteSaveInterval)
             return;
 
         if (quotes.size() <= 0)
             return;
-
+                
         lastQuoteSaveTime = Clock.getInstance().now();
-        synchronized (quotes){saveQuotesToFile(fileName, quotes);}
+        synchronized (quotes){saveQuotesToFile(fileName,"", quotes);}
     }
 
     @Override
-    public void saveLastTradeDateQuoteToFile(String fileName, Map<String, Quote> quotes, Map<String, Quote> lastTradeDateQuotes) {
-        if (lastTradeDateQuotes.size() <= 0 && quotes.size() <= 0)
+    public void saveLastTradeDateQuoteToFile(String fileName,String lastQuoteFileName, Map<String, Quote> quotes) {
+        if (quotes.size() <= 0 && !StringUtils.hasText(lastQuoteFileName))
             return;
-        lastTradeDateQuotes = quotes;
-        saveQuotesToFile(fileName, lastTradeDateQuotes);
+        
+        saveQuotesToFile(fileName,lastQuoteFileName, quotes);
     }
 
     @Override
@@ -117,7 +123,7 @@ public class QuoteSaver implements IQuoteSaver {
             return;
 
         lastQuoteExtendSaveTime = Clock.getInstance().now();
-        synchronized (quoteExtends){saveQuotesToFile(fileName, quoteExtends);}
+        synchronized (quoteExtends){saveQuotesToFile(fileName,"", quoteExtends);}
     }
 
     @Override
@@ -125,19 +131,98 @@ public class QuoteSaver implements IQuoteSaver {
         if (lastTradeDateQuoteExtends.size() <= 0 && quoteExtends.size() <= 0)
             return;
         lastTradeDateQuoteExtends = quoteExtends;
-        saveQuotesToFile(fileName, lastTradeDateQuoteExtends);
+        saveQuotesToFile(fileName,"", lastTradeDateQuoteExtends);
     }
+    
+    private void saveQuotesToFile(String fileName,String copyFrom, Map quotes) {
 
-    private void saveQuotesToFile(String fileName, Map quotes) {
-        File file = new File(fileName);
-        try {
-            file.createNewFile();
-            FileOutputStream os = new FileOutputStream(file);
-                xstream.toXML(quotes, os);
-            os.close();
+		String prevFileName = fileName+".prev";
+		String nowFileName = fileName;
+		String nextFileName = fileName+".next";
+		File prevFile = new File(prevFileName);
+		File nowFile = new File(nowFileName);
+		File nextFile = new File(nextFileName);
+		File lastQuoteFile = null;
+		boolean success = true;
+		
+    	try {
+    		
+    		if(prevFile != null && prevFile.exists()){
+    			success = prevFile.delete();
+    			if(!success)
+    				log.warn("can't delete file:{}",prevFileName);
+    			
+    		}
+    		
+    		if(nowFile != null){  			
+    		    success = nowFile.renameTo(prevFile);
+    			if(!success)
+    				log.warn("can't rename file:{} -> {}",nowFileName,prevFileName);
+    		}
+       
+			if(StringUtils.hasText(copyFrom)){
+				lastQuoteFile = new File(copyFrom);
+			}
+			
+			if(lastQuoteFile!=null && lastQuoteFile.exists()){
+				copyFile(new File(copyFrom), nextFile);
+			}else{
+				quoteToXML(nextFile,quotes);
+			}
+            nextFile.renameTo(nowFile);                 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+        }finally{       	
+        	prevFile = null;     
+        	nowFile = null;
+        	nextFile = null;     	
         }
     }
-
+    
+    private void quoteToXML(File toFile,Map quotes) throws IOException{
+    	toFile.createNewFile();
+        FileOutputStream os = new FileOutputStream(toFile);
+            xstream.toXML(quotes, os);
+        os.close();
+    }
+    
+    private void copyFile(File source,File dest) throws IOException{
+    	
+    	InputStream inStream = null;
+    	OutputStream outStream = null;
+    	boolean success = false;
+    	try{
+ 
+    	    inStream = new FileInputStream(source);
+    	    outStream = new FileOutputStream(dest);
+ 
+    	    byte[] buffer = new byte[1024];
+ 
+    	    int length;
+    	    while ((length = inStream.read(buffer)) > 0){
+    	    	outStream.write(buffer, 0, length);
+    	    }
+ 
+    	    if (inStream != null)
+    	    	inStream.close();
+    	    
+    	    if (outStream != null)
+    	    	outStream.close();
+ 
+    	    success = true;
+    	}finally{
+    		
+    		if(!success && null != dest ){
+        	    if (inStream != null)
+        	    	inStream.close();
+        	    
+        	    if (outStream != null)
+        	    	outStream.close();
+        	    
+    			log.warn("write file fail, delete file:{}",dest.getName());
+    			dest.delete();
+    		}
+    		
+    	}
+    }
 }

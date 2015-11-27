@@ -39,7 +39,7 @@
     </bean>
 
     <bean id="globalTransportService" class="com.cyanspring.transport.ActiveMQObjectService">
-        <property name="url" value="nio://10.0.0.51:60006"/>
+        <property name="url" value="failover:(nio://10.0.0.51:60006)?initialReconnectDelay=2000&amp;maxReconnectDelay=5000&amp;maxReconnectAttempts=100"/>
     </bean>
 
     <bean id="kdbThrottling" class="com.cyanspring.common.marketdata.KdbFxThrottling"></bean>
