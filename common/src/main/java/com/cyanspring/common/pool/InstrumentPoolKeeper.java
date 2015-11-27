@@ -103,7 +103,8 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 		List<String> users = new ArrayList<String>();
 		for (Entry<String, Map<String, ExchangeSubAccount>> entry : userSubAccounMap
 				.entrySet()) {
-			if (entry.getValue().containsKey(subAccount)) {
+			if (entry.getValue().containsKey(subAccount)
+					&& !users.contains(entry.getKey())) {
 				users.add(entry.getKey());
 			}
 		}
@@ -302,6 +303,15 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 		if (instrumentPoolRecordMap.containsKey(record.getInstrumentPoolId())
 				&& instrumentPoolRecordMap.get(record.getInstrumentPoolId())
 						.containsKey(record.getSymbol())) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean ifExists(UserExchangeSubAccount userSubAccount) {
+		if (userSubAccounMap.containsKey(userSubAccount.getUser())
+				&& userSubAccounMap.get(userSubAccount.getUser()).containsKey(
+						userSubAccount.getExchangeSubAccount())) {
 			return true;
 		}
 		return false;

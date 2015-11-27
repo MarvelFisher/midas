@@ -16,6 +16,7 @@ import com.cyanspring.common.event.pool.ExchangeSubAccountUpdateEvent;
 import com.cyanspring.common.event.pool.InstrumentPoolRecordUpdateEvent;
 import com.cyanspring.common.event.pool.InstrumentPoolRecordsUpdateEvent;
 import com.cyanspring.common.event.pool.InstrumentPoolUpdateEvent;
+import com.cyanspring.common.event.pool.UserExchangeSubAccountUpdateEvent;
 import com.cyanspring.common.pool.InstrumentPoolHelper;
 import com.cyanspring.common.pool.InstrumentPoolKeeper;
 import com.cyanspring.common.util.IdGenerator;
@@ -35,9 +36,9 @@ public final class InstrumentPoolKeeperManager {
 	private static InstrumentPoolKeeperManager instance;
 
 	private InstrumentPoolKeeper instrumentPoolKeeper;
-	
+
 	private List<User> riskManagerNGroupUser;
-	
+
 	private Map<String, User> riskManagerNGroupUserMap = new HashMap<String, User>();;
 
 	private IAsyncEventListener listener;
@@ -65,21 +66,28 @@ public final class InstrumentPoolKeeperManager {
 					processInstrumentPoolRecordUpdateEvent((InstrumentPoolRecordUpdateEvent) event);
 				} else if (event instanceof AccountPoolsUpdateEvent) {
 					processAccountPoolsUpdateEvent((AccountPoolsUpdateEvent) event);
+				} else if (event instanceof UserExchangeSubAccountUpdateEvent) {
+					processUserExchangeSubAccountUpdateEvent((UserExchangeSubAccountUpdateEvent) event);
 				}
 			}
 		};
-		CSTWEventManager.subscribe(ExchangeAccountOperationReplyEvent.class, listener);
+		CSTWEventManager.subscribe(ExchangeAccountOperationReplyEvent.class,
+				listener);
 		CSTWEventManager.subscribe(ExchangeAccountUpdateEvent.class, listener);
-		
-		CSTWEventManager.subscribe(ExchangeSubAccountOperationReplyEvent.class, listener);
-		CSTWEventManager.subscribe(ExchangeSubAccountUpdateEvent.class,listener);
-		
+
+		CSTWEventManager.subscribe(ExchangeSubAccountOperationReplyEvent.class,
+				listener);
+		CSTWEventManager.subscribe(ExchangeSubAccountUpdateEvent.class,
+				listener);
+
 		CSTWEventManager.subscribe(InstrumentPoolUpdateEvent.class, listener);
 		CSTWEventManager.subscribe(InstrumentPoolRecordsUpdateEvent.class,
 				listener);
 		CSTWEventManager.subscribe(InstrumentPoolRecordUpdateEvent.class,
 				listener);
 		CSTWEventManager.subscribe(AccountPoolsUpdateEvent.class, listener);
+		CSTWEventManager.subscribe(UserExchangeSubAccountUpdateEvent.class,
+				listener);
 	}
 
 	public void processExchangeAccountUpdateEvent(
@@ -121,6 +129,14 @@ public final class InstrumentPoolKeeperManager {
 		sendInstrumentPoolUpdateEvent();
 	}
 
+	public void processUserExchangeSubAccountUpdateEvent(
+			UserExchangeSubAccountUpdateEvent event) {
+		InstrumentPoolHelper.updateUserExchangeSubAccounts(
+				instrumentPoolKeeper, event.getUserExchangeSubAccounts(),
+				event.getOperationType());
+		sendInstrumentPoolUpdateEvent();
+	}
+
 	public IInstrumentPoolKeeper getInstrumentPoolKeeper() {
 		return instrumentPoolKeeper;
 	}
@@ -129,11 +145,11 @@ public final class InstrumentPoolKeeperManager {
 			InstrumentPoolKeeper instrumentPoolKeeper) {
 		this.instrumentPoolKeeper = instrumentPoolKeeper;
 	}
-	
+
 	public List<User> getRiskManagerNGroupUser() {
 		return riskManagerNGroupUser;
 	}
-	
+
 	public User getRiskManagerOrGroupUser(String userId) {
 		return riskManagerNGroupUserMap.get(userId);
 	}
@@ -154,7 +170,7 @@ public final class InstrumentPoolKeeperManager {
 		CSTWEventManager.sendEvent(event);
 
 	}
-	
+
 	private void sendSubAccountStructureUpdateEvent() {
 		SubAccountStructureUpdateLocalEvent event = new SubAccountStructureUpdateLocalEvent(
 				IdGenerator.getInstance().getNextID());
