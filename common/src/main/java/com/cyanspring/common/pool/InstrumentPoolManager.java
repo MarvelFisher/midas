@@ -452,6 +452,7 @@ public class InstrumentPoolManager implements IPlugin {
 		OperationType type = event.getOperationType();
 		log.info("Received UserExchangeSubAccountOperationRequestEvent: "
 				+ userExchangeSubAccounts + ", " + type);
+
 		if (userExchangeSubAccounts != null
 				&& !userExchangeSubAccounts.isEmpty()) {
 			InstrumentPoolHelper.updateUserExchangeSubAccounts(

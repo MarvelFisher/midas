@@ -124,12 +124,25 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 		List<InstrumentPoolRecord> instrumentPoolRecords = new ArrayList<InstrumentPoolRecord>();
 		switch (type) {
 		case EXCHANGE_ACCOUNT:
-			for (ExchangeSubAccount subAccount : subAccountMap.getMap(id)
-					.values()) {
-				for (InstrumentPool instrumentPool : poolSubAccountMap.getMap(
-						subAccount.getId()).values()) {
-					instrumentPoolRecords.addAll(instrumentPoolRecordMap.get(
-							instrumentPool.getId()).values());
+			Map<String, ExchangeSubAccount> tempSubAccountMap = subAccountMap
+					.getMap(id);
+			if (tempSubAccountMap != null && !tempSubAccountMap.isEmpty()) {
+				for (ExchangeSubAccount subAccount : tempSubAccountMap.values()) {
+					Map<String, InstrumentPool> tempInstrumentPoolMap = poolSubAccountMap
+							.getMap(subAccount.getId());
+					if (tempInstrumentPoolMap != null
+							&& !tempInstrumentPoolMap.isEmpty()) {
+						for (InstrumentPool instrumentPool : tempInstrumentPoolMap
+								.values()) {
+							if (instrumentPoolRecordMap
+									.containsKey(instrumentPool.getId())) {
+								instrumentPoolRecords
+										.addAll(instrumentPoolRecordMap.get(
+												instrumentPool.getId())
+												.values());
+							}
+						}
+					}
 				}
 			}
 			break;
