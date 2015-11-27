@@ -58,8 +58,8 @@ public final class SpeedDepthTableComposite extends Composite {
 	private TableColumn tblclmnAskVol;
 	private TableColumn tblBidsVol;
 
-	private TableItem currentMouseSelectedItem;
-	private TableItem currentKeySelectedItem;
+	private TableItem currentMouseMoveItem;
+	private TableItem currentSelectedItem;
 
 	private Composite buttonBarComposite;
 
@@ -158,8 +158,8 @@ public final class SpeedDepthTableComposite extends Composite {
 					labelProvider.setKeyselectIndex(-1);
 					labelProvider.setMouseselectIndex(-1);
 					labelProvider.clearSelectedIndex();
-					currentKeySelectedItem = null;
-					currentMouseSelectedItem = null;
+					currentSelectedItem = null;
+					currentMouseMoveItem = null;
 					tableViewer.setInput(speedDepthService.getSpeedDepthList(
 							currentQuote, isLock));
 				}
@@ -217,17 +217,19 @@ public final class SpeedDepthTableComposite extends Composite {
 								Double.valueOf(model.getPrice()), orderType);
 					}
 				}
+				TableItem item = table.getItem(new Point(e.x, e.y));
+				checkSelectedItem(item);
 			}
 		});
 
 		table.addListener(SWT.MouseExit, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
-				if (currentMouseSelectedItem != null
-						&& currentMouseSelectedItem != currentKeySelectedItem) {
-					changeItemColor(currentMouseSelectedItem, SWT.COLOR_WHITE);
+				if (currentMouseMoveItem != null
+						&& currentMouseMoveItem != currentSelectedItem) {
+					changeItemColor(currentMouseMoveItem, SWT.COLOR_WHITE);
 					labelProvider.setMouseselectIndex(-1);
-					currentMouseSelectedItem = null;
+					currentMouseMoveItem = null;
 					return;
 				}
 			}
@@ -239,18 +241,18 @@ public final class SpeedDepthTableComposite extends Composite {
 				TableItem item = table.getItem(new Point(e.x, e.y));
 				if (item != null) {
 					changeItemColor(item, SWT.COLOR_BLACK);
-					if (currentMouseSelectedItem != null
-							&& !currentMouseSelectedItem.isDisposed()
-							&& currentMouseSelectedItem != item) {
-						changeItemColor(currentMouseSelectedItem,
-								SWT.COLOR_WHITE);
+					if (currentMouseMoveItem != null
+							&& !currentMouseMoveItem.isDisposed()
+							&& currentMouseMoveItem != item
+							&& currentMouseMoveItem != currentSelectedItem) {
+						changeItemColor(currentMouseMoveItem, SWT.COLOR_WHITE);
 					}
 					SpeedDepthModel model = (SpeedDepthModel) item.getData();
 					labelProvider.setMouseselectIndex(model.getIndex());
 				} else {
 					labelProvider.setMouseselectIndex(-1);
 				}
-				currentMouseSelectedItem = item;
+				currentMouseMoveItem = item;
 				if (isLock) {
 					labelProvider.clearSelectedIndex();
 					for (TableItem selectedItem : table.getSelection()) {
@@ -268,28 +270,30 @@ public final class SpeedDepthTableComposite extends Composite {
 			public void keyReleased(KeyEvent e) {
 				if (e.keyCode == SWT.ARROW_DOWN || e.keyCode == SWT.ARROW_UP) {
 					TableItem item = table.getItem(table.getSelectionIndex());
-					if (item == null) {
-						return;
-					}
-					if (item != currentMouseSelectedItem) {
-						changeItemColor(item, SWT.COLOR_BLACK);
-					}
-					if (currentKeySelectedItem != null
-							&& !currentKeySelectedItem.isDisposed()
-							&& currentKeySelectedItem != item
-							&& currentKeySelectedItem != currentMouseSelectedItem) {
-						changeItemColor(currentKeySelectedItem, SWT.COLOR_WHITE);
-					}
-					currentKeySelectedItem = item;
-					SpeedDepthModel model = (SpeedDepthModel) item.getData();
-					labelProvider.setKeyselectIndex(model.getIndex());
+					checkSelectedItem(item);
 				}
 			}
 		});
 	}
 
-	private void changeItemColor(TableItem item, int color) {
+	private void checkSelectedItem(TableItem item) {
+		if (item == null) {
+			return;
+		}
+		if (item != currentMouseMoveItem) {
+			changeItemColor(item, SWT.COLOR_BLACK);
+		}
+		if (currentSelectedItem != null && !currentSelectedItem.isDisposed()
+				&& currentSelectedItem != item
+				&& currentSelectedItem != currentMouseMoveItem) {
+			changeItemColor(currentSelectedItem, SWT.COLOR_WHITE);
+		}
+		currentSelectedItem = item;
+		SpeedDepthModel model = (SpeedDepthModel) item.getData();
+		labelProvider.setKeyselectIndex(model.getIndex());
+	}
 
+	private void changeItemColor(TableItem item, int color) {
 		item.setForeground(1, SWTResourceManager.getColor(color));
 		item.setForeground(3, SWTResourceManager.getColor(color));
 	}
@@ -315,7 +319,7 @@ public final class SpeedDepthTableComposite extends Composite {
 		tableViewer.setInput(list);
 
 		// 每次刷新后key选择失效
-		currentKeySelectedItem = null;
+		currentSelectedItem = null;
 
 	}
 
