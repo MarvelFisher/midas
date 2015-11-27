@@ -36,6 +36,7 @@ import com.cyanspring.common.event.IRemoteEventManager;
 import com.cyanspring.common.event.account.InternalResetAccountRequestEvent;
 import com.cyanspring.common.event.account.PmEndOfDayRollEvent;
 import com.cyanspring.common.event.account.ResetAccountRequestEvent;
+import com.cyanspring.common.event.marketsession.EndOfDayEvent;
 import com.cyanspring.common.event.order.AllExecutionSnapshotReplyEvent;
 import com.cyanspring.common.event.order.AllExecutionSnapshotRequestEvent;
 import com.cyanspring.common.event.order.AllStrategySnapshotReplyEvent;
@@ -103,7 +104,7 @@ public class OrderManager {
 			subscribeToEvent(SingleInstrumentStrategyUpdateEvent.class, null);
 			subscribeToEvent(MultiInstrumentStrategyUpdateEvent.class, null);
 			subscribeToEvent(InternalResetAccountRequestEvent.class, null);
-			subscribeToEvent(PmEndOfDayRollEvent.class, null);
+			subscribeToEvent(EndOfDayEvent.class, null);
 			subscribeToEvent(AllStrategySnapshotRequestEvent.class,null);
 			subscribeToEvent(AllExecutionSnapshotRequestEvent.class,null);
 
@@ -583,7 +584,7 @@ public class OrderManager {
 
 	}
 
-	public void processPmEndOfDayRollEvent(PmEndOfDayRollEvent event) {
+	public void processEndOfDayEvent(EndOfDayEvent event) {
         if (parentOrderSaver != null) {
         	Collection<ParentOrder> cParentOrders = parentOrders.values();
         	List<ParentOrder> lstParentOrder = new ArrayList<>();

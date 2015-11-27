@@ -61,6 +61,7 @@
 				<include>/conf/**</include>
 				<include>/refdata/**</include>
 				<include>/database/**</include>
+				<include>/dblog/**</include>
 			</includes>
 		</fileSet>    
 	</fileSets>

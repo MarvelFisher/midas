@@ -69,10 +69,10 @@ public abstract class AbstractRefDataStrategy implements IRefDataStrategy {
 
 	@Override
 	public void init(Calendar cal, Map<String, Quote> qMap) throws Exception {
-		if (cal == null || qMap == null) {
-			throw new Exception("Both cal and map cannot be null");
+		if (cal == null) {
+			throw new Exception("cal cannot be null");
 		}
-
+		
 		this.cal = cal;
 		this.qMap = qMap;
 	}
