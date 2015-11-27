@@ -32,6 +32,7 @@
 				<ref bean="statisticManager" />
 				<ref bean="systemSuspendValidator" />
 				<ref bean="liveTradingSession" />
+				<ref bean="refDataHandler" />				
 			</list>
 		</property>
 		<property name="readyMap">
@@ -298,6 +299,11 @@
 
 	<bean id="commissionManager" class="com.cyanspring.server.account.FTCommissionManager">
 		<property name="trxTaxRate" value="0.00002" />
+	</bean>
+
+	<bean id="refDataHandler" class="com.cyanspring.common.refdata.FileRefDataHandler">
+		<property name="eventManager" ref="eventManager" />
+		<property name="saveRefDataList" value="true"></property>
 	</bean>
 
 	<bean id="refDataAdaptor" class="com.cyanspring.server.sim.SimTWFRefDataAdapter">
