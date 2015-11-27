@@ -7,8 +7,6 @@ import java.util.Map;
 import org.springframework.util.StringUtils;
 
 import com.cyanspring.common.BeanHolder;
-import com.cyanspring.common.account.UserGroup;
-import com.cyanspring.common.account.UserRole;
 import com.cyanspring.common.cstw.auth.IAuthChecker;
 import com.cyanspring.common.cstw.kdb.SignalManager;
 import com.cyanspring.common.cstw.kdb.SignalType;
@@ -16,6 +14,7 @@ import com.cyanspring.common.cstw.tick.TickManager;
 import com.cyanspring.common.cstw.tick.Ticker;
 import com.cyanspring.common.fx.IFxConverter;
 import com.cyanspring.common.staticdata.RefData;
+import com.cyanspring.cstw.session.CSTWSession;
 
 /**
  * 
@@ -25,8 +24,6 @@ import com.cyanspring.common.staticdata.RefData;
  *
  */
 public final class CSTWBeanPool implements IBusinessService {
-
-	private UserGroup userGroup = new UserGroup("Admin", UserRole.Admin);
 
 	private IAuthChecker authManager;
 	private TickManager tickManager;
@@ -41,14 +38,6 @@ public final class CSTWBeanPool implements IBusinessService {
 		tickManager = beanHolder.getTickManager();
 		signalManager = beanHolder.getSignalManager();
 		tickManager = new TickManager(beanHolder.getEventManager());
-	}
-
-	public UserGroup getUserGroup() {
-		return userGroup;
-	}
-
-	public void setUserGroup(UserGroup userGroup) {
-		this.userGroup = userGroup;
 	}
 
 	public IAuthChecker getAuthManager() {
@@ -95,11 +84,13 @@ public final class CSTWBeanPool implements IBusinessService {
 	}
 
 	public boolean hasAuth(String view, String action) {
-		return this.authManager.hasAuth(userGroup.getRole(), view, action);
+		return this.authManager.hasAuth(CSTWSession.getInstance()
+				.getUserGroup().getRole(), view, action);
 	}
 
 	public boolean hasViewAuth(String view) {
-		return this.authManager.hasViewAuth(userGroup.getRole(), view);
+		return this.authManager.hasViewAuth(CSTWSession.getInstance()
+				.getUserGroup().getRole(), view);
 	}
 
 	public IFxConverter getRateConverter() {

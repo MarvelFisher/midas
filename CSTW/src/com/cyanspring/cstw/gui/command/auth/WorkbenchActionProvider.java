@@ -21,57 +21,59 @@ import com.cyanspring.cstw.common.GUIUtils;
 import com.cyanspring.cstw.common.ImageID;
 import com.cyanspring.cstw.gui.Activator;
 import com.cyanspring.cstw.gui.common.StyledAction;
+import com.cyanspring.cstw.session.CSTWSession;
 import com.cyanspring.cstw.ui.views.ConfirmPasswordDialog;
 
 public class WorkbenchActionProvider {
-	
-	private static final Logger log = LoggerFactory.getLogger(WorkbenchActionProvider.class);
+
+	private static final Logger log = LoggerFactory
+			.getLogger(WorkbenchActionProvider.class);
 	private static WorkbenchActionProvider wp;
-	private Map <String,ToolBarManager> tbMap = new HashMap <String,ToolBarManager>();
-	
+	private Map<String, ToolBarManager> tbMap = new HashMap<String, ToolBarManager>();
+
 	public final static String ID_TOOLBARMANAGER_COOLBAR = "TOOLBARMANAGER_COOLBAR";
 	private final String ID_SUSPEND_SYSTEM_ACTION = "SUSPEND_SYSTEM_ACTION";
 	private final String ID_SERVER_SHUTDOWN_ACTION = "SERVER_SHUTDOWN_ACTION";
 	private final String ID_USER_INFO_ACTION = "USER_INFO_ACTION";
-	
+
 	private Action suspendSystemAction;
 	private Action serverShutdownAction;
 	private Action userInfoAction;
-	public static ActionContributionItem  userInfoItem;
-	
+	public static ActionContributionItem userInfoItem;
+
 	private ImageRegistry imageRegistry;
-	
-	
+
 	private WorkbenchActionProvider() {
 		imageRegistry = Activator.getDefault().getImageRegistry();
 	}
-	
-	public static WorkbenchActionProvider getInstance(){
-		if(null == wp)
+
+	public static WorkbenchActionProvider getInstance() {
+		if (null == wp)
 			wp = new WorkbenchActionProvider();
-		
+
 		return wp;
 	}
-	
-	public ToolBarManager produceToolBarManager(String id){
-		if(!StringUtils.hasText(id)){
+
+	public ToolBarManager produceToolBarManager(String id) {
+		if (!StringUtils.hasText(id)) {
 			log.info("id is empty");
 			return null;
 		}
-		
+
 		ToolBarManager tempTB = new ToolBarManager();
 		tbMap.put(id, tempTB);
 		return tempTB;
 	}
-	
-	public ToolBarManager getWorkbenchCoolBarActions(){
-		
+
+	public ToolBarManager getWorkbenchCoolBarActions() {
+
 		createSuspendSystemAction();
 		createUserInfoAction();
-		createServerShutdownAction();	
-		
-		ToolBarManager toolBarManager = WorkbenchActionProvider.getInstance().produceToolBarManager(ID_TOOLBARMANAGER_COOLBAR);
-		if(null == toolBarManager){
+		createServerShutdownAction();
+
+		ToolBarManager toolBarManager = WorkbenchActionProvider.getInstance()
+				.produceToolBarManager(ID_TOOLBARMANAGER_COOLBAR);
+		if (null == toolBarManager) {
 			return null;
 		}
 		toolBarManager.add(userInfoItem);
@@ -80,42 +82,51 @@ public class WorkbenchActionProvider {
 		toolBarManager.add(serverShutdownAction);
 		return toolBarManager;
 	}
-	
-	
-	public ToolBarManager getToolBarManager(String id){
-		if(tbMap.containsKey(id)){
+
+	public ToolBarManager getToolBarManager(String id) {
+		if (tbMap.containsKey(id)) {
 			return tbMap.get(id);
-		}else{
+		} else {
 			return null;
 		}
 	}
-	
-	
+
 	public void createUserInfoAction() {
-		userInfoAction = new StyledAction("",org.eclipse.jface.action.IAction.AS_UNSPECIFIED) {
+		userInfoAction = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_UNSPECIFIED) {
 		};
 		userInfoAction.setId(ID_USER_INFO_ACTION);
-		userInfoAction.setText(Business.getInstance().getUser()+" - "+Business.getInstance().getUserGroup().getRole().toString());
+		userInfoAction
+				.setText(CSTWSession.getInstance().getUserId()
+						+ " - "
+						+ CSTWSession.getInstance().getUserGroup().getRole()
+								.toString());
 		userInfoAction.setDescription("");
 		userInfoAction.setToolTipText("");
-		userInfoAction.setImageDescriptor(imageRegistry.getDescriptor(ImageID.USER_ICON.toString()));
+		userInfoAction.setImageDescriptor(imageRegistry
+				.getDescriptor(ImageID.USER_ICON.toString()));
 		userInfoItem = new ActionContributionItem(userInfoAction);
 		userInfoItem.setMode(ActionContributionItem.MODE_FORCE_TEXT);
 		userInfoAction.setEnabled(false);
 	}
 
 	public void createSuspendSystemAction() {
-		suspendSystemAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
+		suspendSystemAction = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_CHECK_BOX) {
 			public void run() {
-				
-				if(!Business.getInstance().getUserGroup().isAdmin()){
-					GUIUtils.showMessageBox("Only Admin can do this action", PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+
+				if (!CSTWSession.getInstance().getUserGroup().isAdmin()) {
+					GUIUtils.showMessageBox("Only Admin can do this action",
+							PlatformUI.getWorkbench()
+									.getActiveWorkbenchWindow().getShell());
 					return;
-				}						
+				}
 				boolean suspend;
 				if (this.isChecked()) {
 					suspend = true;
-					boolean isOk = MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "", "suspend server?");
+					boolean isOk = MessageDialog.openConfirm(PlatformUI
+							.getWorkbench().getActiveWorkbenchWindow()
+							.getShell(), "", "suspend server?");
 					if (!isOk) {
 						suspendSystemAction.setChecked(false);
 						return;
@@ -125,35 +136,45 @@ public class WorkbenchActionProvider {
 				}
 
 				try {
-					Business.getInstance().getEventManager().sendRemoteEvent(
-							new SuspendServerEvent(null,
-									Business.getInstance().getFirstServer(), suspend));
+					Business.getInstance()
+							.getEventManager()
+							.sendRemoteEvent(
+									new SuspendServerEvent(null, Business
+											.getInstance().getFirstServer(),
+											suspend));
 				} catch (Exception e) {
 					log.error(e.getMessage(), e);
 				}
 			}
 		};
 		suspendSystemAction.setId(ID_SUSPEND_SYSTEM_ACTION);
-		suspendSystemAction.setImageDescriptor(imageRegistry.getDescriptor(ImageID.ALERT_ICON.toString()));
+		suspendSystemAction.setImageDescriptor(imageRegistry
+				.getDescriptor(ImageID.ALERT_ICON.toString()));
 	}
 
 	public void createServerShutdownAction() {
-		serverShutdownAction = new StyledAction("", org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
+		serverShutdownAction = new StyledAction("",
+				org.eclipse.jface.action.IAction.AS_PUSH_BUTTON) {
 			public void run() {
-				if(!Business.getInstance().getUserGroup().isAdmin()){
-					GUIUtils.showMessageBox("Only Admin can do this action", PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+				if (!CSTWSession.getInstance().getUserGroup().isAdmin()) {
+					GUIUtils.showMessageBox("Only Admin can do this action",
+							PlatformUI.getWorkbench()
+									.getActiveWorkbenchWindow().getShell());
 					return;
-				}	
-				
-				boolean isOk = MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "", "Shutdown server?");
+				}
+
+				boolean isOk = MessageDialog.openConfirm(PlatformUI
+						.getWorkbench().getActiveWorkbenchWindow().getShell(),
+						"", "Shutdown server?");
 				if (!isOk) {
 					return;
 				}
 
 				try {
-					IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-					ConfirmPasswordDialog confirmPasswordDialog =
-							new ConfirmPasswordDialog(window.getShell());
+					IWorkbenchWindow window = PlatformUI.getWorkbench()
+							.getActiveWorkbenchWindow();
+					ConfirmPasswordDialog confirmPasswordDialog = new ConfirmPasswordDialog(
+							window.getShell());
 					confirmPasswordDialog.open();
 				} catch (Exception e) {
 					log.error(e.getMessage(), e);
@@ -161,6 +182,7 @@ public class WorkbenchActionProvider {
 			}
 		};
 		serverShutdownAction.setId(ID_SERVER_SHUTDOWN_ACTION);
-		serverShutdownAction.setImageDescriptor(imageRegistry.getDescriptor(ImageID.POWER_ICON.toString()));
+		serverShutdownAction.setImageDescriptor(imageRegistry
+				.getDescriptor(ImageID.POWER_ICON.toString()));
 	}
 }

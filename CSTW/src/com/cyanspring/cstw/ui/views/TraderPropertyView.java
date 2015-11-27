@@ -69,7 +69,7 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener 
 	private Composite parentComposite = null;
 	private AccountSetting accountSetting = CSTWSession.getInstance()
 			.getAccountSetting();
-	private String accountId = Business.getInstance().getAccount();
+	private String accountId = CSTWSession.getInstance().getAccountId();
 	private AsyncTimerEvent refreshEvent = new AsyncTimerEvent();
 	private long minRefreshInterval = 3000;
 	private Button btnEdit;
@@ -240,7 +240,7 @@ public class TraderPropertyView extends ViewPart implements IAsyncEventListener 
 			}
 		});
 
-		accountId = Business.getInstance().getAccount();
+		accountId = CSTWSession.getInstance().getAccountId();
 		log.info("request setting:{}", accountId);
 		subEvent(AccountSettingSnapshotReplyEvent.class);
 		subEvent(ChangeAccountSettingReplyEvent.class);

@@ -64,6 +64,7 @@ import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
 import com.cyanspring.cstw.localevent.AccountSelectionLocalEvent;
 import com.cyanspring.cstw.localevent.OrderCacheReadyLocalEvent;
+import com.cyanspring.cstw.session.CSTWSession;
 import com.cyanspring.cstw.ui.views.SetPriceDialog.Mode;
 
 public class PositionView extends ViewPart implements IAsyncEventListener {
@@ -89,7 +90,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	private List<Execution> executions;
 
 	private DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
-	private String currentAccount = Business.getInstance().getAccount();
+	private String currentAccount = CSTWSession.getInstance().getAccountId();
 	private ImageRegistry imageRegistry;
 
 	// pop up menu action
@@ -176,7 +177,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		createOpenPositionViewer(openComposite);
 		tbtmOpenPositions.setControl(openComposite);
 
-		if (Business.getInstance().getUserGroup().isAdmin()) {
+		if (CSTWSession.getInstance().getUserGroup().isAdmin()) {
 
 			tbtmClosedPositions = new CTabItem(tabFolder, SWT.NONE);
 			tbtmClosedPositions.setText("Closed Positions");
@@ -213,7 +214,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 		Business.getInstance().getEventManager()
 				.subscribe(AccountSnapshotReplyEvent.class, ID, this);
 		if (Business.getInstance().getOrderManager().isReady()) {
-			sendSubscriptionRequest(Business.getInstance().getAccount());
+			sendSubscriptionRequest(CSTWSession.getInstance().getAccountId());
 		} else {
 			Business.getInstance().getEventManager()
 					.subscribe(OrderCacheReadyLocalEvent.class, this);
@@ -667,8 +668,9 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private void sendTraderRequestEvent() {
-		if (UserRole.Trader == Business.getInstance().getUserGroup().getRole()) {
-			Account account = Business.getInstance().getLoginAccount();
+		if (UserRole.Trader == CSTWSession.getInstance().getUserGroup()
+				.getRole()) {
+			Account account = CSTWSession.getInstance().getLoginAccount();
 			if (null != account) {
 				sendSubscriptionRequest(account.getId());
 			}
@@ -769,7 +771,7 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 	@Override
 	public void onEvent(AsyncEvent event) {
 		if (event instanceof OrderCacheReadyLocalEvent) {
-			sendSubscriptionRequest(Business.getInstance().getAccount());
+			sendSubscriptionRequest(CSTWSession.getInstance().getAccountId());
 		} else if (event instanceof AccountSnapshotReplyEvent) {
 			AccountSnapshotReplyEvent evt = (AccountSnapshotReplyEvent) event;
 			log.debug("AccountSnapshotReplyEvent received: " + evt.getAccount());
@@ -796,22 +798,22 @@ public class PositionView extends ViewPart implements IAsyncEventListener {
 			showAccount();
 		} else if (event instanceof OpenPositionUpdateEvent) {
 			OpenPositionUpdateEvent evt = (OpenPositionUpdateEvent) event;
-			if(!evt.getPosition().getAccount().equals(this.currentAccount))
+			if (!evt.getPosition().getAccount().equals(this.currentAccount))
 				return;
-			
+
 			processOpenPosition(evt.getPosition());
 		} else if (event instanceof OpenPositionDynamicUpdateEvent) {
 			OpenPositionDynamicUpdateEvent evt = (OpenPositionDynamicUpdateEvent) event;
-			if(!evt.getPosition().getAccount().equals(this.currentAccount))
+			if (!evt.getPosition().getAccount().equals(this.currentAccount))
 				return;
-			
+
 			processOpenPosition(evt.getPosition());
 		} else if (event instanceof ClosedPositionUpdateEvent) {
 			ClosedPositionUpdateEvent evt = (ClosedPositionUpdateEvent) event;
 			if (null == closedPositions)
 				return;
-			
-			if(!evt.getPosition().getAccount().equals(this.currentAccount))
+
+			if (!evt.getPosition().getAccount().equals(this.currentAccount))
 				return;
 
 			synchronized (closedPositions) {

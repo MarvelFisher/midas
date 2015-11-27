@@ -34,9 +34,10 @@ public final class ParentOrderServiceImpl implements IParentOrderService {
 	@Override
 	public void quickEnterOrder(ParentOrderModel model, CustomOrderType type) {
 		HashMap<String, Object> fields = new HashMap<String, Object>();
-		fields.put(OrderField.USER.value(), Business.getInstance().getUser());
-		fields.put(OrderField.ACCOUNT.value(), Business.getInstance()
-				.getAccount());
+		fields.put(OrderField.USER.value(), CSTWSession.getInstance()
+				.getUserId());
+		fields.put(OrderField.ACCOUNT.value(), CSTWSession.getInstance()
+				.getAccountId());
 		fields.put(OrderField.SYMBOL.value(), model.getSymbol());
 		fields.put(OrderField.SIDE.value(), model.getSide());
 		fields.put(OrderField.QUANTITY.value(), model.getQuantity());

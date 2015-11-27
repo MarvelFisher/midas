@@ -11,6 +11,7 @@ import com.cyanspring.common.event.order.ParentOrderUpdateEvent;
 import com.cyanspring.cstw.cachingmanager.BasicCachingManager;
 import com.cyanspring.cstw.localevent.OrderCacheReadyLocalEvent;
 import com.cyanspring.cstw.service.localevent.riskmgr.caching.FrontRCParentOrderUpdateCachingLocalEvent;
+import com.cyanspring.cstw.session.CSTWSession;
 
 /**
  * 
@@ -64,7 +65,7 @@ public final class FrontRCOrderCachingManager extends BasicCachingManager {
 					.getOrder();
 			log.info("ParentOrderCachingManager : Update parent order recieved: "
 					+ parentOrder);
-			if (business.getUserGroup().isManageeExist(parentOrder.getUser())){
+			if (CSTWSession.getInstance().getUserGroup().isManageeExist(parentOrder.getUser())){
 				orderMap.put(parentOrder.getId(), parentOrder);
 				sendParentOrderUpdateEvent();
 			}			

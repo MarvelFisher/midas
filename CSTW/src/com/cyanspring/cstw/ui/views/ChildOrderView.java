@@ -287,8 +287,8 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 						.sendEvent(
 								new StrategyLogEvent(objectId, null,
 										LogType.Error, "Error: "
-												+ e.getMessage(), Business
-												.getInstance().getAccount()));
+												+ e.getMessage(), CSTWSession
+												.getInstance().getAccountId()));
 			} catch (Exception ex) {
 				log.error(e.getMessage(), ex);
 				ex.printStackTrace();
@@ -348,8 +348,8 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 						.sendEvent(
 								new StrategyLogEvent(objectId, null,
 										LogType.Error, "Error: "
-												+ e.getMessage(), Business
-												.getInstance().getAccount()));
+												+ e.getMessage(), CSTWSession
+												.getInstance().getAccountId()));
 			} catch (Exception ex) {
 				log.error(e.getMessage(), ex);
 				ex.printStackTrace();
@@ -692,7 +692,7 @@ public class ChildOrderView extends ViewPart implements IAsyncEventListener {
 						.sendEvent(
 								new StrategyLogEvent(objectId, null,
 										LogType.Warn, event.getMessage(),
-										Business.getInstance().getAccount()));
+										CSTWSession.getInstance().getAccountId()));
 			}
 
 		}

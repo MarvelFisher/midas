@@ -212,12 +212,12 @@ public class OrderDialog extends Dialog implements IAsyncEventListener {
 					if (fieldDef.isInput()
 							&& !isConstantField(fieldDef.getName())) {
 						if (fieldDef.getName().equals(OrderField.USER.value()))
-							data.put(fieldDef.getName(), Business.getInstance()
-									.getUser());
+							data.put(fieldDef.getName(), CSTWSession.getInstance()
+									.getUserId());
 						else if (fieldDef.getName().equals(
 								OrderField.ACCOUNT.value()))
-							data.put(fieldDef.getName(), Business.getInstance()
-									.getAccount());
+							data.put(fieldDef.getName(), CSTWSession.getInstance()
+									.getAccountId());
 						else
 							data.put(fieldDef.getName(), fieldDef.getValue());
 						fields.add(fieldDef.getName());
@@ -441,9 +441,9 @@ public class OrderDialog extends Dialog implements IAsyncEventListener {
 		fields.put(OrderField.STRATEGY.value(), cbStrategy.getText());
 		fields.put(OrderField.START_TIME.value(), txtStartTime.getText());
 		fields.put(OrderField.END_TIME.value(), txtEndTime.getText());
-		fields.put(OrderField.USER.value(), Business.getInstance().getUser());
-		fields.put(OrderField.ACCOUNT.value(), Business.getInstance()
-				.getAccount());
+		fields.put(OrderField.USER.value(), CSTWSession.getInstance().getUserId());
+		fields.put(OrderField.ACCOUNT.value(), CSTWSession.getInstance()
+				.getAccountId());
 
 		if (cbStrategy.getText().equals("STOP"))
 			fields.put(OrderField.REASON.value(), OrderReason.StopOrder);

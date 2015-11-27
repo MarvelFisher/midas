@@ -35,6 +35,7 @@ import com.cyanspring.cstw.gui.command.auth.AuthProvider;
 import com.cyanspring.cstw.gui.command.auth.ViewAuthListener;
 import com.cyanspring.cstw.gui.command.auth.WorkbenchActionProvider;
 import com.cyanspring.cstw.localevent.SelectUserAccountLocalEvent;
+import com.cyanspring.cstw.session.CSTWSession;
 import com.cyanspring.cstw.ui.views.LoginDialog;
 
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
@@ -59,7 +60,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 		loginDialog.open();
 		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
 		configurer.setInitialSize(new Point(1024, 768));
-		if (Business.getInstance().getUserGroup().getRole()
+		if (CSTWSession.getInstance().getUserGroup().getRole()
 				.equals(UserRole.Admin))
 			configurer.setShowCoolBar(true);
 		else
@@ -81,23 +82,23 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 			// add listener
 			ViewAuthListener authListener = new ViewAuthListener();
 			page.addPartListener(authListener);
-			setUserAccount(Business.getInstance().getUser(), Business
-					.getInstance().getAccount());
+			setUserAccount(CSTWSession.getInstance().getUserId(), CSTWSession
+					.getInstance().getAccountId());
 
 			// check login role
-			log.info("fire account login menu change :{}", Business
+			log.info("fire account login menu change :{}", CSTWSession
 					.getInstance().getUserGroup().getRole().name());
 			ISourceProviderService sourceProviderService = (ISourceProviderService) window
 					.getService(ISourceProviderService.class);
 			AuthProvider commandStateService = (AuthProvider) sourceProviderService
-					.getSourceProvider(Business.getInstance().getUserGroup()
+					.getSourceProvider(CSTWSession.getInstance().getUserGroup()
 							.getRole().name());
 			commandStateService.fireAccountChanged();
 
 			log.info("Business.getInstance().getUserGroup().getRole().equals(UserRole.Admin):"
-					+ Business.getInstance().getUserGroup().getRole()
+					+ CSTWSession.getInstance().getUserGroup().getRole()
 							.equals(UserRole.Admin));
-			if (Business.getInstance().getUserGroup().getRole()
+			if (CSTWSession.getInstance().getUserGroup().getRole()
 					.equals(UserRole.Admin))
 				getWindowConfigurer().setShowCoolBar(true);
 
@@ -138,9 +139,9 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 					ActionContributionItem actionItem = (ActionContributionItem) coolItem;
 					if (actionItem.getId().equals("USER_INFO_ACTION")) {
 						actionItem.getAction().setText(
-								Business.getInstance().getUser()
+								CSTWSession.getInstance().getUserId()
 										+ " - "
-										+ Business.getInstance().getUserGroup()
+										+ CSTWSession.getInstance().getUserGroup()
 												.getRole().toString());
 					}
 					authListener.filterViewAction("Application View",

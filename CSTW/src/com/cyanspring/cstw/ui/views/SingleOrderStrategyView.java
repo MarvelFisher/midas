@@ -154,7 +154,7 @@ public class SingleOrderStrategyView extends ViewPart implements
 	private boolean orderFilter = false;
 
 	private Composite parent;
-	private String accountId = Business.getInstance().getAccount();
+	private String accountId = CSTWSession.getInstance().getAccountId();
 
 	// QuickOrderPad
 	private String currentOrderPadId;
@@ -818,9 +818,10 @@ public class SingleOrderStrategyView extends ViewPart implements
 		fields.put(OrderField.QUANTITY.value(), txtQuantity.getText());
 		fields.put(OrderField.PRICE.value(), txtPrice.getText());
 		fields.put(OrderField.STRATEGY.value(), "SDMA");
-		fields.put(OrderField.USER.value(), Business.getInstance().getUser());
-		fields.put(OrderField.ACCOUNT.value(), Business.getInstance()
-				.getAccount());
+		fields.put(OrderField.USER.value(), CSTWSession.getInstance()
+				.getUserId());
+		fields.put(OrderField.ACCOUNT.value(), CSTWSession.getInstance()
+				.getAccountId());
 
 		changeStrategyByType(fields);
 		logOrder(fields, LogType.Enter);
@@ -1335,8 +1336,8 @@ public class SingleOrderStrategyView extends ViewPart implements
 				if (!pinned) {
 					viewer.removeFilter(accountFilter);
 				} else {
-					accountFilter.setMatch("Account", Business.getInstance()
-							.getAccount());
+					accountFilter.setMatch("Account", CSTWSession.getInstance()
+							.getAccountId());
 					viewer.addFilter(accountFilter);
 				}
 				smartShowOrders();
@@ -1347,7 +1348,8 @@ public class SingleOrderStrategyView extends ViewPart implements
 		pinAction.setChecked(true);
 		pinned = true;
 		accountFilter = new ParentOrderFilter();
-		accountFilter.setMatch("Account", Business.getInstance().getAccount());
+		accountFilter.setMatch("Account", CSTWSession.getInstance()
+				.getAccountId());
 		viewer.addFilter(accountFilter);
 
 		pinAction.setText("Pin Account");

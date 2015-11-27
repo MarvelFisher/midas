@@ -1,6 +1,13 @@
 package com.cyanspring.cstw.session;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.cyanspring.common.Default;
+import com.cyanspring.common.account.Account;
 import com.cyanspring.common.account.AccountSetting;
+import com.cyanspring.common.account.UserGroup;
+import com.cyanspring.common.account.UserRole;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
@@ -17,6 +24,14 @@ public class CSTWSession {
 	private String channel;
 	private String nodeInfoChannel;
 
+	private String userId;
+	private String accountId;
+	private Account loginAccount;
+
+	private UserGroup userGroup;
+	private List<String> accountGroupList;
+	private List<Account> accountList;
+
 	private String configPath;
 
 	private XStream xstream = new XStream(new DomDriver());
@@ -30,6 +45,14 @@ public class CSTWSession {
 			instance = new CSTWSession();
 		}
 		return instance;
+	}
+
+	private CSTWSession() {
+		userId = Default.getUser();
+		accountId = Default.getAccount();
+		accountGroupList = new ArrayList<String>();
+		accountList = new ArrayList<Account>();
+		userGroup = new UserGroup("Admin", UserRole.Admin);
 	}
 
 	public String getConfigPath() {
@@ -74,6 +97,62 @@ public class CSTWSession {
 
 	public void setNodeInfoChannel(String nodeInfoChannel) {
 		this.nodeInfoChannel = nodeInfoChannel;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getAccountId() {
+		return accountId;
+	}
+
+	public void setAccountId(String accountId) {
+		this.accountId = accountId;
+	}
+
+	public Account getLoginAccount() {
+		return loginAccount;
+	}
+
+	public void setLoginAccount(Account loginAccount) {
+		this.loginAccount = loginAccount;
+	}
+
+	public UserGroup getUserGroup() {
+		return userGroup;
+	}
+
+	public void setUserGroup(UserGroup userGroup) {
+		this.userGroup = userGroup;
+	}
+
+	public List<String> getAccountGroupList() {
+		return accountGroupList;
+	}
+
+	public void setAccountGroupList(List<String> accountGroupList) {
+		this.accountGroupList = accountGroupList;
+	}
+
+	public List<Account> getAccountList() {
+		return accountList;
+	}
+
+	public void setAccountList(List<Account> accountList) {
+		this.accountList = accountList;
+	}
+
+	public void setXstream(XStream xstream) {
+		this.xstream = xstream;
+	}
+
+	public static void setInstance(CSTWSession instance) {
+		CSTWSession.instance = instance;
 	}
 
 }

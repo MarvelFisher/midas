@@ -43,6 +43,7 @@ import com.cyanspring.cstw.localevent.GuiMultiInstrumentStrategyUpdateLocalEvent
 import com.cyanspring.cstw.localevent.GuiSingleInstrumentStrategyUpdateLocalEvent;
 import com.cyanspring.cstw.localevent.GuiSingleOrderStrategyUpdateLocalEvent;
 import com.cyanspring.cstw.localevent.OrderCacheReadyLocalEvent;
+import com.cyanspring.cstw.session.CSTWSession;
 
 public class OrderCachingManager implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -201,7 +202,7 @@ public class OrderCachingManager implements IAsyncEventListener {
 		if (null == event.getAccount()) {
 			log.error("Event has no account! " + event.getMessage());
 		} else if (!event.getAccount().equals(
-				Business.getInstance().getAccount()))
+				CSTWSession.getInstance().getAccountId()))
 			return;
 
 		LinkedList<StrategyLogEvent> list = logs.get(event.getKey());
@@ -261,27 +262,27 @@ public class OrderCachingManager implements IAsyncEventListener {
 		CSTWEventManager.subscribe(AccountSelectionLocalEvent.class, this);
 		CSTWEventManager.subscribe(StrategySnapshotEvent.class, this);
 		CSTWEventManager.subscribe(StrategyLogEvent.class, this);
-		subscribeAccountOrder(Business.getInstance().getAccount());
+		subscribeAccountOrder(CSTWSession.getInstance().getAccountId());
 		CSTWEventManager.subscribe(SingleInstrumentStrategyUpdateEvent.class,
-				Business.getInstance().getAccount(), this);
+				CSTWSession.getInstance().getAccountId(), this);
 		CSTWEventManager.subscribe(MultiInstrumentStrategyUpdateEvent.class,
-				Business.getInstance().getAccount(), this);
+				CSTWSession.getInstance().getAccountId(), this);
 		CSTWEventManager.subscribe(AllStrategySnapshotReplyEvent.class, this);
 
 		try {
-			if (Business.getInstance().getUserGroup().isAdmin()) {
+			if (CSTWSession.getInstance().getUserGroup().isAdmin()) {
 				CSTWEventManager.sendEvent(new AllStrategySnapshotRequestEvent(
 						IdGenerator.getInstance().getNextID(), Business
 								.getInstance().getFirstServer(), null));
-			} else if (Business.getInstance().getUserGroup().getRole()
+			} else if (CSTWSession.getInstance().getUserGroup().getRole()
 					.isManagerLevel()) {
 				CSTWEventManager.sendEvent(new AllStrategySnapshotRequestEvent(
 						IdGenerator.getInstance().getNextID(), Business
-								.getInstance().getFirstServer(), Business
-								.getInstance().getAccountGroup()));
+								.getInstance().getFirstServer(), CSTWSession
+								.getInstance().getAccountGroupList()));
 			} else {
 				CSTWEventManager.sendEvent(new StrategySnapshotRequestEvent(
-						Business.getInstance().getAccount(), Business
+						CSTWSession.getInstance().getAccountId(), Business
 								.getInstance().getFirstServer(), null));
 			}
 		} catch (Exception e) {
@@ -300,14 +301,14 @@ public class OrderCachingManager implements IAsyncEventListener {
 	public void uninit() {
 		CSTWEventManager.unsubscribe(StrategySnapshotEvent.class, this);
 		CSTWEventManager.unsubscribe(StrategyLogEvent.class, this);
-		CSTWEventManager.unsubscribe(ParentOrderUpdateEvent.class, Business
-				.getInstance().getAccount(), this);
+		CSTWEventManager.unsubscribe(ParentOrderUpdateEvent.class, CSTWSession
+				.getInstance().getAccountId(), this);
 		CSTWEventManager.unsubscribe(SingleInstrumentStrategyUpdateEvent.class,
-				Business.getInstance().getAccount(), this);
+				CSTWSession.getInstance().getAccountId(), this);
 		CSTWEventManager.unsubscribe(MultiInstrumentStrategyUpdateEvent.class,
-				Business.getInstance().getAccount(), this);
+				CSTWSession.getInstance().getAccountId(), this);
 		CSTWEventManager.unsubscribe(AllStrategySnapshotReplyEvent.class,
-				Business.getInstance().getAccount(), this);
+				CSTWSession.getInstance().getAccountId(), this);
 
 	}
 
@@ -391,10 +392,10 @@ public class OrderCachingManager implements IAsyncEventListener {
 		groupOrderCache.updateInstrument(event.getInstruments());
 		groupOrderCache.updateMultiInstrumentStrategyData(event
 				.getStrategyData());
-		if (Business.getInstance().getUserGroup().isAdmin()) {
+		if (CSTWSession.getInstance().getUserGroup().isAdmin()) {
 			CSTWEventManager.subscribe(ParentOrderUpdateEvent.class, this);
 		} else {
-			subGroupEvent(Business.getInstance().getAccountGroup());
+			subGroupEvent(CSTWSession.getInstance().getAccountGroupList());
 		}
 
 		// setting ready

@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.account.UserRole;
 import com.cyanspring.cstw.business.Business;
+import com.cyanspring.cstw.session.CSTWSession;
 
 public class ViewAuthListener implements IPartListener2 {
 	private static final Logger log = LoggerFactory
@@ -26,8 +27,8 @@ public class ViewAuthListener implements IPartListener2 {
 
 	public void filterViewAction(String partName,
 			ActionContributionItem actionItem) {
-		if (!Business.getBusinessService().hasAuth(partName,
-				actionItem.getId())) {
+		if (!Business.getBusinessService()
+				.hasAuth(partName, actionItem.getId())) {
 			actionItem.getAction().setEnabled(false);
 		} else {
 			actionItem.getAction().setEnabled(true);
@@ -70,7 +71,7 @@ public class ViewAuthListener implements IPartListener2 {
 	@Override
 	public void partActivated(IWorkbenchPartReference partRef) {
 
-		UserRole role = Business.getInstance().getUserGroup().getRole();
+		UserRole role = CSTWSession.getInstance().getUserGroup().getRole();
 		String partName = partRef.getPartName();
 		// log.info("partActviated:{}",partRef.getPartName());
 		filterToolbarAction(partName, partRef.getPart(true));

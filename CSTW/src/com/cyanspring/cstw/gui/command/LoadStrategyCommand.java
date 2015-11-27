@@ -136,9 +136,10 @@ public class LoadStrategyCommand extends AbstractHandler {
 		}
 
 		if (null != map) {
-			map.put(OrderField.USER.value(), Business.getInstance().getUser());
-			map.put(OrderField.ACCOUNT.value(), Business.getInstance()
-					.getAccount());
+			map.put(OrderField.USER.value(), CSTWSession.getInstance()
+					.getUserId());
+			map.put(OrderField.ACCOUNT.value(), CSTWSession.getInstance()
+					.getAccountId());
 		}
 	}
 }

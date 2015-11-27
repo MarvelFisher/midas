@@ -43,6 +43,7 @@ import com.cyanspring.cstw.gui.common.DynamicTableViewer;
 import com.cyanspring.cstw.gui.common.StyledAction;
 import com.cyanspring.cstw.gui.filter.ParentOrderFilter;
 import com.cyanspring.cstw.localevent.AccountSelectionLocalEvent;
+import com.cyanspring.cstw.session.CSTWSession;
 
 public class ExecutionView extends ViewPart implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -95,13 +96,13 @@ public class ExecutionView extends ViewPart implements IAsyncEventListener {
 		Business.getInstance().getEventManager()
 				.subscribe(AccountSelectionLocalEvent.class, this);
 
-		UserGroup ug = Business.getInstance().getUserGroup();
-		List<String> id = Business.getInstance().getAccountGroup();
+		UserGroup ug = CSTWSession.getInstance().getUserGroup();
+		List<String> id = CSTWSession.getInstance().getAccountGroupList();
 		if (ug.isAdmin()) {
 			id = null;
 		} else if (!ug.getRole().isManagerLevel()) {
 			id = new ArrayList<String>();
-			id.add(Business.getInstance().getAccount());
+			id.add(CSTWSession.getInstance().getAccountId());
 		}
 
 		AllExecutionSnapshotRequestEvent event = new AllExecutionSnapshotRequestEvent(
@@ -113,7 +114,7 @@ public class ExecutionView extends ViewPart implements IAsyncEventListener {
 		}
 
 		if (!StringUtils.hasText(currentAccount)) {
-			currentAccount = Business.getInstance().getAccount();
+			currentAccount =CSTWSession.getInstance().getAccountId();
 		}
 	}
 
@@ -125,8 +126,8 @@ public class ExecutionView extends ViewPart implements IAsyncEventListener {
 				if (!pinned) {
 					viewer.removeFilter(accountFilter);
 				} else {
-					accountFilter.setMatch("Account", Business.getInstance()
-							.getAccount());
+					accountFilter.setMatch("Account", CSTWSession.getInstance()
+							.getAccountId());
 					viewer.addFilter(accountFilter);
 				}
 			}
@@ -136,7 +137,7 @@ public class ExecutionView extends ViewPart implements IAsyncEventListener {
 		pinAction.setChecked(true);
 		pinned = true;
 		accountFilter = new ParentOrderFilter();
-		accountFilter.setMatch("Account", Business.getInstance().getAccount());
+		accountFilter.setMatch("Account",CSTWSession.getInstance().getAccountId());
 		viewer.addFilter(accountFilter);
 
 		pinAction.setText("Pin Account");

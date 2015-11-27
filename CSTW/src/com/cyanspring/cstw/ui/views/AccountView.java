@@ -56,6 +56,7 @@ import com.cyanspring.cstw.gui.common.StyledAction;
 import com.cyanspring.cstw.localevent.AccountSelectionLocalEvent;
 import com.cyanspring.cstw.localevent.SelectUserAccountLocalEvent;
 import com.cyanspring.cstw.localevent.ServerStatusLocalEvent;
+import com.cyanspring.cstw.session.CSTWSession;
 
 public class AccountView extends ViewPart implements IAsyncEventListener {
 	private static final Logger log = LoggerFactory
@@ -144,7 +145,8 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 					Business.getInstance()
 							.getEventManager()
 							.sendEvent(
-									new AccountSelectionLocalEvent(account.getId()));
+									new AccountSelectionLocalEvent(account
+											.getId()));
 
 					try {
 						Business.getInstance()
@@ -473,9 +475,9 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 							Business.getInstance()
 									.getEventManager()
 									.sendEvent(
-											new SelectUserAccountLocalEvent(account
-													.getUserId(), account
-													.getId()));
+											new SelectUserAccountLocalEvent(
+													account.getUserId(),
+													account.getId()));
 						}
 					}
 				} catch (Exception e) {
@@ -604,9 +606,19 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	}
 
 	private boolean inAuthList(Account account) {
+		if (CSTWSession.getInstance().getUserId().equals(account.getUserId())
+				|| isManagee(account.getUserId())) {
+			return true;
+		}
+		return false;
+	}
 
-		if (Business.getInstance().getUser().equals(account.getUserId())
-				|| Business.getInstance().isManagee(account.getUserId())) {
+	private boolean isManagee(String account) {
+		if (CSTWSession.getInstance().getUserGroup().isAdmin()
+				|| CSTWSession.getInstance().getUserGroup()
+						.isGroupPairExist(account)
+				|| CSTWSession.getInstance().getUserGroup()
+						.isManageeExist(account)) {
 			return true;
 		}
 		return false;
@@ -615,7 +627,8 @@ public class AccountView extends ViewPart implements IAsyncEventListener {
 	@Override
 	public void onEvent(AsyncEvent event) {
 		if (event instanceof ServerStatusLocalEvent) {
-			sendSubscriptionRequest(((ServerStatusLocalEvent) event).getServer());
+			sendSubscriptionRequest(((ServerStatusLocalEvent) event)
+					.getServer());
 		} else if (event instanceof AllAccountSnapshotReplyEvent) {
 			AllAccountSnapshotReplyEvent evt = (AllAccountSnapshotReplyEvent) event;
 			for (Account account : evt.getAccounts()) {
