@@ -36,7 +36,6 @@ import com.cyanspring.common.event.order.InitClientRequestEvent;
 import com.cyanspring.common.event.pool.AccountInstrumentSnapshotReplyEvent;
 import com.cyanspring.common.event.system.NodeInfoEvent;
 import com.cyanspring.common.event.system.ServerHeartBeatEvent;
-import com.cyanspring.common.marketsession.DefaultStartEndTime;
 import com.cyanspring.common.server.event.ServerReadyEvent;
 import com.cyanspring.common.util.IdGenerator;
 import com.cyanspring.common.util.TimeUtil;
@@ -69,7 +68,6 @@ public final class Business {
 	private AsyncTimerEvent timerEvent;
 	private int heartBeatInterval; // 5 seconds
 	private HashMap<String, Date> lastHeartBeatMap;
-	private DefaultStartEndTime defaultStartEndTime;
 	private Map<AlertType, Integer> alertColorConfig;
 
 	private UserLoginAssist userLoginAssist;
@@ -193,7 +191,6 @@ public final class Business {
 			} else if (event instanceof InitClientEvent) {
 				log.debug("Received event: " + event);
 				InitClientEvent initClientEvent = (InitClientEvent) event;
-				defaultStartEndTime = initClientEvent.getDefaultStartEndTime();
 				TraderSession.getInstance().initByEvnet(initClientEvent);
 			} else if (event instanceof AccountSettingSnapshotReplyEvent) {
 				AccountSettingSnapshotReplyEvent evt = (AccountSettingSnapshotReplyEvent) event;
@@ -273,10 +270,6 @@ public final class Business {
 
 	public ScheduleManager getScheduleManager() {
 		return scheduleManager;
-	}
-
-	public DefaultStartEndTime getDefaultStartEndTime() {
-		return defaultStartEndTime;
 	}
 
 	public Map<AlertType, Integer> getAlertColorConfig() {

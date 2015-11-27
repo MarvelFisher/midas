@@ -40,13 +40,10 @@ import com.cyanspring.common.BeanHolder;
 import com.cyanspring.common.account.OrderReason;
 import com.cyanspring.common.business.FieldDef;
 import com.cyanspring.common.business.OrderField;
-import com.cyanspring.common.business.util.DataConvertException;
-import com.cyanspring.common.business.util.GenericDataConverter;
 import com.cyanspring.common.event.AsyncEvent;
 import com.cyanspring.common.event.IAsyncEventListener;
 import com.cyanspring.common.event.order.EnterParentOrderEvent;
 import com.cyanspring.common.event.order.EnterParentOrderReplyEvent;
-import com.cyanspring.common.marketsession.DefaultStartEndTime;
 import com.cyanspring.common.type.OrderSide;
 import com.cyanspring.common.type.OrderType;
 import com.cyanspring.cstw.business.Business;
@@ -113,21 +110,6 @@ public class OrderDialog extends Dialog implements IAsyncEventListener {
 	 */
 	@Override
 	protected Control createDialogArea(final Composite parent) {
-		DefaultStartEndTime defaultStartEndTime = Business.getInstance()
-				.getDefaultStartEndTime();
-		GenericDataConverter dataConverter = BeanHolder.getInstance()
-				.getDataConverter();
-		String strStart = "";
-		String strEnd = "";
-		try {
-			strStart = dataConverter.toString(OrderField.START_TIME.value(),
-					defaultStartEndTime.getStart());
-			strEnd = dataConverter.toString(OrderField.END_TIME.value(),
-					defaultStartEndTime.getEnd());
-		} catch (DataConvertException e) {
-			log.error(e.getMessage(), e);
-		}
-
 		final Composite container = (Composite) super.createDialogArea(parent);
 		GridLayout gridLayout = (GridLayout) container.getLayout();
 		gridLayout.horizontalSpacing = 1;
@@ -212,12 +194,12 @@ public class OrderDialog extends Dialog implements IAsyncEventListener {
 					if (fieldDef.isInput()
 							&& !isConstantField(fieldDef.getName())) {
 						if (fieldDef.getName().equals(OrderField.USER.value()))
-							data.put(fieldDef.getName(), CSTWSession.getInstance()
-									.getUserId());
+							data.put(fieldDef.getName(), CSTWSession
+									.getInstance().getUserId());
 						else if (fieldDef.getName().equals(
 								OrderField.ACCOUNT.value()))
-							data.put(fieldDef.getName(), CSTWSession.getInstance()
-									.getAccountId());
+							data.put(fieldDef.getName(), CSTWSession
+									.getInstance().getAccountId());
 						else
 							data.put(fieldDef.getName(), fieldDef.getValue());
 						fields.add(fieldDef.getName());
@@ -441,7 +423,8 @@ public class OrderDialog extends Dialog implements IAsyncEventListener {
 		fields.put(OrderField.STRATEGY.value(), cbStrategy.getText());
 		fields.put(OrderField.START_TIME.value(), txtStartTime.getText());
 		fields.put(OrderField.END_TIME.value(), txtEndTime.getText());
-		fields.put(OrderField.USER.value(), CSTWSession.getInstance().getUserId());
+		fields.put(OrderField.USER.value(), CSTWSession.getInstance()
+				.getUserId());
 		fields.put(OrderField.ACCOUNT.value(), CSTWSession.getInstance()
 				.getAccountId());
 
