@@ -154,6 +154,7 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl
 	protected List<Class<? extends AsyncEvent>> getReplyEventList() {
 		List<Class<? extends AsyncEvent>> list = new ArrayList<Class<? extends AsyncEvent>>();
 		list.add(InstrumentPoolUpdateLocalEvent.class);
+		list.add(SubAccountStructureUpdateLocalEvent.class);
 		return list;
 	}
 
