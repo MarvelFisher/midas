@@ -114,4 +114,11 @@ public interface IInstrumentPoolKeeper {
 	 */
 	ExchangeSubAccount getSubAccountById(String subAccountId);
 
+	/**
+	 * 获取风控所能管理的ExchangeSubAccount List
+	 * 
+	 * @param user
+	 * @return
+	 */
+	List<ExchangeSubAccount> getAssignedSubAccounts(String user);
 }
