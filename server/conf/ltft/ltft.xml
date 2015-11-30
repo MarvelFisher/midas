@@ -408,13 +408,4 @@
 		</constructor-arg>
 	</bean>
 
-	<bean id="twfStrategy" class="com.cyanspring.common.staticdata.strategy.TWFStrategy">
-		<property name="weekOfMonth">
-			<value>3</value>
-		</property>
-		<property name="dayOfWeek">
-			<value>4</value><!-- Calendar.WEDNESDAY -->
-		</property>
-	</bean>
-
 </beans>

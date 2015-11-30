@@ -1935,7 +1935,7 @@
 		<fields>
 			<entry>
 				<string>TWTrading unit</string>
-				<string>500千克/手</string>
+				<string>*500千克/手</string>
 			</entry>
 			<entry>
 				<string>Price limit</string>
@@ -1991,7 +1991,7 @@
 			</entry>
 			<entry>
 				<string>CNTrading unit</string>
-				<string>500千克/手</string>
+				<string>*500千克/手</string>
 			</entry>
 			<entry>
 				<string>Spot TWName</string>

@@ -24,29 +24,6 @@ public class TWFStrategy extends AbstractRefDataStrategy {
     	super.init(cal, map);
     }
 
-	private int weekOfMonth = 3;
-	private int dayOfWeek = Calendar.WEDNESDAY;
-	// The value must be aligned with the CLOSE time
-	// of SettlementSession in FITXSessionState.xml/FIMTXSessionState.xml
-	Calendar currMonthSettleCalendar = null;
-	int gracePeriod = 0;
-
-	public int getWeekOfMonth() {
-		return weekOfMonth;
-	}
-
-	public void setWeekOfMonth(int weekOfMonth) {
-		this.weekOfMonth = weekOfMonth;
-	}
-
-	public int getDayOfWeek() {
-		return dayOfWeek;
-	}
-
-	public void setDayOfWeek(int dayOfWeek) {
-		this.dayOfWeek = dayOfWeek;
-	}
-
 	@Override
 	public List<RefData> updateRefData(RefData refData) {
 		// Get settlement date in current month for contract policy use
@@ -84,7 +61,7 @@ public class TWFStrategy extends AbstractRefDataStrategy {
 
 	private void setSettlementDate(RefData refData, Calendar cal) {
 		refData.setSettlementDate(RefDataUtil.calSettlementDateByWeekDay(
-    			refData, cal, weekOfMonth, dayOfWeek));
+    			refData, cal, 3, Calendar.WEDNESDAY));
 	}
 
 }
