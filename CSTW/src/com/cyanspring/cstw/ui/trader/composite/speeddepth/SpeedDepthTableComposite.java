@@ -240,14 +240,14 @@ public final class SpeedDepthTableComposite extends Composite {
 				TableItem item = table.getItem(new Point(e.x, e.y));
 				if (item != null) {
 					changeItemColor(item, SWT.COLOR_BLACK);
-					System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 					if (currentMouseMoveItem != null
 							&& !currentMouseMoveItem.isDisposed()
 							&& currentMouseMoveItem != item) {
-						if (isLock
-								&& currentMouseMoveItem != currentSelectedItem) {
-							changeItemColor(currentMouseMoveItem,
-									SWT.COLOR_WHITE);
+						if (isLock) {
+							if (currentMouseMoveItem != currentSelectedItem) {
+								changeItemColor(currentMouseMoveItem,
+										SWT.COLOR_WHITE);
+							}
 						} else {
 							changeItemColor(currentMouseMoveItem,
 									SWT.COLOR_WHITE);
@@ -269,6 +269,11 @@ public final class SpeedDepthTableComposite extends Composite {
 					if (!TableUtils.isItemSelected(item, table)) {
 						changeItemColor(item, SWT.COLOR_WHITE);
 					}
+				}
+
+				if (isLock) {
+					currentSelectedItem = table.getItem(table
+							.getSelectionIndex());
 				}
 			}
 		});
