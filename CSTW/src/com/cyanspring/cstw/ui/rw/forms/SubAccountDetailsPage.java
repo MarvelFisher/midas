@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.IDetailsPage;
 import org.eclipse.ui.forms.IFormPart;
 import org.eclipse.ui.forms.IManagedForm;
@@ -135,8 +136,15 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		service.addSubAccountInputChangeListener(new IInputChangeListener() {
 			@Override
 			public void inputChanged() {
-				//input = service.getExchangeAccoutById(input.getId());
-				update();
+				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+					
+					@Override
+					public void run() {
+						//input = service.getExchangeAccoutById(input.getId());
+						update();
+					}
+				});
+				
 			}
 		});
 		

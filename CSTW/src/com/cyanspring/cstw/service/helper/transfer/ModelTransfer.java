@@ -16,6 +16,7 @@ import com.cyanspring.common.util.PriceUtils;
 import com.cyanspring.cstw.keepermanager.InstrumentPoolKeeperManager;
 import com.cyanspring.cstw.model.admin.ExchangeAccountModel;
 import com.cyanspring.cstw.model.admin.InstrumentInfoModel;
+import com.cyanspring.cstw.model.admin.InstrumentPoolModel;
 import com.cyanspring.cstw.model.admin.SubAccountModel;
 import com.cyanspring.cstw.model.riskmgr.RCInstrumentModel;
 import com.cyanspring.cstw.model.riskmgr.RCOpenPositionModel;
@@ -254,6 +255,13 @@ public final class ModelTransfer {
 				.symbolId(pool.getId()).symbolName(pool.getName()).build();
 		return model;
 
+	}
+	
+	public static InstrumentPoolModel parseInstrumentPoolModel(InstrumentPool pool) {
+		InstrumentPoolModel model = new InstrumentPoolModel.Builder()
+				.id(pool.getId()).name(pool.getName())
+				.relativeAccount(pool.getExchangeSubAccount()).build();
+		return model;
 	}
 
 }

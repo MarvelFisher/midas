@@ -71,7 +71,7 @@ public class SubPoolDetailsPage implements IDetailsPage {
 		//init Top Part
 		dataSection1 = toolkit.createSection(parent, Section.TITLE_BAR | Section.EXPANDED);
 		dataSection1.marginWidth = 10;
-		dataSection1.setText("Exchange Account Details: ");
+		dataSection1.setText("Sub Account Details: ");
 		
 		TableWrapData td1 = new TableWrapData(TableWrapData.FILL, TableWrapData.TOP);
 		td1.grabHorizontal = true;
@@ -90,7 +90,7 @@ public class SubPoolDetailsPage implements IDetailsPage {
 		// init Bottom Part
 		dataSection2 = toolkit.createSection(parent,  Section.TITLE_BAR | Section.EXPANDED);
 		dataSection2.marginWidth = 10;
-		dataSection2.setText("SubAccount Details: ");
+		dataSection2.setText("Sub Pool Details: ");
 		TableWrapData td2 = new TableWrapData(TableWrapData.FILL, TableWrapData.BOTTOM);
 		td2.grabHorizontal = true;
 		dataSection2.setLayoutData(td2);
@@ -240,7 +240,7 @@ public class SubPoolDetailsPage implements IDetailsPage {
 			accTableComposite.setInput(service.getInstrumentInfoModelListBySubAccountId(input.getRelativeAccount()));
 			
 			txtName2.setText(input.getName());
-			accTableComposite.setInput(service.getInstrumentInfoModelListBySubPoolId(input.getId()));
+			poolTableComposite.setInput(service.getInstrumentInfoModelListBySubPoolId(input.getId()));
 			
 //			assignedTableComposite setInput
 		}

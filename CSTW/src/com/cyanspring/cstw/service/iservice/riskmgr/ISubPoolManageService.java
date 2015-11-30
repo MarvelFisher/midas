@@ -11,13 +11,17 @@ import com.cyanspring.cstw.service.iservice.admin.IInputChangeListener;
  * @create 24 Nov 2015
  */
 public interface ISubPoolManageService extends IBasicService{
-
+	
+	List<SubAccountModel> getAllAssignedSubAccount();
+	
 	void addSubAccountInputChangeListener(
 			IInputChangeListener iInputChangeListener);
 
 	List<?> getInstrumentInfoModelListBySubAccountId(String id);
 
 	List<?> getInstrumentInfoModelListBySubPoolId(String id);
+
+	List<?> getSubPoolListByAccountId(String id);
 	
 	
 

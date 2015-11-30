@@ -48,7 +48,13 @@ public enum TableType {
 	RWInstrumentSummary(new String[] { "Instrument ID", "PnL",
 			"Trades", "Total Quantity", "Consideration" }, new int[] { 100,
 			100, 100, 100, 100, }, SWT.CENTER, true, false),
+			
+	RWAssignedInstrument(new String[] { "Instrument", "Instrument Name", "Quantity" },
+			new int[] { 100, 100, 100 }, SWT.CENTER, false, false),
 
+	RWAssignedPool(new String[] { "No.", "User", "Role" },
+			new int[] { 100, 100, 100 }, SWT.CENTER, false, false),
+			
 	// BW
 	BWPosition(new String[] { "Instrument ID", "Direction", "Quantity", "UR PnL",
 			"Avg Price", }, new int[] { 100, 100, 100, 100, 100, }, SWT.CENTER,

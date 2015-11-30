@@ -38,22 +38,18 @@ public class SubPoolManageMasterDetailBlock extends MasterDetailsBlock {
 	private ISubPoolManageService service;
 	
 	private FormToolkit toolkit;
-	private TreeViewer ediTree;
+	private TreeViewer editTree;
 	private SectionPart spart;
 	private Section dataSection;
 	private Menu treeMenu;
 	
-	private Button btnAddAcc;
 	private Button btnAddPool;
 	private Button btnDelete;
 	private Button btnUp;
 	private Button btnDown;
 	
-	private Action addAccAction;
 	private Action addPoolAction;
 	private Action delAction;
-	private Action upAction;
-	private Action downAction;
 	
 	
 	public SubPoolManageMasterDetailBlock(ISubPoolManageService service) {
@@ -96,9 +92,9 @@ public class SubPoolManageMasterDetailBlock extends MasterDetailsBlock {
 		data.heightHint = 200;
 		data.widthHint = 200;
 		memberTree.setLayoutData(data);
-		ediTree = new TreeViewer(memberTree);
-		ediTree.setContentProvider(new EditTreeContentProvider());
-		ediTree.setLabelProvider(new EditTreeLabelProvider());
+		editTree = new TreeViewer(memberTree);
+		editTree.setContentProvider(new EditTreeContentProvider(service));
+		editTree.setLabelProvider(new EditTreeLabelProvider());
 		initTreeMenu(sectionClient);
 		refreshTree();
 		
@@ -155,20 +151,20 @@ public class SubPoolManageMasterDetailBlock extends MasterDetailsBlock {
 			}
 		});
 		
-		ediTree.getTree().setMenu(treeMenu);
+		editTree.getTree().setMenu(treeMenu);
 		
 	}
 
 
 	private void initListener(final IManagedForm managedForm) {
-		ediTree.addSelectionChangedListener(new ISelectionChangedListener() {
+		editTree.addSelectionChangedListener(new ISelectionChangedListener() {
 			
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				managedForm.fireSelectionChanged(spart, event.getSelection());
 			}
 		});
-		ediTree.addSelectionChangedListener(new ISelectionChangedListener() {
+		editTree.addSelectionChangedListener(new ISelectionChangedListener() {
 			
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -184,7 +180,7 @@ public class SubPoolManageMasterDetailBlock extends MasterDetailsBlock {
 	}
 	
 	private void changeUiElementState() {
-		IStructuredSelection selected = (IStructuredSelection) ediTree.getSelection();
+		IStructuredSelection selected = (IStructuredSelection) editTree.getSelection();
 		if (selected.isEmpty()) {
 			
 		} else if (selected.size() == 1) {
@@ -195,8 +191,9 @@ public class SubPoolManageMasterDetailBlock extends MasterDetailsBlock {
 	}
 	
 	private void refreshTree() {
-		ediTree.setInput(null);
-		ediTree.refresh();
+		editTree.setInput(service.getAllAssignedSubAccount());
+		editTree.expandAll();
+		editTree.refresh();
 	}
 
 	private void createSpacer(FormToolkit toolkit, Composite parent, int span) {

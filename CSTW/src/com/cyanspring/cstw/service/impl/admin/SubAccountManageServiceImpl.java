@@ -145,7 +145,7 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl implements
 		List<InstrumentInfoModel> instrumentInfoModelList = new ArrayList<InstrumentInfoModel>();
 		for (Map.Entry<String, Double> entry : symbolQtyMap.entrySet()) {
 			InstrumentInfoModel infoModel = new InstrumentInfoModel.Builder()
-					.symbolName(entry.getKey()).symbolName(entry.getKey())
+					.symbolId(entry.getKey()).symbolName(entry.getKey())
 					.qty(entry.getValue()).build();
 			instrumentInfoModelList.add(infoModel);
 		}

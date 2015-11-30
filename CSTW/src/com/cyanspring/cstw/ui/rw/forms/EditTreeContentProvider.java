@@ -1,7 +1,12 @@
 package com.cyanspring.cstw.ui.rw.forms;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+
+import com.cyanspring.cstw.model.admin.SubAccountModel;
+import com.cyanspring.cstw.service.iservice.riskmgr.ISubPoolManageService;
 
 /**
  * @author Junfeng
@@ -9,57 +14,51 @@ import org.eclipse.jface.viewers.Viewer;
  */
 public class EditTreeContentProvider implements ITreeContentProvider {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
-	 */
+	private ISubPoolManageService service;
+	
+	public EditTreeContentProvider(ISubPoolManageService service) {
+		this.service = service;
+	}
+	
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
-	 */
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		// TODO Auto-generated method stub
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getElements(java.lang.Object)
-	 */
 	@Override
 	public Object[] getElements(Object inputElement) {
-		// TODO Auto-generated method stub
+		if (inputElement instanceof List) {
+			return ((List)inputElement).toArray();
+		}
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
-	 */
 	@Override
 	public Object[] getChildren(Object parentElement) {
-		// TODO Auto-generated method stub
+		if (parentElement instanceof SubAccountModel) {
+			SubAccountModel parent = (SubAccountModel) parentElement;
+			return service.getSubPoolListByAccountId(parent.getId()).toArray();
+		}
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
-	 */
 	@Override
 	public Object getParent(Object element) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.Object)
-	 */
+	
 	@Override
 	public boolean hasChildren(Object element) {
-		// TODO Auto-generated method stub
+		if (element instanceof SubAccountModel) {
+			SubAccountModel parent = (SubAccountModel) element;
+			return !service.getSubPoolListByAccountId(parent.getId()).isEmpty();
+		}
 		return false;
 	}
 
