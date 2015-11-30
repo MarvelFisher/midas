@@ -217,6 +217,7 @@ public final class SpeedDepthTableComposite extends Composite {
 								Double.valueOf(model.getPrice()), orderType);
 					}
 				}
+
 				TableItem item = table.getItem(new Point(e.x, e.y));
 				checkSelectedItem(item);
 			}
@@ -243,9 +244,15 @@ public final class SpeedDepthTableComposite extends Composite {
 					changeItemColor(item, SWT.COLOR_BLACK);
 					if (currentMouseMoveItem != null
 							&& !currentMouseMoveItem.isDisposed()
-							&& currentMouseMoveItem != item
-							&& currentMouseMoveItem != currentSelectedItem) {
-						changeItemColor(currentMouseMoveItem, SWT.COLOR_WHITE);
+							&& currentMouseMoveItem != item) {
+						if (isLock
+								&& currentMouseMoveItem != currentSelectedItem) {
+							changeItemColor(currentMouseMoveItem,
+									SWT.COLOR_WHITE);
+						} else {
+							changeItemColor(currentMouseMoveItem,
+									SWT.COLOR_WHITE);
+						}
 					}
 					SpeedDepthModel model = (SpeedDepthModel) item.getData();
 					labelProvider.setMouseselectIndex(model.getIndex());

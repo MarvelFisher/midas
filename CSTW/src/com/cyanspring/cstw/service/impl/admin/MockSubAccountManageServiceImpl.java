@@ -197,57 +197,6 @@ public abstract class MockSubAccountManageServiceImpl extends BasicServiceImpl i
 		sub2list.remove(subAccount);
 	}
 
-	
-	@Override
-	public void moveUpExchangeAccount(ExchangeAccountModel exchange) {
-		int index = exlist.indexOf(exchange);
-		if (index > 0) {
-			exlist.remove(exchange);
-			exlist.add(index-1, exchange);
-		}
-	}
-
-	@Override
-	public void moveDownExchangeAccount(ExchangeAccountModel exchange) {
-		int index = exlist.indexOf(exchange);
-		if (index >= 0 && index < exlist.size()) {
-			exlist.remove(exchange);
-			exlist.add(index+1, exchange);
-		}
-	}
-
-	@Override
-	public void moveUpSubAccount(SubAccountModel subAccount) {
-		int index = sub1list.indexOf(subAccount);
-		if (index > 0) {
-			sub1list.remove(subAccount);
-			sub1list.add(index-1, subAccount);
-		}
-		
-		int index2 = sub2list.indexOf(subAccount);
-		if (index2 > 0) {
-			sub2list.remove(subAccount);
-			sub2list.add(index2-1, subAccount);
-		}
-		
-	}
-
-	@Override
-	public void moveDownSubAccount(SubAccountModel subAccount) {
-		int index1 = sub1list.indexOf(subAccount);
-		if (index1 >= 0 && index1 < sub1list.size()) {
-			sub1list.remove(subAccount);
-			sub1list.add(index1+1, subAccount);
-		}
-		
-		int index2 = sub2list.indexOf(subAccount);
-		if (index2 >= 0 && index2 < sub2list.size()) {
-			sub2list.remove(subAccount);
-			sub2list.add(index2+1, subAccount);
-		}
-		
-	}
-
 	@Override
 	public void createNewAssignedModel(SubAccountModel subAccount,
 			AssignedModel assigned, int index) {

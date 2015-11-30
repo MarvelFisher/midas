@@ -10,8 +10,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.IDetailsPage;
 import org.eclipse.ui.forms.IFormPart;
 import org.eclipse.ui.forms.IManagedForm;
@@ -186,8 +188,14 @@ public class SubAccountDetailsPage implements IDetailsPage {
 			
 			@Override
 			public void inputChanged() {
-				input = service.getSubAccountById(input.getId());
-				update();
+				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						input = service.getSubAccountById(input.getId());
+						update();
+					}
+				});
+				
 			}
 		});
 		
