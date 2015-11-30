@@ -2,6 +2,9 @@ package com.cyanspring.cstw.service.iservice.riskmgr;
 
 import java.util.List;
 
+import com.cyanspring.common.account.Account;
+import com.cyanspring.common.account.User;
+import com.cyanspring.cstw.model.admin.AssignedModel;
 import com.cyanspring.cstw.model.admin.InstrumentInfoModel;
 import com.cyanspring.cstw.model.admin.InstrumentPoolModel;
 import com.cyanspring.cstw.model.admin.SubAccountModel;
@@ -19,13 +22,13 @@ public interface ISubPoolManageService extends IBasicService{
 	void addSubAccountInputChangeListener(
 			IInputChangeListener iInputChangeListener);
 
-	List<?> getInstrumentInfoModelListBySubAccountId(String id);
+	List<InstrumentInfoModel> getInstrumentInfoModelListBySubAccountId(String id);
 
-	List<?> getInstrumentInfoModelListBySubPoolId(String id);
+	List<InstrumentInfoModel> getInstrumentInfoModelListBySubPoolId(String id);
 
-	List<?> getSubPoolListByAccountId(String id);
+	List<InstrumentPoolModel> getSubPoolListByAccountId(String id);
 	
-	List<?> getAssignedModelListBySubPoolId(String id);
+	List<AssignedModel> getAssignedModelListBySubPoolId(String id);
 
 	void createNewSubPool(String selectText);
 
@@ -36,6 +39,8 @@ public interface ISubPoolManageService extends IBasicService{
 
 	void removeInstrumentInfoModel(InstrumentPoolModel subPoolModel,
 			InstrumentInfoModel model);
+
+	List<Account> getAvailableAssigneeList(InstrumentPoolModel subPoolModel);
 
 	
 	

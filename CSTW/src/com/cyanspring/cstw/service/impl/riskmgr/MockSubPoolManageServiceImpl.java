@@ -8,6 +8,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cyanspring.common.account.Account;
+import com.cyanspring.common.account.User;
 import com.cyanspring.common.client.IInstrumentPoolKeeper;
 import com.cyanspring.common.client.IInstrumentPoolKeeper.ModelType;
 import com.cyanspring.common.event.AsyncEvent;
@@ -15,6 +17,7 @@ import com.cyanspring.common.pool.ExchangeSubAccount;
 import com.cyanspring.common.pool.InstrumentPool;
 import com.cyanspring.common.pool.InstrumentPoolRecord;
 import com.cyanspring.cstw.keepermanager.InstrumentPoolKeeperManager;
+import com.cyanspring.cstw.model.admin.AssignedModel;
 import com.cyanspring.cstw.model.admin.InstrumentInfoModel;
 import com.cyanspring.cstw.model.admin.InstrumentPoolModel;
 import com.cyanspring.cstw.model.admin.SubAccountModel;
@@ -56,7 +59,7 @@ public class MockSubPoolManageServiceImpl extends BasicServiceImpl implements
 	}
 	
 	@Override
-	public List<?> getAssignedModelListBySubPoolId(String id) {
+	public List<AssignedModel> getAssignedModelListBySubPoolId(String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -81,7 +84,7 @@ public class MockSubPoolManageServiceImpl extends BasicServiceImpl implements
 	}
 
 	@Override
-	public List<?> getInstrumentInfoModelListBySubAccountId(String id) {
+	public List<InstrumentInfoModel> getInstrumentInfoModelListBySubAccountId(String id) {
 		List<InstrumentPoolRecord> recordList = instrumentPoolKeeper
 				.getInstrumentPoolRecordList(id, ModelType.EXCHANGE_SUB_ACCOUNT);
 		// merge record
@@ -105,7 +108,7 @@ public class MockSubPoolManageServiceImpl extends BasicServiceImpl implements
 	}
 
 	@Override
-	public List<?> getInstrumentInfoModelListBySubPoolId(String id) {
+	public List<InstrumentInfoModel> getInstrumentInfoModelListBySubPoolId(String id) {
 		List<InstrumentPoolRecord> recordList = instrumentPoolKeeper.getInstrumentPoolRecordList(id, ModelType.INSTRUMENT_POOL);
 		// merge record
 		Map<String, Double> symbolQtyMap = new HashMap<String, Double>();
@@ -128,7 +131,7 @@ public class MockSubPoolManageServiceImpl extends BasicServiceImpl implements
 	}
 
 	@Override
-	public List<?> getSubPoolListByAccountId(String id) {
+	public List<InstrumentPoolModel> getSubPoolListByAccountId(String id) {
 		List<InstrumentPoolModel> poolList = new ArrayList<InstrumentPoolModel>();
 		List<InstrumentPool> instrumentPool = instrumentPoolKeeper.getInstrumentPoolList(id);
 		for (InstrumentPool pool : instrumentPool) {
@@ -161,6 +164,12 @@ public class MockSubPoolManageServiceImpl extends BasicServiceImpl implements
 			InstrumentInfoModel model) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public List<Account> getAvailableAssigneeList(InstrumentPoolModel subPoolModel) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	

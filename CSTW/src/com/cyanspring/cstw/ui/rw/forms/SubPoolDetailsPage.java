@@ -243,6 +243,7 @@ public class SubPoolDetailsPage implements IDetailsPage {
 			poolTableComposite.setSubPoolModel(input);
 			poolTableComposite.setInput(service.getInstrumentInfoModelListBySubPoolId(input.getId()));
 			
+			assignedTableComposite.setSubPoolModel(input);
 			assignedTableComposite.setInput(service.getAssignedModelListBySubPoolId(input.getId()));
 		}
 	}

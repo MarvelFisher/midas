@@ -163,7 +163,7 @@ public class AssignedTableComposite extends BasicTableComposite {
 			lblSelectUserRole.setText("User Role: ");
 			txtSelectUserRole = new Text(container, SWT.READ_ONLY | SWT.BORDER);
 			txtSelectUserRole.setLayoutData(gridData);
-			txtSelectUserRole.setEditable(true);
+			txtSelectUserRole.setEditable(false);
 			return container;
 		}
 
