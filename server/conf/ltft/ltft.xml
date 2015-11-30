@@ -314,7 +314,7 @@
 
 	<bean id="refDataManager" class="com.cyanspring.common.staticdata.RefDataFactory">
 		<property name="refDataTemplatePath">
-			<value>refdata/template/template_FT.xml</value>
+			<value>refdata/template/template_LTFT.xml</value>
 		</property>
 	</bean>
 
@@ -386,7 +386,7 @@
 
 	<bean id="refDataTplLoader" class="com.cyanspring.common.staticdata.RefDataTplLoader">
 		<property name="tplPath">
-			<value>refdata/template/template_FT.xml</value>
+			<value>refdata/template/template_LTFT.xml</value>
 		</property>
 	</bean>
 

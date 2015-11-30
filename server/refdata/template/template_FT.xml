@@ -1,620 +1,1320 @@
 <list>
-	<com.cyanspring.common.staticdata.RefData>
-		<fields>
-			<entry>
-				<string>Symbol</string>
-				<string>TXF${MY}</string>
-			</entry>
-			<entry>
-				<string>Desc</string>
-				<string>期貨.台灣期交所.臺指</string>
-			</entry>
-			<entry>
-				<string>Exchange</string>
-				<string>TWF</string>
-			</entry>
-			<entry>
-				<string>Currency</string>
-				<string>NTD</string>
-			</entry>
-			<entry>
-				<string>ENName</string>
-				<string>FITX${YYMM}</string>
-			</entry>
-			<entry>
-				<string>TWName</string>
-				<string>臺指${YYMM}</string>
-			</entry>
-			<entry>
-				<string>CNName</string>
-				<string>臺指${YYMM}</string>
-			</entry>
-			<entry>
-				<string>Ref symbol</string>
-				<string>TXF${SEQ}</string>
-			</entry>
-			<entry>
-				<string>Category</string>
-				<string>FITX</string>
-			</entry>
-			<entry>
-				<string>Contract policy</string>
-				<string>TX</string>
-			</entry>
-			<entry>
-				<string>Spot ENName</string>
-				<string>TX</string>
-			</entry>
-			<entry>
-				<string>Spot TWName</string>
-				<string>臺指</string>
-			</entry>
-			<entry>
-				<string>Spot CNName</string>
-				<string>台指</string>
-			</entry>
-			<entry>
-				<string>Code</string>
-				<string>ICE.TWF.FITX.${YYYYMM}</string>
-			</entry>
-			<entry>
-				<string>Subscribe symbol</string>
-				<string>ICE.TWF.FITX.${YYYYMM}</string>
-			</entry>
-			<entry>
-				<string>Type</string>
-				<string>INDEX_FU</string>
-			</entry>
-			<entry>
-				<string>Lot size</string>
-				<int>1</int>
-			</entry>
-			<entry>
-				<string>Price per unit</string>
-				<double>200</double>
-			</entry>
-			<entry>
-				<string>TWTrading unit</string>
-				<string>元(新臺幣)/指數1點</string>
-			</entry>
-			<entry>
-				<string>CNTrading unit</string>
-				<string>元(新台币)/指数1点</string>
-			</entry>
-			<entry>
-				<string>ENTrading unit</string>
-				<string>NTD/Point</string>
-			</entry>
-			<entry>
-				<string>Price limit</string>
-				<double>10</double>
-			</entry>
-			<entry>
-				<string>Strategy</string>
-				<string>TWF</string>
-			</entry>
-			<entry>
-				<string>Maximum hold</string>
-				<int>4000</int>
-			</entry>
-			<entry>
-				<string>Tick table</string>
-				<string>FT</string>
-			</entry>
-			<entry>
-				<string>Margin Rate</string>
-				<double>0.05</double>
-			</entry>
-			<entry>
-				<string>Limit maximum lot</string>
-				<int>100</int>
-			</entry>
-			<entry>
-				<string>Market maximum lot</string>
-				<int>100</int>
-			</entry>
-			<entry>
-				<string>Numerator DP</string>
-				<double>0</double>
-			</entry>
-			<entry>
-				<string>Decimal point</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Lot CF</string>
-				<double>35</double>
-			</entry>
-			<entry>
-				<string>Minimal CF</string>
-				<double>0</double>
-			</entry>
-			<entry>
-				<string>Instrument type</string>
-				<long>0x0412</long>
-			</entry>
-			<entry>
-				<string>Tradable days</string>
-				<int>0</int>
-			</entry>
-		</fields>
-	</com.cyanspring.common.staticdata.RefData>
-	<com.cyanspring.common.staticdata.RefData>
-		<fields>
-			<entry>
-				<string>Symbol</string>
-				<string>MXF${MY}</string>
-			</entry>
-			<entry>
-				<string>Desc</string>
-				<string>期貨.台灣期交所.小臺</string>
-			</entry>
-			<entry>
-				<string>Exchange</string>
-				<string>TWF</string>
-			</entry>
-			<entry>
-				<string>Currency</string>
-				<string>NTD</string>
-			</entry>
-			<entry>
-				<string>ENName</string>
-				<string>FIMTX${YYMM}</string>
-			</entry>
-			<entry>
-				<string>TWName</string>
-				<string>小臺${YYMM}</string>
-			</entry>
-			<entry>
-				<string>CNName</string>
-				<string>小台${YYMM}</string>
-			</entry>
-			<entry>
-				<string>Ref symbol</string>
-				<string>MXF${SEQ}</string>
-			</entry>
-			<entry>
-				<string>Category</string>
-				<string>FIMTX</string>
-			</entry>
-			<entry>
-				<string>Contract policy</string>
-				<string>TX</string>
-			</entry>
-			<entry>
-				<string>Spot ENName</string>
-				<string>MTX</string>
-			</entry>
-			<entry>
-				<string>Spot TWName</string>
-				<string>小臺</string>
-			</entry>
-			<entry>
-				<string>Spot CNName</string>
-				<string>小台</string>
-			</entry>
-			<entry>
-				<string>Code</string>
-				<string>ICE.TWF.FIMTX.${YYYYMM}</string>
-			</entry>
-			<entry>
-				<string>Subscribe symbol</string>
-				<string>ICE.TWF.FIMTX.${YYYYMM}</string>
-			</entry>
-			<entry>
-				<string>Type</string>
-				<string>INDEX_FU</string>
-			</entry>
-			<entry>
-				<string>Lot size</string>
-				<int>1</int>
-			</entry>
-			<entry>
-				<string>Price per unit</string>
-				<double>50</double>
-			</entry>
-			<entry>
-				<string>TWTrading unit</string>
-				<string>元(新臺幣)/指數1點</string>
-			</entry>
-			<entry>
-				<string>CNTrading unit</string>
-				<string>元(新台币)/指数1点</string>
-			</entry>
-			<entry>
-				<string>ENTrading unit</string>
-				<string>NTD/Point</string>
-			</entry>
-			<entry>
-				<string>Price limit</string>
-				<double>10</double>
-			</entry>
-			<entry>
-				<string>Strategy</string>
-				<string>TWF</string>
-			</entry>
-			<!-- 與臺股期貨合併計算(依4口小型臺指期貨契約等於1口臺股期貨契約合併計算, 臺股期貨部位限制6,000) -->
-			<!-- 目前設置 臺股期貨4000, 小型臺指期貨8000, 4000 + 8000/4 = 6000 -->
-			<entry>
-				<string>Maximum hold</string>
-				<int>8000</int>
-			</entry>
-			<entry>
-				<string>Tick table</string>
-				<string>FT</string>
-			</entry>
-			<entry>
-				<string>Margin Rate</string>
-				<double>0.05</double>
-			</entry>
-			<entry>
-				<string>Limit maximum lot</string>
-				<int>100</int>
-			</entry>
-			<entry>
-				<string>Market maximum lot</string>
-				<int>100</int>
-			</entry>
-			<entry>
-				<string>Numerator DP</string>
-				<double>0</double>
-			</entry>
-			<entry>
-				<string>Decimal point</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Lot CF</string>
-				<double>20</double>
-			</entry>
-			<entry>
-				<string>Minimal CF</string>
-				<double>0</double>
-			</entry>
-			<entry>
-				<string>Instrument type</string>
-				<long>0x0412</long>
-			</entry>
-			<entry>
-				<string>Tradable days</string>
-				<int>0</int>
-			</entry>
-		</fields>
-	</com.cyanspring.common.staticdata.RefData>
-	<com.cyanspring.common.staticdata.RefData>
-		<fields>
-			<entry>
-				<string>Maximum hold</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Price per unit</string>
-				<double>0.0</double>
-			</entry>
-			<entry>
-				<string>Index Session Type</string>
-				<string>SPOT</string>
-			</entry>
-			<entry>
-				<string>Strategy</string>
-				<string>INDEX</string>
-			</entry>
-			<entry>
-				<string>Limit maximum lot</string>
-				<int>1000000</int>
-			</entry>
-			<entry>
-				<string>Margin Rate</string>
-				<double>0.0</double>
-			</entry>
-			<entry>
-				<string>Code</string>
-				<string>ICE.TWF.FITX</string>
-			</entry>
-			<entry>
-				<string>Lot size</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Category</string>
-				<string>INDEX</string>
-			</entry>
-			<entry>
-				<string>Exchange</string>
-				<string>TWF</string>
-			</entry>
-			<entry>
-				<string>Market maximum lot</string>
-				<int>1000000</int>
-			</entry>
-			<entry>
-				<string>Symbol</string>
-				<string>TWSETX</string>
-			</entry>
-			<entry>
-				<string>ENName</string>
-				<string>ICE.TWF.FITX</string>
-			</entry>
-			<entry>
-				<string>CNName</string>
-				<string>臺指 (台灣期交所)</string>
-			</entry>
-			<entry>
-				<string>TWName</string>
-				<string>臺指 (台灣期交所)</string>
-			</entry>
-			<entry>
-				<string>Ref symbol</string>
-				<string>TWSETX</string>
-			</entry>
-			<entry>
-				<string>Spell name</string>
-				<string>tz(twqjs)</string>
-			</entry>
-			<entry>
-				<string>Tick table</string>
-				<string>SC</string>
-			</entry>
-			<entry>
-				<string>Decimal point</string>
-				<int>2</int>
-			</entry>
-			<entry>
-				<string>Instrument type</string>
-				<long>0x0010</long>
-			</entry>
-		</fields>
-	</com.cyanspring.common.staticdata.RefData>
-	<com.cyanspring.common.staticdata.RefData>
-		<fields>
-			<entry>
-				<string>Maximum hold</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Price per unit</string>
-				<double>0.0</double>
-			</entry>
-			<entry>
-				<string>Index Session Type</string>
-				<string>SPOT</string>
-			</entry>
-			<entry>
-				<string>Strategy</string>
-				<string>INDEX</string>
-			</entry>
-			<entry>
-				<string>Limit maximum lot</string>
-				<int>1000000</int>
-			</entry>
-			<entry>
-				<string>Margin Rate</string>
-				<double>0.0</double>
-			</entry>
-			<entry>
-				<string>Code</string>
-				<string>ICE.TWF.FIMTX</string>
-			</entry>
-			<entry>
-				<string>Lot size</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Category</string>
-				<string>INDEX</string>
-			</entry>
-			<entry>
-				<string>Exchange</string>
-				<string>TWF</string>
-			</entry>
-			<entry>
-				<string>Market maximum lot</string>
-				<int>1000000</int>
-			</entry>
-			<entry>
-				<string>Symbol</string>
-				<string>TWSEMTX</string>
-			</entry>
-			<entry>
-				<string>ENName</string>
-				<string>ICE.TWF.FIMTX</string>
-			</entry>
-			<entry>
-				<string>CNName</string>
-				<string>小臺 (台灣期交所)</string>
-			</entry>
-			<entry>
-				<string>TWName</string>
-				<string>小臺 (台灣期交所)</string>
-			</entry>
-			<entry>
-				<string>Ref symbol</string>
-				<string>TWSEMTX</string>
-			</entry>
-			<entry>
-				<string>Spell name</string>
-				<string>xt(twqjs)</string>
-			</entry>
-			<entry>
-				<string>Tick table</string>
-				<string>SC</string>
-			</entry>
-			<entry>
-				<string>Decimal point</string>
-				<int>2</int>
-			</entry>
-			<entry>
-				<string>Instrument type</string>
-				<long>0x0010</long>
-			</entry>
-		</fields>
-	</com.cyanspring.common.staticdata.RefData>
-	<com.cyanspring.common.staticdata.RefData>
-		<fields>
-			<entry>
-				<string>Maximum hold</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Price per unit</string>
-				<double>0.0</double>
-			</entry>
-			<entry>
-				<string>Index Session Type</string>
-				<string>SPOT</string>
-			</entry>
-			<entry>
-				<string>Strategy</string>
-				<string>INDEX</string>
-			</entry>
-			<entry>
-				<string>Limit maximum lot</string>
-				<int>1000000</int>
-			</entry>
-			<entry>
-				<string>Margin Rate</string>
-				<double>0.0</double>
-			</entry>
-			<entry>
-				<string>Code</string>
-				<string>ICE.TWF.FITE</string>
-			</entry>
-			<entry>
-				<string>Lot size</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Category</string>
-				<string>INDEX</string>
-			</entry>
-			<entry>
-				<string>Exchange</string>
-				<string>TWF</string>
-			</entry>
-			<entry>
-				<string>Market maximum lot</string>
-				<int>1000000</int>
-			</entry>
-			<entry>
-				<string>Symbol</string>
-				<string>TWSETE</string>
-			</entry>
-			<entry>
-				<string>ENName</string>
-				<string>ICE.TWF.FITE</string>
-			</entry>
-			<entry>
-				<string>CNName</string>
-				<string>電指 (台灣期交所)</string>
-			</entry>
-			<entry>
-				<string>TWName</string>
-				<string>電指 (台灣期交所)</string>
-			</entry>
-			<entry>
-				<string>Ref symbol</string>
-				<string>TWSETE</string>
-			</entry>
-			<entry>
-				<string>Spell name</string>
-				<string>dz(twqjs)</string>
-			</entry>
-			<entry>
-				<string>Tick table</string>
-				<string>SC</string>
-			</entry>
-			<entry>
-				<string>Decimal point</string>
-				<int>2</int>
-			</entry>
-			<entry>
-				<string>Instrument type</string>
-				<long>0x0010</long>
-			</entry>
-		</fields>
-	</com.cyanspring.common.staticdata.RefData>
-	<com.cyanspring.common.staticdata.RefData>
-		<fields>
-			<entry>
-				<string>Maximum hold</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Price per unit</string>
-				<double>0.0</double>
-			</entry>
-			<entry>
-				<string>Index Session Type</string>
-				<string>SPOT</string>
-			</entry>
-			<entry>
-				<string>Strategy</string>
-				<string>INDEX</string>
-			</entry>
-			<entry>
-				<string>Limit maximum lot</string>
-				<int>1000000</int>
-			</entry>
-			<entry>
-				<string>Margin Rate</string>
-				<double>0.0</double>
-			</entry>
-			<entry>
-				<string>Code</string>
-				<string>ICE.TWF.FITF</string>
-			</entry>
-			<entry>
-				<string>Lot size</string>
-				<int>0</int>
-			</entry>
-			<entry>
-				<string>Category</string>
-				<string>INDEX</string>
-			</entry>
-			<entry>
-				<string>Exchange</string>
-				<string>TWF</string>
-			</entry>
-			<entry>
-				<string>Market maximum lot</string>
-				<int>1000000</int>
-			</entry>
-			<entry>
-				<string>Symbol</string>
-				<string>TWSETF</string>
-			</entry>
-			<entry>
-				<string>ENName</string>
-				<string>ICE.TWF.FITF</string>
-			</entry>
-			<entry>
-				<string>CNName</string>
-				<string>金指 (台灣期交所)</string>
-			</entry>
-			<entry>
-				<string>TWName</string>
-				<string>金指 (台灣期交所)</string>
-			</entry>
-			<entry>
-				<string>Ref symbol</string>
-				<string>TWSETF</string>
-			</entry>
-			<entry>
-				<string>Spell name</string>
-				<string>jz(twqjs)</string>
-			</entry>
-			<entry>
-				<string>Tick table</string>
-				<string>SC</string>
-			</entry>
-			<entry>
-				<string>Decimal point</string>
-				<int>2</int>
-			</entry>
-			<entry>
-				<string>Instrument type</string>
-				<long>0x0010</long>
-			</entry>
-		</fields>
-	</com.cyanspring.common.staticdata.RefData>
+    <com.cyanspring.common.staticdata.RefData>
+        <fields>
+            <entry>
+                <string>Symbol</string>
+                <string>TXF${MY}</string>
+            </entry>
+            <entry>
+                <string>Desc</string>
+                <string>期貨.台灣期交所.臺指</string>
+            </entry>
+            <entry>
+                <string>Exchange</string>
+                <string>TWF</string>
+            </entry>
+            <entry>
+                <string>Currency</string>
+                <string>NTD</string>
+            </entry>
+            <entry>
+                <string>ENName</string>
+                <string>FITX${YYMM}</string>
+            </entry>
+            <entry>
+                <string>TWName</string>
+                <string>臺指${YYMM}</string>
+            </entry>
+            <entry>
+                <string>CNName</string>
+                <string>臺指${YYMM}</string>
+            </entry>
+            <entry>
+                <string>Ref symbol</string>
+                <string>TXF${SEQ}</string>
+            </entry>
+            <entry>
+                <string>Category</string>
+                <string>FITX</string>
+            </entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>TX</string>
+            </entry>
+            <entry>
+                <string>Spot ENName</string>
+                <string>TX</string>
+            </entry>
+            <entry>
+                <string>Spot TWName</string>
+                <string>臺指</string>
+            </entry>
+            <entry>
+                <string>Spot CNName</string>
+                <string>台指</string>
+            </entry>
+            <entry>
+                <string>Code</string>
+                <string>ICE.TWF.FITX.${YYYYMM}</string>
+            </entry>
+            <entry>
+                <string>Subscribe symbol</string>
+                <string>ICE.TWF.FITX.${YYYYMM}</string>
+            </entry>
+            <entry>
+                <string>Type</string>
+                <string>INDEX_FU</string>
+            </entry>
+            <entry>
+                <string>Lot size</string>
+                <int>1</int>
+            </entry>
+            <entry>
+                <string>Price per unit</string>
+                <double>200</double>
+            </entry>
+            <entry>
+                <string>TWTrading unit</string>
+                <string>元(新臺幣)/指數1點</string>
+            </entry>
+            <entry>
+                <string>CNTrading unit</string>
+                <string>元(新台币)/指数1点</string>
+            </entry>
+            <entry>
+                <string>ENTrading unit</string>
+                <string>NTD/Point</string>
+            </entry>
+            <entry>
+                <string>Price limit</string>
+                <double>10</double>
+            </entry>
+            <entry>
+                <string>Strategy</string>
+                <string>TWF</string>
+            </entry>
+            <entry>
+                <string>Maximum hold</string>
+                <int>4000</int>
+            </entry>
+            <entry>
+                <string>Tick table</string>
+                <string>FT</string>
+            </entry>
+            <entry>
+                <string>Margin Rate</string>
+                <double>0.05</double>
+            </entry>
+            <entry>
+                <string>Limit maximum lot</string>
+                <int>100</int>
+            </entry>
+            <entry>
+                <string>Market maximum lot</string>
+                <int>100</int>
+            </entry>
+            <entry>
+                <string>Numerator DP</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Decimal point</string>
+                <int>0</int>
+            </entry>
+            <entry>
+                <string>Lot CF</string>
+                <double>35</double>
+            </entry>
+            <entry>
+                <string>Minimal CF</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Instrument type</string>
+                <long>0x0412</long>
+            </entry>
+            <entry>
+                <string>Tradable days</string>
+                <int>0</int>
+            </entry>
+        </fields>
+    </com.cyanspring.common.staticdata.RefData>
+    <com.cyanspring.common.staticdata.RefData>
+        <fields>
+            <entry>
+                <string>Symbol</string>
+                <string>MXF${MY}</string>
+            </entry>
+            <entry>
+                <string>Desc</string>
+                <string>期貨.台灣期交所.小臺</string>
+            </entry>
+            <entry>
+                <string>Exchange</string>
+                <string>TWF</string>
+            </entry>
+            <entry>
+                <string>Currency</string>
+                <string>NTD</string>
+            </entry>
+            <entry>
+                <string>ENName</string>
+                <string>FIMTX${YYMM}</string>
+            </entry>
+            <entry>
+                <string>TWName</string>
+                <string>小臺${YYMM}</string>
+            </entry>
+            <entry>
+                <string>CNName</string>
+                <string>小台${YYMM}</string>
+            </entry>
+            <entry>
+                <string>Ref symbol</string>
+                <string>MXF${SEQ}</string>
+            </entry>
+            <entry>
+                <string>Category</string>
+                <string>FIMTX</string>
+            </entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>TX</string>
+            </entry>
+            <entry>
+                <string>Spot ENName</string>
+                <string>MTX</string>
+            </entry>
+            <entry>
+                <string>Spot TWName</string>
+                <string>小臺</string>
+            </entry>
+            <entry>
+                <string>Spot CNName</string>
+                <string>小台</string>
+            </entry>
+            <entry>
+                <string>Code</string>
+                <string>ICE.TWF.FIMTX.${YYYYMM}</string>
+            </entry>
+            <entry>
+                <string>Subscribe symbol</string>
+                <string>ICE.TWF.FIMTX.${YYYYMM}</string>
+            </entry>
+            <entry>
+                <string>Type</string>
+                <string>INDEX_FU</string>
+            </entry>
+            <entry>
+                <string>Lot size</string>
+                <int>1</int>
+            </entry>
+            <entry>
+                <string>Price per unit</string>
+                <double>50</double>
+            </entry>
+            <entry>
+                <string>TWTrading unit</string>
+                <string>元(新臺幣)/指數1點</string>
+            </entry>
+            <entry>
+                <string>CNTrading unit</string>
+                <string>元(新台币)/指数1点</string>
+            </entry>
+            <entry>
+                <string>ENTrading unit</string>
+                <string>NTD/Point</string>
+            </entry>
+            <entry>
+                <string>Price limit</string>
+                <double>10</double>
+            </entry>
+            <entry>
+                <string>Strategy</string>
+                <string>TWF</string>
+            </entry>
+            <!-- 與臺股期貨合併計算(依4口小型臺指期貨契約等於1口臺股期貨契約合併計算, 臺股期貨部位限制6,000) -->
+            <!-- 目前設置 臺股期貨4000, 小型臺指期貨8000, 4000 + 8000/4 = 6000 -->
+            <entry>
+                <string>Maximum hold</string>
+                <int>8000</int>
+            </entry>
+            <entry>
+                <string>Tick table</string>
+                <string>FT</string>
+            </entry>
+            <entry>
+                <string>Margin Rate</string>
+                <double>0.05</double>
+            </entry>
+            <entry>
+                <string>Limit maximum lot</string>
+                <int>100</int>
+            </entry>
+            <entry>
+                <string>Market maximum lot</string>
+                <int>100</int>
+            </entry>
+            <entry>
+                <string>Numerator DP</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Decimal point</string>
+                <int>0</int>
+            </entry>
+            <entry>
+                <string>Lot CF</string>
+                <double>20</double>
+            </entry>
+            <entry>
+                <string>Minimal CF</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Instrument type</string>
+                <long>0x0412</long>
+            </entry>
+            <entry>
+                <string>Tradable days</string>
+                <int>0</int>
+            </entry>
+        </fields>
+    </com.cyanspring.common.staticdata.RefData>
+    <com.cyanspring.common.staticdata.RefData>
+        <fields>
+            <entry>
+                <string>Symbol</string>
+                <string>XIF${MY}</string>
+            </entry>
+            <entry>
+                <string>Desc</string>
+                <string>期貨.台灣期交所.非金電</string>
+            </entry>
+            <entry>
+                <string>Exchange</string>
+                <string>TWF</string>
+            </entry>
+            <entry>
+                <string>Currency</string>
+                <string>NTD</string>
+            </entry>
+            <entry>
+                <string>ENName</string>
+                <string>XIF${YYMM}</string>
+            </entry>
+            <entry>
+                <string>TWName</string>
+                <string>非金電${YYMM}</string>
+            </entry>
+            <entry>
+                <string>CNName</string>
+                <string>非金电${YYMM}</string>
+            </entry>
+            <entry>
+                <string>Ref symbol</string>
+                <string>XIF${SEQ}</string>
+            </entry>
+            <entry>
+                <string>Category</string>
+                <string>XIF</string>
+            </entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>TX</string>
+            </entry>
+            <entry>
+                <string>Spot ENName</string>
+                <string>XIF</string>
+            </entry>
+            <entry>
+                <string>Spot TWName</string>
+                <string>非金電</string>
+            </entry>
+            <entry>
+                <string>Spot CNName</string>
+                <string>非金电</string>
+            </entry>
+            <entry>
+                <string>Code</string>
+                <string>ICE.TWF.XIF.${YYYYMM}</string>
+            </entry>
+            <entry>
+                <string>Subscribe symbol</string>
+                <string>ICE.TWF.XIF.${YYYYMM}</string>
+            </entry>
+            <entry>
+                <string>Type</string>
+                <string>INDEX_FU</string>
+            </entry>
+            <entry>
+                <string>Lot size</string>
+                <int>1</int>
+            </entry>
+            <entry>
+                <string>Price per unit</string>
+                <double>100</double>
+            </entry>
+            <entry>
+                <string>TWTrading unit</string>
+                <string>元(新臺幣)/指數1點</string>
+            </entry>
+            <entry>
+                <string>CNTrading unit</string>
+                <string>元(新台币)/指数1点</string>
+            </entry>
+            <entry>
+                <string>ENTrading unit</string>
+                <string>NTD/Point</string>
+            </entry>
+            <entry>
+                <string>Price limit</string>
+                <double>10</double>
+            </entry>
+            <entry>
+                <string>Strategy</string>
+                <string>TWF</string>
+            </entry>
+            <entry>
+                <string>Maximum hold</string>
+                <int>1000</int>
+            </entry>
+            <entry>
+                <string>Tick table</string>
+                <string>FT</string>
+            </entry>
+            <entry>
+                <string>Margin Rate</string>
+                <double>0.05</double>
+            </entry>
+            <entry>
+                <string>Limit maximum lot</string>
+                <int>100</int>
+            </entry>
+            <entry>
+                <string>Market maximum lot</string>
+                <int>100</int>
+            </entry>
+            <entry>
+                <string>Numerator DP</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Decimal point</string>
+                <int>0</int>
+            </entry>
+            <entry>
+                <string>Lot CF</string>
+                <double>35</double>
+            </entry>
+            <entry>
+                <string>Minimal CF</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Instrument type</string>
+                <long>0x0412</long>
+            </entry>
+            <entry>
+                <string>Tradable days</string>
+                <int>0</int>
+            </entry>
+        </fields>
+    </com.cyanspring.common.staticdata.RefData>
+    <com.cyanspring.common.staticdata.RefData>
+        <fields>
+            <entry>
+                <string>Symbol</string>
+                <string>FXF${MY}</string>
+            </entry>
+            <entry>
+                <string>Desc</string>
+                <string>期貨.台灣期交所.金融</string>
+            </entry>
+            <entry>
+                <string>Exchange</string>
+                <string>TWF</string>
+            </entry>
+            <entry>
+                <string>Currency</string>
+                <string>NTD</string>
+            </entry>
+            <entry>
+                <string>ENName</string>
+                <string>FITF${YYMM}</string>
+            </entry>
+            <entry>
+                <string>TWName</string>
+                <string>金融${YYMM}</string>
+            </entry>
+            <entry>
+                <string>CNName</string>
+                <string>金融${YYMM}</string>
+            </entry>
+            <entry>
+                <string>Ref symbol</string>
+                <string>FXF${SEQ}</string>
+            </entry>
+            <entry>
+                <string>Category</string>
+                <string>FITF</string>
+            </entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>TX</string>
+            </entry>
+            <entry>
+                <string>Spot ENName</string>
+                <string>TF</string>
+            </entry>
+            <entry>
+                <string>Spot TWName</string>
+                <string>金融</string>
+            </entry>
+            <entry>
+                <string>Spot CNName</string>
+                <string>金融</string>
+            </entry>
+            <entry>
+                <string>Code</string>
+                <string>ICE.TWF.FITF.${YYYYMM}</string>
+            </entry>
+            <entry>
+                <string>Subscribe symbol</string>
+                <string>ICE.TWF.FITF.${YYYYMM}</string>
+            </entry>
+            <entry>
+                <string>Type</string>
+                <string>INDEX_FU</string>
+            </entry>
+            <entry>
+                <string>Lot size</string>
+                <int>1</int>
+            </entry>
+            <entry>
+                <string>Price per unit</string>
+                <double>1000</double>
+            </entry>
+            <entry>
+                <string>TWTrading unit</string>
+                <string>元(新臺幣)/指數1點</string>
+            </entry>
+            <entry>
+                <string>CNTrading unit</string>
+                <string>元(新台币)/指数1点</string>
+            </entry>
+            <entry>
+                <string>ENTrading unit</string>
+                <string>NTD/Point</string>
+            </entry>
+            <entry>
+                <string>Price limit</string>
+                <double>10</double>
+            </entry>
+            <entry>
+                <string>Strategy</string>
+                <string>TWF</string>
+            </entry>
+            <entry>
+                <string>Maximum hold</string>
+                <int>1000</int>
+            </entry>
+            <entry>
+                <string>Tick table</string>
+                <string>IF</string>
+            </entry>
+            <entry>
+                <string>Margin Rate</string>
+                <double>0.05</double>
+            </entry>
+            <entry>
+                <string>Limit maximum lot</string>
+                <int>100</int>
+            </entry>
+            <entry>
+                <string>Market maximum lot</string>
+                <int>100</int>
+            </entry>
+            <entry>
+                <string>Numerator DP</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Decimal point</string>
+                <int>0</int>
+            </entry>
+            <entry>
+                <string>Lot CF</string>
+                <double>35</double>
+            </entry>
+            <entry>
+                <string>Minimal CF</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Instrument type</string>
+                <long>0x0412</long>
+            </entry>
+            <entry>
+                <string>Tradable days</string>
+                <int>0</int>
+            </entry>
+        </fields>
+    </com.cyanspring.common.staticdata.RefData>
+    <com.cyanspring.common.staticdata.RefData>
+        <fields>
+            <entry>
+                <string>Symbol</string>
+                <string>EXF${MY}</string>
+            </entry>
+            <entry>
+                <string>Desc</string>
+                <string>期貨.台灣期交所.電子</string>
+            </entry>
+            <entry>
+                <string>Exchange</string>
+                <string>TWF</string>
+            </entry>
+            <entry>
+                <string>Currency</string>
+                <string>NTD</string>
+            </entry>
+            <entry>
+                <string>ENName</string>
+                <string>FITE${YYMM}</string>
+            </entry>
+            <entry>
+                <string>TWName</string>
+                <string>電子${YYMM}</string>
+            </entry>
+            <entry>
+                <string>CNName</string>
+                <string>电子${YYMM}</string>
+            </entry>
+            <entry>
+                <string>Ref symbol</string>
+                <string>EXF${SEQ}</string>
+            </entry>
+            <entry>
+                <string>Category</string>
+                <string>FITE</string>
+            </entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>TX</string>
+            </entry>
+            <entry>
+                <string>Spot ENName</string>
+                <string>TE</string>
+            </entry>
+            <entry>
+                <string>Spot TWName</string>
+                <string>電子</string>
+            </entry>
+            <entry>
+                <string>Spot CNName</string>
+                <string>电子</string>
+            </entry>
+            <entry>
+                <string>Code</string>
+                <string>ICE.TWF.FITE.${YYYYMM}</string>
+            </entry>
+            <entry>
+                <string>Subscribe symbol</string>
+                <string>ICE.TWF.FITE.${YYYYMM}</string>
+            </entry>
+            <entry>
+                <string>Type</string>
+                <string>INDEX_FU</string>
+            </entry>
+            <entry>
+                <string>Lot size</string>
+                <int>1</int>
+            </entry>
+            <entry>
+                <string>Price per unit</string>
+                <double>4000</double>
+            </entry>
+            <entry>
+                <string>TWTrading unit</string>
+                <string>元(新臺幣)/指數1點</string>
+            </entry>
+            <entry>
+                <string>CNTrading unit</string>
+                <string>元(新台币)/指数1点</string>
+            </entry>
+            <entry>
+                <string>ENTrading unit</string>
+                <string>NTD/Point</string>
+            </entry>
+            <entry>
+                <string>Price limit</string>
+                <double>10</double>
+            </entry>
+            <entry>
+                <string>Strategy</string>
+                <string>TWF</string>
+            </entry>
+            <entry>
+                <string>Maximum hold</string>
+                <int>1000</int>
+            </entry>
+            <entry>
+                <string>Tick table</string>
+                <string>UNIT005</string>
+            </entry>
+            <entry>
+                <string>Margin Rate</string>
+                <double>0.05</double>
+            </entry>
+            <entry>
+                <string>Limit maximum lot</string>
+                <int>100</int>
+            </entry>
+            <entry>
+                <string>Market maximum lot</string>
+                <int>100</int>
+            </entry>
+            <entry>
+                <string>Numerator DP</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Decimal point</string>
+                <int>0</int>
+            </entry>
+            <entry>
+                <string>Lot CF</string>
+                <double>35</double>
+            </entry>
+            <entry>
+                <string>Minimal CF</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Instrument type</string>
+                <long>0x0412</long>
+            </entry>
+            <entry>
+                <string>Tradable days</string>
+                <int>0</int>
+            </entry>
+        </fields>
+    </com.cyanspring.common.staticdata.RefData>
+    <com.cyanspring.common.staticdata.RefData>
+        <fields>
+            <entry>
+                <string>Symbol</string>
+                <string>T5F${MY}</string>
+            </entry>
+            <entry>
+                <string>Desc</string>
+                <string>期貨.台灣期交所.臺灣50</string>
+            </entry>
+            <entry>
+                <string>Exchange</string>
+                <string>TWF</string>
+            </entry>
+            <entry>
+                <string>Currency</string>
+                <string>NTD</string>
+            </entry>
+            <entry>
+                <string>ENName</string>
+                <string>FIT5${YYMM}</string>
+            </entry>
+            <entry>
+                <string>TWName</string>
+                <string>臺灣50${YYMM}</string>
+            </entry>
+            <entry>
+                <string>CNName</string>
+                <string>台湾50${YYMM}</string>
+            </entry>
+            <entry>
+                <string>Ref symbol</string>
+                <string>T5F${SEQ}</string>
+            </entry>
+            <entry>
+                <string>Category</string>
+                <string>FIT5</string>
+            </entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>TX</string>
+            </entry>
+            <entry>
+                <string>Spot ENName</string>
+                <string>T5F</string>
+            </entry>
+            <entry>
+                <string>Spot TWName</string>
+                <string>臺灣50</string>
+            </entry>
+            <entry>
+                <string>Spot CNName</string>
+                <string>台湾50</string>
+            </entry>
+            <entry>
+                <string>Code</string>
+                <string>ICE.TWF.FIT5.${YYYYMM}</string>
+            </entry>
+            <entry>
+                <string>Subscribe symbol</string>
+                <string>ICE.TWF.FIT5.${YYYYMM}</string>
+            </entry>
+            <entry>
+                <string>Type</string>
+                <string>INDEX_FU</string>
+            </entry>
+            <entry>
+                <string>Lot size</string>
+                <int>1</int>
+            </entry>
+            <entry>
+                <string>Price per unit</string>
+                <double>100</double>
+            </entry>
+            <entry>
+                <string>TWTrading unit</string>
+                <string>元(新臺幣)/指數1點</string>
+            </entry>
+            <entry>
+                <string>CNTrading unit</string>
+                <string>元(新台币)/指数1点</string>
+            </entry>
+            <entry>
+                <string>ENTrading unit</string>
+                <string>NTD/Point</string>
+            </entry>
+            <entry>
+                <string>Price limit</string>
+                <double>10</double>
+            </entry>
+            <entry>
+                <string>Strategy</string>
+                <string>TWF</string>
+            </entry>
+            <entry>
+                <string>Maximum hold</string>
+                <int>1000</int>
+            </entry>
+            <entry>
+                <string>Tick table</string>
+                <string>FT</string>
+            </entry>
+            <entry>
+                <string>Margin Rate</string>
+                <double>0.05</double>
+            </entry>
+            <entry>
+                <string>Limit maximum lot</string>
+                <int>100</int>
+            </entry>
+            <entry>
+                <string>Market maximum lot</string>
+                <int>100</int>
+            </entry>
+            <entry>
+                <string>Numerator DP</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Decimal point</string>
+                <int>0</int>
+            </entry>
+            <entry>
+                <string>Lot CF</string>
+                <double>35</double>
+            </entry>
+            <entry>
+                <string>Minimal CF</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Instrument type</string>
+                <long>0x0412</long>
+            </entry>
+            <entry>
+                <string>Tradable days</string>
+                <int>0</int>
+            </entry>
+        </fields>
+    </com.cyanspring.common.staticdata.RefData>
+    <com.cyanspring.common.staticdata.RefData>
+        <fields>
+            <entry>
+                <string>Symbol</string>
+                <string>GTF${MY}</string>
+            </entry>
+            <entry>
+                <string>Desc</string>
+                <string>期貨.台灣期交所.櫃買</string>
+            </entry>
+            <entry>
+                <string>Exchange</string>
+                <string>TWF</string>
+            </entry>
+            <entry>
+                <string>Currency</string>
+                <string>NTD</string>
+            </entry>
+            <entry>
+                <string>ENName</string>
+                <string>GTF${YYMM}</string>
+            </entry>
+            <entry>
+                <string>TWName</string>
+                <string>櫃買${YYMM}</string>
+            </entry>
+            <entry>
+                <string>CNName</string>
+                <string>柜买${YYMM}</string>
+            </entry>
+            <entry>
+                <string>Ref symbol</string>
+                <string>GTF${SEQ}</string>
+            </entry>
+            <entry>
+                <string>Category</string>
+                <string>GTF</string>
+            </entry>
+            <entry>
+                <string>Contract policy</string>
+                <string>TX</string>
+            </entry>
+            <entry>
+                <string>Spot ENName</string>
+                <string>GTF</string>
+            </entry>
+            <entry>
+                <string>Spot TWName</string>
+                <string>櫃買</string>
+            </entry>
+            <entry>
+                <string>Spot CNName</string>
+                <string>柜买</string>
+            </entry>
+            <entry>
+                <string>Code</string>
+                <string>ICE.TWF.GTF.${YYYYMM}</string>
+            </entry>
+            <entry>
+                <string>Subscribe symbol</string>
+                <string>ICE.TWF.GTF.${YYYYMM}</string>
+            </entry>
+            <entry>
+                <string>Type</string>
+                <string>INDEX_FU</string>
+            </entry>
+            <entry>
+                <string>Lot size</string>
+                <int>1</int>
+            </entry>
+            <entry>
+                <string>Price per unit</string>
+                <double>4000</double>
+            </entry>
+            <entry>
+                <string>TWTrading unit</string>
+                <string>元(新臺幣)/指數1點</string>
+            </entry>
+            <entry>
+                <string>CNTrading unit</string>
+                <string>元(新台币)/指数1点</string>
+            </entry>
+            <entry>
+                <string>ENTrading unit</string>
+                <string>NTD/Point</string>
+            </entry>
+            <entry>
+                <string>Price limit</string>
+                <double>10</double>
+            </entry>
+            <entry>
+                <string>Strategy</string>
+                <string>TWF</string>
+            </entry>
+            <entry>
+                <string>Maximum hold</string>
+                <int>1000</int>
+            </entry>
+            <entry>
+                <string>Tick table</string>
+                <string>UNIT005</string>
+            </entry>
+            <entry>
+                <string>Margin Rate</string>
+                <double>0.05</double>
+            </entry>
+            <entry>
+                <string>Limit maximum lot</string>
+                <int>100</int>
+            </entry>
+            <entry>
+                <string>Market maximum lot</string>
+                <int>100</int>
+            </entry>
+            <entry>
+                <string>Numerator DP</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Decimal point</string>
+                <int>0</int>
+            </entry>
+            <entry>
+                <string>Lot CF</string>
+                <double>35</double>
+            </entry>
+            <entry>
+                <string>Minimal CF</string>
+                <double>0</double>
+            </entry>
+            <entry>
+                <string>Instrument type</string>
+                <long>0x0412</long>
+            </entry>
+            <entry>
+                <string>Tradable days</string>
+                <int>0</int>
+            </entry>
+        </fields>
+    </com.cyanspring.common.staticdata.RefData>
+    <com.cyanspring.common.staticdata.RefData>
+        <fields>
+            <entry>
+                <string>Maximum hold</string>
+                <int>0</int>
+            </entry>
+            <entry>
+                <string>Price per unit</string>
+                <double>0.0</double>
+            </entry>
+            <entry>
+                <string>Index Session Type</string>
+                <string>SPOT</string>
+            </entry>
+            <entry>
+                <string>Strategy</string>
+                <string>INDEX</string>
+            </entry>
+            <entry>
+                <string>Limit maximum lot</string>
+                <int>1000000</int>
+            </entry>
+            <entry>
+                <string>Margin Rate</string>
+                <double>0.0</double>
+            </entry>
+            <entry>
+                <string>Code</string>
+                <string>ICE.TWF.FITX</string>
+            </entry>
+            <entry>
+                <string>Lot size</string>
+                <int>0</int>
+            </entry>
+            <entry>
+                <string>Category</string>
+                <string>INDEX</string>
+            </entry>
+            <entry>
+                <string>Exchange</string>
+                <string>TWF</string>
+            </entry>
+            <entry>
+                <string>Market maximum lot</string>
+                <int>1000000</int>
+            </entry>
+            <entry>
+                <string>Symbol</string>
+                <string>TWSETX</string>
+            </entry>
+            <entry>
+                <string>ENName</string>
+                <string>ICE.TWF.FITX</string>
+            </entry>
+            <entry>
+                <string>CNName</string>
+                <string>臺指 (台灣期交所)</string>
+            </entry>
+            <entry>
+                <string>TWName</string>
+                <string>臺指 (台灣期交所)</string>
+            </entry>
+            <entry>
+                <string>Ref symbol</string>
+                <string>TWSETX</string>
+            </entry>
+            <entry>
+                <string>Spell name</string>
+                <string>tz(twqjs)</string>
+            </entry>
+            <entry>
+                <string>Tick table</string>
+                <string>SC</string>
+            </entry>
+            <entry>
+                <string>Decimal point</string>
+                <int>2</int>
+            </entry>
+            <entry>
+                <string>Instrument type</string>
+                <long>0x0010</long>
+            </entry>
+        </fields>
+    </com.cyanspring.common.staticdata.RefData>
+    <com.cyanspring.common.staticdata.RefData>
+        <fields>
+            <entry>
+                <string>Maximum hold</string>
+                <int>0</int>
+            </entry>
+            <entry>
+                <string>Price per unit</string>
+                <double>0.0</double>
+            </entry>
+            <entry>
+                <string>Index Session Type</string>
+                <string>SPOT</string>
+            </entry>
+            <entry>
+                <string>Strategy</string>
+                <string>INDEX</string>
+            </entry>
+            <entry>
+                <string>Limit maximum lot</string>
+                <int>1000000</int>
+            </entry>
+            <entry>
+                <string>Margin Rate</string>
+                <double>0.0</double>
+            </entry>
+            <entry>
+                <string>Code</string>
+                <string>ICE.TWF.FIMTX</string>
+            </entry>
+            <entry>
+                <string>Lot size</string>
+                <int>0</int>
+            </entry>
+            <entry>
+                <string>Category</string>
+                <string>INDEX</string>
+            </entry>
+            <entry>
+                <string>Exchange</string>
+                <string>TWF</string>
+            </entry>
+            <entry>
+                <string>Market maximum lot</string>
+                <int>1000000</int>
+            </entry>
+            <entry>
+                <string>Symbol</string>
+                <string>TWSEMTX</string>
+            </entry>
+            <entry>
+                <string>ENName</string>
+                <string>ICE.TWF.FIMTX</string>
+            </entry>
+            <entry>
+                <string>CNName</string>
+                <string>小臺 (台灣期交所)</string>
+            </entry>
+            <entry>
+                <string>TWName</string>
+                <string>小臺 (台灣期交所)</string>
+            </entry>
+            <entry>
+                <string>Ref symbol</string>
+                <string>TWSEMTX</string>
+            </entry>
+            <entry>
+                <string>Spell name</string>
+                <string>xt(twqjs)</string>
+            </entry>
+            <entry>
+                <string>Tick table</string>
+                <string>SC</string>
+            </entry>
+            <entry>
+                <string>Decimal point</string>
+                <int>2</int>
+            </entry>
+            <entry>
+                <string>Instrument type</string>
+                <long>0x0010</long>
+            </entry>
+        </fields>
+    </com.cyanspring.common.staticdata.RefData>
+    <com.cyanspring.common.staticdata.RefData>
+        <fields>
+            <entry>
+                <string>Maximum hold</string>
+                <int>0</int>
+            </entry>
+            <entry>
+                <string>Price per unit</string>
+                <double>0.0</double>
+            </entry>
+            <entry>
+                <string>Index Session Type</string>
+                <string>SPOT</string>
+            </entry>
+            <entry>
+                <string>Strategy</string>
+                <string>INDEX</string>
+            </entry>
+            <entry>
+                <string>Limit maximum lot</string>
+                <int>1000000</int>
+            </entry>
+            <entry>
+                <string>Margin Rate</string>
+                <double>0.0</double>
+            </entry>
+            <entry>
+                <string>Code</string>
+                <string>ICE.TWF.FITE</string>
+            </entry>
+            <entry>
+                <string>Lot size</string>
+                <int>0</int>
+            </entry>
+            <entry>
+                <string>Category</string>
+                <string>INDEX</string>
+            </entry>
+            <entry>
+                <string>Exchange</string>
+                <string>TWF</string>
+            </entry>
+            <entry>
+                <string>Market maximum lot</string>
+                <int>1000000</int>
+            </entry>
+            <entry>
+                <string>Symbol</string>
+                <string>TWSETE</string>
+            </entry>
+            <entry>
+                <string>ENName</string>
+                <string>ICE.TWF.FITE</string>
+            </entry>
+            <entry>
+                <string>CNName</string>
+                <string>電指 (台灣期交所)</string>
+            </entry>
+            <entry>
+                <string>TWName</string>
+                <string>電指 (台灣期交所)</string>
+            </entry>
+            <entry>
+                <string>Ref symbol</string>
+                <string>TWSETE</string>
+            </entry>
+            <entry>
+                <string>Spell name</string>
+                <string>dz(twqjs)</string>
+            </entry>
+            <entry>
+                <string>Tick table</string>
+                <string>SC</string>
+            </entry>
+            <entry>
+                <string>Decimal point</string>
+                <int>2</int>
+            </entry>
+            <entry>
+                <string>Instrument type</string>
+                <long>0x0010</long>
+            </entry>
+        </fields>
+    </com.cyanspring.common.staticdata.RefData>
+    <com.cyanspring.common.staticdata.RefData>
+        <fields>
+            <entry>
+                <string>Maximum hold</string>
+                <int>0</int>
+            </entry>
+            <entry>
+                <string>Price per unit</string>
+                <double>0.0</double>
+            </entry>
+            <entry>
+                <string>Index Session Type</string>
+                <string>SPOT</string>
+            </entry>
+            <entry>
+                <string>Strategy</string>
+                <string>INDEX</string>
+            </entry>
+            <entry>
+                <string>Limit maximum lot</string>
+                <int>1000000</int>
+            </entry>
+            <entry>
+                <string>Margin Rate</string>
+                <double>0.0</double>
+            </entry>
+            <entry>
+                <string>Code</string>
+                <string>ICE.TWF.FITF</string>
+            </entry>
+            <entry>
+                <string>Lot size</string>
+                <int>0</int>
+            </entry>
+            <entry>
+                <string>Category</string>
+                <string>INDEX</string>
+            </entry>
+            <entry>
+                <string>Exchange</string>
+                <string>TWF</string>
+            </entry>
+            <entry>
+                <string>Market maximum lot</string>
+                <int>1000000</int>
+            </entry>
+            <entry>
+                <string>Symbol</string>
+                <string>TWSETF</string>
+            </entry>
+            <entry>
+                <string>ENName</string>
+                <string>ICE.TWF.FITF</string>
+            </entry>
+            <entry>
+                <string>CNName</string>
+                <string>金指 (台灣期交所)</string>
+            </entry>
+            <entry>
+                <string>TWName</string>
+                <string>金指 (台灣期交所)</string>
+            </entry>
+            <entry>
+                <string>Ref symbol</string>
+                <string>TWSETF</string>
+            </entry>
+            <entry>
+                <string>Spell name</string>
+                <string>jz(twqjs)</string>
+            </entry>
+            <entry>
+                <string>Tick table</string>
+                <string>SC</string>
+            </entry>
+            <entry>
+                <string>Decimal point</string>
+                <int>2</int>
+            </entry>
+            <entry>
+                <string>Instrument type</string>
+                <long>0x0010</long>
+            </entry>
+        </fields>
+    </com.cyanspring.common.staticdata.RefData>
 </list>

@@ -240,6 +240,19 @@
 			</array>
 		</property>
 	</bean>
+	<bean id="unit005TickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+        <property name="tickTable">
+            <array>
+                <array>
+                    <value>0</value>
+                    <value>1000000</value>
+                    <value>0.05</value>
+                </array>
+            </array>
+        </property>
+    </bean>
+    <bean id="ifTickTable" class="com.cyanspring.common.staticdata.IFTickTable">
+    </bean>
 
 	<bean id="tickTableManager" class="com.cyanspring.common.staticdata.TickTableManager">
 		<property name="tickTables">
@@ -247,6 +260,8 @@
 				<entry key="DEFAULT" value-ref="hkexTickTable" />
 				<entry key="FX" value-ref="forexTickTable" />
 				<entry key="FT" value-ref="ftTickTable" />
+				<entry key="UNIT005" value-ref="unit005TickTable" />
+				<entry key="IF" value-ref="ifTickTable" />
 			</map>
 		</property>
 	</bean>
@@ -406,9 +421,14 @@
 	<bean id="marketSessionUtil" class="com.cyanspring.common.marketsession.MarketSessionUtil">
 		<constructor-arg>
 			<list>
-				<ref bean="fitxSessionChecker" />
 				<ref bean="fimtxSessionChecker" />
+				<ref bean="fit5SessionChecker" />
+				<ref bean="fiteSessionChecker" />
+				<ref bean="fitfSessionChecker" />
+				<ref bean="fitxSessionChecker" />
+				<ref bean="gtfSessionChecker" />
 				<ref bean="indexSessionChecker" />
+				<ref bean="xifSessionChecker" />
 			</list>
 		</constructor-arg>
 	</bean>
