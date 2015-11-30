@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.IDetailsPage;
 import org.eclipse.ui.forms.IFormPart;
 import org.eclipse.ui.forms.IManagedForm;
@@ -47,6 +48,7 @@ public class ExchangeAccountDetailsPage implements IDetailsPage {
 	private InstrumentInfoTableComposite tableComposite;
 	
 	private Action updateAction;
+	private IInputChangeListener inputChangeListener;
 	
 	public ExchangeAccountDetailsPage(ISubAccountManagerService service) {
 		this.service = service;
@@ -131,14 +133,21 @@ public class ExchangeAccountDetailsPage implements IDetailsPage {
 			}
 		});
 		
-		service.addExchangeInputChangeListener(new IInputChangeListener() {
+		inputChangeListener = new IInputChangeListener() {
 			@Override
 			public void inputChanged() {
-				input = service.getExchangeAccoutById(input.getId());
-				update();
+				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						input = service.getExchangeAccoutById(input.getId());
+						update();
+					}
+				});
+				
 			}
-		});
+		};
 		
+		service.addExchangeInputChangeListener(inputChangeListener);
 	}
 
 	private void initAction() {
@@ -167,8 +176,6 @@ public class ExchangeAccountDetailsPage implements IDetailsPage {
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

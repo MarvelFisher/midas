@@ -111,7 +111,8 @@ public class InstrumentPoolKeeper implements IInstrumentPoolKeeper {
 		return users;
 	}
 
-	public List<ExchangeSubAccount> getExchangeSubAccountsByUser(String user) {
+	@Override
+	public List<ExchangeSubAccount> getAssignedSubAccounts(String user) {
 		List<ExchangeSubAccount> subAccounts = new ArrayList<ExchangeSubAccount>();
 		if (userSubAccounMap.containsKey(user)) {
 			subAccounts.addAll(userSubAccounMap.get(user).values());
