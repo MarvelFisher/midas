@@ -34,6 +34,7 @@ import com.cyanspring.cstw.ui.trader.composite.speeddepth.model.SpeedDepthModel;
 import com.cyanspring.cstw.ui.trader.composite.speeddepth.provider.SpeedDepthContentProvider;
 import com.cyanspring.cstw.ui.trader.composite.speeddepth.provider.SpeedDepthLabelProvider;
 import com.cyanspring.cstw.ui.trader.composite.speeddepth.service.SpeedDepthService;
+import com.cyanspring.cstw.ui.utils.TableUtils;
 
 /**
  * 
@@ -217,9 +218,6 @@ public final class SpeedDepthTableComposite extends Composite {
 								Double.valueOf(model.getPrice()), orderType);
 					}
 				}
-
-				TableItem item = table.getItem(new Point(e.x, e.y));
-				checkSelectedItem(item);
 			}
 		});
 
@@ -242,6 +240,7 @@ public final class SpeedDepthTableComposite extends Composite {
 				TableItem item = table.getItem(new Point(e.x, e.y));
 				if (item != null) {
 					changeItemColor(item, SWT.COLOR_BLACK);
+					System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 					if (currentMouseMoveItem != null
 							&& !currentMouseMoveItem.isDisposed()
 							&& currentMouseMoveItem != item) {
@@ -260,13 +259,15 @@ public final class SpeedDepthTableComposite extends Composite {
 					labelProvider.setMouseselectIndex(-1);
 				}
 				currentMouseMoveItem = item;
-				if (isLock) {
-					labelProvider.clearSelectedIndex();
-					for (TableItem selectedItem : table.getSelection()) {
-						changeItemColor(selectedItem, SWT.COLOR_BLACK);
-						SpeedDepthModel model = (SpeedDepthModel) selectedItem
-								.getData();
-						labelProvider.addSelectedIndex(model.getIndex());
+			}
+		});
+
+		table.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				for (TableItem item : table.getItems()) {
+					if (!TableUtils.isItemSelected(item, table)) {
+						changeItemColor(item, SWT.COLOR_WHITE);
 					}
 				}
 			}
@@ -301,8 +302,10 @@ public final class SpeedDepthTableComposite extends Composite {
 	}
 
 	private void changeItemColor(TableItem item, int color) {
-		item.setForeground(1, SWTResourceManager.getColor(color));
-		item.setForeground(3, SWTResourceManager.getColor(color));
+		if (item.getText(1).length() > 0 || item.getText(3).length() > 0) {
+			item.setForeground(1, SWTResourceManager.getColor(color));
+			item.setForeground(3, SWTResourceManager.getColor(color));
+		}
 	}
 
 	public void clear() {

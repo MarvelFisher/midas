@@ -83,4 +83,13 @@ public class TableUtils {
 		}
 		return strs;
 	}
+
+	public static boolean isItemSelected(TableItem item, Table table) {
+		for (TableItem selectedItem : table.getSelection()) {
+			if (item == selectedItem) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
