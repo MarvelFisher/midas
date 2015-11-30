@@ -47,17 +47,12 @@ public class ApiQuoteEvent implements IApiReply {
         if (quoteEvent.getReceiver() != null) {
             resourceManager.sendEventToUser(quoteEvent.getKey(), sendEvent); //in this case key is user
         } else {
-        	String symbol = quoteEvent.getQuote().getSymbol();
             Map<String, List<String>> mapQuoteSubs = resourceManager.getQuoteSubs();
             if (mapQuoteSubs != null && mapQuoteSubs.size() > 0) {
 	            Set<Map.Entry<String, List<String>>> entries = mapQuoteSubs.entrySet();
 	            for (Map.Entry<String, List<String>> entry : entries) {
 	            	String user = entry.getKey();
-	            	List<String> lstSymbol = entry.getValue();
-	            	while (lstSymbol != null && lstSymbol.contains(symbol)) {
-						lstSymbol.remove(symbol);
-						resourceManager.sendEventToUser(user, sendEvent);
-					}
+					resourceManager.sendEventToUser(user, sendEvent);
 	            }
             }
         }

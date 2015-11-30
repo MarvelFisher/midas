@@ -1,5 +1,6 @@
 package com.cyanspring.event.api.obj.request;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -48,11 +49,18 @@ public class ApiQuoteSubEvent implements IApiRequest {
 
         // Restrict maximum number of quote per user to be <= 5
         List<String> lstSymbol = resourceManager.getQuoteSubsSymbolList(ctxUser);
-        if (lstSymbol != null && lstSymbol.size() > 4) {
-	        for (Iterator<String> iterator = lstSymbol.iterator(); iterator.hasNext();) {
-	        	iterator.next();
-	            iterator.remove();
-	        }
+        if (lstSymbol != null && lstSymbol.contains(symbol)) {
+			return;
+		}
+
+        if (lstSymbol == null) {
+        	lstSymbol = new ArrayList<>();
+		}
+
+        while (lstSymbol.size() > 4) {
+	        Iterator<String> iterator = lstSymbol.iterator();
+        	iterator.next();
+        	iterator.remove();
         }
 
         resourceManager.putQuoteSubsSymbol(ctxUser, symbol);
