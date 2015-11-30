@@ -49,16 +49,12 @@ public interface ISubAccountManagerService extends IBasicService {
 	
 	void updateSubAccountName(SubAccountModel subAccount, String name);
 	
-	void moveUpExchangeAccount(ExchangeAccountModel exchange);
-	
-	void moveDownExchangeAccount(ExchangeAccountModel exchange);
-	
-	void moveUpSubAccount(SubAccountModel subAccount);
-	
-	void moveDownSubAccount(SubAccountModel subAccount);
-	
 	void addExchangeInputChangeListener(IInputChangeListener listener);
 	
 	void addSubAccInputChangeListener(IInputChangeListener listener);
+	
+	void removeExchangeInputChangeListener(IInputChangeListener listener);
+	
+	void removeSubAccInputChangeListener(IInputChangeListener listener);
 	
 }

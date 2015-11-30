@@ -72,8 +72,8 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl implements
 
 	@Override
 	public SubAccountModel getSubAccountById(String id) {
-
-		return null;
+		ExchangeSubAccount sub = instrumentPoolKeeper.getSubAccountById(id);
+		return ModelTransfer.parseSubAccountModel(sub);
 	}
 
 	@Override
@@ -318,30 +318,6 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl implements
 	}
 
 	@Override
-	public void moveUpExchangeAccount(ExchangeAccountModel exchange) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void moveDownExchangeAccount(ExchangeAccountModel exchange) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void moveUpSubAccount(SubAccountModel subAccount) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void moveDownSubAccount(SubAccountModel subAccount) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void addExchangeInputChangeListener(IInputChangeListener listener) {
 		exchangeInputChange.add(listener);
 	}
@@ -361,6 +337,16 @@ public class SubAccountManageServiceImpl extends BasicServiceImpl implements
 		for (IInputChangeListener listener : subInputChange) {
 			listener.inputChanged();
 		}
+	}
+
+	@Override
+	public void removeExchangeInputChangeListener(IInputChangeListener listener) {
+		exchangeInputChange.remove(listener);
+	}
+
+	@Override
+	public void removeSubAccInputChangeListener(IInputChangeListener listener) {
+		subInputChange.remove(listener);
 	}
 
 }
