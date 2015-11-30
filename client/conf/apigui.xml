@@ -26,6 +26,9 @@
 		<property name="port" value="13323"></property>
 		<property name="retryInterval" value="3000"></property>
 		<property name="maxRetry" value="1"></property>
+		<property name="serialization">
+			<bean class="com.cyanspring.transport.tools.GsonSerialization"></bean>	
+		</property>
 	</bean>
 	
 </beans>

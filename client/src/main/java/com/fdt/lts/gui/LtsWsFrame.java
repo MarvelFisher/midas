@@ -96,7 +96,8 @@ public class LtsWsFrame extends JFrame {
     private JTable tblAccount;
     private JLabel lblBidAsk;
     private JTextField edQuote;
-
+    private JPanel plStrategy;
+    
 	/**
 	 * Create the frame.
 	 */
@@ -213,8 +214,12 @@ public class LtsWsFrame extends JFrame {
 			));
 		scrollPane_2.setViewportView(tblAccount);
 		
+		JPanel plBottom = new JPanel();
+		contentPane.add(plBottom, BorderLayout.SOUTH);
+		plBottom.setLayout(new BorderLayout(0, 0));
+		
 		JPanel plTrade = new JPanel();
-		contentPane.add(plTrade, BorderLayout.SOUTH);
+		plBottom.add(plTrade, BorderLayout.NORTH);
 		
 		JLabel lblSymbol = new JLabel("Symbol:");
 		plTrade.add(lblSymbol);
@@ -310,6 +315,46 @@ public class LtsWsFrame extends JFrame {
 			}
 		});
 		plTrade.add(btRefresh);
+		
+		JButton btV = new JButton("V");
+		btV.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(plStrategy.isVisible())
+					plStrategy.setVisible(false);
+				else
+					plStrategy.setVisible(true);
+			}
+		});
+		plTrade.add(btV);
+		
+		plStrategy = new JPanel();
+		plBottom.add(plStrategy, BorderLayout.SOUTH);
+		
+		JLabel lblStrategy = new JLabel("Strategy:");
+		plStrategy.add(lblStrategy);
+		
+		JComboBox cbStrategy = new JComboBox();
+		cbStrategy.setModel(new DefaultComboBoxModel(new String[] {"SPREAD"}));
+		plStrategy.add(cbStrategy);
+		
+		JLabel lblGap = new JLabel("Spread:");
+		plStrategy.add(lblGap);
+		
+		txGap = new JTextField();
+		txGap.setText("3");
+		plStrategy.add(txGap);
+		txGap.setColumns(10);
+		
+		JLabel lblTimeFrame = new JLabel("Time frame:");
+		plStrategy.add(lblTimeFrame);
+		
+		txTimeFrame = new JTextField();
+		txTimeFrame.setText("30");
+		plStrategy.add(txTimeFrame);
+		txTimeFrame.setColumns(10);
+		
+		JButton btStart = new JButton("Start");
+		plStrategy.add(btStart);
 	}
 	
 	private void updateAllOrder(List<Order> orders) {
@@ -442,6 +487,8 @@ public class LtsWsFrame extends JFrame {
         }
 
     };
+    private JTextField txGap;
+    private JTextField txTimeFrame;
 
     public void init() throws Exception {
         eventProcessor.setHandler(this);
