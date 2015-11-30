@@ -46,6 +46,7 @@ public class NetEaseClient
 	final static String TO = "to";
 	final static String TYPE = "type";
 	final static String BODY = "body";
+	final static String OPTION = "option";
 	final static String ATTACH = "attach";
 	final static String PUSHCONTENT = "pushcontent";
 	final static String PAYLOAD = "payload";
@@ -282,6 +283,9 @@ public class NetEaseClient
 		forms.put(TO, accidToID);
 		forms.put(TYPE, type);
 		forms.put(BODY, body.toString());
+		JSONObject json = new JSONObject();
+		json.put("push", false);
+		forms.put(OPTION, json.toString());
 		return HttpHelper.post(SENDMSG_URI, headers, forms);
 	}
 
