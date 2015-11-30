@@ -275,5 +275,12 @@ public class ServerSocketService implements IServerUserSocketService, IPlugin {
 		this.buffSize = buffSize;
 	}
 
-	
+	public ISerialization getSerialization() {
+		return serialization;
+	}
+
+	public void setSerialization(ISerialization serialization) {
+		this.serialization = serialization;
+	}
+
 }

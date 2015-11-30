@@ -286,4 +286,11 @@ public class ClientSocketService implements IClientSocketService, IPlugin {
 		this.connectionTimeout = connectionTimeout;
 	}
 
+	public ISerialization getSerialization() {
+		return serialization;
+	}
+
+	public void setSerialization(ISerialization serialization) {
+		this.serialization = serialization;
+	}
 }
