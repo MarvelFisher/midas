@@ -166,6 +166,10 @@
             <scope>system</scope>
             <systemPath>${basedir}/lib/cyanspring-transport-2.56.jar</systemPath>
         </dependency>
-        
+        <dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.4</version>
+		</dependency>
     </dependencies>
 </project>
