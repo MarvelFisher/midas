@@ -4,6 +4,8 @@ package com.cyanspring.cstw.ui.admin.forms;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -19,6 +21,7 @@ import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 
 import com.cyanspring.cstw.model.admin.SubAccountModel;
+import com.cyanspring.cstw.service.iservice.admin.IInputChangeListener;
 import com.cyanspring.cstw.service.iservice.admin.ISubAccountManagerService;
 
 /**
@@ -98,10 +101,13 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		client2.setLayout(gLayout2);
 		createSpacer(toolkit, client2, 3);
 		createComponent2(toolkit, client2);
+		
+		initListener();
+		
 		toolkit.paintBordersFor(dataSection2);
 		dataSection2.setClient(client2);
 	}
-	
+
 	private void createComponent1(FormToolkit toolkit, Composite client) {
 		toolkit.createLabel(client, "Name: ");
 		txtName1 = toolkit.createText(client, "", SWT.BORDER);
@@ -166,6 +172,24 @@ public class SubAccountDetailsPage implements IDetailsPage {
 		gd4.widthHint = TABLE_WIDTH_HINT;
 		assTableComposite.setLayoutData(gd4);
 		toolkit.adapt(assTableComposite);
+	}
+	
+	private void initListener() {
+		btnEdit2.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				
+			}
+		});
+		
+		service.addSubAccInputChangeListener(new IInputChangeListener() {
+			
+			@Override
+			public void inputChanged() {
+				input = service.getSubAccountById(input.getId());
+				update();
+			}
+		});
 		
 	}
 

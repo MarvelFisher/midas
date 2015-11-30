@@ -1,5 +1,6 @@
 package com.cyanspring.common.pool;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -449,22 +450,41 @@ public class InstrumentPoolManager implements IPlugin {
 		String errorMessage = "";
 		List<UserExchangeSubAccount> userExchangeSubAccounts = event
 				.getUserExchangeSubAccounts();
+		List<UserExchangeSubAccount> validUserExchangeSubAccounts = null;
 		OperationType type = event.getOperationType();
 		log.info("Received UserExchangeSubAccountOperationRequestEvent: "
 				+ userExchangeSubAccounts + ", " + type);
+
 		if (userExchangeSubAccounts != null
 				&& !userExchangeSubAccounts.isEmpty()) {
-			InstrumentPoolHelper.updateUserExchangeSubAccounts(
-					instrumentPoolKeeper, userExchangeSubAccounts, type);
 			switch (type) {
 			case CREATE:
-				PmUserExchangeSubAccountInsertEvent insertEvent = new PmUserExchangeSubAccountInsertEvent(
-						userExchangeSubAccounts);
-				eventManager.sendEvent(insertEvent);
+				validUserExchangeSubAccounts = new ArrayList<UserExchangeSubAccount>();
+				for (UserExchangeSubAccount record : userExchangeSubAccounts) {
+					if (!instrumentPoolKeeper.ifExists(record)) {
+						validUserExchangeSubAccounts.add(record);
+					}
+				}
+				if (!validUserExchangeSubAccounts.isEmpty()) {
+					InstrumentPoolHelper.updateUserExchangeSubAccounts(
+							instrumentPoolKeeper, validUserExchangeSubAccounts,
+							type);
+					PmUserExchangeSubAccountInsertEvent insertEvent = new PmUserExchangeSubAccountInsertEvent(
+							validUserExchangeSubAccounts);
+					eventManager.sendEvent(insertEvent);
+				} else {
+					ok = false;
+					errorMessage = MessageLookup
+							.buildEventMessage(
+									ErrorMessage.USER_EXCHANGE_SUB_ACCOUNT_ALREADY_EXISTS,
+									"The received UserExchangeSubAccount(s) already exists");
+				}
 				break;
 			case UPDATE:
 				break;
 			case DELETE:
+				InstrumentPoolHelper.updateUserExchangeSubAccounts(
+						instrumentPoolKeeper, userExchangeSubAccounts, type);
 				PmUserExchangeSubAccountDeleteEvent deleteEvent = new PmUserExchangeSubAccountDeleteEvent(
 						userExchangeSubAccounts);
 				eventManager.sendEvent(deleteEvent);
@@ -480,8 +500,14 @@ public class InstrumentPoolManager implements IPlugin {
 				event.getKey(), event.getSender(), ok, errorMessage,
 				event.getTxId());
 		if (ok) {
-			UserExchangeSubAccountUpdateEvent updateEvent = new UserExchangeSubAccountUpdateEvent(
-					null, null, userExchangeSubAccounts, type);
+			UserExchangeSubAccountUpdateEvent updateEvent = null;
+			if (type == OperationType.CREATE) {
+				updateEvent = new UserExchangeSubAccountUpdateEvent(null, null,
+						validUserExchangeSubAccounts, type);
+			} else {
+				updateEvent = new UserExchangeSubAccountUpdateEvent(null, null,
+						userExchangeSubAccounts, type);
+			}
 			eventManager.sendRemoteEvent(updateEvent);
 		}
 		eventManager.sendRemoteEvent(replyEvent);

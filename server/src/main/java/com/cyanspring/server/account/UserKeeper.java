@@ -221,7 +221,7 @@ public class UserKeeper {
 	public List<User> getUsersByRole(UserRole role) {
 		List<User> userList = new ArrayList<User>();
 		for (User user : users.values()) {
-			if (user.getRole() == UserRole.RiskManager) {
+			if (user.getRole() == role) {
 				userList.add(user);
 			}
 		}

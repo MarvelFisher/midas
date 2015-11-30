@@ -73,8 +73,9 @@ public class FCRefSymbolInfo extends IRefSymbolInfo
 		{
 			for (SymbolInfo symbolinfo : refSymbolInfo)
 			{
-				if (symbolinfo.getWindCode().equals("HOT") && 
-						symbolinfo.getCategory().equals(inputinfo.getCategory()))
+				if (symbolinfo.getWindCode() != null 
+						&& symbolinfo.getWindCode().equals("HOT")
+						&& symbolinfo.getCategory().equals(inputinfo.getCategory()))
 				{
 					infoList.add(symbolinfo);
 					break;

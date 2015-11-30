@@ -421,6 +421,9 @@
 		class="com.cyanspring.server.InstrumentPoolRecordRecoveryProcessor">
 	</bean>
 
+	<bean id="userExchangeSubAccountRecoveryProcessor"
+		class="com.cyanspring.server.UserExchangeSubAccountRecoveryProcessor"></bean>
+
 	<bean id="downStreamManager" class="com.cyanspring.common.downstream.DownStreamManager">
 		<constructor-arg>
 			<list>
