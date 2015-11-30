@@ -448,7 +448,7 @@
 				<ref bean="ppSessionChecker" />
 				<ref bean="pSessionChecker" />
 				<ref bean="jSessionChecker" />
-				<!-- <ref bean="jdSessionChecker"/> -->
+				<ref bean="jdSessionChecker"/>
 				<ref bean="fgSessionChecker" />
 				<ref bean="rmSessionChecker" />
 				<ref bean="taSessionChecker" />
