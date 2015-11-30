@@ -56,6 +56,12 @@ public class MockSubPoolManageServiceImpl extends BasicServiceImpl implements
 	}
 	
 	@Override
+	public List<?> getAssignedModelListBySubPoolId(String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	protected List<Class<? extends AsyncEvent>> getReplyEventList() {
 		// TODO Auto-generated method stub
 		return null;
@@ -129,6 +135,32 @@ public class MockSubPoolManageServiceImpl extends BasicServiceImpl implements
 			poolList.add(ModelTransfer.parseInstrumentPoolModel(pool));
 		}
 		return poolList;
+	}
+
+	@Override
+	public void createNewSubPool(String selectText) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeSubPool(InstrumentPoolModel obj) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void createNewInstrumentInfoModel(InstrumentPoolModel subPoolModel,
+			InstrumentInfoModel model) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeInstrumentInfoModel(InstrumentPoolModel subPoolModel,
+			InstrumentInfoModel model) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	

@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-class InputNameDialog extends TrayDialog {
+public class InputNameDialog extends TrayDialog {
 	
 	private String selectText;
 	private String inputTitle;

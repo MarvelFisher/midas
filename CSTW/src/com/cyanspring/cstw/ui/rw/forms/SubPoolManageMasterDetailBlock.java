@@ -2,6 +2,7 @@ package com.cyanspring.cstw.ui.rw.forms;
 
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -28,6 +29,7 @@ import org.eclipse.ui.forms.widgets.TableWrapData;
 import com.cyanspring.cstw.model.admin.InstrumentPoolModel;
 import com.cyanspring.cstw.model.admin.SubAccountModel;
 import com.cyanspring.cstw.service.iservice.riskmgr.ISubPoolManageService;
+import com.cyanspring.cstw.ui.admin.forms.InputNameDialog;
 
 /**
  * @author Junfeng
@@ -45,11 +47,10 @@ public class SubPoolManageMasterDetailBlock extends MasterDetailsBlock {
 	
 	private Button btnAddPool;
 	private Button btnDelete;
-	private Button btnUp;
-	private Button btnDown;
 	
 	private Action addPoolAction;
 	private Action delAction;
+	private Action renameAction;
 	
 	
 	public SubPoolManageMasterDetailBlock(ISubPoolManageService service) {
@@ -121,13 +122,6 @@ public class SubPoolManageMasterDetailBlock extends MasterDetailsBlock {
 		
 		toolkit.createLabel(btnComposite, "");
 		
-		btnUp = toolkit.createButton(btnComposite, "Up", SWT.NONE);
-		btnDown = toolkit.createButton(btnComposite, "Down", SWT.NONE);
-		btnUp.setLayoutData(btnData);
-		btnDown.setLayoutData(btnData);
-		btnUp.setEnabled(false);
-		btnDown.setEnabled(false);
-		
 		dataSection.setClient(sectionClient);
 	}
 
@@ -148,6 +142,14 @@ public class SubPoolManageMasterDetailBlock extends MasterDetailsBlock {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				delAction.run();
+			}
+		});
+		final MenuItem item3 = new MenuItem(treeMenu, SWT.PUSH);
+		item3.setText("Rename");
+		item3.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				renameAction.run();
 			}
 		});
 		
@@ -176,6 +178,39 @@ public class SubPoolManageMasterDetailBlock extends MasterDetailsBlock {
 	}
 
 	private void initAction() {
+		addPoolAction = new Action() {
+			@Override
+			public void run() {
+				InputNameDialog inputDialog = new InputNameDialog(editTree.getTree().getShell());
+				inputDialog.setInputTitle("Exchange Account: ");
+				if ( TrayDialog.OK == inputDialog.open() ) {
+					service.createNewSubPool(inputDialog.getSelectText());
+				}
+				refreshTree();
+				changeUiElementState();
+			}
+		};
+		
+		delAction = new Action() {
+			@Override
+			public void run() {
+				Object obj = ((IStructuredSelection) editTree.getSelection())
+						.getFirstElement();
+				if (obj instanceof InstrumentPoolModel) {
+					service.removeSubPool((InstrumentPoolModel) obj);
+				}
+				refreshTree();
+				changeUiElementState();
+			}
+		};
+		
+		renameAction = new Action() {
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				super.run();
+			}
+		};
 		
 	}
 	

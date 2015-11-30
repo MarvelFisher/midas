@@ -154,7 +154,7 @@ public class SubPoolDetailsPage implements IDetailsPage {
 		gd2.horizontalSpan = 3;
 		Label lblTable = toolkit.createLabel(client, "Summary of symbol: ");
 		lblTable.setLayoutData(gd2);
-		poolTableComposite = new AssignInstrumentInfoTableComposite(client, SWT.NONE);
+		poolTableComposite = new AssignInstrumentInfoTableComposite(client, service, SWT.NONE);
 		GridData gd3 = new GridData(); //SWT.LEFT, SWT.FILL, false, true
 		gd3.horizontalSpan = 3;
 		gd3.heightHint = TABLE_HEIGHT_HINT;
@@ -240,9 +240,10 @@ public class SubPoolDetailsPage implements IDetailsPage {
 			accTableComposite.setInput(service.getInstrumentInfoModelListBySubAccountId(input.getRelativeAccount()));
 			
 			txtName2.setText(input.getName());
+			poolTableComposite.setSubPoolModel(input);
 			poolTableComposite.setInput(service.getInstrumentInfoModelListBySubPoolId(input.getId()));
 			
-//			assignedTableComposite setInput
+			assignedTableComposite.setInput(service.getAssignedModelListBySubPoolId(input.getId()));
 		}
 	}
 	
