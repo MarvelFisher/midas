@@ -14,7 +14,7 @@ import com.google.gson.Gson;
 public class GsonSerialization implements ISerialization {
 
 	private Gson gson = new Gson();
-
+	
 	private Logger log = LoggerFactory.getLogger(FastSerialization.class);
 
 	private class InnerWrapObj {

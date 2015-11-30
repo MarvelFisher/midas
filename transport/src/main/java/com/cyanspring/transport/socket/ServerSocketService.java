@@ -31,18 +31,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cyanspring.common.IPlugin;
+import com.cyanspring.common.transport.ISerialization;
 import com.cyanspring.common.transport.IServerUserSocketService;
 import com.cyanspring.common.transport.IUserSocketContext;
 import com.cyanspring.common.transport.IServerSocketListener;
 import com.cyanspring.common.util.IdGenerator;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
+import com.cyanspring.transport.tools.GsonSerialization;
 
 public class ServerSocketService implements IServerUserSocketService, IPlugin {
 	private static final Logger log = LoggerFactory
 			.getLogger(ServerSocketService.class);
 
-	private XStream xstream = new XStream(new DomDriver("UTF_8"));
+	//private XStream xstream = new XStream(new DomDriver("UTF_8"));
+	private ISerialization serialization = new GsonSerialization();
+	
 	private int port = 52368;
 	private String host = "0.0.0.0";
 	private int buffSize = 2000*8192;
@@ -60,7 +62,7 @@ public class ServerSocketService implements IServerUserSocketService, IPlugin {
 			Collections.synchronizedList(new ArrayList<IServerSocketListener>());
 	
 	synchronized private IUserSocketContext addConnectionContext(Channel channel) {
-		UserSocketContext ctx = new UserSocketContext(IdGenerator.getInstance().getNextID(), null, channel, xstream);
+		UserSocketContext ctx = new UserSocketContext(IdGenerator.getInstance().getNextID(), null, channel, serialization);
 		channels.put(channel, ctx.getId());
 		idChannels.put(ctx.getId(), ctx);
     	log.info("Channel count: " + channels.size());
@@ -129,7 +131,7 @@ public class ServerSocketService implements IServerUserSocketService, IPlugin {
 	    @Override
 	    public void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
 	    	log.debug(msg);
-	    	Object obj = xstream.fromXML(msg);
+	    	Object obj = serialization.deSerialize(msg);
 	    	Channel channel = ctx.channel();
 	    	String id = channels.get(channel);
 	    	if(null == id) {
