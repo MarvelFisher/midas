@@ -192,7 +192,7 @@
 		<property name="password"><value>hkfdt1234</value></property>
 		<property name="broker"><value>0253</value></property>
 		<property name="connectionCount"><value>1</value></property>
-		<property name="libPath"><value>./ctplib/linux64/thosttraderapi.so</value></property>
+		<!-- <property name="libPath"><value>./ctplib/linux64/thosttraderapi.so</value></property> -->
         <property name="symbolConverter"><bean class="com.cyanspring.common.business.CnFutureSymbolConverter"/></property>
 	</bean>
 	
@@ -203,7 +203,7 @@
 		<property name="password"><value>hkfdt1234</value></property>
 		<property name="broker"><value>0253</value></property>
 		<property name="connectionCount"><value>1</value></property>
-		<property name="libPath"><value>./ctplib/linux64/thosttraderapi.so</value></property>
+		<!-- <property name="libPath"><value>./ctplib/linux64/thosttraderapi.so</value></property> -->
         <property name="symbolConverter"><bean class="com.cyanspring.common.business.CnFutureSymbolConverter"/></property>
         <property name="connectionPrefix" value="STP"></property>
 	</bean>
